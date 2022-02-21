@@ -119,6 +119,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4CB9B06727C4424D00B413D0 /* MPEnvController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPEnvController.h; sourceTree = "<group>"; };
+		4CB9B06827C4427800B413D0 /* MPGameStateController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPGameStateController.h; sourceTree = "<group>"; };
+		4CB9B06927C442B000B413D0 /* MPRoomModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPRoomModel.h; sourceTree = "<group>"; };
+		4CB9B06A27C442C000B413D0 /* MPGridModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPGridModel.h; sourceTree = "<group>"; };
+		4CB9B06B27C442D700B413D0 /* MPGameStateModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPGameStateModel.h; sourceTree = "<group>"; };
+		4CB9B06C27C442F300B413D0 /* MPCharacterModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPCharacterModel.h; sourceTree = "<group>"; };
+		4CB9B06D27C4430700B413D0 /* MPReynardModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPReynardModel.h; sourceTree = "<group>"; };
 		EB122DA01E281F4A0019E2D1 /* Rocket Demo (iOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rocket Demo (iOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2C2239201D887E0090F94D /* CUGL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CUGL.xcodeproj; path = "../cugl/build-apple/CUGL.xcodeproj"; sourceTree = "<group>"; };
 		EB3B95761E25B1E000314284 /* MPApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MPApp.cpp; sourceTree = "<group>"; };
@@ -288,6 +295,13 @@
 				EB3B957C1E25B1E000314284 /* MPLoadingScene.cpp */,
 				EB3B95791E25B1E000314284 /* MPGameScene.h */,
 				EB8ADF5D201E54130037306F /* MPGameScene.cpp */,
+				4CB9B06727C4424D00B413D0 /* MPEnvController.h */,
+				4CB9B06927C442B000B413D0 /* MPRoomModel.h */,
+				4CB9B06A27C442C000B413D0 /* MPGridModel.h */,
+				4CB9B06B27C442D700B413D0 /* MPGameStateModel.h */,
+				4CB9B06C27C442F300B413D0 /* MPCharacterModel.h */,
+				4CB9B06D27C4430700B413D0 /* MPReynardModel.h */,
+				4CB9B06827C4427800B413D0 /* MPGameStateController.h */,
 				EB3B957B1E25B1E000314284 /* MPInput.h */,
 				EB3B957A1E25B1E000314284 /* MPInput.cpp */,
 				EB3B957F1E25B1E000314284 /* MPRocketModel.h */,

@@ -32,7 +32,7 @@
  * until later. This is one of the main reasons we like to avoid initialization
  * in the constructor.
  */
-class RocketInput {
+class InputController {
 private:
     /** Whether or not this input is active */
     bool _active;
@@ -76,12 +76,12 @@ public:
      * This constructor does NOT do any initialzation.  It simply allocates the
      * object. This makes it safe to use this class without a pointer.
      */
-    RocketInput(); // Don't initialize.  Allow stack based
+    InputController(); // Don't initialize.  Allow stack based
     
     /**
      * Disposes of this input controller, releasing all listeners.
      */
-    ~RocketInput() { dispose(); }
+    ~InputController() { dispose(); }
     
     /**
      * Deactivates this input controller, releasing all listeners.

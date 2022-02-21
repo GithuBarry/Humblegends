@@ -16,7 +16,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "124"
             endingLineNumber = "124"
-            landmarkName = "RocketInput::update(dt)"
+            landmarkName = "InputController::update(dt)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -32,7 +32,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "123"
             endingLineNumber = "123"
-            landmarkName = "RocketInput::update(dt)"
+            landmarkName = "InputController::update(dt)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -48,7 +48,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "156"
             endingLineNumber = "156"
-            landmarkName = "RocketInput::update(dt)"
+            landmarkName = "InputController::update(dt)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
