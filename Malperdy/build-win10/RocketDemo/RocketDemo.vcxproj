@@ -185,21 +185,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\HelloApp.h" />
-    <ClInclude Include="..\..\source\RDApp.h" />
-    <ClInclude Include="..\..\source\RDGameScene.h" />
-    <ClInclude Include="..\..\source\RDInput.h" />
-    <ClInclude Include="..\..\source\RDLoadingScene.h" />
-    <ClInclude Include="..\..\source\RDRocketModel.h" />
+    <ClInclude Include="..\..\source\MPApp.h" />
+    <ClInclude Include="..\..\source\MPCharacterModel.h" />
+    <ClInclude Include="..\..\source\MPEnvController.h" />
+    <ClInclude Include="..\..\source\MPGameScene.h" />
+    <ClInclude Include="..\..\source\MPGameStateController.h" />
+    <ClInclude Include="..\..\source\MPGameStateModel.h" />
+    <ClInclude Include="..\..\source\MPGridModel.h" />
+    <ClInclude Include="..\..\source\MPInput.h" />
+    <ClInclude Include="..\..\source\MPLoadingScene.h" />
+    <ClInclude Include="..\..\source\MPReynardModel.h" />
+    <ClInclude Include="..\..\source\MPRocketModel.h" />
+    <ClInclude Include="..\..\source\MPRoomModel.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\main.cpp" />
-    <ClCompile Include="..\..\source\RDApp.cpp" />
-    <ClCompile Include="..\..\source\RDGameScene.cpp" />
-    <ClCompile Include="..\..\source\RDInput.cpp" />
-    <ClCompile Include="..\..\source\RDLoadingScene.cpp" />
-    <ClCompile Include="..\..\source\RDRocketModel.cpp" />
+    <ClCompile Include="..\..\source\MPApp.cpp" />
+    <ClCompile Include="..\..\source\MPGameScene.cpp" />
+    <ClCompile Include="..\..\source\MPInput.cpp" />
+    <ClCompile Include="..\..\source\MPLoadingScene.cpp" />
+    <ClCompile Include="..\..\source\MPRocketModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RocketDemo.rc" />

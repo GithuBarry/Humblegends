@@ -15,25 +15,43 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\HelloApp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\RDApp.h">
+    <ClInclude Include="..\..\source\MPApp.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\RDGameScene.h">
+    <ClInclude Include="..\..\source\MPCharacterModel.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\RDInput.h">
+    <ClInclude Include="..\..\source\MPEnvController.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\RDLoadingScene.h">
+    <ClInclude Include="..\..\source\MPGameScene.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\RDRocketModel.h">
+    <ClInclude Include="..\..\source\MPGameStateController.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\MPGameStateModel.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\MPGridModel.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\MPInput.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\MPLoadingScene.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\MPReynardModel.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\MPRocketModel.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\MPRoomModel.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,19 +59,19 @@
     <ClCompile Include="..\..\source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\RDApp.cpp">
+    <ClCompile Include="..\..\source\MPApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\RDInput.cpp">
+    <ClCompile Include="..\..\source\MPGameScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\RDLoadingScene.cpp">
+    <ClCompile Include="..\..\source\MPInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\RDRocketModel.cpp">
+    <ClCompile Include="..\..\source\MPLoadingScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\RDGameScene.cpp">
+    <ClCompile Include="..\..\source\MPRocketModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
