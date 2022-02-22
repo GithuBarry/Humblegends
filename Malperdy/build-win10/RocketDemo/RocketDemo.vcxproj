@@ -197,7 +197,6 @@
     <ClInclude Include="..\..\source\MPReynardModel.h" />
     <ClInclude Include="..\..\source\MPRocketModel.h" />
     <ClInclude Include="..\..\source\MPRoomModel.h" />
-    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\main.cpp" />
