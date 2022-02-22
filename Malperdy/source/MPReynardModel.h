@@ -90,17 +90,7 @@ class ReynardModel : CharacterModel {
         _force.y = value;
     }
 
-    /**
-     * Returns the amount of thrust that this rocket has.
-     *
-     * Multiply this value times the horizontal and vertical values in the
-     * input controller to get the force.
-     *
-     * @return the amount of thrust that this rocket has.
-     */
-    float getThrust() const {
-        return DEFAULT_THRUST;
-    }
+
 };
 
 #endif /* MPReynardModel_h */

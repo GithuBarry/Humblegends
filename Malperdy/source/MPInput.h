@@ -178,7 +178,7 @@ public:
      * in form of [start_pos, end_pos]
      * return null when didEndSwipe() is false
      */
-    Vec2[] getSwipeStartEnd();
+    std::vector<cugl::Vec2> getSwipeStartEnd();
     
     
 #pragma mark -

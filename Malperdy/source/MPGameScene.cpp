@@ -52,32 +52,6 @@ using namespace cugl;
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
 
-// Since these appear only once, we do not care about the magic numbers.
-// In an actual game, this information would go in a data file.
-// IMPORTANT: Note that Box2D units do not equal drawing units
-/** The wall vertices */
-//float WALL1[] = { 0.0f,  0.0f, 16.0f,  0.0f, 16.0f,  1.0f,
-//                  3.0f,  1.0f,  3.0f,  5.0f,  2.0f,  7.0f,
-//                  1.0f, 17.0f,  8.0f, 15.0f, 16.0f, 17.0f,
-//                 16.0f, 18.0f,  0.0f, 18.0f};
-//float WALL2[] = {32.0f, 18.0f, 16.0f, 18.0f, 16.0f, 17.0f,
-//                 31.0f, 16.0f, 30.0f, 10.0f, 31.0f,  1.0f,
-//                 16.0f,  1.0f, 16.0f,  0.0f, 32.0f,  0.0f};
-//float WALL3[] = { 4.0f,  9.5f,  8.0f,  9.5f,
-//                  8.0f, 10.5f,  4.0f, 10.5f };
-
-/** The positions of the crate pyramid */
-//float BOXES[] = { 14.5f, 14.25f,
-//                  13.0f, 12.00f, 16.0f, 12.00f,
-//                  11.5f,  9.75f, 14.5f,  9.75f, 17.5f, 9.75f,
-//                  13.0f,  7.50f, 16.0f,  7.50f,
-//                  11.5f,  5.25f, 14.5f,  5.25f, 17.5f, 5.25f,
-//                  10.0f,  3.00f, 13.0f,  3.00f, 16.0f, 3.00f, 19.0f, 3.0f};
-//
-///** The initial rocket position */
-//float ROCK_POS[] = {24,  4};
-///** The goal door position */
-//float GOAL_POS[] = { 6, 12};
 
 #pragma mark Assset Constants
 /** The key for the earth texture in the asset manager */
@@ -89,23 +63,23 @@ using namespace cugl;
 /** The key prefix for the multiple crate assets */
 #define CRATE_PREFIX        "crate"
 /** The key for the fire textures in the asset manager */
-#define MAIN_FIRE_TEXTURE   "flames"
-#define RGHT_FIRE_TEXTURE   "flames-right"
-#define LEFT_FIRE_TEXTURE   "flames-left"
-
-/** Color to outline the physics nodes */
-#define STATIC_COLOR    Color4::WHITE
-/** Opacity of the physics outlines */
-#define DYNAMIC_COLOR   Color4::YELLOW
-
-/** The key for collisions sounds */
-#define COLLISION_SOUND     "bump"
-/** The key for the main afterburner sound */
-#define MAIN_FIRE_SOUND     "burn"
-/** The key for the right afterburner sound */
-#define RGHT_FIRE_SOUND     "right-burn"
-/** The key for the left afterburner sound */
-#define LEFT_FIRE_SOUND     "left-burn"
+//#define MAIN_FIRE_TEXTURE   "flames"
+//#define RGHT_FIRE_TEXTURE   "flames-right"
+//#define LEFT_FIRE_TEXTURE   "flames-left"
+//
+///** Color to outline the physics nodes */
+//#define STATIC_COLOR    Color4::WHITE
+///** Opacity of the physics outlines */
+//#define DYNAMIC_COLOR   Color4::YELLOW
+//
+///** The key for collisions sounds */
+//#define COLLISION_SOUND     "bump"
+///** The key for the main afterburner sound */
+//#define MAIN_FIRE_SOUND     "burn"
+///** The key for the right afterburner sound */
+//#define RGHT_FIRE_SOUND     "right-burn"
+///** The key for the left afterburner sound */
+//#define LEFT_FIRE_SOUND     "left-burn"
 
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
@@ -203,9 +177,10 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
 
     if (assets == nullptr) {
         return false;
-    } else if (!Scene2::init(dimen)) {
-        return false;
     }
+//    else if (!Scene2::init(dimen)) {
+//        return false;
+//    }
     
     // Start up the input handler
     _assets = assets;
@@ -243,8 +218,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
 //    _exitnode->setForeground(STATIC_COLOR);
 //    _exitnode->setVisible(false);
     
-    addChild(_worldnode);
-    addChild(_debugnode);
+//    addChild(_worldnode);
+//    addChild(_debugnode);
 //    addChild(_exitnode);
     
     populate();
@@ -261,17 +236,17 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
  * Disposes of all (non-static) resources allocated to this mode.
  */
 void GameScene::dispose() {
-    if (_active) {
-        removeAllChildren();
-        _input.dispose();
-        _world = nullptr;
-        _worldnode = nullptr;
-        _debugnode = nullptr;
-        _exitnode = nullptr;
-        _complete = false;
-        _debug = false;
-        Scene2::dispose();
-    }
+//    if (_active) {
+//        removeAllChildren();
+//        _input.dispose();
+//        _world = nullptr;
+//        _worldnode = nullptr;
+//        _debugnode = nullptr;
+//        _exitnode = nullptr;
+//        _complete = false;
+//        _debug = false;
+//        Scene2::dispose();
+//    }
 }
 
 
@@ -305,168 +280,73 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
-#pragma mark : Goal door
-    std::shared_ptr<Texture> image = _assets->get<Texture>(GOAL_TEXTURE);
-    
-    // Create obstacle
-    Vec2 goalPos = ((Vec2)GOAL_POS);
-    Size goalSize = image->getSize()/_scale;
-    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(image);
-    
-    
-    _goalDoor = physics2::BoxObstacle::alloc(goalPos,goalSize);
-    _goalDoor->setName("door");
-    _goalDoor->setDebugColor(STATIC_COLOR);
-    
-    // Set the physics attributes
-    _goalDoor->setBodyType(b2_staticBody);
-    _goalDoor->setDensity(0.0f);
-    _goalDoor->setFriction(0.0f);
-    _goalDoor->setRestitution(0.0f);
-    _goalDoor->setSensor(true);
-    
-    addObstacle(_goalDoor,sprite); // Put this at the very back
-    
-#pragma mark : Wall polygon 1
-    // Create ground pieces
-    // All walls share the same texture
-    image  = _assets->get<Texture>(EARTH_TEXTURE);
-    std::string wname = "wall";
-
-    // Create the polygon outline
-    Poly2 wall1(reinterpret_cast<Vec2*>(WALL1),11);
-    EarclipTriangulator triangulator;
-    triangulator.set(wall1.vertices);
-    triangulator.calculate();
-    wall1.setIndices(triangulator.getTriangulation());
-    triangulator.clear();
-
-    std::shared_ptr<physics2::PolygonObstacle> wallobj;
-    wallobj = physics2::PolygonObstacle::allocWithAnchor(wall1,Vec2::ANCHOR_CENTER);
-    wallobj->setDebugColor(STATIC_COLOR);
-    wallobj->setName(wname);
-
-    // Set the physics attributes
-    wallobj->setBodyType(b2_staticBody);
-    wallobj->setDensity(BASIC_DENSITY);
-    wallobj->setFriction(BASIC_FRICTION);
-    wallobj->setRestitution(BASIC_RESTITUTION);
-
-    // Add the scene graph nodes to this object
-    wall1 *= _scale;
-    sprite = scene2::PolygonNode::allocWithTexture(image,wall1);
-    addObstacle(wallobj,sprite);  // All walls share the same texture
-    
-#pragma mark : Wall polygon 2
-    Poly2 wall2(reinterpret_cast<Vec2*>(WALL2),9);
-    triangulator.set(wall2.vertices);
-    triangulator.calculate();
-    wall2.setIndices(triangulator.getTriangulation());
-    triangulator.clear();
-
-    wallobj = physics2::PolygonObstacle::allocWithAnchor(wall2,Vec2::ANCHOR_CENTER);
-    wallobj->setDebugColor(STATIC_COLOR);
-    wallobj->setName(wname);
-    
-    // Set the physics attributes
-    wallobj->setBodyType(b2_staticBody);
-    wallobj->setDensity(BASIC_DENSITY);
-    wallobj->setFriction(BASIC_FRICTION);
-    wallobj->setRestitution(BASIC_RESTITUTION);
-
-    // Add the scene graph nodes to this object
-    wall2 *= _scale;
-    sprite = scene2::PolygonNode::allocWithTexture(image,wall2);
-    addObstacle(wallobj,sprite);  // All walls share the same texture
-
-    
-#pragma mark : Wall polygon 3
-    Poly2 wall3(reinterpret_cast<Vec2*>(WALL3),4);
-    triangulator.set(wall3.vertices);
-    triangulator.calculate();
-    wall3.setIndices(triangulator.getTriangulation());
-    triangulator.clear();
-
-    wallobj = physics2::PolygonObstacle::allocWithAnchor(wall3,Vec2::ANCHOR_CENTER);
-    wallobj->setDebugColor(STATIC_COLOR);
-    wallobj->setName(wname);
-
-    // Set the physics attributes
-    wallobj->setBodyType(b2_staticBody);
-    wallobj->setDensity(BASIC_DENSITY);
-    wallobj->setFriction(BASIC_FRICTION);
-    wallobj->setRestitution(BASIC_RESTITUTION);
-
-    // Add the scene graph nodes to this object
-    wall3 *= _scale;
-    sprite = scene2::PolygonNode::allocWithTexture(image,wall3);
-    addObstacle(wallobj,sprite);  // All walls share the same texture
-    
-#pragma mark : Crates
-    std::srand((int)std::time(0));
-    for (int ii = 0; ii < 15; ii++) {
-        // Pick a crate and random and generate the key
-        int indx = (std::rand() % 2 == 0 ? 2 : 1);
-        std::stringstream ss;
-        ss << CRATE_PREFIX << (indx < 10 ? "0" : "" ) << indx;
-
-        // Create the sprite for this crate
-        image  = _assets->get<Texture>(ss.str());
-
-        Vec2 boxPos(BOXES[2*ii], BOXES[2*ii+1]);
-        Size boxSize(image->getSize()/_scale);
-        auto crate = physics2::BoxObstacle::alloc(boxPos,boxSize);
-        crate->setDebugColor(DYNAMIC_COLOR);
-        crate->setName(ss.str());
-        crate->setAngleSnap(0);             // Snap to the nearest degree
-
-        // Set the physics attributes
-        crate->setDensity(CRATE_DENSITY);
-        crate->setFriction(CRATE_FRICTION);
-        crate->setAngularDamping(CRATE_DAMPING);
-        crate->setRestitution(BASIC_RESTITUTION);
-
-        sprite = scene2::PolygonNode::allocWithTexture(image);
-		sprite->setAnchor(Vec2::ANCHOR_CENTER);
-        addObstacle(crate,sprite);   // PUT SAME TEXTURES IN SAME LAYER!!!
-
-    }
-
-#pragma mark : Rocket
-    Vec2 rockPos = ((Vec2)ROCK_POS);
-    image  = _assets->get<Texture>(ROCK_TEXTURE);
-    Size rockSize(image->getSize()/_scale);
-    
-    _rocket = RocketModel::alloc(rockPos,rockSize);
-    _rocket->setDrawScale(_scale);
-    _rocket->setDebugColor(DYNAMIC_COLOR);
-    
-    auto rocketNode = scene2::PolygonNode::allocWithTexture(image);
-	rocketNode->setAnchor(Vec2::ANCHOR_CENTER);
-	_rocket->setShipNode(rocketNode);
-    
-    // These will attach them to the ship node
-    _rocket->setBurnerStrip(RocketModel::Burner::MAIN, _assets->get<Texture>(MAIN_FIRE_TEXTURE));
-    _rocket->setBurnerStrip(RocketModel::Burner::LEFT, _assets->get<Texture>(LEFT_FIRE_TEXTURE));
-    _rocket->setBurnerStrip(RocketModel::Burner::RIGHT,_assets->get<Texture>(RGHT_FIRE_TEXTURE));
-    
-    // This just stores the keys
-    _rocket->setBurnerSound(RocketModel::Burner::MAIN,  MAIN_FIRE_SOUND);
-    _rocket->setBurnerSound(RocketModel::Burner::LEFT,  LEFT_FIRE_SOUND);
-    _rocket->setBurnerSound(RocketModel::Burner::RIGHT, RGHT_FIRE_SOUND);
-
-    // Create the polygon node (empty, as the model will initialize)
-    _worldnode->addChild(rocketNode);
-    _rocket->setDebugScene(_debugnode);
-    _world->addObstacle(_rocket);
 }
-
+    
+//#pragma mark : Crates
+//    std::srand((int)std::time(0));
+//    for (int ii = 0; ii < 15; ii++) {
+//        // Pick a crate and random and generate the key
+//        int indx = (std::rand() % 2 == 0 ? 2 : 1);
+//        std::stringstream ss;
+//        ss << CRATE_PREFIX << (indx < 10 ? "0" : "" ) << indx;
+//
+//        // Create the sprite for this crate
+//        image  = _assets->get<Texture>(ss.str());
+//
+//        Vec2 boxPos(BOXES[2*ii], BOXES[2*ii+1]);
+//        Size boxSize(image->getSize()/_scale);
+//        auto crate = physics2::BoxObstacle::alloc(boxPos,boxSize);
+//        crate->setDebugColor(DYNAMIC_COLOR);
+//        crate->setName(ss.str());
+//        crate->setAngleSnap(0);             // Snap to the nearest degree
+//
+//        // Set the physics attributes
+//        crate->setDensity(CRATE_DENSITY);
+//        crate->setFriction(CRATE_FRICTION);
+//        crate->setAngularDamping(CRATE_DAMPING);
+//        crate->setRestitution(BASIC_RESTITUTION);
+//
+//        sprite = scene2::PolygonNode::allocWithTexture(image);
+//		sprite->setAnchor(Vec2::ANCHOR_CENTER);
+//        addObstacle(crate,sprite);   // PUT SAME TEXTURES IN SAME LAYER!!!
+//
+//    }
+//
+//#pragma mark : Rocket
+//    Vec2 rockPos = ((Vec2)ROCK_POS);
+//    image  = _assets->get<Texture>(ROCK_TEXTURE);
+//    Size rockSize(image->getSize()/_scale);
+//
+//    _rocket = RocketModel::alloc(rockPos,rockSize);
+//    _rocket->setDrawScale(_scale);
+//    _rocket->setDebugColor(DYNAMIC_COLOR);
+//
+//    auto rocketNode = scene2::PolygonNode::allocWithTexture(image);
+//	rocketNode->setAnchor(Vec2::ANCHOR_CENTER);
+//	_rocket->setShipNode(rocketNode);
+//
+//    // These will attach them to the ship node
+//    _rocket->setBurnerStrip(RocketModel::Burner::MAIN, _assets->get<Texture>(MAIN_FIRE_TEXTURE));
+//    _rocket->setBurnerStrip(RocketModel::Burner::LEFT, _assets->get<Texture>(LEFT_FIRE_TEXTURE));
+//    _rocket->setBurnerStrip(RocketModel::Burner::RIGHT,_assets->get<Texture>(RGHT_FIRE_TEXTURE));
+//
+//    // This just stores the keys
+//    _rocket->setBurnerSound(RocketModel::Burner::MAIN,  MAIN_FIRE_SOUND);
+//    _rocket->setBurnerSound(RocketModel::Burner::LEFT,  LEFT_FIRE_SOUND);
+//    _rocket->setBurnerSound(RocketModel::Burner::RIGHT, RGHT_FIRE_SOUND);
+//
+//    // Create the polygon node (empty, as the model will initialize)
+//    _worldnode->addChild(rocketNode);
+//    _rocket->setDebugScene(_debugnode);
+//    _world->addObstacle(_rocket);
+//}
+//
 /**
  * Adds the physics object to the physics world and loosely couples it to the scene graph
  *
  * There are two ways to link a physics object to a scene graph node on the
- * screen.  One way is to make a subclass of a physics object, like we did 
- * with rocket.  The other is to use callback functions to loosely couple 
+ * screen.  One way is to make a subclass of a physics object, like we did
+ * with rocket.  The other is to use callback functions to loosely couple
  * the two.  This function is an example of the latter.
  *
  * param obj    The physics object to add
@@ -476,11 +356,11 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle>& obj,
                             const std::shared_ptr<scene2::SceneNode>& node) {
     _world->addObstacle(obj);
     obj->setDebugScene(_debugnode);
-    
+
     // Position the scene graph node (enough for static objects)
     node->setPosition(obj->getPosition()*_scale);
     _worldnode->addChild(node);
-    
+
     // Dynamic objects need constant updating
     if (obj->getBodyType() == b2_dynamicBody) {
         scene2::SceneNode* weak = node.get(); // No need for smart pointer in callback
@@ -519,54 +399,29 @@ void GameScene::update(float dt) {
         Application::get()->quit();
     }
     if (_input.didEndSwipe()){
-        Vec2 start();
-        Vec end();
+        Vec2 start;
+        Vec2 end;
         start = _input.getSwipeStartEnd()[0];
         end = _input.getSwipeStartEnd()[1];
 
     }
 
-    // Apply the force to the rocket
-    _rocket->setFX(_input.getHorizontal() * _rocket->getThrust());
-    _rocket->setFY(_input.getVertical() * _rocket->getThrust());
-    _rocket->applyForce();
-
-    // Animate the three burners
-    updateBurner(RocketModel::Burner::MAIN,  _rocket->getFY() >  1);
-    updateBurner(RocketModel::Burner::LEFT,  _rocket->getFX() >  1);
-    updateBurner(RocketModel::Burner::RIGHT, _rocket->getFX() <  -1);
+//    // Apply the force to the rocket
+//    _rocket->setFX(_input.getHorizontal() * _rocket->getThrust());
+//    _rocket->setFY(_input.getVertical() * _rocket->getThrust());
+//    _rocket->applyForce();
+//
+//    // Animate the three burners
+//    updateBurner(RocketModel::Burner::MAIN,  _rocket->getFY() >  1);
+//    updateBurner(RocketModel::Burner::LEFT,  _rocket->getFX() >  1);
+//    updateBurner(RocketModel::Burner::RIGHT, _rocket->getFX() <  -1);
 
     // Turn the physics engine crank.
     // TODO: Implement https://gafferongames.com/post/fix_your_timestep/
     _world->update(dt);
 }
 
-/**
- * Updates that animation for a single burner
- *
- * This method is here instead of the the rocket model because of our philosophy
- * that models should always be lightweight.  Animation includes sounds and other
- * assets that we do not want to process in the model
- *
- * @param  burner   The rocket burner to animate
- * @param  on       Whether to turn the animation on or off
- */
-void GameScene::updateBurner(RocketModel::Burner burner, bool on) {
-    std::string sound = _rocket->getBurnerSound(burner);
-    if (on) {
-        _rocket->animateBurner(burner, true);
-        if (!AudioEngine::get()->isActive(sound) && sound.size() > 0) {
-            auto source = _assets->get<Sound>(sound);
-            AudioEngine::get()->play(sound,source,true,source->getVolume());
-        }
-    } else {
-        _rocket->animateBurner(burner, false);
-        if (AudioEngine::get()->isActive(sound)) {
-            AudioEngine::get()->clear(sound);
-        }
-    }
-    
-}
+
 
 /**
  * Processes the start of a collision
@@ -582,13 +437,13 @@ void GameScene::beginContact(b2Contact* contact) {
     b2Body* body2 = contact->GetFixtureB()->GetBody();
     
     // If we hit the "win" door, we are done
-    intptr_t rptr = reinterpret_cast<intptr_t>(_rocket.get());
-    intptr_t dptr = reinterpret_cast<intptr_t>(_goalDoor.get());
+//    intptr_t rptr = reinterpret_cast<intptr_t>(_rocket.get());
+//    intptr_t dptr = reinterpret_cast<intptr_t>(_goalDoor.get());
 
-    if((body1->GetUserData().pointer == rptr && body2->GetUserData().pointer == dptr) ||
-       (body1->GetUserData().pointer == dptr && body2->GetUserData().pointer == rptr)) {
-        setComplete(true);
-    }
+//    if((body1->GetUserData().pointer == rptr && body2->GetUserData().pointer == dptr) ||
+//       (body1->GetUserData().pointer == dptr && body2->GetUserData().pointer == rptr)) {
+//        setComplete(true);
+//    }
 }
 
 /**
@@ -622,19 +477,19 @@ void GameScene::beforeSolve(b2Contact* contact, const b2Manifold* oldManifold) {
     }
     
     // Play a sound if above threshold
-    if (speed > SOUND_THRESHOLD) {
-        // These keys result in a low number of sounds.  Too many == distortion.
-        physics2::Obstacle* data1 = reinterpret_cast<physics2::Obstacle*>(body1->GetUserData().pointer);
-        physics2::Obstacle* data2 = reinterpret_cast<physics2::Obstacle*>(body2->GetUserData().pointer);
-
-        if (data1 != nullptr && data2 != nullptr) {
-            std::string key = (data1->getName()+data2->getName());
-            auto source = _assets->get<Sound>(COLLISION_SOUND);
-            if (!AudioEngine::get()->isActive(key)) {
-                AudioEngine::get()->play(key, source, false, source->getVolume());
-            }
-        }
-    }
+//    if (speed > SOUND_THRESHOLD) {
+//        // These keys result in a low number of sounds.  Too many == distortion.
+//        physics2::Obstacle* data1 = reinterpret_cast<physics2::Obstacle*>(body1->GetUserData().pointer);
+//        physics2::Obstacle* data2 = reinterpret_cast<physics2::Obstacle*>(body2->GetUserData().pointer);
+//
+//        if (data1 != nullptr && data2 != nullptr) {
+//            std::string key = (data1->getName()+data2->getName());
+//            auto source = _assets->get<Sound>(COLLISION_SOUND);
+//            if (!AudioEngine::get()->isActive(key)) {
+//                AudioEngine::get()->play(key, source, false, source->getVolume());
+//            }
+//        }
+//    }
 }
 
 /**

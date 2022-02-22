@@ -222,11 +222,21 @@ void InputController::touchBeganCB(const cugl::TouchEvent& event, bool focus) {
  */
 void InputController::touchEndedCB(const cugl::TouchEvent& event, bool focus) {
     // Gesture has ended.  Give it meaning.
-    Vec2 diff = event.position-_dtouch;
+    cugl::Vec2 diff = event.position-_dtouch;
     bool fast = (event.timestamp.ellapsedMillis(_timestamp) < EVENT_SWIPE_TIME);
     _keyReset = fast && diff.x < -EVENT_SWIPE_LENGTH;
     _keyExit  = fast && diff.x > EVENT_SWIPE_LENGTH;
     _keyDebug = fast && diff.y > EVENT_SWIPE_LENGTH;
     _keyUp = false;
+}
+
+bool InputController::didEndSwipe() { 
+    //TODO
+    return false;
+}
+
+std::vector<cugl::Vec2> InputController::getSwipeStartEnd(){
+    //TODO
+    return std::vector<cugl::Vec2>();
 }
 
