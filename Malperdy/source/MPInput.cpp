@@ -229,3 +229,4 @@ void InputController::touchEndedCB(const cugl::TouchEvent& event, bool focus) {
     _keyDebug = fast && diff.y > EVENT_SWIPE_LENGTH;
     _keyUp = false;
 }
+

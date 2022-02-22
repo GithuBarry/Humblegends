@@ -24,11 +24,13 @@
 //
 #ifndef __MP_GAME_SCENE_H__
 #define __MP_GAME_SCENE_H__
+
 #include <cugl/cugl.h>
 #include <box2d/b2_world_callbacks.h>
 #include <vector>
-#include "MPRocketModel.h"
+#include "MPReynardModel.h"
 #include "MPInput.h"
+#include "MPGameStateController.h"
 
 /**
  * This class is the primary gameplay constroller for the demo.
@@ -41,18 +43,19 @@ class GameScene : public cugl::Scene2 {
 protected:
     /** The asset manager for this game mode. */
     std::shared_ptr<cugl::AssetManager> _assets;
-    
+
     // CONTROLLERS
     /** Controller for abstracting out input across multiple platforms */
     InputController _input;
-    
+    GameStateController _gamestate;
+
     // VIEW
     /** Reference to the physics root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _worldnode;
     /** Reference to the debug root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _debugnode;
-    /** Reference to the win message label */
-    std::shared_ptr<cugl::scene2::Label> _winnode;
+    /** Reference to the exit message label */
+    std::shared_ptr<cugl::scene2::Label> _exitnode;
 
     /** The Box2D world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
@@ -61,16 +64,19 @@ protected:
 
     // Physics objects for the game
     /** Reference to the goalDoor (for collision detection) */
-    std::shared_ptr<cugl::physics2::BoxObstacle> _goalDoor;
+    //std::shared_ptr<cugl::physics2::BoxObstacle> _goalDoor;
     /** Reference to the rocket/player avatar */
-    std::shared_ptr<RocketModel> _rocket;
+    //std::shared_ptr<RocketModel> _rocket;
+
+    std::shared_ptr<ReynardModel> _reynard;
 
     /** Whether we have completed this "game" */
     bool _complete;
     /** Whether or not debug mode is active */
     bool _debug;
-    
+
 #pragma mark Internal Object Management
+
     /**
      * Lays out the game geography.
      *
@@ -83,7 +89,7 @@ protected:
      * with your serialization loader, which would process a level file.
      */
     void populate();
-    
+
     /**
      * Adds the physics object to the physics world and loosely couples it to the scene graph
      *
@@ -95,8 +101,8 @@ protected:
      * param obj    The physics object to add
      * param node   The scene graph node to attach it to
      */
-    void addObstacle(const std::shared_ptr<cugl::physics2::Obstacle>& obj, 
-                     const std::shared_ptr<cugl::scene2::SceneNode>& node);
+    void addObstacle(const std::shared_ptr<cugl::physics2::Obstacle> &obj,
+            const std::shared_ptr<cugl::scene2::SceneNode> &node);
 
     /**
      * Returns the active screen size of this scene.
@@ -105,10 +111,11 @@ protected:
      * ratios
      */
     cugl::Size computeActiveSize() const;
-    
+
 public:
 #pragma mark -
 #pragma mark Constructors
+
     /**
      * Creates a new game world with the default values.
      *
@@ -116,20 +123,22 @@ public:
      * This allows us to use a controller without a heap pointer.
      */
     GameScene();
-    
+
     /**
      * Disposes of all (non-static) resources allocated to this mode.
      *
      * This method is different from dispose() in that it ALSO shuts off any
      * static resources, like the input controller.
      */
-    ~GameScene() { dispose(); }
-    
+    ~GameScene() {
+        dispose();
+    }
+
     /**
      * Disposes of all (non-static) resources allocated to this mode.
      */
     void dispose();
-    
+
     /**
      * Initializes the controller contents, and starts the game
      *
@@ -144,7 +153,7 @@ public:
      *
      * @return true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager>& assets);
+    bool init(const std::shared_ptr<cugl::AssetManager> &assets);
 
     /**
      * Initializes the controller contents, and starts the game
@@ -162,8 +171,8 @@ public:
      *
      * @return  true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager>& assets, const cugl::Rect rect);
-    
+    bool init(const std::shared_ptr<cugl::AssetManager> &assets, const cugl::Rect rect);
+
     /**
      * Initializes the controller contents, and starts the game
      *
@@ -181,17 +190,20 @@ public:
      *
      * @return  true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager>& assets, const cugl::Rect rect, const cugl::Vec2 gravity);
-    
-    
+    bool init(const std::shared_ptr<cugl::AssetManager> &assets, const cugl::Rect rect, const cugl::Vec2 gravity);
+
+
 #pragma mark -
 #pragma mark State Access
+
     /**
      * Returns true if the gameplay controller is currently active
      *
      * @return true if the gameplay controller is currently active
      */
-    bool isActive( ) const { return _active; }
+    bool isActive() const {
+        return _active;
+    }
 
     /**
      * Returns true if debug mode is active.
@@ -200,8 +212,10 @@ public:
      *
      * @return true if debug mode is active.
      */
-    bool isDebug( ) const { return _debug; }
-    
+    bool isDebug() const {
+        return _debug;
+    }
+
     /**
      * Sets whether debug mode is active.
      *
@@ -209,8 +223,11 @@ public:
      *
      * @param value whether debug mode is active.
      */
-    void setDebug(bool value) { _debug = value; _debugnode->setVisible(value); }
-    
+    void setDebug(bool value) {
+        _debug = value;
+        _debugnode->setVisible(value);
+    }
+
     /**
      * Returns true if the level is completed.
      *
@@ -218,8 +235,10 @@ public:
      *
      * @return true if the level is completed.
      */
-    bool isComplete( ) const { return _complete; }
-    
+    bool isComplete() const {
+        return _complete;
+    }
+
     /**
      * Sets whether the level is completed.
      *
@@ -227,11 +246,15 @@ public:
      *
      * @param value whether the level is completed.
      */
-    void setComplete(bool value) { _complete = value; _winnode->setVisible(value); }
-    
-    
+    void setComplete(bool value) {
+        _complete = value;
+        _exitnode->setVisible(value);
+    }
+
+
 #pragma mark -
 #pragma mark Gameplay Handling
+
     /**
      * The method called to update the game mode.
      *
@@ -240,7 +263,7 @@ public:
      * @param timestep  The amount of time (in seconds) since the last frame
      */
     void update(float timestep);
-    
+
     /**
      * Updates that animation for a single burner
      *
@@ -257,10 +280,11 @@ public:
      * Resets the status of the game so that we can play again.
      */
     void reset();
-    
-    
+
+
 #pragma mark -
 #pragma mark Collision Handling
+
     /**
      * Processes the start of a collision
      *
@@ -270,7 +294,7 @@ public:
      *
      * @param  contact  The two bodies that collided
      */
-    void beginContact(b2Contact* contact);
+    void beginContact(b2Contact *contact);
 
     /**
      * Handles any modifications necessary before collision resolution
@@ -282,7 +306,7 @@ public:
      * @param  contact  The two bodies that collided
      * @param  contact  The collision manifold before contact
      */
-    void beforeSolve(b2Contact* contact, const b2Manifold* oldManifold);
+    void beforeSolve(b2Contact *contact, const b2Manifold *oldManifold);
 };
 
 #endif /* __MP_GAME_MODE_H__ */

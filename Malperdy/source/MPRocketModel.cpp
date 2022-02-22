@@ -76,7 +76,7 @@ bool RocketModel::init(const Vec2 pos, const Size size) {
     physics2::BoxObstacle::init(pos,size);
     std::string name("rocket");
     setName(name);
-    
+
     _shipNode = nullptr;
     
     _mainBurner = nullptr;

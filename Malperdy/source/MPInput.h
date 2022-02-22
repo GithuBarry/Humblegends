@@ -127,24 +127,24 @@ public:
     
 #pragma mark -
 #pragma mark Input Results
-    /**
-     * Returns the amount of sideways movement.
-     *
-     * -1 = left, 1 = right, 0 = still
-     *
-     * @return the amount of sideways movement.
-     */
-    float getHorizontal() const { return _horizontal; }
-    
-    /**
-     * Returns the amount of vertical movement.
-     *
-     * -1 = down, 1 = up, 0 = still
-     *
-     * @return the amount of vertical movement.
-     */
-    float getVertical() const { return _vertical; }
-    
+//    /**
+//     * Returns the amount of sideways movement.
+//     *
+//     * -1 = left, 1 = right, 0 = still
+//     *
+//     * @return the amount of sideways movement.
+//     */
+//    float getHorizontal() const { return _horizontal; }
+//
+//    /**
+//     * Returns the amount of vertical movement.
+//     *
+//     * -1 = down, 1 = up, 0 = still
+//     *
+//     * @return the amount of vertical movement.
+//     */
+//    float getVertical() const { return _vertical; }
+//
     /**
      * Returns true if the reset button was pressed.
      *
@@ -166,6 +166,20 @@ public:
      */
     bool didExit() const { return _exitPressed; }
     
+    // TODO
+    bool didDash();
+    bool didJump();
+    /**
+     * @return Whether a swipe just ended
+     */
+    bool didEndSwipe();
+    /**
+     * @return the start and the end global coordinates of a swipe (mobile and mouse)
+     * in form of [start_pos, end_pos]
+     * return null when didEndSwipe() is false
+     */
+    Vec2[] getSwipeStartEnd();
+    
     
 #pragma mark -
 #pragma mark Touch Callbacks
@@ -184,6 +198,7 @@ public:
      * @param event The associated event
      */
     void touchEndedCB(const cugl::TouchEvent& event, bool focus);
+
 
 };
 

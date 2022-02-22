@@ -56,28 +56,28 @@ using namespace cugl;
 // In an actual game, this information would go in a data file.
 // IMPORTANT: Note that Box2D units do not equal drawing units
 /** The wall vertices */
-float WALL1[] = { 0.0f,  0.0f, 16.0f,  0.0f, 16.0f,  1.0f,
-                  3.0f,  1.0f,  3.0f,  5.0f,  2.0f,  7.0f,
-                  1.0f, 17.0f,  8.0f, 15.0f, 16.0f, 17.0f,
-                 16.0f, 18.0f,  0.0f, 18.0f};
-float WALL2[] = {32.0f, 18.0f, 16.0f, 18.0f, 16.0f, 17.0f,
-                 31.0f, 16.0f, 30.0f, 10.0f, 31.0f,  1.0f,
-                 16.0f,  1.0f, 16.0f,  0.0f, 32.0f,  0.0f};
-float WALL3[] = { 4.0f,  9.5f,  8.0f,  9.5f,
-                  8.0f, 10.5f,  4.0f, 10.5f };
+//float WALL1[] = { 0.0f,  0.0f, 16.0f,  0.0f, 16.0f,  1.0f,
+//                  3.0f,  1.0f,  3.0f,  5.0f,  2.0f,  7.0f,
+//                  1.0f, 17.0f,  8.0f, 15.0f, 16.0f, 17.0f,
+//                 16.0f, 18.0f,  0.0f, 18.0f};
+//float WALL2[] = {32.0f, 18.0f, 16.0f, 18.0f, 16.0f, 17.0f,
+//                 31.0f, 16.0f, 30.0f, 10.0f, 31.0f,  1.0f,
+//                 16.0f,  1.0f, 16.0f,  0.0f, 32.0f,  0.0f};
+//float WALL3[] = { 4.0f,  9.5f,  8.0f,  9.5f,
+//                  8.0f, 10.5f,  4.0f, 10.5f };
 
 /** The positions of the crate pyramid */
-float BOXES[] = { 14.5f, 14.25f,
-                  13.0f, 12.00f, 16.0f, 12.00f,
-                  11.5f,  9.75f, 14.5f,  9.75f, 17.5f, 9.75f,
-                  13.0f,  7.50f, 16.0f,  7.50f,
-                  11.5f,  5.25f, 14.5f,  5.25f, 17.5f, 5.25f,
-                  10.0f,  3.00f, 13.0f,  3.00f, 16.0f, 3.00f, 19.0f, 3.0f};
-
-/** The initial rocket position */
-float ROCK_POS[] = {24,  4};
-/** The goal door position */
-float GOAL_POS[] = { 6, 12};
+//float BOXES[] = { 14.5f, 14.25f,
+//                  13.0f, 12.00f, 16.0f, 12.00f,
+//                  11.5f,  9.75f, 14.5f,  9.75f, 17.5f, 9.75f,
+//                  13.0f,  7.50f, 16.0f,  7.50f,
+//                  11.5f,  5.25f, 14.5f,  5.25f, 17.5f, 5.25f,
+//                  10.0f,  3.00f, 13.0f,  3.00f, 16.0f, 3.00f, 19.0f, 3.0f};
+//
+///** The initial rocket position */
+//float ROCK_POS[] = {24,  4};
+///** The goal door position */
+//float GOAL_POS[] = { 6, 12};
 
 #pragma mark Assset Constants
 /** The key for the earth texture in the asset manager */
@@ -236,16 +236,16 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
-
-    _winnode = scene2::Label::allocWithText("VICTORY!",_assets->get<Font>(PRIMARY_FONT));
-	_winnode->setAnchor(Vec2::ANCHOR_CENTER);
-    _winnode->setPosition(dimen/2.0f);
-    _winnode->setForeground(STATIC_COLOR);
-    _winnode->setVisible(false);
+//
+//    _exitnode = scene2::Label::allocWithText("VICTORY!",_assets->get<Font>(PRIMARY_FONT));
+//	_exitnode->setAnchor(Vec2::ANCHOR_CENTER);
+//    _exitnode->setPosition(dimen/2.0f);
+//    _exitnode->setForeground(STATIC_COLOR);
+//    _exitnode->setVisible(false);
     
     addChild(_worldnode);
     addChild(_debugnode);
-    addChild(_winnode);
+//    addChild(_exitnode);
     
     populate();
     _active = true;
@@ -267,7 +267,7 @@ void GameScene::dispose() {
         _world = nullptr;
         _worldnode = nullptr;
         _debugnode = nullptr;
-        _winnode = nullptr;
+        _exitnode = nullptr;
         _complete = false;
         _debug = false;
         Scene2::dispose();
@@ -517,6 +517,13 @@ void GameScene::update(float dt) {
     if (_input.didExit())  {
         CULog("Shutting down");
         Application::get()->quit();
+    }
+    if (_input.didEndSwipe()){
+        Vec2 start();
+        Vec end();
+        start = _input.getSwipeStartEnd()[0];
+        end = _input.getSwipeStartEnd()[1];
+
     }
 
     // Apply the force to the rocket
