@@ -9,6 +9,11 @@
 //  Room is a subclass of SceneNode, and so all of SceneNode's methods can be used
 //  with it. This allows individual rooms and their contents to be scaled properly
 //  when zooming in and out.
+// 
+//  In theory, all the rooms in a level can be made children of a SceneNode for the
+//  whole level grid. Transforming the grid should then allow for easy transformation
+//  of all the room, and calling render() on the level grid SceneNode should draw all
+//  of the rooms accordingly.
 //
 //  Created by Barry Wang on 2/21/22.
 //  Copyright © 2022 Humblegends. All rights reserved.
@@ -141,6 +146,19 @@ public:
      * @return  Shared pointer to vector of physics objects for room geometry
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsGeometry() { return _physicsGeometry; }
+
+#pragma mark -
+#pragma mark Animation
+    /**
+     * Draws the room with all of its interior geometry.
+     * 
+     * This overrides the draw() method of SceneNode to include drawing the room geometry.
+     * 
+     * @param batch     The SpriteBatch to draw with
+     * @param transform The global affine transformation
+     * @param tint      The tint to blend with the Node color
+     */
+    virtual void draw(const std::shared_ptr<SpriteBatch>& batch, const Affine2& transform, Color4 tint) override;
 
 };
 
