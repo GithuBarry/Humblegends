@@ -20,7 +20,7 @@
 //  3. All allocation takes place via static constructors which return a shared
 //     pointer.
 //
-//  With that said, this class looks very similar to the classes in the math
+//  With that said, this class looks very similar to the classes in the math 
 //  package in that has many methods that assume the object is on the stack and
 //  not in a pointer.  That is because we often want to transform these objects
 //  with math classes, but we still want shared pointer support for SpriteBatch
@@ -61,7 +61,7 @@ using namespace cugl;
 /**
  * Creates a degenerate, white-colored gradient.
  */
-Gradient::Gradient() :
+Gradient::Gradient() : 
 _radius(0),
 _feather(0) {
     _inverse.setIdentity();
@@ -453,16 +453,15 @@ Gradient& Gradient::set(const Color4 inner, const Color4 outer, const Vec2 start
  * @return this gradient, returned for chaining
  */
 Gradient& Gradient::set(const Color4 inner, const Color4 outer, const Vec2 center, float radius) {
-    float r = radius*0.5f;
     _inverse.setIdentity();
     _inverse.m[4] = -center.x;
     _inverse.m[5] = -center.y;
     
     _inner = inner;
     _outer = outer;
-    _extent.set(r,r);
-    _radius  = r;
-    _feather = radius;
+    _extent.set(radius,radius);
+    _radius  = radius;
+    _feather = 0.0f;
     return *this;
 }
 
@@ -574,7 +573,7 @@ Gradient& Gradient::set(const Color4 inner, const Color4 outer, const Vec2 origi
  * Returns the transform component of this gradient
  *
  * The transform maps the origin of the current coordinate system to
- * the center and rotation of the rounded rectangular box with the
+ * the center and rotation of the rounded rectangular box with the 
  * inner color. Applying further transforms will adjust the gradient
  * in texture space.
  *
@@ -591,7 +590,7 @@ Affine2 Gradient::getTransform() const {
  * Sets the transform component of this gradient
  *
  * The transform maps the origin of the current coordinate system to
- * the center and rotation of the rounded rectangular box with the
+ * the center and rotation of the rounded rectangular box with the 
  * inner color. Applying further transforms will adjust the gradient
  * in texture space.
  *
@@ -609,7 +608,7 @@ void Gradient::setTransform(const Affine2& transform) {
  * Sets the transform component of this gradient
  *
  * The transform maps the origin of the current coordinate system to
- * the center and rotation of the rounded rectangular box with the
+ * the center and rotation of the rounded rectangular box with the 
  * inner color. Applying further transforms will adjust the gradient
  * in texture space.
  *
@@ -703,7 +702,7 @@ Gradient& Gradient::translate(const Vec2 t) {
  */
 Gradient& Gradient::operator*=(const Mat4& mat) {
     Affine2::multiply((Affine2)mat.getInverse(),_inverse,&_inverse);
-    return *this;
+    return *this;        
 }
 
 /**
@@ -719,7 +718,7 @@ Gradient& Gradient::operator*=(const Mat4& mat) {
  */
 Gradient& Gradient::operator*=(const Affine2& aff) {
     Affine2::multiply(aff.getInverse(),_inverse,&_inverse);
-    return *this;
+    return *this;        
 }
 
 #pragma mark -
@@ -733,7 +732,7 @@ Gradient& Gradient::operator*=(const Affine2& aff) {
  * 4 floats for the outer color, (4) 2 floats for the extent,
  * (5) 1 float for the corner radius, and (6) 1 float for the
  * feather value.  Values are written in this order.
- *
+ *     
  * @param array     The array to store the values
  *
  * @return a reference to the array for chaining

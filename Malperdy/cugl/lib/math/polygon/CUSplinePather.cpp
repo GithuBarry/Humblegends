@@ -240,10 +240,10 @@ Path2* SplinePather::getPath(Path2* buffer) const {
 
     int size = (int)points->size();
     int amt = (size-1)/3+1;
-    size_t limit = isClosed() ? size-4 : size-1;
+    size_t limit = isClosed() ? size-4 : size;
     size_t bsize = buffer->vertices.size();
     buffer->reserve(bsize+amt);
-    for(int ii = 0; 3*ii <= limit; ii++) {
+    for(int ii = 0; 3*ii < limit; ii++) {
         buffer->vertices.push_back(points->at(3*ii));
         for(auto it = _anchorpts.begin(); it != _anchorpts.end(); ++it) {
             if (it->first % 3 == 0 && !_spline->_smooth[it->second]) {
