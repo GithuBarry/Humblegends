@@ -71,6 +71,9 @@
     <ClCompile Include="..\..\source\MPRocketModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MPRoomModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RocketDemo.rc">

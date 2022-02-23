@@ -31,6 +31,7 @@
 #include "MPReynardModel.h"
 #include "MPInput.h"
 #include "MPGameStateController.h"
+#include "MPRoomModel.h"
 
 /**
  * This class is the primary gameplay constroller for the demo.
@@ -40,6 +41,10 @@
  * so that we can have a separate mode for the loading screen.
  */
 class GameScene : public cugl::Scene2 {
+private:
+    // DEBUGGING VARIABLES
+    std::shared_ptr<RoomModel> _room;
+
 protected:
     /** The asset manager for this game mode. */
     std::shared_ptr<cugl::AssetManager> _assets;
