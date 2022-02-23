@@ -63,23 +63,23 @@ using namespace cugl;
 /** The key prefix for the multiple crate assets */
 #define CRATE_PREFIX        "crate"
 /** The key for the fire textures in the asset manager */
-//#define MAIN_FIRE_TEXTURE   "flames"
-//#define RGHT_FIRE_TEXTURE   "flames-right"
-//#define LEFT_FIRE_TEXTURE   "flames-left"
-//
-///** Color to outline the physics nodes */
-//#define STATIC_COLOR    Color4::WHITE
-///** Opacity of the physics outlines */
-//#define DYNAMIC_COLOR   Color4::YELLOW
-//
-///** The key for collisions sounds */
-//#define COLLISION_SOUND     "bump"
-///** The key for the main afterburner sound */
-//#define MAIN_FIRE_SOUND     "burn"
-///** The key for the right afterburner sound */
-//#define RGHT_FIRE_SOUND     "right-burn"
-///** The key for the left afterburner sound */
-//#define LEFT_FIRE_SOUND     "left-burn"
+#define MAIN_FIRE_TEXTURE   "flames"
+#define RGHT_FIRE_TEXTURE   "flames-right"
+#define LEFT_FIRE_TEXTURE   "flames-left"
+
+/** Color to outline the physics nodes */
+#define STATIC_COLOR    Color4::WHITE
+/** Opacity of the physics outlines */
+#define DYNAMIC_COLOR   Color4::YELLOW
+
+/** The key for collisions sounds */
+#define COLLISION_SOUND     "bump"
+/** The key for the main afterburner sound */
+#define MAIN_FIRE_SOUND     "burn"
+/** The key for the right afterburner sound */
+#define RGHT_FIRE_SOUND     "right-burn"
+/** The key for the left afterburner sound */
+#define LEFT_FIRE_SOUND     "left-burn"
 
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
@@ -177,15 +177,14 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
 
     if (assets == nullptr) {
         return false;
+    } else if (!Scene2::init(dimen)) {
+        return false;
     }
-//    else if (!Scene2::init(dimen)) {
-//        return false;
-//    }
     
     // Start up the input handler
     _assets = assets;
-    _input.init();
-    
+    _input.init();    
+
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect,gravity);
     _world->activateCollisionCallbacks(true);
@@ -211,16 +210,16 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
-//
-//    _exitnode = scene2::Label::allocWithText("VICTORY!",_assets->get<Font>(PRIMARY_FONT));
-//	_exitnode->setAnchor(Vec2::ANCHOR_CENTER);
-//    _exitnode->setPosition(dimen/2.0f);
-//    _exitnode->setForeground(STATIC_COLOR);
-//    _exitnode->setVisible(false);
+
+    _exitnode = scene2::Label::allocWithText("VICTORY!",_assets->get<Font>(PRIMARY_FONT));
+	_exitnode->setAnchor(Vec2::ANCHOR_CENTER);
+    _exitnode->setPosition(dimen/2.0f);
+    _exitnode->setForeground(STATIC_COLOR);
+    _exitnode->setVisible(false);
     
-//    addChild(_worldnode);
-//    addChild(_debugnode);
-//    addChild(_exitnode);
+    addChild(_worldnode);
+    addChild(_debugnode);
+    addChild(_exitnode);
     
     populate();
     _active = true;
@@ -236,17 +235,17 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
  * Disposes of all (non-static) resources allocated to this mode.
  */
 void GameScene::dispose() {
-//    if (_active) {
-//        removeAllChildren();
-//        _input.dispose();
-//        _world = nullptr;
-//        _worldnode = nullptr;
-//        _debugnode = nullptr;
-//        _exitnode = nullptr;
-//        _complete = false;
-//        _debug = false;
-//        Scene2::dispose();
-//    }
+    if (_active) {
+        removeAllChildren();
+        _input.dispose();
+        _world = nullptr;
+        _worldnode = nullptr;
+        _debugnode = nullptr;
+        _exitnode = nullptr;
+        _complete = false;
+        _debug = false;
+        Scene2::dispose();
+    }
 }
 
 
@@ -279,7 +278,18 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
+    /////////////////////////////////////
+    // DEBUG: add room to scene graph
+    /////////////////////////////////////
+    _room = make_shared<RoomModel>();
+    _room->init();
+    _room->setPosition(50, 50);
 
+    _worldnode->addChild(_room);
+
+    /////////////////////////////////////
+    // END DEBUG
+    /////////////////////////////////////
 }
     
 //#pragma mark : Crates
