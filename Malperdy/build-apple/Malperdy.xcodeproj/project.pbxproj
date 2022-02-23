@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4CFBAAEA27C6D820005FB921 /* MPRoomModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CFBAAE627C6D820005FB921 /* MPRoomModel.cpp */; };
+		4CFBAAEB27C6D820005FB921 /* MPRoomModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CFBAAE627C6D820005FB921 /* MPRoomModel.cpp */; };
+		4CFBAAEC27C6D820005FB921 /* MPRoomModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CFBAAE627C6D820005FB921 /* MPRoomModel.cpp */; };
 		EB122DB71E281F7E0019E2D1 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = EB3B95851E25B1FA00314284 /* sounds */; };
 		EB122DB81E281F7E0019E2D1 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = EB59D52B1E25281300A93BB5 /* fonts */; };
 		EB122DB91E281F7E0019E2D1 /* json in Resources */ = {isa = PBXBuildFile; fileRef = EB59D52C1E25281300A93BB5 /* json */; };
@@ -126,6 +129,7 @@
 		4CB9B06B27C442D700B413D0 /* MPGameStateModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPGameStateModel.h; sourceTree = "<group>"; };
 		4CB9B06C27C442F300B413D0 /* MPCharacterModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPCharacterModel.h; sourceTree = "<group>"; };
 		4CB9B06D27C4430700B413D0 /* MPReynardModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPReynardModel.h; sourceTree = "<group>"; };
+		4CFBAAE627C6D820005FB921 /* MPRoomModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MPRoomModel.cpp; sourceTree = "<group>"; };
 		EB122DA01E281F4A0019E2D1 /* Rocket Demo (iOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rocket Demo (iOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2C2239201D887E0090F94D /* CUGL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CUGL.xcodeproj; path = "../cugl/build-apple/CUGL.xcodeproj"; sourceTree = "<group>"; };
 		EB3B95761E25B1E000314284 /* MPApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MPApp.cpp; sourceTree = "<group>"; };
@@ -288,6 +292,7 @@
 		EBB1AC281DF8C75400C353B0 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				4CFBAAE627C6D820005FB921 /* MPRoomModel.cpp */,
 				EBB1AC2B1DF8C76D00C353B0 /* main.cpp */,
 				EB3B95771E25B1E000314284 /* MPApp.h */,
 				EB3B95761E25B1E000314284 /* MPApp.cpp */,
@@ -572,6 +577,7 @@
 				EB122DBF1E28203D0019E2D1 /* MPApp.cpp in Sources */,
 				EB8ADF5F201E54160037306F /* MPGameScene.cpp in Sources */,
 				EB122DC11E28203D0019E2D1 /* MPInput.cpp in Sources */,
+				4CFBAAEB27C6D820005FB921 /* MPRoomModel.cpp in Sources */,
 				EB122DC21E28203D0019E2D1 /* MPRocketModel.cpp in Sources */,
 				EB122DC31E28203D0019E2D1 /* MPLoadingScene.cpp in Sources */,
 			);
@@ -585,6 +591,7 @@
 				EB62272D23DE06E7007EA978 /* main.cpp in Sources */,
 				EB62272F23DE06ED007EA978 /* MPGameScene.cpp in Sources */,
 				EB62272C23DE06E2007EA978 /* MPApp.cpp in Sources */,
+				4CFBAAEC27C6D820005FB921 /* MPRoomModel.cpp in Sources */,
 				EB62273023DE06F0007EA978 /* MPInput.cpp in Sources */,
 				EB62273123DE06F3007EA978 /* MPRocketModel.cpp in Sources */,
 			);
@@ -598,6 +605,7 @@
 				EB3B95801E25B1E000314284 /* MPApp.cpp in Sources */,
 				EB8ADF5E201E54130037306F /* MPGameScene.cpp in Sources */,
 				EB3B95821E25B1E000314284 /* MPInput.cpp in Sources */,
+				4CFBAAEA27C6D820005FB921 /* MPRoomModel.cpp in Sources */,
 				EB3B95831E25B1E000314284 /* MPLoadingScene.cpp in Sources */,
 				EB3B95841E25B1E000314284 /* MPRocketModel.cpp in Sources */,
 			);

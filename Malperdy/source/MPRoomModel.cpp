@@ -17,7 +17,7 @@
 //  of the rooms accordingly.
 //
 //  Created by Kristina Gu on 2/22/22.
-//  Copyright © 2022 Humblegends. All rights reserved.
+//  Copyright ï¿½ 2022 Humblegends. All rights reserved.
 //
 
 #include "MPRoomModel.h"
@@ -132,5 +132,5 @@ void RoomModel::dispose() {
 	removeAllChildren();
 	_geometry = nullptr;
 	_physicsGeometry = nullptr;
-	this->dispose();
+	//this->dispose();
 }
