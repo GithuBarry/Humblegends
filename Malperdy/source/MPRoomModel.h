@@ -8,7 +8,8 @@
 // 
 //  Room is a subclass of SceneNode, and so all of SceneNode's methods can be used
 //  with it. This allows individual rooms and their contents to be scaled properly
-//  when zooming in and out.
+//  when zooming in and out. Each element of room geometry is then stored as a child
+//  scene graph node of the room.
 // 
 //  In theory, all the rooms in a level can be made children of a SceneNode for the
 //  whole level grid. Transforming the grid should then allow for easy transformation
@@ -25,6 +26,8 @@
 #include <cugl/cugl.h>
 #include <stdlib.h>
 #include <vector>
+
+using namespace cugl;
 
 /** The default width of a room in pixels */
 #define DEFAULT_ROOM_WIDTH 720
@@ -43,9 +46,18 @@ private:
      * Rebuilds the geometry.
      *
      * This method should recreate all the polygons for any geometry in the room.
-     * It should also recreate all physics objects.
+     * 
+     * For now, it assumes every room only has the floor for geometry.
      */
     void buildGeometry();
+
+    /**
+     * Rebuilds the physics geometry.
+     *
+     * This method should recreate all the physics objects corresponding to any
+     * geometry in the room.
+     */
+    void buildPhysicsGeometry();
 
 public:
 #pragma mark Constructors
@@ -62,7 +74,7 @@ public:
      *
      * @return  true if the room is initialized properly, false otherwise.
      */
-    bool init() { init(0, 0); }
+    bool init() { return init(0, 0, nullptr); }
 
     /**
      * Initializes an empty room at the given location.
@@ -73,7 +85,7 @@ public:
      * @param pos   The origin of the room in parent space
      * @return      true if the room is initialized properly, false otherwise.
      */
-    bool init(const Vec2 pos) { init(pos.x, pos.y); }
+    bool init(const Vec2 pos) { return init(pos.x, pos.y, nullptr); }
 
     /**
      * Initializes an empty room at the given location.
@@ -85,7 +97,7 @@ public:
      * @param y The y-coordinate of the room in parent space
      * @return  true if the room is initialized properly, false otherwise.
      */
-    bool init(float x, float y) { init(x, y, nullptr); }
+    bool init(float x, float y) { return init(x, y, nullptr); }
 
     /**
      * Initializes a room with the given geometry at the world origin.
@@ -96,7 +108,7 @@ public:
      * @param geometry  Shared pointer to the vector of polygons containing the room's geometry
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(shared_ptr<vector<Poly2>> geometry) { init(0, 0, geometry); }
+    bool init(shared_ptr<vector<Poly2>> geometry) { return init(0, 0, geometry); }
 
     /**
      * Initializes a room with the given geometry at the given location.
@@ -108,7 +120,7 @@ public:
      * @param geometry  Shared pointer to the vector of polygons containing the room's geometry
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(Vec2 pos, shared_ptr<vector<Poly2>> geometry) { init(pos.x, pos.y, geometry); }
+    bool init(Vec2 pos, shared_ptr<vector<Poly2>> geometry) { return init(pos.x, pos.y, geometry); }
 
     /**
      * Initializes a room with the given geometry at the given location.
@@ -146,19 +158,6 @@ public:
      * @return  Shared pointer to vector of physics objects for room geometry
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsGeometry() { return _physicsGeometry; }
-
-#pragma mark -
-#pragma mark Animation
-    /**
-     * Draws the room with all of its interior geometry.
-     * 
-     * This overrides the draw() method of SceneNode to include drawing the room geometry.
-     * 
-     * @param batch     The SpriteBatch to draw with
-     * @param transform The global affine transformation
-     * @param tint      The tint to blend with the Node color
-     */
-    virtual void draw(const std::shared_ptr<SpriteBatch>& batch, const Affine2& transform, Color4 tint) override;
 
 };
 
