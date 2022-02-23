@@ -48,6 +48,8 @@
 
 #include <cugl/math/CURect.h>
 #include <cugl/render/CUTextAlignment.h>
+#include <cugl/render/CUMesh.h>
+#include <cugl/render/CUSpriteVertex.h>
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -173,12 +175,12 @@ public:
      * NEVER USE A CONSTRUCTOR WITH NEW. If you want to allocate an object on
      * the heap, use one of the static constructors instead.
      */
-	TextLayout();
+    TextLayout();
 
     /**
      * Deletes this text layout, disposing of all resources.
      */
-	~TextLayout() { dispose(); }
+    ~TextLayout() { dispose(); }
     
     /**
      * Deletes the layout resources and resets all attributes.
@@ -581,7 +583,7 @@ public:
      * adding the text for each line together may not produce the original
      * text.
      *
-     * @param line	The line number
+     * @param line    The line number
      *
      * @return the text for the given line.
      */
@@ -788,6 +790,93 @@ public:
      * @return the number of glyphs successfully processed
      */
     size_t getGlyphs(std::unordered_map<GLuint,std::shared_ptr<GlyphRun>>& runs, Rect rect) const;
+    
+#pragma mark -
+#pragma mark Glyph Debugging
+    /**
+     * Returns a (line) mesh of the quad outlines for the text glyphs.
+     *
+     * This method is useful for debugging. When this mesh is drawn together
+     * with a glyph run sequence, it shows the bounding box for each glyph.
+     * However, these bounding boxes are determined by the glyph metrics,
+     * and do not take into account atlas padding. So they do not represent
+     * potential overlaps when the padding is non-zero.
+     *
+     * The origin of the mesh will agree with that of the text layout. This
+     * method will do nothing if {@link #layout} has not been called or the
+     * layout has been invalidated.
+     *
+     * @return a (line) mesh of the quad outlines for the text glyphs
+     */
+    Mesh<SpriteVertex2> getGlyphBoxes() const;
+    
+    /**
+     * Returns a (line) mesh of the quad outlines for the text glyphs.
+     *
+     * This method is useful for debugging. When this mesh is drawn together
+     * with a glyph run sequence, it shows the bounding box for each glyph.
+     * However, these bounding boxes are determined by the glyph metrics,
+     * and do not take into account atlas padding. So they do not represent
+     * potential overlaps when the padding is non-zero.
+     *
+     * The quad sequence is adjusted so that all of the vertices fit in the
+     * provided rectangle. The primary use-case for this is to guarantee
+     * that glyphs do not spill outside of a window. This may mean that some
+     * of the glyphs will be truncrated or even omitted.
+     *
+     * The origin of the mesh will agree with that of the text layout. This
+     * method will do nothing if {@link #layout} has not been called or the
+     * layout has been invalidated.
+     *
+     * @param rect      The bounding box for the quads
+     *
+     * @return a (line) mesh of the quad outlines for the text glyphs
+     */
+    Mesh<SpriteVertex2> getGlyphBoxes(Rect rect) const;
+
+    /**
+     * Stores the quad outlines for the text glyphs in the given mesh.
+     *
+     * This method is useful for debugging. When this mesh is drawn together
+     * with a glyph run sequence, it shows the bounding box for each glyph.
+     * However, these bounding boxes are determined by the glyph metrics,
+     * and do not take into account atlas padding. So they do not represent
+     * potential overlaps when the padding is non-zero.
+     *
+     * The origin of the mesh will agree with that of the text layout. This
+     * method will do nothing if {@link #layout} has not been called or the
+     * layout has been invalidated.
+     *
+     * @param mesh      The mesh to store the new quads
+     *
+     * @return the number of quads generated
+     */
+    size_t getGlyphBoxes(Mesh<SpriteVertex2>& mesh) const;
+    
+    /**
+     * Stores the quad outlines for the text glyphs in the given mesh.
+     *
+     * This method is useful for debugging. When this mesh is drawn together
+     * with a glyph run sequence, it shows the bounding box for each glyph.
+     * However, these bounding boxes are determined by the glyph metrics,
+     * and do not take into account atlas padding. So they do not represent
+     * potential overlaps when the padding is non-zero.
+     *
+     * The quad sequence is adjusted so that all of the vertices fit in the
+     * provided rectangle. The primary use-case for this is to guarantee
+     * that glyphs do not spill outside of a window. This may mean that some
+     * of the glyphs will be truncrated or even omitted.
+     *
+     * The origin of the mesh will agree with that of the text layout. This
+     * method will do nothing if {@link #layout} has not been called or the
+     * layout has been invalidated.
+     *
+     * @param mesh      The mesh to store the new quads
+     * @param rect      The bounding box for the quads
+     *
+     * @return the number of quads generated
+     */
+    size_t getGlyphBoxes(Mesh<SpriteVertex2>& mesh, Rect rect) const;
     
 #pragma mark -
 #pragma mark Layout Methods
