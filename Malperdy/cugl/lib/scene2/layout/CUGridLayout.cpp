@@ -244,7 +244,7 @@ bool GridLayout::validate(Uint32 width, Uint32 height) {
         Uint32 x = it->second.x;
         Uint32 y = it->second.y;
         if (x >= width || y >= height) {
-            CUAssertLog(false, "GridModel location (%d,%d) is invalidated by new grid size (%d,%d)",x,y,width,height);
+            CUAssertLog(false, "Grid location (%d,%d) is invalidated by new grid size (%d,%d)",x,y,width,height);
             return false;
         }
     }

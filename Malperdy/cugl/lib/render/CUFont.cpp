@@ -70,7 +70,7 @@ using namespace cugl;
 /**
  * Returns true if thechar is a Unicode control character
  *
- * Control characters 
+ * Control characters
  * @param thechar   The character to test
  *
  * @return true if thechar is a Unicode control character
@@ -115,14 +115,14 @@ texture(nullptr) {
  * atlas to use it.
  */
 void Font::Atlas::dispose() {
-	if (_surface != nullptr) {
-		SDL_FreeSurface(_surface);
-		_surface = nullptr;
-	}
-	_parent = nullptr;
-	_size = Size::ZERO;
+    if (_surface != nullptr) {
+        SDL_FreeSurface(_surface);
+        _surface = nullptr;
+    }
+    _parent = nullptr;
+    _size = Size::ZERO;
     texture = nullptr;
-	glyphmap.clear();
+    glyphmap.clear();
 }
         
 /**
@@ -2700,6 +2700,7 @@ size_t Font::getGlyphBoxes(Mesh<SpriteVertex2>& mesh, const char* substr, const 
                     offset.x += adjusts[pos++];
                 }
             }
+            prvchar = thechar;
             getOutline(prvchar,offset,mesh,rect);
             total++;
         } else if (_fallback && hasGlyph(thechar)) {
@@ -2709,6 +2710,7 @@ size_t Font::getGlyphBoxes(Mesh<SpriteVertex2>& mesh, const char* substr, const 
                     offset.x += adjusts[pos++];
                 }
             }
+            prvchar = thechar;
             getOutline(prvchar,offset,mesh,rect);
             total++;
         }
@@ -2900,7 +2902,7 @@ Font::Metrics Font::computeMetrics(Uint32 thechar) const {
         TTF_SizeUNICODE(_data, str, &w, &h);
         if (w != metrics.advance) {
             int diff = w-metrics.advance;
-            metrics.minx += diff/2; 
+            metrics.minx += diff/2;
             metrics.maxx += diff/2;
             metrics.advance += diff;
         }
