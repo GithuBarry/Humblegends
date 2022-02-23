@@ -205,7 +205,7 @@
     <ClCompile Include="..\..\source\MPInput.cpp" />
     <ClCompile Include="..\..\source\MPLoadingScene.cpp" />
     <ClCompile Include="..\..\source\MPRocketModel.cpp" />
-    <ClCompile Include="MPRoomModel.cpp" />
+    <ClCompile Include="..\..\source\MPRoomModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RocketDemo.rc" />
