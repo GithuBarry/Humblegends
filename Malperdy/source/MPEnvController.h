@@ -2,47 +2,58 @@
 //  MPEnvController.h
 //  Malperdy
 //
-//  Initialize and update grid
-//  (room swapping, physics objects coordinate updates), interactions
+//  Controller for the house of Malperdy
 //
-//
-//  Created by Barry Wang on 2/21/22.
+//  Authors: Barry Wang, Jordan Selin
 //  Copyright © 2022 Humblegends. All rights reserved.
+//  Version: 2/23/22
 //
 
 #ifndef MPEnvController_h
 #define MPEnvController_h
 
 #include <cugl/cugl.h>
+#include "MPGridModel.h"
+#include "MPRoomModel.h"
 
 class EnvController: scene2::SceneNode {
-    Vec2 getGridcoordOfRoom(RoomModel room);
+private:
+    /* The grid of rooms constituting the gamespace */
+    std::shared_ptr<GridModel> _grid;
 
-    RoomModel getRoom(int row, int col);
+    /* The row, column of the room to be swapped */
+    Vec2 _toSwap;
 
-    /**
-     * Given global coordinate (when zoomed out), find if it is inside an area of a room
-     * @param globalCoordinate
-     * @return
-     */
-    RoomModel getRoom(Vec2 globalCoordinate);
+public:
+    /* Creates an envrionment controller and initializes its grid and rooms */
+    EnvController();
 
-    /**
-     * Return two vec2, former indicates left bottom corner GLOBAL coordinate,
-     * latter indicates upper right when zoomed out
-     */
-    Vec2[] getGlobalcoordOfRoom(RoomModel room);
-    Vec2[] getGlobalcoordOfRoom(int row, int col);
+    /*
+    * Selects the room at the given location
+    * Selection is for the purpose of being swapped with another room in swapWithSelected
+    * Does not currently check if the room is swappable
+    * 
+    * @param coords     the coordinates of the selection in worldspace
+    * 
+    * @return true if room was successfully selected, and false otherwise
+    */
+    bool selectRoom(Vec2 coords);
 
-    /**
-     * Change room grid coordinate, and update the physics world objects (obstacles) in rooms
-     * with correct, new Global physics coordinates
-     * @param room1
-     * @param room2
-     */
-    void swapRoom(RoomModel room1, RoomModel room2);
+    /*
+    * Swaps the room at the given location with the selected room
+    * If room at given location is the selected room, deselects the room
+    * Does not currently check if the room is swappable
+    * 
+    * @param coords     the coordinates of the selection in worldspace
+    * 
+    * @return true if rooms were successfully swapped
+    * @return true if room was the same as selected room & is now deselected
+    * @return false if no swap occurred
+    */
+    bool swapWithSelected(Vec2 coords);
 
-    cugl::physics2::Obstacle getAllObstacles();
+    /* Deselects the currently selected room, if one is selected */
+    void deselectRoom();
 };
 
 #endif /* MPEnvController_h */
