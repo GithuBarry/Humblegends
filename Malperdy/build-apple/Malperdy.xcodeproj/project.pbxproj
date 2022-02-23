@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		592D1613224173EDA75517C0 /* MPRoomModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 592D1D493234F7E5988E7CFE /* MPRoomModel.cpp */; };
-		592D1D62C1DBDEC8F9824ACE /* MPRoomModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 592D1D493234F7E5988E7CFE /* MPRoomModel.cpp */; };
-		592D1DDAE0DD79BE36C18D95 /* MPRoomModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 592D1D493234F7E5988E7CFE /* MPRoomModel.cpp */; };
+		C69E5F9727C6BBD10018F0B4 /* MPReynardController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C69E5F9527C6BBD10018F0B4 /* MPReynardController.cpp */; };
+		C69E5F9827C6BBD10018F0B4 /* MPReynardController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C69E5F9527C6BBD10018F0B4 /* MPReynardController.cpp */; };
+		C69E5F9927C6BBD10018F0B4 /* MPReynardController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C69E5F9527C6BBD10018F0B4 /* MPReynardController.cpp */; };
 		EB122DB71E281F7E0019E2D1 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = EB3B95851E25B1FA00314284 /* sounds */; };
 		EB122DB81E281F7E0019E2D1 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = EB59D52B1E25281300A93BB5 /* fonts */; };
 		EB122DB91E281F7E0019E2D1 /* json in Resources */ = {isa = PBXBuildFile; fileRef = EB59D52C1E25281300A93BB5 /* json */; };
@@ -582,7 +582,6 @@
 				EB122DC11E28203D0019E2D1 /* MPInput.cpp in Sources */,
 				EB122DC21E28203D0019E2D1 /* MPRocketModel.cpp in Sources */,
 				EB122DC31E28203D0019E2D1 /* MPLoadingScene.cpp in Sources */,
-				592D1D62C1DBDEC8F9824ACE /* MPRoomModel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,7 +596,6 @@
 				EB62272C23DE06E2007EA978 /* MPApp.cpp in Sources */,
 				EB62273023DE06F0007EA978 /* MPInput.cpp in Sources */,
 				EB62273123DE06F3007EA978 /* MPRocketModel.cpp in Sources */,
-				592D1613224173EDA75517C0 /* MPRoomModel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -612,7 +610,6 @@
 				EB3B95821E25B1E000314284 /* MPInput.cpp in Sources */,
 				EB3B95831E25B1E000314284 /* MPLoadingScene.cpp in Sources */,
 				EB3B95841E25B1E000314284 /* MPRocketModel.cpp in Sources */,
-				592D1DDAE0DD79BE36C18D95 /* MPRoomModel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
