@@ -15,81 +15,76 @@
 #include "MPCharacterModel.h"
 
 class ReynardModel : CharacterModel {
-    cugl::Vec2 _force;
-
+    /* Vec2 representing speed + direction */ 
+    cugl::Vec2 velocity;
+    /* Vec2 representing position */ 
+    cugl::Vec2 position;
 
     /**
-     * Returns the force applied to this rocket.
+     * Returns the velocity vector for Reynard 
      *
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @return the force applied to this rocket.
+     * @return the velocity vector applied to Reynard
      */
-    const cugl::Vec2 &getForce() const {
-        return _force;
+    const cugl::Vec2 &getVelocity() const {
+        return velocity;
     }
 
     /**
-     * Sets the force applied to this rocket.
+     * Sets the velocity vector for Reynard 
      *
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @param value  the force applied to this rocket.
+     * @param value  the velocity vector to apply to Reynard
      */
-    void setForce(const cugl::Vec2 &value) {
-        _force.set(value);
+    void setVelocity(const cugl::Vec2 &value) {
+        velocity.set(value);
+    }
+
+
+    /**
+     * Returns the x-component of the velocity applied to Reynard.
+     *
+     * @return the x-component of the velocity applied to Reynard.
+     */
+    float getVelocityX() const {
+        return velocity.x;
     }
 
     /**
-     * Returns the x-component of the force applied to this rocket.
+     * Returns the x-component of the velocity applied to Reynard.
      *
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @return the x-component of the force applied to this rocket.
+     * @return the x-component of the velocity applied to Reynard.
      */
-    float getFX() const {
-        return _force.x;
+    float getVelocityY() const {
+        return velocity.y;
+    }
+
+
+    /**
+     * Sets the position vector for Reynard 
+     *
+     * @param value  the position vector to apply to Reynard
+     */
+    void setPosition(const cugl::Vec2 &value) {
+        position.set(value);
+    }
+
+
+    /**
+     * Returns the x-component of the position applied to Reynard.
+     *
+     * @return the x-component of the position applied to Reynard.
+     */
+    float getPositionX() const {
+        return position.x;
     }
 
     /**
-     * Sets the x-component of the force applied to this rocket.
+     * Returns the x-component of the position applied to Reynard.
      *
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @param value the x-component of the force applied to this rocket.
+     * @return the x-component of the position applied to Reynard.
      */
-    void setFX(float value) {
-        _force.x = value;
+    float getPositionY() const {
+        return position.y;
     }
-
-    /**
-     * Returns the y-component of the force applied to this rocket.
-     *
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @return the y-component of the force applied to this rocket.
-     */
-    float getFY() const {
-        return _force.y;
-    }
-
-    /**
-     * Sets the x-component of the force applied to this rocket.
-     *
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @param value the x-component of the force applied to this rocket.
-     */
-    void setFY(float value) {
-        _force.y = value;
-    }
-
 
 };
 
