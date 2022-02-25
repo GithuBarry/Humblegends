@@ -14,6 +14,7 @@
  * All game changes should be in a controller.
  */
 class CharacterModel : public cugl::physics2::BoxObstacle{
+public:
     /**
      * Apply non-game-logic changes
      * apply velocity or what
@@ -40,6 +41,7 @@ class CharacterModel : public cugl::physics2::BoxObstacle{
         TRAPPED,
         //add more when necessary
     };
+
     CharacterState getState();
 
     bool setState(CharacterState cs);

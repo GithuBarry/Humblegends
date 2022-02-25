@@ -8,6 +8,7 @@
 
 #include <cugl/cugl.h>
 #include "MPCharacterModel.h"
+#include "MPReynardModel.h"
 
 class MPReynardController {
 
@@ -32,7 +33,7 @@ public:
      * and slowed (such as if he is zoomed out looking at the map).
      * [IF you want to change REYNARD and one of his interactions to something within the world
      * YOU DO THAT HERE]**/
-    void updateMode(CharacterState c);
+    void updateMode(CharacterModel::CharacterState c);
 
     /**Whenever Reynard hits a horizontal wall, this function is called and turns him around
      * His velocity will be turned to whatever the negative of whatever the Constant his speed
@@ -43,7 +44,6 @@ public:
      * can jump it makes him jump and return true (if he cannot it will return false)
      * If Reynard's state is already jumping**/
     bool resolveJump ();
-
 
 };
 
