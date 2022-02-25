@@ -34,7 +34,6 @@
 build-android
 build-apple
 build-win10
-cugl
 
 
 *.DS_Store
