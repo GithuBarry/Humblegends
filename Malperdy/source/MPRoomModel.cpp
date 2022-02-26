@@ -6,6 +6,12 @@
 //  its geometry for both drawing and physics. Locations of everything within a
 //  a room are stored relative to the room's origin, which is the lower left corner.
 // 
+//  Geometry within a room is defined as a percentage of the room's actual width/
+//  height. Changing the macros for default room width/height in the headerfile will
+//  scale the rooms accordingly.
+// 
+//  Rooms are not locked, meaning they can be swapped, by default upon creation.
+// 
 //  Room is a subclass of SceneNode, and so all of SceneNode's methods can be used
 //  with it. This allows individual rooms and their contents to be scaled properly
 //  when zooming in and out. Each element of room geometry is then stored as a child
@@ -31,18 +37,44 @@ using namespace cugl;
 
 #pragma mark Room Layout
 /** The vertices for a floor in a room */
-float FLOOR[] = {				 0,						  0,
-				DEFAULT_ROOM_WIDTH,						  0,
-				DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT / 4,
-								 0, DEFAULT_ROOM_HEIGHT / 4 };
+float FLOOR[] = {	0,		0,
+					1,		0,
+					1,	 0.25,
+					0,	 0.25 };
 
 /** The vertices for the boundary of a room */
 // TODO: this is a dumb workaround to path not closing, fix it later
-float BOUND[] = {				 0,					  0,
-				DEFAULT_ROOM_WIDTH,					  0,
-				DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT,
-					-BOUND_WIDTH/2, DEFAULT_ROOM_HEIGHT,
-					-BOUND_WIDTH/2,					  0 };
+float BOUND[] = {				 0,						  0,
+				DEFAULT_ROOM_WIDTH,						  0,
+				DEFAULT_ROOM_WIDTH,		DEFAULT_ROOM_HEIGHT,
+					-BOUND_WIDTH/2,		DEFAULT_ROOM_HEIGHT,
+					-BOUND_WIDTH/2,						  0 };
+
+/**
+ * Converts the given geometry scaled to the room's dimensions.
+ *
+ * Room coordinates are given as a percentage of the room's actual
+ * dimensions. This method converts takes in an array of these coordinates,
+ * then modifies the array itself to convert to pixel space. The new pixel
+ * coordinates can then be found in the original array.
+ *
+ * @param coords    Coordinates of room geometry, as percentage of actual dims
+ */
+void RoomModel::roomToPixelCoords(float coords[]) {
+	// Get length of array
+	int len = sizeof(coords);
+	// Scale x-coordinates by room width and y-coordinates by room height
+	for (int k = 0; k < len; k++) {
+		// Even-indexed elements are x-coordinates
+		if (k % 2 == 0) {
+			coords[k] = coords[k] * DEFAULT_ROOM_WIDTH;
+		}
+		// Odd-indexed elements are y-coordinates
+		else {
+			coords[k] = coords[k] * DEFAULT_ROOM_HEIGHT;
+		}
+	}
+}
 
 /**
  * Rebuilds the geometry.
@@ -52,6 +84,9 @@ float BOUND[] = {				 0,					  0,
  * For now, it assumes every room only has the floor for geometry.
  */
 void RoomModel::buildGeometry() {
+	// Convert floor coordinates from room to pixel space
+	roomToPixelCoords(FLOOR);
+
 	// Create path for floor
 	Path2 floorPath = Path2(reinterpret_cast<Vec2*>(FLOOR), size(FLOOR) / 2);
 	// Fill floor

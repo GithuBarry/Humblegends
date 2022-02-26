@@ -19,6 +19,7 @@ using namespace cugl;
 
 class GridModel : public cugl::scene2::SceneNode {
 
+
 private:
 
     /** Number of PIXELS between rooms horizontally  */
@@ -31,6 +32,7 @@ private:
      * _size[0] is the width, _size[1] is the height
      */
     Vec2 _size = Vec2(3,3);
+
 
     float _physics_scale;
 
@@ -45,6 +47,8 @@ private:
      **/
     void buildGeometry();
 
+
+
     /** Rebuilds the physics assets for all the rooms.
      *
      * Propogates the call down to each of the rooms.
@@ -53,6 +57,7 @@ private:
 
 public:
 #pragma mark Constructors
+
 
     /** Creates an empty grid model */
     GridModel() {};
@@ -80,12 +85,12 @@ public:
     bool init(int width, int height, shared_ptr<vector<Poly2>> geometry, int vgap, int hgap);
 
 
-
 #pragma mark Destructors
     /**
      * Destroys this grid, releasing all resources.
      */
     virtual ~GridModel(void) { dispose(); }
+
 
     /**
      * Disposes all resources and assets of this grid.
@@ -108,6 +113,7 @@ public:
         return _size.y;
     }
 
+
     /** Returns a 1-D vector of all the rooms */
     Vector<shared_ptr<RoomModel>> getRooms();
 
@@ -119,13 +125,16 @@ public:
 
 #pragma mark Setters
 
+
     /** Sets the room located at the ith row from the bottom, jth column from the left  */
     void setRoom(Vec2 coord, shared_ptr<RoomModel> room);
+
 
     /** Swaps two rooms given two room coordinates.
      * room = (i,j) meaning the room at row i, col j
      * returns true if the swap occurs successfully, returns false if rooms cannot be swapped */
     bool swapRooms(Vec2 room1, Vec2 room2);
+
 
     /** Returns whether the rooms can be swapped or not */
     bool canSwap(Vec2 room1, Vec2 room2);
