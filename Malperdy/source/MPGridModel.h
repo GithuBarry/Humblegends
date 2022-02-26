@@ -47,7 +47,7 @@ class GridModel {
      * Implementer feel free to place them in order however you like. just document well enough for others.
      * Feel free to use shared pointer
      */
-    Vector<RoomModel> rooms;
+    // Vector<RoomModel> rooms;
 
 
 public:
@@ -57,7 +57,7 @@ public:
     /**
      * @return all rooms, in a well-defined order
      */
-    RoomModel[] getRooms();
+    // RoomModel[] getRooms();
 
 
 
