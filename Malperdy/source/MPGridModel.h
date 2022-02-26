@@ -17,59 +17,104 @@
 
 using namespace cugl;
 
-class GridModel {
-    float horizontal_gap_between_rooms;
-    float vertical_gap_between_rooms;
+class GridModel : public cugl::scene2::SceneNode {
+    
+private:
+    
+    /** Number of PIXELS between rooms horizontally  */
+    float _horizontal_gap;
+    /** Number of PIXELS between rooms vertically  */
+    float _vertical_gap;
 
     /**
-     * Room length, in terms of pixels
+     * Size of the level (in units of number of rooms )
+     * _size[0] is the width, _size[1] is the height
      */
-    float room_size_x;
-    float room_size_y;
+    Vec2 _size = Vec2(3,3);
 
-    /**
-     * (global_boundary_x, global_boundary_y)
-     * should be the global coordinate of the left down corner of the left down room when zoomed out
-     */
-    float global_boundary_x;
-    float global_boundary_y;
-
-    /**
-     * How many rooms on each row/col when zoomed out
-     */
-    int n_rooms_on_each_row;
-    int n_rooms_on_each_col;
-
-    float physics_scale;
+    float _physics_scale;
 
     /*
-     * Rooms, presumably rooms[0] -> left corner room, and room[4] is room above that in a 3x3 level.
-     * Implementer feel free to place them in order however you like. just document well enough for others.
-     * Feel free to use shared pointer
+     * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
      */
-    Vector<RoomModel> rooms;
-
+    Vector<Vector<shared_ptr<RoomModel>>> _grid;
+    
+    /** Rebuilds the geometry for all the rooms.
+     *
+     * Propogates the call down to each of the rooms.
+     **/
+    void buildGeometry();
+    
+    /** Rebuilds the physics assets for all the rooms.
+     *
+     * Propogates the call down to each of the rooms.
+     **/
+    void buildPhysicsGeometry();
 
 public:
-    //Constructor placeholder, presumably need all private fields (except rooms)
-    // and array of [array of paths (in a room)]
+#pragma mark Constructors
+    
+    /** Creates an empty grid model */
+    GridModel() {};
+    
+    /** Initializes a grid with the deafult width and height (3x3), and the default rooms */
+    bool init();
+    
+    /** Initializes a grid with a width and height, initializes all rooms to be the default*/
+    bool init(int width, int height);
+    
+    /** Initializes a grid with a width and height, initializes all rooms to be a copy of Room */
+    bool init(int width, int height, shared_ptr<RoomModel> room);
+    
+#pragma mark Destructors
+    /**
+     * Destroys this grid, releasing all resources.
+     */
+    virtual ~GridModel(void) { dispose(); }
 
     /**
-     * @return all rooms, in a well-defined order
+     * Disposes all resources and assets of this grid.
+     *
+     * Any assets owned by this object will be immediately released.  Once
+     * disposed, a room may not be used until it is initialized again.
      */
-    RoomModel[] getRooms();
-
-
-
-    int getNRoomsOnEachRow() const {
-        return n_rooms_on_each_row;
+    void dispose();
+    
+#pragma mark -
+#pragma mark Accessors
+    
+    /** Getter for grid width */
+    int getWidth() const {
+        return _size.x;
     }
 
-    int getNRoomsOnEachCol() const {
-        return n_rooms_on_each_col;
+    /** Getter for grid height */
+    int getHeight() const {
+        return _size.y;
     }
+    
+    /** Returns a 1-D vector of all the rooms */
+    Vector<shared_ptr<RoomModel>> getRooms();
+    
+    /** Returns the ptr to the room located at the coordinate.
+     *
+     * If coord = (i,j), then this returns the room at the ith row from the bottom,
+     * jth column from the left */
+    shared_ptr<RoomModel> getRoom(Vec2 coord);
 
-
+#pragma mark Setters
+    
+    /** Sets the room located at the ith row from the bottom, jth column from the left  */
+    void setRoom(Vec2 coord, shared_ptr<RoomModel> room);
+    
+    /** Swaps two rooms given two room coordinates.
+     * room = (i,j) meaning the room at row i, col j
+     * returns true if the swap occurs successfully, returns false if rooms cannot be swapped */
+    bool swapRooms(Vec2 room1, Vec2 room2);
+    
+    /** Returns whether the rooms can be swapped or not */
+    bool canSwap(Vec2 room1, Vec2 room2);
+    
 };
 
 #endif /* MPGridModel_h */
