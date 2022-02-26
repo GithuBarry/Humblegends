@@ -37,7 +37,7 @@ private:
     /*
      * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
      */
-    Vector<Vector<shared_ptr<RoomModel>>> _grid;
+    vector<vector<shared_ptr<RoomModel>>> _grid;
     
     /** Rebuilds the geometry for all the rooms.
      *
@@ -94,7 +94,7 @@ public:
     }
     
     /** Returns a 1-D vector of all the rooms */
-    Vector<shared_ptr<RoomModel>> getRooms();
+    vector<shared_ptr<RoomModel>> getRooms();
     
     /** Returns the ptr to the room located at the coordinate.
      *
