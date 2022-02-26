@@ -46,7 +46,7 @@ private:
      * Rebuilds the geometry.
      *
      * This method should recreate all the polygons for any geometry in the room.
-     * 
+     * {@note by Barry Feb 26: please mark when do I need to call (and re-call) this function.}
      * For now, it assumes every room only has the floor for geometry.
      */
     void buildGeometry();
@@ -56,6 +56,7 @@ private:
      *
      * This method should recreate all the physics objects corresponding to any
      * geometry in the room.
+     *
      */
     void buildPhysicsGeometry();
 
@@ -65,6 +66,8 @@ public:
      * Creates a new, empty room.
      */
     RoomModel() {};
+
+    //{@note by Barry on Feb 26: feature request: alloc() which returns shared ptr so I dont gave to make_shared in Gamescene}
 
     /**
      * Initializes an empty room at the world origin.
@@ -154,7 +157,7 @@ public:
     /**
      * Returns a shared pointer to the vector of physics objects that compose
      * the room geometry.
-     * 
+     * {@note by Barry Feb 26: documentation addition: must call buildPhysicsGeometry() before getting them?}
      * @return  Shared pointer to vector of physics objects for room geometry
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsGeometry() { return _physicsGeometry; }

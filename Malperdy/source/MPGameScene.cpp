@@ -23,6 +23,7 @@
 //  Version: 1/10/17
 //
 #include "MPGameScene.h"
+
 #include <box2d/b2_world.h>
 #include <box2d/b2_contact.h>
 #include <box2d/b2_collision.h>
@@ -54,53 +55,23 @@ using namespace cugl;
 
 
 #pragma mark Assset Constants
-/** The key for the earth texture in the asset manager */
-#define EARTH_TEXTURE       "earth"
-/** The key for the rocket texture in the asset manager */
-#define ROCK_TEXTURE        "rocket"
-/** The key for the win door texture in the asset manager */
-#define GOAL_TEXTURE        "goal"
-/** The key prefix for the multiple crate assets */
-#define CRATE_PREFIX        "crate"
-/** The key for the fire textures in the asset manager */
-#define MAIN_FIRE_TEXTURE   "flames"
-#define RGHT_FIRE_TEXTURE   "flames-right"
-#define LEFT_FIRE_TEXTURE   "flames-left"
+/** The key for the some texture in the asset manager {@example}*/
+#define SOME_TEXTURE       "sometexturename"
 
 /** Color to outline the physics nodes */
 #define STATIC_COLOR    Color4::WHITE
-/** Opacity of the physics outlines */
-#define DYNAMIC_COLOR   Color4::YELLOW
+/** Opacity of the physics outlines {@example} */
+#define SOME_COLOR   Color4::YELLOW
 
-/** The key for collisions sounds */
-#define COLLISION_SOUND     "bump"
-/** The key for the main afterburner sound */
-#define MAIN_FIRE_SOUND     "burn"
-/** The key for the right afterburner sound */
-#define RGHT_FIRE_SOUND     "right-burn"
-/** The key for the left afterburner sound */
-#define LEFT_FIRE_SOUND     "left-burn"
+/** The key for collisions sounds {@example} */
+#define SOME_SOUND     "somesoundname"
 
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
 
 #pragma mark Physics Constants
 
-// Physics constants for initialization
-/** Density of non-crate objects */
-#define BASIC_DENSITY       0.0f
-/** Density of the crate objects */
-#define CRATE_DENSITY       1.0f
-/** Friction of non-crate objects */
-#define BASIC_FRICTION      0.1f
-/** Friction of the crate objects */
-#define CRATE_FRICTION      0.2f
-/** Angular damping of the crate objects */
-#define CRATE_DAMPING       1.0f
-/** Collision restitution for all objects */
-#define BASIC_RESTITUTION   0.1f
-/** Threshold for generating sound on collision */
-#define SOUND_THRESHOLD     3
+
 
 
 #pragma mark -
@@ -211,15 +182,15 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
 
-    _exitnode = scene2::Label::allocWithText("VICTORY!",_assets->get<Font>(PRIMARY_FONT));
-	_exitnode->setAnchor(Vec2::ANCHOR_CENTER);
-    _exitnode->setPosition(dimen/2.0f);
-    _exitnode->setForeground(STATIC_COLOR);
-    _exitnode->setVisible(false);
+//    _exitnode = scene2::Label::allocWithText("VICTORY!",_assets->get<Font>(PRIMARY_FONT));
+//	_exitnode->setAnchor(Vec2::ANCHOR_CENTER);
+//    _exitnode->setPosition(dimen/2.0f);
+//    _exitnode->setForeground(STATIC_COLOR);
+//    _exitnode->setVisible(false);
     
     addChild(_worldnode);
     addChild(_debugnode);
-    addChild(_exitnode);
+//    addChild(_exitnode);
     
     populate();
     _active = true;
@@ -278,10 +249,18 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
+
+
+#pragma mark Models
+    _reynard = make_shared<ReynardModel>(Vec2(50,50));
+
+
+
+#pragma mark Rooms
     /////////////////////////////////////
     // DEBUG: add room to scene graph
     /////////////////////////////////////
-    _room = make_shared<RoomModel>();
+    std:const shared_ptr<SceneNode> &_room = make_shared<RoomModel>();
     _room->init();
     _room->setPosition(50, 50);
 

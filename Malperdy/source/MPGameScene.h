@@ -41,9 +41,7 @@
  * so that we can have a separate mode for the loading screen.
  */
 class GameScene : public cugl::Scene2 {
-private:
-    // DEBUGGING VARIABLES
-    std::shared_ptr<RoomModel> _room;
+
 
 protected:
     /** The asset manager for this game mode. */
@@ -54,13 +52,14 @@ protected:
     InputController _input;
     GameStateController _gamestate;
 
+
     // VIEW
     /** Reference to the physics root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _worldnode;
     /** Reference to the debug root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _debugnode;
-    /** Reference to the exit message label */
-    std::shared_ptr<cugl::scene2::Label> _exitnode;
+//    /** Reference to the exit message label */
+//    std::shared_ptr<cugl::scene2::Label> _exitnode;
 
     /** The Box2D world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
@@ -73,6 +72,7 @@ protected:
     /** Reference to the rocket/player avatar */
     //std::shared_ptr<RocketModel> _rocket;
 
+    /** Reference to the Reynard avatar */
     std::shared_ptr<ReynardModel> _reynard;
 
     /** Whether we have completed this "game" */
@@ -85,13 +85,6 @@ protected:
     /**
      * Lays out the game geography.
      *
-     * Pay close attention to how we attach physics objects to a scene graph.
-     * The simplest way is to make a subclass, like we do for the rocket.  However,
-     * for simple objects you can just use a callback function to lightly couple
-     * them.  This is what we do with the crates.
-     *
-     * This method is really, really long.  In practice, you would replace this
-     * with your serialization loader, which would process a level file.
      */
     void populate();
 
@@ -253,7 +246,7 @@ public:
      */
     void setComplete(bool value) {
         _complete = value;
-        _exitnode->setVisible(value);
+//        _exitnode->setVisible(value);
     }
 
 
@@ -292,7 +285,8 @@ public:
     void beginContact(b2Contact *contact);
 
     /**
-     * Handles any modifications necessary before collision resolution
+     * Handles any modifications necessary before collision re
+     * lution
      *
      * This method is called just before Box2D resolves a collision.  We use 
      * this method to implement sound on contact, using the algorithms outlined 

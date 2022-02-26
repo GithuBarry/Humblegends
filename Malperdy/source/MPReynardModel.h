@@ -15,7 +15,17 @@
 #include "MPCharacterModel.h"
 
 class ReynardModel : CharacterModel {
-    cugl::Vec2 _force;
+    cugl::Vec2 _force;;
+public:
+
+    /**
+     * {@note by Barry Feb 26 I need a constructor}
+     * @return a Reynard.
+     *
+    ReynardModel(Vec2 pos) {
+    }
+
+    //{@note by Barry on Feb 26: feature request: alloc() which returns shared ptr so I dont gave to make_shared in Gamescene}
 
 
     /**
@@ -78,6 +88,7 @@ class ReynardModel : CharacterModel {
         return _force.y;
     }
 
+
     /**
      * Sets the x-component of the force applied to this rocket.
      *
@@ -89,8 +100,6 @@ class ReynardModel : CharacterModel {
     void setFY(float value) {
         _force.y = value;
     }
-
-
 };
 
 #endif /* MPReynardModel_h */

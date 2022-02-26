@@ -25,10 +25,26 @@ class CharacterModel : public cugl::physics2::BoxObstacle{
     /** Velocity of the Character */
     cugl::Vec2 _vel;
 
+    /**
+     * {@note by Barry:Feature request}
+     * after calling this function, I should be able to call setCharaterNode and get a PolygonNode
+     * @param texture
+     */
+    void setTexture(Texture texture);
 
 
-    const std::shared_ptr<cugl::scene2::SceneNode>& getCharacterNode();
+    /**
+     * {@note by Barry: please complete documentation for every function}
+     * must be called after calling setTexture
+     * @return
+     */
+    const std::shared_ptr<cugl::scene2::PolygonNode>& getCharacterNode();
     void setCharaterNode(const std::shared_ptr<cugl::scene2::SceneNode>& node);
+
+    CharacterState getState();
+    bool setState(CharacterState cs);
+
+public:
     enum class CharacterState : int{
         MOVING,
         RESTING,
@@ -36,8 +52,6 @@ class CharacterModel : public cugl::physics2::BoxObstacle{
         TRAPPED,
         //add more when necessary
     };
-    CharacterState getState();
-    bool setState(CharacterState cs);
 };
 
 #endif /* MPCharacterModel_h */
