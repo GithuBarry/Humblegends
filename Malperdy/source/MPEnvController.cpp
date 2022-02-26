@@ -37,9 +37,7 @@ bool EnvController::swapWithSelected(Vec2 coords){
 		// set _toSwap to (-1, -1)
 		// may make sense to return false, depending on caller usage
 		// return true
-	// create a new variable tempRoom to hold the room at row2 and col2
-	// get the room at _toSelect and put it into row2, col2
-	// put the room in tempRoom into _toSelect.x, _toSelect.y
+	// call the grid to swap the rooms at row2, col2 and _toSwap
 	// return true
 
 	return false;

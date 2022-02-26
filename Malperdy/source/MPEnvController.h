@@ -16,7 +16,7 @@
 #include "MPGridModel.h"
 #include "MPRoomModel.h"
 
-class EnvController: scene2::SceneNode {
+class EnvController {
 private:
     /* The grid of rooms constituting the gamespace */
     std::shared_ptr<GridModel> _grid;
