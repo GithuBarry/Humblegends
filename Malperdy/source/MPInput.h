@@ -168,7 +168,11 @@ public:
     
     // TODO
     bool didDash();
+    
+    
     bool didJump();
+    
+    
     /**
      * @return Whether a swipe just ended
      */
