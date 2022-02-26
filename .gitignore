@@ -31,5 +31,11 @@
 *.out
 *.app
 
+build-android
+build-apple
+build-win10
+
+
 *.DS_Store
-Malperdy/build-apple/Malperdy.xcodeproj/project.xcworkspace/xcuserdata/barry.xcuserdatad/UserInterfaceState.xcuserstate
+Malperdy/build-apple/Malperdy.xcodeproj/project.xcworkspace/xcuserdata/*
+*.xcuserstate

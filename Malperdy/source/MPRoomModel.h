@@ -6,6 +6,12 @@
 //  its geometry for both drawing and physics. Locations of everything within a
 //  a room are stored relative to the room's origin, which is the lower left corner.
 // 
+//  Geometry within a room is defined as a percentage of the room's actual width/
+//  height. Changing the macros for default room width/height in the headerfile will
+//  scale the rooms accordingly.
+// 
+//  Rooms are not locked, meaning they can be swapped, by default upon creation.
+// 
 //  Room is a subclass of SceneNode, and so all of SceneNode's methods can be used
 //  with it. This allows individual rooms and their contents to be scaled properly
 //  when zooming in and out. Each element of room geometry is then stored as a child
@@ -36,6 +42,10 @@ using namespace cugl;
 
 class RoomModel : public cugl::scene2::SceneNode {
 private:
+    // STATUS
+    /** Whether this room is currently locked/unable to be swapped. False by default */
+    bool locked = false;
+
     // GEOMETRY
     /** Vector of Poly2s forming the visuals for the room's geometry */
     shared_ptr<vector<Poly2>> _geometry;
@@ -43,10 +53,22 @@ private:
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> _physicsGeometry;
 
     /**
+     * Converts the given geometry scaled to the room's dimensions.
+     * 
+     * Room coordinates are given as a percentage of the room's actual
+     * dimensions. This method converts takes in an array of these coordinates,
+     * then modifies the array itself to convert to pixel space. The new pixel
+     * coordinates can then be found in the original array.
+     * 
+     * @param coords    Coordinates of room geometry, as percentage of actual dims
+     */
+    void roomToPixelCoords(float coords[]);
+
+    /**
      * Rebuilds the geometry.
      *
      * This method should recreate all the polygons for any geometry in the room.
-     * 
+     * {@note by Barry Feb 26: please mark when do I need to call (and re-call) this function.}
      * For now, it assumes every room only has the floor for geometry.
      */
     void buildGeometry();
@@ -56,6 +78,7 @@ private:
      *
      * This method should recreate all the physics objects corresponding to any
      * geometry in the room.
+     *
      */
     void buildPhysicsGeometry();
 
@@ -65,6 +88,8 @@ public:
      * Creates a new, empty room.
      */
     RoomModel() {};
+
+    //{@note by Barry on Feb 26: feature request: alloc() which returns shared ptr so I dont gave to make_shared in Gamescene}
 
     /**
      * Initializes an empty room at the world origin.
@@ -150,15 +175,33 @@ public:
     void dispose();
 
 #pragma mark -
-#pragma mark Accessors
+#pragma mark Getters
     /**
      * Returns a shared pointer to the vector of physics objects that compose
      * the room geometry.
-     * 
+     * {@note by Barry Feb 26: documentation addition: must call buildPhysicsGeometry() before getting them?}
      * @return  Shared pointer to vector of physics objects for room geometry
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsGeometry() { return _physicsGeometry; }
 
+    /**
+     * Returns whether or not this room is currently locked, meaning it cannot
+     * be swapped.
+     * 
+     * @return  Whether this room is locked, meaning it can't be swapped
+     */
+    bool isLocked() { return locked; }
+
+#pragma mark Setters
+    /**
+     * Sets this room to be locked, meaning it can no longer be swapped.
+     */
+    void lock() { locked = true; }
+
+    /**
+     * Sets this room to be unlocked, meaning it can now be swapped.
+     */
+    void unlock() { locked = false; }
 };
 
 #endif /* MPRoomModel_h */

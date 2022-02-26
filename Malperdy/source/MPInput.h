@@ -167,6 +167,7 @@ public:
     bool didExit() const { return _exitPressed; }
     
     // TODO
+    // TODO {@note by Barry Feb 26: please complete documentation for these function}
     bool didDash();
     bool didJump();
     /**
