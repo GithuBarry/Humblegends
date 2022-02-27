@@ -2,7 +2,13 @@
 //  MPRoomLoader.cpp
 //  Malperdy
 //
-//  This class loads in all of the room geometries from a JSON file.
+//  This class loads in all of the room geometries from a JSON file,
+//  storing them in a lookup table of JsonValues. The loader can then
+//  be queried to get the JsonValues corresponding to a room's inner
+//  geometry.
+// 
+//  This class should never be used except by RoomModel, which constructs
+//  a single static instance to be used by all RoomModels.
 //
 //  Created by Kristina Gu on 2/26/22.
 //  Copyright � 2022 Humblegends. All rights reserved.

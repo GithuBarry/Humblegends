@@ -78,10 +78,8 @@ public:
      */
     RoomModel() {};
 
-    //{@note by Barry on Feb 26: feature request: alloc() which returns shared ptr so I dont gave to make_shared in Gamescene}
-
     /**
-     * Initializes an empty room at the world origin.
+     * Initializes a floor-only room at the world origin.
      *
      * Rooms are automatically initialized to have the bounds given by
      * the default room width/height.
@@ -91,7 +89,7 @@ public:
     bool init() { return init(0, 0, ""); }
 
     /**
-     * Initializes an empty room at the given location.
+     * Initializes a floor-only room at the given location.
      *
      * Rooms are automatically initialized to have the bounds given by
      * the default room width/height.
@@ -102,7 +100,7 @@ public:
     bool init(const Vec2 pos) { return init(pos.x, pos.y, ""); }
 
     /**
-     * Initializes an empty room at the given location.
+     * Initializes a floor-only room at the given location.
      *
      * Rooms are automatically initialized to have the bounds given by
      * the default room width/height.
@@ -158,6 +156,103 @@ public:
      */
     bool init(float x, float y, string roomID);
 
+#pragma mark Static Constructors
+    /**
+     * Returns a newly-allocated floor-only room at the world origin.
+     *
+     * Rooms are automatically initialized to have the bounds given by
+     * the default room width/height.
+     *
+     * @return  A newly-allocated RoomModel at the origin.
+     */
+    static std::shared_ptr<RoomModel> alloc() {
+        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+        return (result->init() ? result : nullptr);
+    }
+
+    /**
+     * Returns a newly-allocated floor-only room at the given location.
+     *
+     * Rooms are automatically initialized to have the bounds given by
+     * the default room width/height.
+     *
+     * @param pos   The origin of the room in parent space
+     * @return      A newly-allocated RoomModel
+     */
+    static std::shared_ptr<RoomModel> alloc(const Vec2 pos) {
+        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+        return (result->init(pos) ? result : nullptr);
+    }
+
+    /**
+     * Returns a newly-allocated floor-only room at the given location.
+     *
+     * Rooms are automatically initialized to have the bounds given by
+     * the default room width/height.
+     *
+     * @param x The x-coordinate of the room in parent space
+     * @param y The y-coordinate of the room in parent space
+     * @return  A newly-allocated RoomModel
+     */
+    static std::shared_ptr<RoomModel> alloc(float x, float y) {
+        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+        return (result->init(x, y) ? result : nullptr);
+    }
+
+    /**
+     * Returns a newly-allocated room with the type of the given ID at the world origin.
+     *
+     * The geometry corresponding to the room type given by the room ID is
+     * taken from the JSON file of rooms.
+     *
+     * Rooms are automatically initialized to have the bounds given by
+     * the default room width/height.
+     *
+     * @param roomID    ID of room type with the desired geometry
+     * @return          A newly-allocated RoomModel
+     */
+    static std::shared_ptr<RoomModel> alloc(string roomID) {
+        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+        return (result->init(roomID) ? result : nullptr);
+    }
+
+    /**
+     * Returns a newly-allocated room with the type of the given ID at the given location.
+     *
+     * The geometry corresponding to the room type given by the room ID is
+     * taken from the JSON file of rooms.
+     *
+     * Rooms are automatically initialized to have the bounds given by
+     * the default room width/height.
+     *
+     * @param pos       The origin of the room in parent space
+     * @param roomID    ID of room type with the desired geometry
+     * @return          A newly-allocated RoomModel
+     */
+    static std::shared_ptr<RoomModel> alloc(Vec2 pos, string roomID) {
+        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+        return (result->init(pos, roomID) ? result : nullptr);
+    }
+
+    /**
+     * Returns a newly-allocated room with the given geometry at the given location.
+     *
+     * The geometry corresponding to the room type given by the room ID is
+     * taken from the JSON file of rooms.
+     *
+     * Rooms are automatically initialized to have the bounds given by
+     * the default room width/height.
+     *
+     * @param x         The x-coordinate of the room in parent space
+     * @param y         The y-coordinate of the room in parent space
+     * @param roomID    ID of room type with the desired geometry
+     * @return          A newly-allocated RoomModel
+     */
+    static std::shared_ptr<RoomModel> alloc(float x, float y, string roomID) {
+        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+        return (result->init(x, y, roomID) ? result : nullptr);
+    }
+
 #pragma mark Destructors
     /**
      * Destroys this room, releasing all resources.
@@ -177,7 +272,7 @@ public:
     /**
      * Returns a shared pointer to the vector of physics objects that compose
      * the room geometry.
-     * {@note by Barry Feb 26: documentation addition: must call buildPhysicsGeometry() before getting them?}
+     * 
      * @return  Shared pointer to vector of physics objects for room geometry
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsGeometry() { return _physicsGeometry; }

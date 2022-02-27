@@ -260,9 +260,7 @@ void GameScene::populate() {
     /////////////////////////////////////
     // DEBUG: add room to scene graph
     /////////////////////////////////////
-    std:const shared_ptr<scene2::SceneNode> &_room = make_shared<RoomModel>();
-    _room->init();
-    _room->setPosition(50, 50);
+    shared_ptr<RoomModel> _room = RoomModel::alloc(50, 50);
 
     _worldnode->addChild(_room);
 
