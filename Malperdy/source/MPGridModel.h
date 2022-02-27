@@ -115,7 +115,7 @@ public:
 
 
     /** Returns a 1-D vector of all the rooms */
-    Vector<shared_ptr<RoomModel>> getRooms();
+    vector<shared_ptr<RoomModel>> getRooms();
 
     /** Returns the ptr to the room located at the coordinate.
      *

@@ -212,7 +212,7 @@ void GameScene::dispose() {
         _world = nullptr;
         _worldnode = nullptr;
         _debugnode = nullptr;
-        _exitnode = nullptr;
+        //_exitnode = nullptr;
         _complete = false;
         _debug = false;
         Scene2::dispose();
@@ -252,7 +252,7 @@ void GameScene::populate() {
 
 
 #pragma mark Models
-    _reynard = make_shared<ReynardModel>(Vec2(50,50));
+    //_reynard = make_shared<ReynardModel>(Vec2(50,50));
 
 
 
@@ -260,7 +260,7 @@ void GameScene::populate() {
     /////////////////////////////////////
     // DEBUG: add room to scene graph
     /////////////////////////////////////
-    std:const shared_ptr<SceneNode> &_room = make_shared<RoomModel>();
+    std:const shared_ptr<scene2::SceneNode> &_room = make_shared<RoomModel>();
     _room->init();
     _room->setPosition(50, 50);
 

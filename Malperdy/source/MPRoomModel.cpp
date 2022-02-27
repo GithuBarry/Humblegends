@@ -6,11 +6,8 @@
 //  its geometry for both drawing and physics. Locations of everything within a
 //  a room are stored relative to the room's origin, which is the lower left corner.
 // 
-//  ALWAYS call loadRooms() first before creating or initializing any rooms. This
-//  will read in all the predefined room geometries from the JSON and store those
-//  as a static lookup table that all instances of RoomModel can access. Failing
-//  to call this first means that rooms won't know what geometries to draw for
-//  themselves.
+//  Room geometries are read from a JSON and stored in a static lookup table shared
+//  among all instances of RoomModel.
 // 
 //  Geometry within a room is defined as a percentage of the room's actual width/
 //  height. Changing the macros for default room width/height in the headerfile will
