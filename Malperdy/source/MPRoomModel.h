@@ -81,6 +81,8 @@ public:
      */
     RoomModel() {};
 
+    //{@note by Barry on Feb 26: feature request: alloc() which returns shared ptr so I dont gave to make_shared in Gamescene}
+
     /**
      * Initializes an empty room at the world origin.
      *
@@ -178,7 +180,7 @@ public:
     /**
      * Returns a shared pointer to the vector of physics objects that compose
      * the room geometry.
-     * 
+     * {@note by Barry Feb 26: documentation addition: must call buildPhysicsGeometry() before getting them?}
      * @return  Shared pointer to vector of physics objects for room geometry
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsGeometry() { return _physicsGeometry; }
