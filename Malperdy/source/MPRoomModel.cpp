@@ -63,8 +63,8 @@ float BOUND[] = {				 0,						  0,
  */
 void RoomModel::buildGeometry(string roomID) {
 	// Get data for the room with the corresponding ID
-	// If no roomID is given, use a room with only floor
-	shared_ptr<vector<shared_ptr<JsonValue>>> roomData = _roomLoader->getRoomData(roomID == "" ? "floor" : roomID);
+	// If no roomID is given, use a default room
+	shared_ptr<vector<shared_ptr<JsonValue>>> roomData = _roomLoader->getRoomData(roomID == "" ? "leftright" : roomID);
 
 	// Initialize vector of physics objects for the room
 	_physicsGeometry = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
@@ -79,7 +79,7 @@ void RoomModel::buildGeometry(string roomID) {
 		path = Path2(roomData->at(k));
 		path *= ROOM_SCALE;
 		// Fill path
-		et.reset();
+		et.clear();
 		et.set(path);
 		et.calculate();
 
@@ -87,12 +87,13 @@ void RoomModel::buildGeometry(string roomID) {
 		shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
 		polyNode->setPolygon(et.getPolygon());
 		polyNode->setColor(Color4::BLACK);
+		// Set position of polygon node accordingly
+		polyNode->setAnchor(0, 0);
+		polyNode->setPosition(path.getBounds().origin);
 		addChild(polyNode);
 
-		// Then create a corresponding physics object for the polygon
-		shared_ptr<physics2::PolygonObstacle> physPoly = make_shared<physics2::PolygonObstacle>();
 		// Generate PolygonObstacle and set the corresponding properties for level geometry
-		physPoly = physics2::PolygonObstacle::alloc(et.getPolygon(), Vec2::ZERO);
+		shared_ptr<physics2::PolygonObstacle> physPoly = physics2::PolygonObstacle::alloc(et.getPolygon(), Vec2::ZERO);
 		physPoly->setBodyType(b2_staticBody);
 		// Store as part of the physics geometry
 		_physicsGeometry->push_back(physPoly);
