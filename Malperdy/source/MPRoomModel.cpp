@@ -6,11 +6,16 @@
 //  its geometry for both drawing and physics. Locations of everything within a
 //  a room are stored relative to the room's origin, which is the lower left corner.
 // 
+//  ALWAYS call loadRooms() first before creating or initializing any rooms. This
+//  will read in all the predefined room geometries from the JSON and store those
+//  as a static lookup table that all instances of RoomModel can access. Failing
+//  to call this first means that rooms won't know what geometries to draw for
+//  themselves.
+// 
 //  Geometry within a room is defined as a percentage of the room's actual width/
 //  height. Changing the macros for default room width/height in the headerfile will
-//  scale the rooms accordingly.
-// 
-//  Rooms are not locked, meaning they can be swapped, by default upon creation.
+//  scale the rooms accordingly. Rooms are not locked, meaning they can be swapped,
+//  by default upon creation.
 // 
 //  Room is a subclass of SceneNode, and so all of SceneNode's methods can be used
 //  with it. This allows individual rooms and their contents to be scaled properly
@@ -27,21 +32,22 @@
 //
 
 #include "MPRoomModel.h"
+#include <cugl/util/CUDebug.h>
 
 using namespace cugl;
 
+/** Initialize RoomLoader for loading in rooms from a JSON */
+shared_ptr<RoomLoader> RoomModel::_roomLoader = RoomLoader::alloc("json/rooms.json");
+
 #pragma mark -
 #pragma mark Room Display Constants
+/** Initialize scale by which rooms should be scaled to be in pixel space */
+const Vec2 RoomModel::ROOM_SCALE = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+
 /** How big the boundary extrusion should be */
 #define BOUND_WIDTH 10
 
 #pragma mark Room Layout
-/** The vertices for a floor in a room */
-float FLOOR[] = {	0,		0,
-					1,		0,
-					1,	 0.25,
-					0,	 0.25 };
-
 /** The vertices for the boundary of a room */
 // TODO: this is a dumb workaround to path not closing, fix it later
 float BOUND[] = {				 0,						  0,
@@ -51,71 +57,45 @@ float BOUND[] = {				 0,						  0,
 					-BOUND_WIDTH/2,						  0 };
 
 /**
- * Converts the given geometry scaled to the room's dimensions.
- *
- * Room coordinates are given as a percentage of the room's actual
- * dimensions. This method converts takes in an array of these coordinates,
- * then modifies the array itself to convert to pixel space. The new pixel
- * coordinates can then be found in the original array.
- *
- * @param coords    Coordinates of room geometry, as percentage of actual dims
- */
-void RoomModel::roomToPixelCoords(float coords[]) {
-	// Get length of array
-	int len = sizeof(coords);
-	// Scale x-coordinates by room width and y-coordinates by room height
-	for (int k = 0; k < len; k++) {
-		// Even-indexed elements are x-coordinates
-		if (k % 2 == 0) {
-			coords[k] = coords[k] * DEFAULT_ROOM_WIDTH;
-		}
-		// Odd-indexed elements are y-coordinates
-		else {
-			coords[k] = coords[k] * DEFAULT_ROOM_HEIGHT;
-		}
-	}
-}
-
-/**
- * Rebuilds the geometry.
- *
- * This method should recreate all the polygons for any geometry in the room.
+ * Creates all the polygons for any geometry for the room type with the given ID.
+ * If no room ID is given, then it defaults to a room with only floor.
  * 
- * For now, it assumes every room only has the floor for geometry.
+ * This is a private helper function that is only used within the class.
+ * 
+ * @param roomID	ID of room type with the desired geometry
  */
-void RoomModel::buildGeometry() {
-	// Convert floor coordinates from room to pixel space
-	roomToPixelCoords(FLOOR);
+void RoomModel::buildGeometry(string roomID) {
+	// Get data for the room with the corresponding ID
+	// If no roomID is given, use a room with only floor
+	shared_ptr<vector<shared_ptr<JsonValue>>> roomData = _roomLoader->getRoomData(roomID == "" ? "floor" : roomID);
 
-	// Create path for floor
-	Path2 floorPath = Path2(reinterpret_cast<Vec2*>(FLOOR), size(FLOOR) / 2);
-	// Fill floor
+	// Initialize vector of physics objects for the room
+	_physicsGeometry = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
+
+	// Initialize Path and EarclipTriangulator variables to generate polygon
+	Path2 path;
 	EarclipTriangulator et = EarclipTriangulator();
-	et.set(floorPath);
-	et.calculate();
 
-	// Convert floor into a scene graph node and add as child to room
-	shared_ptr<scene2::PolygonNode> floorNode = scene2::PolygonNode::alloc();
-	floorNode->setPolygon(et.getPolygon());
-	floorNode->setColor(Color4::BLACK);
-	addChild(floorNode);
-}
+	// For each set of polygon coordinates in the room's geometry
+	for (int k = 0; k < roomData->size(); k++) {
+		// Create the path and scale to pixel space
+		path = Path2(roomData->at(k));
+		path *= ROOM_SCALE;
+		// Fill path
+		et.reset();
+		et.set(path);
+		et.calculate();
 
-/**
- * Rebuilds the physics geometry.
- *
- * This method should recreate all the physics objects corresponding to any
- * geometry in the room.
- */
-void RoomModel::buildPhysicsGeometry() {
-	// TODO: fix this with scene graphs
+		// Convert polygon into a scene graph node and add as a child to the room node
+		shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
+		polyNode->setPolygon(et.getPolygon());
+		polyNode->setColor(Color4::BLACK);
+		addChild(polyNode);
 
-	// For every polygon in room geometry
-	for (std::vector<Poly2>::iterator it = _geometry->begin(); it != _geometry->end(); ++it) {
-		// Create a corresponding physics object for each
+		// Then create a corresponding physics object for the polygon
 		shared_ptr<physics2::PolygonObstacle> physPoly = make_shared<physics2::PolygonObstacle>();
 		// Generate PolygonObstacle and set the corresponding properties for level geometry
-		physPoly = physics2::PolygonObstacle::alloc(*it, Vec2::ZERO);
+		physPoly = physics2::PolygonObstacle::alloc(et.getPolygon(), Vec2::ZERO);
 		physPoly->setBodyType(b2_staticBody);
 		// Store as part of the physics geometry
 		_physicsGeometry->push_back(physPoly);
@@ -126,16 +106,22 @@ void RoomModel::buildPhysicsGeometry() {
 #pragma mark Constructors
 /**
  * Initializes a room with the given geometry at the given location.
+ * 
+ * The geometry corresponding to the room type given by the room ID is
+ * taken from the JSON file of rooms.
  *
  * Rooms are automatically initialized to have the bounds given by
  * the default room width/height.
  *
  * @param x         The x-coordinate of the room in parent space
  * @param y         The y-coordinate of the room in parent space
- * @param geometry  Shared pointer to the vector of polygons containing the room's geometry
+ * @param roomID    ID of room type with the desired geometry
  * @return          true if the room is initialized properly, false otherwise.
  */
-bool RoomModel::init(float x, float y, shared_ptr<vector<Poly2>> geometry) {
+bool RoomModel::init(float x, float y, string roomID) {
+	// Build geometry for the room type with the given ID
+	buildGeometry(roomID);
+
 	// Create path node for room boundary
 	Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), size(BOUND) / 2);
 	boundPath.closed = true;
@@ -143,14 +129,6 @@ bool RoomModel::init(float x, float y, shared_ptr<vector<Poly2>> geometry) {
 	boundNode->setColor(Color4::BLACK);
 	boundNode->setClosed(true);
 	addChild(boundNode);
-
-	// Set geometry if given
-	if (geometry != nullptr) _geometry = geometry;
-	// Otherwise initialize vector for level geometry and build it
-	else {
-		_geometry = make_shared<std::vector<Poly2>>();
-		buildGeometry();
-	}
 
 	// Initialize with the default room width/height and given position
 	return this->initWithBounds(x, y, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
@@ -165,7 +143,5 @@ bool RoomModel::init(float x, float y, shared_ptr<vector<Poly2>> geometry) {
  */
 void RoomModel::dispose() {
 	removeAllChildren();
-	_geometry = nullptr;
 	_physicsGeometry = nullptr;
-	//this->dispose();
 }

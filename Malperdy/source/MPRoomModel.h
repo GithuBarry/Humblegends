@@ -6,11 +6,16 @@
 //  its geometry for both drawing and physics. Locations of everything within a
 //  a room are stored relative to the room's origin, which is the lower left corner.
 // 
+//  ALWAYS call loadRooms() first before creating or initializing any rooms. This
+//  will read in all the predefined room geometries from the JSON and store those
+//  as a static lookup table that all instances of RoomModel can access. Failing
+//  to call this first means that rooms won't know what geometries to draw for
+//  themselves.
+// 
 //  Geometry within a room is defined as a percentage of the room's actual width/
 //  height. Changing the macros for default room width/height in the headerfile will
-//  scale the rooms accordingly.
-// 
-//  Rooms are not locked, meaning they can be swapped, by default upon creation.
+//  scale the rooms accordingly. Rooms are not locked, meaning they can be swapped,
+//  by default upon creation.
 // 
 //  Room is a subclass of SceneNode, and so all of SceneNode's methods can be used
 //  with it. This allows individual rooms and their contents to be scaled properly
@@ -32,6 +37,9 @@
 #include <cugl/cugl.h>
 #include <stdlib.h>
 #include <vector>
+#include <map>
+
+#include "MPRoomLoader.h"
 
 using namespace cugl;
 
@@ -42,44 +50,29 @@ using namespace cugl;
 
 class RoomModel : public cugl::scene2::SceneNode {
 private:
+    // ROOM LOADING
+    /** Loads in room formats from a JSON and is used to look up geometries for rooms */
+    static shared_ptr<RoomLoader> _roomLoader;
+
     // STATUS
     /** Whether this room is currently locked/unable to be swapped. False by default */
     bool locked = false;
 
     // GEOMETRY
-    /** Vector of Poly2s forming the visuals for the room's geometry */
-    shared_ptr<vector<Poly2>> _geometry;
     /** Vector of physics objects forming the room's geometry */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> _physicsGeometry;
+    /** Vector constant representing by how much the room geometry needs to be scaled */
+    static const Vec2 ROOM_SCALE;
 
     /**
-     * Converts the given geometry scaled to the room's dimensions.
+     * Creates all the polygons for any geometry for the room type with the given ID.
+     * If no room ID is given, then it defaults to a room with only floor.
      * 
-     * Room coordinates are given as a percentage of the room's actual
-     * dimensions. This method converts takes in an array of these coordinates,
-     * then modifies the array itself to convert to pixel space. The new pixel
-     * coordinates can then be found in the original array.
-     * 
-     * @param coords    Coordinates of room geometry, as percentage of actual dims
-     */
-    void roomToPixelCoords(float coords[]);
-
-    /**
-     * Rebuilds the geometry.
+     * This is a private helper function that is only used within the class.
      *
-     * This method should recreate all the polygons for any geometry in the room.
-     * 
-     * For now, it assumes every room only has the floor for geometry.
+     * @param roomID	ID of room type with the desired geometry
      */
-    void buildGeometry();
-
-    /**
-     * Rebuilds the physics geometry.
-     *
-     * This method should recreate all the physics objects corresponding to any
-     * geometry in the room.
-     */
-    void buildPhysicsGeometry();
+    void buildGeometry(string roomID);
 
 public:
 #pragma mark Constructors
@@ -96,7 +89,7 @@ public:
      *
      * @return  true if the room is initialized properly, false otherwise.
      */
-    bool init() { return init(0, 0, nullptr); }
+    bool init() { return init(0, 0, ""); }
 
     /**
      * Initializes an empty room at the given location.
@@ -107,7 +100,7 @@ public:
      * @param pos   The origin of the room in parent space
      * @return      true if the room is initialized properly, false otherwise.
      */
-    bool init(const Vec2 pos) { return init(pos.x, pos.y, nullptr); }
+    bool init(const Vec2 pos) { return init(pos.x, pos.y, ""); }
 
     /**
      * Initializes an empty room at the given location.
@@ -119,43 +112,52 @@ public:
      * @param y The y-coordinate of the room in parent space
      * @return  true if the room is initialized properly, false otherwise.
      */
-    bool init(float x, float y) { return init(x, y, nullptr); }
+    bool init(float x, float y) { return init(x, y, ""); }
 
     /**
-     * Initializes a room with the given geometry at the world origin.
+     * Initializes a room with the type of the given ID at the world origin.
+     * 
+     * The geometry corresponding to the room type given by the room ID is
+     * taken from the JSON file of rooms.
      *
      * Rooms are automatically initialized to have the bounds given by
      * the default room width/height.
      *
-     * @param geometry  Shared pointer to the vector of polygons containing the room's geometry
+     * @param roomID    ID of room type with the desired geometry
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(shared_ptr<vector<Poly2>> geometry) { return init(0, 0, geometry); }
+    bool init(string roomID) { return init(0, 0, roomID); }
 
     /**
-     * Initializes a room with the given geometry at the given location.
+     * Initializes a room with the type of the given ID at the given location.
+     * 
+     * The geometry corresponding to the room type given by the room ID is
+     * taken from the JSON file of rooms.
      *
      * Rooms are automatically initialized to have the bounds given by
      * the default room width/height.
      *
      * @param pos       The origin of the room in parent space
-     * @param geometry  Shared pointer to the vector of polygons containing the room's geometry
+     * @param roomID    ID of room type with the desired geometry
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(Vec2 pos, shared_ptr<vector<Poly2>> geometry) { return init(pos.x, pos.y, geometry); }
+    bool init(Vec2 pos, string roomID) { return init(pos.x, pos.y, roomID); }
 
     /**
      * Initializes a room with the given geometry at the given location.
+     * 
+     * The geometry corresponding to the room type given by the room ID is
+     * taken from the JSON file of rooms.
      *
      * Rooms are automatically initialized to have the bounds given by
      * the default room width/height.
      *
      * @param x         The x-coordinate of the room in parent space
      * @param y         The y-coordinate of the room in parent space
-     * @param geometry  Shared pointer to the vector of polygons containing the room's geometry
+     * @param roomID    ID of room type with the desired geometry
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(float x, float y, shared_ptr<vector<Poly2>> geometry);
+    bool init(float x, float y, string roomID);
 
 #pragma mark Destructors
     /**
