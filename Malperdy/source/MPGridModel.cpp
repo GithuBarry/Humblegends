@@ -53,7 +53,7 @@ bool GridModel::init()
 bool GridModel::init(int width, int height)
 {
   _size = Vec2(height, width);
-  init();
+  return init();
 };
 
 /**
@@ -93,7 +93,7 @@ bool GridModel::init(int width, int height, string roomID)
  * @return
  */
 bool GridModel::init(int width, int height, string jsonPath, int vgap, int hgap){
-
+    return false;
 };
 
 #pragma mark Destructors
