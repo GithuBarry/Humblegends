@@ -33,6 +33,7 @@ public:
      * a JSON and can be queried to get the geometry for a specific room type.
      * 
      * @param path  The path to the JSON file containing the room geometries
+     * @return      Whether the loader initialization was successful
      */
     bool init(const string path);
 
@@ -54,7 +55,10 @@ public:
      * geometry of the room with the given ID.
      *
      * Specific rooms are represented by a room ID, which is a string used in
-     * the JSONs to identify distinct rooms. This 
+     * the JSONs to identify distinct rooms. This is used as a key to get the
+     * relevant geometry.
+     * 
+     * @return  Pointer to vector of polygon geometries
      */
     shared_ptr<vector<shared_ptr<JsonValue>>> getRoomData(string roomID) { return lookup->at(roomID); }
 };
