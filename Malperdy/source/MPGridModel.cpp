@@ -158,6 +158,17 @@ vector<shared_ptr<RoomModel>> GridModel::getRooms()
  *
  * If coord = (i,j), then this returns the room at the ith row from the bottom,
  * jth column from the left */
+Vec2 GridModel::worldToRoomCoords(Vec2 coord)
+{
+    //TODO: convert to room row and column
+    //TODO: return null if not corresponding to a room
+    return coord;
+};
+
+/** Returns the ptr to the room located at the coordinate.
+ *
+ * If coord = (i,j), then this returns the room at the ith row from the bottom,
+ * jth column from the left */
 shared_ptr<RoomModel> GridModel::getRoom(Vec2 coord)
 {
   if (coord.x > _size.x || coord.y > _size.y)
