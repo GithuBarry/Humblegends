@@ -39,11 +39,13 @@ protected:
     cugl::Vec2 _position;
     /** Class representing all states Reynard can be in */ 
     enum class ReynardState : int{
+        SPAWN,
         MOVING,
         /** Form of moving when game is zoomed out */
         SLOWMOVING, 
         DASHING,
-        JUMPING
+        JUMPING,
+        TRAPPED
     };
     /** Bool representing if Reynard is currently jumping */ 
     bool _isJumping; 
