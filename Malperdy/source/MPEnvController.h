@@ -47,7 +47,7 @@ public:
     * @param coords     the coordinates of the selection in worldspace
     * 
     * @return true if rooms were successfully swapped
-    * @return true if room was the same as selected room & is now deselected
+    * @return false if room was the same as selected room & is now deselected
     * @return false if no swap occurred
     */
     bool swapWithSelected(Vec2 coords);
