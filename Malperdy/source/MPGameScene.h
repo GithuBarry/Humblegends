@@ -32,6 +32,7 @@
 #include "MPInput.h"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
+#include "MPGridModel.h"
 
 /**
  * This class is the primary gameplay constroller for the demo.
