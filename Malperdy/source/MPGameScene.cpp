@@ -357,6 +357,10 @@ void GameScene::beginContact(b2Contact* contact) {
     b2Body* body1 = contact->GetFixtureA()->GetBody();
     b2Body* body2 = contact->GetFixtureB()->GetBody();
 
+//    if (body1 == _reynard or body2 == _reynard){
+//
+//    }
+
     // If we hit the "win" door, we are done
 //    intptr_t rptr = reinterpret_cast<intptr_t>(_rocket.get());
 //    intptr_t dptr = reinterpret_cast<intptr_t>(_goalDoor.get());
