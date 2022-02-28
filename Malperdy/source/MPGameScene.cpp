@@ -416,3 +416,13 @@ Size GameScene::computeActiveSize() const {
     }
     return dimen;
 }
+
+/**
+ * Render the scene. As this class is a scene and have many child node, calling super render will be enough
+ * A placeholder for future usage.
+ * @param batch The SpriteBatch to draw with.
+
+ */
+void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
+    Scene2::render(batch);
+}

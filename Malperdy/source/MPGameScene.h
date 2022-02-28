@@ -268,6 +268,15 @@ public:
      */
     void update(float timestep);
 
+#pragma mark Drawing
+
+    /**
+     * Draws all of the children in this scene with the given SpriteBatch. This method assumes that the sprite batch is not actively drawing. It will call both begin() and end().
+     * Rendering happens by traversing the the scene graph using an "Pre-Order" tree traversal algorithm ( https://en.wikipedia.org/wiki/Tree_traversal#Pre-order ).
+     * That means that parents are always draw before (and behind children). To override this draw order, you should place an scene2::OrderedNode in the scene graph to specify an alternative order.
+     * @param batch The SpriteBatch to draw with.
+     */
+    void render(const std::shared_ptr<SpriteBatch> &batch);
 
 
     /**
