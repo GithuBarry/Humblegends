@@ -72,17 +72,17 @@ bool GridModel::init(bool json, float hgap, float vgap)
 
 };
 
-/**
- * Init given size
- * @param width
- * @param height
- * @return a grid with width x height rooms
- */
-bool GridModel::init(int width, int height)
-{
-  _size = Vec2(height, width);
-  return init();
-};
+///**
+// * Init given size
+// * @param width
+// * @param height
+// * @return a grid with width x height rooms
+// */
+//bool GridModel::init(int width, int height)
+//{
+//  _size = Vec2(height, width);
+//  return init();
+//};
 
 /**
  *  Init given size and a room template
