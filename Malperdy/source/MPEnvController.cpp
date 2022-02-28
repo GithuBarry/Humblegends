@@ -9,7 +9,7 @@
 //  Version: 2/23/22
 //
 
-#include "MPEnvController.h";
+#include "MPEnvController.h"
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController(){

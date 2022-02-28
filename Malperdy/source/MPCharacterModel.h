@@ -30,7 +30,7 @@ class CharacterModel : public cugl::physics2::BoxObstacle{
      * after calling this function, I should be able to call setCharaterNode and get a PolygonNode
      * @param texture
      */
-    void setTexture(Texture texture);
+    //void setTexture(Texture texture);
 
 
     /**
@@ -41,8 +41,8 @@ class CharacterModel : public cugl::physics2::BoxObstacle{
     const std::shared_ptr<cugl::scene2::PolygonNode>& getCharacterNode();
     void setCharaterNode(const std::shared_ptr<cugl::scene2::SceneNode>& node);
 
-    CharacterState getState();
-    bool setState(CharacterState cs);
+    //CharacterState getState();
+    //bool setState(CharacterState cs);
 
 public:
     enum class CharacterState : int{
