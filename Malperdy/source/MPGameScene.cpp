@@ -243,7 +243,7 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
-    _reynard = ReynardModel::alloc(Vec2(50,50));
+    //_reynard = ReynardModel::alloc(Vec2(50,50));
     //TODO needs help
     //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
 
@@ -356,6 +356,10 @@ void GameScene::update(float dt) {
 void GameScene::beginContact(b2Contact* contact) {
     b2Body* body1 = contact->GetFixtureA()->GetBody();
     b2Body* body2 = contact->GetFixtureB()->GetBody();
+
+//    if (body1 == _reynard or body2 == _reynard){
+//
+//    }
 
     // If we hit the "win" door, we are done
 //    intptr_t rptr = reinterpret_cast<intptr_t>(_rocket.get());
