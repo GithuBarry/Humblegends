@@ -28,7 +28,9 @@ public:
      * @param dt the actual time past
      * @return the time for the physics simulation, based on the state of the game
      */
-    float getScaledDtForPhysics(float dt);
+    float getScaledDtForPhysics(float dt){
+        return 1;
+    };
 
 };
 #endif /* MPGameStateController_h */
