@@ -13,36 +13,34 @@
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController(){
-	// initialize a GridModel and store in _grid;
-	_toSwap = Vec2(-1, -1);
+	_grid = std::make_shared<GridModel>();
+	_grid->init();
+	_toSwap = NULL;
 }
 
 bool EnvController::selectRoom(Vec2 coords){
-	// calculate row and column from coords
+	_toSwap = _grid->screenToNode(coords);
 	// if coords don't correspond to a room
 		// return false
-	// store the row and column in _toSwap
-	// return true
-
-	return false;
+	return true;
 }
 
 bool EnvController::swapWithSelected(Vec2 coords){
-	// if _toSwap is (-1, -1)
-		// return false
-	// calculate row2 and col2 from coords
+	if (_toSwap == NULL) {
+		return false
+	}
+	Vec2 room2 = _grid->screenToNode(coords);
 	// if coords don't correspond to a room
 		// return false
-	// if the new row & column equal those in _toSwap
-		// set _toSwap to (-1, -1)
-		// may make sense to return false, depending on caller usage
-		// return true
-	// call the grid to swap the rooms at row2, col2 and _toSwap
-	// return true
+	//TODO: check if the rooms are equal, not just the coordinates
+	if (room2.x == _toSwap.x && room2.y == _toSwap.y) {
+		_toSwap = NULL;
+		return true; // may make sense to return false, depending on caller usage
+	}
 
-	return false;
+	return _grid->swapRooms(_toSwap, room2);
 }
 
 void EnvController::deselectRoom(){
-	_toSwap = Vec2(-1, -1);
+	_toSwap = NULL;
 }
