@@ -14,6 +14,8 @@
 #include <cugl/cugl.h>
 #include "MPCharacterModel.h"
 
+using namespace cugl;
+
 class ReynardModel : CharacterModel {
 
     

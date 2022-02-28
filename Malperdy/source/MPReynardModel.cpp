@@ -87,4 +87,4 @@ bool ReynardModel::init(const Vec2 pos) {
  */
 void ReynardModel::update(float delta) {
     Obstacle::update(delta); 
-
+}

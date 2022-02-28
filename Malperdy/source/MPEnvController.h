@@ -15,6 +15,7 @@
 #include <cugl/cugl.h>
 #include "MPGridModel.h"
 #include "MPRoomModel.h"
+using namespace cugl;
 
 class EnvController {
 private:

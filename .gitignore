@@ -40,3 +40,4 @@ build-win10
 Malperdy/build-apple/Malperdy.xcodeproj/project.xcworkspace/xcuserdata/*
 *.xcuserstate
 Malperdy/cugl/build-apple/box2d.xcodeproj/xcuserdata/barry.xcuserdatad/xcschemes/xcschememanagement.plist
+Malperdy/cugl/build-apple/box2d.xcodeproj/project.pbxproj
