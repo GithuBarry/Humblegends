@@ -104,6 +104,14 @@ public:
      */
     void setDashing(bool value) { _isDashing = value; }
 
+#pragma mark Constructors
+    bool init(const Vec2 pos);
+
+     static std::shared_ptr<ReynardModel> alloc(const Vec2 pos) {
+        std::shared_ptr<ReynardModel> result = std::make_shared<ReynardModel>();
+        return (result->init(pos) ? result : nullptr);
+    }
+
 #pragma mark -
 #pragma mark Physics
     /**
