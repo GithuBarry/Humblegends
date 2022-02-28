@@ -243,7 +243,7 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
-    _reynard = ReynardModel::alloc(Vec2(50,50));
+    //_reynard = ReynardModel::alloc(Vec2(50,50));
     //TODO needs help
     //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
 

@@ -26,20 +26,20 @@ bool GridLoader::init(const string path) {
 
     // Initialize JsonValue ptr cache to hold num rows
     shared_ptr<JsonValue> row = json->get(0);
-    shared_ptr<vector<shared_ptr<JsonValue>>> rowvec;
+    shared_ptr<vector<shared_ptr<JsonValue>>> rowvec = make_shared<vector<shared_ptr<JsonValue>>>();
     rowvec->push_back(row);
     lookup->emplace(json->get(0)->key(), rowvec);
     
     // Initialize JsonValue ptr cache to hold num cols
     shared_ptr<JsonValue> col = json->get(1);
-    shared_ptr<vector<shared_ptr<JsonValue>>> colvec;
+    shared_ptr<vector<shared_ptr<JsonValue>>> colvec = make_shared<vector<shared_ptr<JsonValue>>>();;
     colvec->push_back(col);
     lookup->emplace(json->get(1)->key(), colvec);
     
     // Initialize JsonValue ptr cache to hold num cols
     shared_ptr<JsonValue> rooms = json->get(2);
     
-    shared_ptr<vector<shared_ptr<JsonValue>>> roomvec;
+    shared_ptr<vector<shared_ptr<JsonValue>>> roomvec = make_shared<vector<shared_ptr<JsonValue>>>();;
 
     // For each room in the JSON, store its geometry in the map with its name as the key
     for (int ii = 0; ii < rooms->size(); ii++) {
