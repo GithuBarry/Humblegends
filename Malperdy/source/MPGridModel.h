@@ -14,62 +14,160 @@
 
 #include <cugl/cugl.h>
 #include "MPRoomModel.h"
+#include "MPGridLoader.h"
 
 using namespace cugl;
 
-class GridModel {
-    float horizontal_gap_between_rooms;
-    float vertical_gap_between_rooms;
+class GridModel : public cugl::scene2::SceneNode
+{
+
+private:
+    // GRID LOADING
+    /** Loads in grid format  from a JSON and is used to look up roomIDs for rooms */
+    static shared_ptr<GridLoader> _gridLoader;
+
+    /** Horizontal gap between rooms in SCREEN SPACE  */
+    float _horizontal_gap;
+
+    /** Verticle gap between rooms in SCREEN SPACE  */
+    float _vertical_gap;
 
     /**
-     * Room length, in terms of pixels
+     * Size of the level (in units of number of rooms )
+     * _size[0] is the width, _size[1] is the height
      */
-    float room_size_x;
-    float room_size_y;
+    Vec2 _size = Vec2(3, 3);
 
-    /**
-     * (global_boundary_x, global_boundary_y)
-     * should be the global coordinate of the left down corner of the left down room when zoomed out
-     */
-    float global_boundary_x;
-    float global_boundary_y;
-
-    /**
-     * How many rooms on each row/col when zoomed out
-     */
-    int n_rooms_on_each_row;
-    int n_rooms_on_each_col;
-
-    float physics_scale;
+    float _physics_scale;
 
     /*
-     * Rooms, presumably rooms[0] -> left corner room, and room[4] is room above that in a 3x3 level.
-     * Implementer feel free to place them in order however you like. just document well enough for others.
-     * Feel free to use shared pointer
+     * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
+     */
+    vector<vector<shared_ptr<RoomModel>>> _grid;
+
+    // /** Rebuilds the geometry for all the rooms.
+    //  *
+    //  * Propogates the call down to each of the rooms.
+    //  **/
+    // void buildGeometry();
+
+    // /** Rebuilds the physics assets for all the rooms.
+    //  *
+    //  * Propogates the call down to each of the rooms.
+    //  **/
+    // void buildPhysicsGeometry();
+
+public:
+#pragma mark Constructors
+
+    /**
+     * Creates an empty grid model.
+     * @return an empty grid model
+     */
+    GridModel(){};
+
+    /**
+     * @return shared pointer to an empty grid model
+     */
+    static std::shared_ptr<GridModel> alloc()
+    {
+        std::shared_ptr<GridModel> result = std::make_shared<GridModel>();
+        return (result->init() ? result : nullptr);
+    }
+
+    /**
+     * Deafult init
+     * @param json - whether to use json loader or not
+     * @return a grid with 3x3 rooms, each room the default
+     */
+    bool init(bool json=false, float hgap = 0, float vgap = 0);
+
+    /**
+     * Init given size
+     * @param width
+     * @param height
+     * @return a grid with width x height rooms
      */
     // Vector<RoomModel> rooms;
 
-
-public:
-    //Constructor placeholder, presumably need all private fields (except rooms)
-    // and array of [array of paths (in a room)]
+    /**
+     *  Init given size and a room template
+     * @param width
+     * @param height
+     * @param room
+     * @return a grid with width x height rooms, is of the form specified by roomID
+     */
+    bool init(int width, int height, string roomID);
 
     /**
-     * @return all rooms, in a well-defined order
+     * {@note by Barry feature request}
+     * @param width
+     * @param height
+     * @param jsonPath
+     * @param vgap: minimal gaps between rooms
+     * @param hgap: minimal hotizal gaps between rooms
+     * @return
+     */
+    bool init(int width, int height, string jsonPath, int vgap, int hgap);
+
+#pragma mark Destructors
+    /**
+     * Destroys this grid, releasing all resources.
      */
     // RoomModel[] getRooms();
 
+    /**
+     * Disposes all resources and assets of this grid.
+     *
+     * Any assets owned by this object will be immediately released.  Once
+     * disposed, a room may not be used until it is initialized again.
+     */
+    void dispose();
 
+#pragma mark -
+#pragma mark Accessors
 
-    int getNRoomsOnEachRow() const {
-        return n_rooms_on_each_row;
+    /** Getter for grid width */
+    int getWidth() const
+    {
+        return _size.x;
     }
 
-    int getNRoomsOnEachCol() const {
-        return n_rooms_on_each_col;
+    /** Getter for grid height */
+    int getHeight() const
+    {
+        return _size.y;
     }
 
+    /** Returns a 1-D vector of all the rooms */
+    vector<shared_ptr<RoomModel>> getRooms();
 
+    /** Returns the row and colum of the room located at the given coordinates
+    * If there is no room at the given coordinates, returns null*/
+    Vec2 worldToRoomCoords(Vec2 coord);
+
+    /** Returns the ptr to the room located at the coordinate.
+     *
+     * If coord = (i,j), then this returns the room at the ith row from the bottom,
+     * jth column from the left */
+    shared_ptr<RoomModel> getRoom(Vec2 coord);
+
+    /** returns all the physics geometry in the grid
+     */
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsObjects();
+
+#pragma mark Setters
+
+    /** Sets the room located at the ith row from the bottom, jth column from the left  */
+    void setRoom(Vec2 coord, shared_ptr<RoomModel> room);
+
+    /** Swaps two rooms given two room coordinates.
+     * room = (i,j) meaning the room at row i, col j
+     * returns true if the swap occurs successfully, returns false if rooms cannot be swapped */
+    bool swapRooms(Vec2 room1, Vec2 room2);
+
+    /** Returns whether the rooms can be swapped or not */
+    bool canSwap(Vec2 room1, Vec2 room2);
 };
 
 #endif /* MPGridModel_h */

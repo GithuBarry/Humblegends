@@ -19,5 +19,16 @@ public:
      */
     GameStateController() {
     }
+
+    void zoom_in();
+
+    void zoom_out();
+
+    /**
+     * @param dt the actual time past
+     * @return the time for the physics simulation, based on the state of the game
+     */
+    float getScaledDtForPhysics(float dt);
+
 };
 #endif /* MPGameStateController_h */
