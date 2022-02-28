@@ -29,6 +29,7 @@
 #include <box2d/b2_world_callbacks.h>
 #include <vector>
 #include "MPReynardModel.h"
+#include "MPCharacterModel.h"
 #include "MPInput.h"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
@@ -78,6 +79,7 @@ protected:
     std::shared_ptr<ReynardModel> _reynard;
     std::shared_ptr<GridModel> _grid;
     std::shared_ptr<EnvController> _envController;
+    std::shared_ptr<GameStateController> _stateController;
 
     /** Whether we have completed this "game" */
     bool _complete;
