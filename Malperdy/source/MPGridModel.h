@@ -14,6 +14,7 @@
 
 #include <cugl/cugl.h>
 #include "MPRoomModel.h"
+#include "MPGridLoader.h"
 
 using namespace cugl;
 
@@ -21,6 +22,10 @@ class GridModel : public cugl::scene2::SceneNode
 {
 
 private:
+    // GRID LOADING
+    /** Loads in grid format  from a JSON and is used to look up roomIDs for rooms */
+    static shared_ptr<GridLoader> _gridLoader;
+    
     /** Horizontal gap between rooms in SCREEN SPACE  */
     float _horizontal_gap;
 
@@ -72,9 +77,10 @@ public:
 
     /**
      * Deafult init
+     * @param json - whether to use json loader or not
      * @return a grid with 3x3 rooms, each room the default
      */
-    bool init();
+    bool init(bool json=false, float hgap = 0, float vgap = 0);
 
     /**
      * Init given size

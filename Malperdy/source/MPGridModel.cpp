@@ -19,29 +19,57 @@
 
 using namespace cugl;
 
+/** Initialize RoomLoader for loading in rooms from a JSON */
+shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testlevel.json");
+
 #pragma mark Constructors
 
 /**
  * Deafult init
  * @return a grid with 3x3 rooms, each room the default
  */
-bool GridModel::init()
+bool GridModel::init(bool json, float hgap, float vgap)
 {
-  _horizontal_gap = 0;
-  _vertical_gap = 0;
+    _horizontal_gap = hgap;
+    _vertical_gap = vgap;
+    
+    if(!json){
+        _grid = vector<vector<shared_ptr<RoomModel>>>();
+        for (int i = 0; i < _size.y; i++)
+        {
+          _grid.push_back(vector<shared_ptr<RoomModel>>());
+          for (int j = 0; j < _size.x; j++)
+          {
+            _grid.at(i).push_back(make_shared<RoomModel>());
+            addChild(_grid.at(i).at(j));
+          }
+        }
 
-  _grid = vector<vector<shared_ptr<RoomModel>>>();
-  for (int i = 0; i < _size.y; i++)
-  {
-    _grid.push_back(vector<shared_ptr<RoomModel>>());
-    for (int j = 0; j < _size.x; j++)
-    {
-      _grid.at(i).push_back(make_shared<RoomModel>());
-      addChild(_grid.at(i).at(j));
+        return true;
     }
-  }
+    else{
+        shared_ptr<vector<shared_ptr<JsonValue>>> rooms = _gridLoader->getRoomData();
+        shared_ptr<JsonValue> rows = _gridLoader->getRows();
+        shared_ptr<JsonValue> cols = _gridLoader->getCols();
+        
+        _size = Vec2(cols->asInt(), rows->asInt());
+        
+        _grid = vector<vector<shared_ptr<RoomModel>>>();
+        for (int i = 0; i < _size.y; i++)
+        {
+          _grid.push_back(vector<shared_ptr<RoomModel>>());
+          for (int j = 0; j < _size.x; j++)
+          {
+            _grid.at(i).push_back(make_shared<RoomModel>());
+            _grid.at(i).at(j)->init(j,i, rooms->at(_size.y * i+j)->asString());
+            addChild(_grid.at(i).at(j));
+          }
+        }
+        
+        
+        return true;
+    }
 
-  return true;
 };
 
 /**
@@ -75,7 +103,8 @@ bool GridModel::init(int width, int height, string roomID)
     _grid.push_back(vector<shared_ptr<RoomModel>>());
     for (int j = 0; j < _size.x; j++)
     {
-      _grid.at(i).push_back(make_shared<RoomModel>(j, i, roomID));
+      _grid.at(i).push_back(make_shared<RoomModel>());
+        _grid.at(i).at(j)->init(j,i,roomID);
       addChild(_grid.at(i).at(j));
     }
   }
