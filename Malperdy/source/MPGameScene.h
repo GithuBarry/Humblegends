@@ -32,6 +32,8 @@
 #include "MPInput.h"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
+#include "MPGridModel.h"
+#include "MPEnvController.h"
 
 /**
  * This class is the primary gameplay constroller for the demo.
@@ -74,6 +76,8 @@ protected:
 
     /** Reference to the Reynard avatar */
     std::shared_ptr<ReynardModel> _reynard;
+    std::shared_ptr<GridModel> _grid;
+    std::shared_ptr<EnvController> _envController;
 
     /** Whether we have completed this "game" */
     bool _complete;

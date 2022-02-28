@@ -39,3 +39,4 @@ build-win10
 *.DS_Store
 Malperdy/build-apple/Malperdy.xcodeproj/project.xcworkspace/xcuserdata/*
 *.xcuserstate
+Malperdy/cugl/build-apple/box2d.xcodeproj/xcuserdata/barry.xcuserdatad/xcschemes/xcschememanagement.plist

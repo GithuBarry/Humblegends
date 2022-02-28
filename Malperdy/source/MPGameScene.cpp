@@ -182,15 +182,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
 
-//    _exitnode = scene2::Label::allocWithText("VICTORY!",_assets->get<Font>(PRIMARY_FONT));
-//	_exitnode->setAnchor(Vec2::ANCHOR_CENTER);
-//    _exitnode->setPosition(dimen/2.0f);
-//    _exitnode->setForeground(STATIC_COLOR);
-//    _exitnode->setVisible(false);
     
     addChild(_worldnode);
     addChild(_debugnode);
-//    addChild(_exitnode);
     
     populate();
     _active = true;
@@ -212,7 +206,6 @@ void GameScene::dispose() {
         _world = nullptr;
         _worldnode = nullptr;
         _debugnode = nullptr;
-        //_exitnode = nullptr;
         _complete = false;
         _debug = false;
         Scene2::dispose();
@@ -252,7 +245,7 @@ void GameScene::populate() {
 
 
 #pragma mark Models
-    //_reynard = make_shared<ReynardModel>(Vec2(50,50));
+    _reynard = ReynardModel::alloc(Vec2(50,50));
 
 
 
@@ -260,9 +253,11 @@ void GameScene::populate() {
     /////////////////////////////////////
     // DEBUG: add room to scene graph
     /////////////////////////////////////
-    shared_ptr<RoomModel> _room = RoomModel::alloc(50, 50, "leftrightup");
 
-    _worldnode->addChild(_room);
+    _grid = GridModel::alloc();
+    _grid->init(true,10,10);
+    _worldnode->addChild(_grid);
+
 
     /////////////////////////////////////
     // END DEBUG
@@ -390,20 +385,10 @@ void GameScene::update(float dt) {
         Vec2 end;
         start = _input.getSwipeStartEnd()[0];
         end = _input.getSwipeStartEnd()[1];
-
+        _envController->selectRoom(start);
+        _envController->swapWithSelected(end);
     }
 
-//    // Apply the force to the rocket
-//    _rocket->setFX(_input.getHorizontal() * _rocket->getThrust());
-//    _rocket->setFY(_input.getVertical() * _rocket->getThrust());
-//    _rocket->applyForce();
-//
-//    // Animate the three burners
-//    updateBurner(RocketModel::Burner::MAIN,  _rocket->getFY() >  1);
-//    updateBurner(RocketModel::Burner::LEFT,  _rocket->getFX() >  1);
-//    updateBurner(RocketModel::Burner::RIGHT, _rocket->getFX() <  -1);
-
-    // Turn the physics engine crank.
     // TODO: Implement https://gafferongames.com/post/fix_your_timestep/
     _world->update(dt);
 }
