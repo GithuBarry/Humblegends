@@ -45,7 +45,7 @@ bool GridModel::init(bool json, float hgap, float vgap)
           }
         }
 
-        return true;
+//        return true;
     }
     else{
         shared_ptr<vector<shared_ptr<JsonValue>>> rooms = _gridLoader->getRoomData();
@@ -61,15 +61,15 @@ bool GridModel::init(bool json, float hgap, float vgap)
           for (int j = 0; j < _size.x; j++)
           {
             _grid.at(i).push_back(make_shared<RoomModel>());
-            _grid.at(i).at(j)->init(j,i, rooms->at(_size.y * i+j)->asString());
+            _grid.at(i).at(j)->init(j*800,i*500, rooms->at(_size.y * i+j)->asString());
             addChild(_grid.at(i).at(j));
           }
         }
         
         
-        return true;
+//        return true;
     }
-
+    return this->scene2::SceneNode::init();
 };
 
 /**

@@ -64,7 +64,9 @@ public:
      * Creates an empty grid model.
      * @return an empty grid model
      */
-    GridModel(){};
+    GridModel(){
+        CULog("child Offset: %i", this->_childOffset);
+    };
 
     /**
      * @return shared pointer to an empty grid model
