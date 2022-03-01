@@ -24,12 +24,12 @@ public:
     }
 
 
-    /**
-     Return whether the game is currently zoomed in
-     */
-    bool zoomed_in(){
-        return zoomed_in;
-    }
+//    /**
+//     Return whether the game is currently zoomed in
+//     */
+//    bool zoomed_in(){
+//        return zoomed_in;
+//    }
 
     /**
      Set the game state to be [zoomed in]
@@ -57,12 +57,12 @@ public:
      * @return the time for the physics simulation, based on the state of the game
      */
     float getScaledDtForPhysics(float dt){
-        if (zoomed_in){
-            return dt;
-        } else{
-            return dt/SLOW_MO_SCALAR;
-        }
-
+//        if (zoomed_in){
+//            return dt;
+//        } else{
+//            return dt/SLOW_MO_SCALAR;
+//        }
+        return 1.0; 
     };
 
 };

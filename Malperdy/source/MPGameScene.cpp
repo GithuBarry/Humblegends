@@ -247,18 +247,32 @@ void GameScene::populate() {
     //TODO needs help
     //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
 
-    _grid = GridModel::alloc();
-    _grid->init(true,10,10);
-    _worldnode->addChild(_grid);
+    //    _grid = GridModel::alloc();
+    //    _grid->init(true,10,10);
+    //    _worldnode->addChild(_grid);
 
-    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects;
-    _grid->getPhysicsObjects();
-    
-    vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
-    vector<shared_ptr<physics2::PolygonObstacle>> physics_vec;
-    physics_vec = *physics_objects;
-    for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++){
-        _world->addObstacle(*ptr);
+
+    //    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
+    //    _grid->getPhysicsObjects();
+
+    //    physics_objects->push_back(_room->getPhysicsGeometry());
+
+    //    vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
+    //    vector<shared_ptr<physics2::PolygonObstacle>> physics_vec;
+    //    physics_vec = physics_objects;
+    //    for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++){
+    //        _world->addObstacle(ptr);
+    //    }
+
+    shared_ptr<RoomModel> _room = RoomModel::alloc(50,50,"leftright");
+    _worldnode->addChild(_room);
+
+
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
+    vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
+
+    for(itr = physics_objects->begin(); itr != physics_objects->end(); ++itr){
+        _world->addObstacle(*itr);
     }
 }
 
