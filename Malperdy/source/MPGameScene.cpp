@@ -34,6 +34,8 @@
 #include <sstream>
 
 using namespace cugl;
+using namespace std;
+
 
 
 #pragma mark -
@@ -352,6 +354,26 @@ void GameScene::update(float dt) {
             _world->addObstacle(*ptr);
         }
     }
+    if (_input.didDashLeft()){
+        cout<<"a"<<endl;
+    }
+    if (_input.didDashRight()){
+        cout<<"d"<<endl;
+    }
+    if (_input.didJump()){
+        cout<<"SPACE (Infinity & Beyond"<<endl;
+    }
+    if (_input.didZoomIn()){
+        cout<<"q"<<endl;
+    }
+    if (_input.didZoomOut()){
+        cout<<"e"<<endl;
+    }
+
+
+
+
+
 
     _world->update(_stateController->getScaledDtForPhysics(dt));
 }
