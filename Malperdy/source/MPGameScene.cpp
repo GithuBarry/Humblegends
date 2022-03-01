@@ -355,19 +355,19 @@ void GameScene::update(float dt) {
         }
     }
     if (_input.didDashLeft()){
-        cout<<"a"<<endl;
+
     }
     if (_input.didDashRight()){
-        cout<<"d"<<endl;
+
     }
     if (_input.didJump()){
-        cout<<"SPACE (Infinity & Beyond"<<endl;
+
     }
     if (_input.didZoomIn()){
-        cout<<"q"<<endl;
+
     }
     if (_input.didZoomOut()){
-        cout<<"e"<<endl;
+
     }
 
 
