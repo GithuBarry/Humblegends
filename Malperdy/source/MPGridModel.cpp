@@ -205,6 +205,8 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
 
   _grid.at(room1.x).at(room1.y) = _grid.at(room2.x).at(room2.y);
   _grid.at(room2.x).at(room2.y) = temp;
+    _grid.at(room1.x).at(room1.y)->setPosition(Vec2(720*room1.x,480*(_size.y-room1.y)));
+    _grid.at(room2.x).at(room2.y)->setPosition(Vec2(720*room2.x,480*(_size.y-room2.y)));
   return true;
 };
 

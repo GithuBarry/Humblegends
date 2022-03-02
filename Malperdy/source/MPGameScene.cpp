@@ -263,6 +263,7 @@ void GameScene::populate() {
     _grid->setScale(0.3);
     _grid->setPosition(100,-100);
     _grid->getPhysicsObjects();
+    _grid->swapRooms(Vec2(0,0), Vec2(1,1));
 
 
 
