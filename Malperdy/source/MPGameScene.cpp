@@ -161,16 +161,16 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect,gravity);
     _world->activateCollisionCallbacks(true);
-    _world->onBeginContact = [this](b2Contact* contact) {
-        beginContact(contact);
+    _world->onEndContact = [this](b2Contact* contact) {
+        endContact(contact);
     };
+    
     _world->beforeSolve = [this](b2Contact* contact, const b2Manifold* oldManifold) {
         beforeSolve(contact,oldManifold);
     };
 
     // IMPORTANT: SCALING MUST BE UNIFORM
-    // This means that we cannot change the aspect ratio of the physics world
-    // Shift to center if a bad fit
+    // This means that we cannot change the aspect ratio of the physics world. Shift to center if a bad fit
     _scale = dimen.width == SCENE_WIDTH ? dimen.width/rect.size.width : dimen.height/rect.size.height;
     Vec2 offset((dimen.width-SCENE_WIDTH)/2.0f,(dimen.height-SCENE_HEIGHT)/2.0f);
 
@@ -244,18 +244,12 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
-
+#pragma mark Reynard
+    //TODO waiting for Reynard Controller and ReynardModel
+    
     //_reynard = ReynardModel::alloc(Vec2(50,50));
-    //TODO needs help
     //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
-
-    //    _grid = GridModel::alloc();
-    //    _grid->init(true,10,10);
-    //    _worldnode->addChild(_grid);
-
-
-    //    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
-    //    _grid->getPhysicsObjects();
+    //_reynardController = ReynardController(_reynard)
 
 #pragma mark Rooms
     /////////////////////////////////////
@@ -381,33 +375,73 @@ void GameScene::update(float dt) {
 }
 
 
-
 /**
- * Processes the start of a collision
+ * Processes the end of a collision
  *
- * This method is called when we first get a collision between two objects.  We use
+ * This method is called when we after get a collision between two objects.  We use
  * this method to test if it is the "right" kind of collision.  In particular, we
- * use it to test if we make it to the win door.
+ * use it to test if we need to turn around reynard.
+ *
+ * To do that , we check if reynard was given force that has a horizontal component opposite to its
+ * horizontal velocity.
  *
  * @param  contact  The two bodies that collided
  */
-void GameScene::beginContact(b2Contact* contact) {
-    b2Body* body1 = contact->GetFixtureA()->GetBody();
-    b2Body* body2 = contact->GetFixtureB()->GetBody();
+void GameScene::endContact(b2Contact* contact) {
+        b2Body* body1 = contact->GetFixtureA()->GetBody();
+        b2Body* body2 = contact->GetFixtureB()->GetBody();
+        b2Body* wall;
+        // If we hit the "win" door, we are done
+        intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
+    
+        if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
+            if (body1->GetUserData().pointer == rptr){
+                wall = body2;
+            }else{
+                wall = body1;
+            }
+            b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
+            int last_idx = contact->GetManifold()->pointCount-1;
+            b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
+            if (first_collision.x == last_collision.x){
+                //_reynardController->switchDirection; //TODO waiting for Spencer
+            }
+    
+        }
 
-//    if (body1 == _reynard or body2 == _reynard){
+}
+
+///**
+// * Processes the start of a collision
+// *
+// * This method is called when we first get a collision between two objects.  We use
+// * this method to test if it is the "right" kind of collision.  In particular, we
+// * use it to test if we make it to the win door.
+// *
+// * @param  contact  The two bodies that collided
+// */
+//void GameScene::beginContact(b2Contact* contact) {
+//    b2Body* body1 = contact->GetFixtureA()->GetBody();
+//    b2Body* body2 = contact->GetFixtureB()->GetBody();
+//    b2Body* wall;
+//    // If we hit the "win" door, we are done
+//    intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
+//
+//    if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
+//        if (body1->GetUserData().pointer == rptr){
+//            wall = body2;
+//        }else{
+//            wall = body1;
+//        }
+//        b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
+//        int last_idx = contact->GetManifold()->pointCount-1;
+//        b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
+//        b2Vec2 wall_pos_bl = wall->GetPosition(); //bottom left point of the obstacle
+//        b2Vec2 wall_pos_ur = wall->GetPosition(); //
 //
 //    }
-
-    // If we hit the "win" door, we are done
-//    intptr_t rptr = reinterpret_cast<intptr_t>(_rocket.get());
-//    intptr_t dptr = reinterpret_cast<intptr_t>(_goalDoor.get());
-
-//    if((body1->GetUserData().pointer == rptr && body2->GetUserData().pointer == dptr) ||
-//       (body1->GetUserData().pointer == dptr && body2->GetUserData().pointer == rptr)) {
-//        setComplete(true);
-//    }
-}
+//
+//}
 
 /**
  * Handles any modifications necessary before collision resolution
