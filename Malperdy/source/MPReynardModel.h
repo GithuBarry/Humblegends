@@ -379,7 +379,7 @@ public:
      */
     virtual void setPosition(const Vec2 value) override {
         SimpleObstacle::setPosition(value);
-        _node->setPosition(value* _drawScale);
+        _node->setPosition(value * _drawScale);
     }
 
 

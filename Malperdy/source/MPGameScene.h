@@ -82,7 +82,7 @@ protected:
     //    std::shared_ptr<ReynardController> _reynardController; //TODO waiting for ReynardController
     std::shared_ptr<GridModel> _grid;
     std::shared_ptr<EnvController> _envController;
-    std::shared_ptr<GameStateController> _stateController;
+    std::shared_ptr<GameStateController> _stateController = make_shared<GameStateController>();
 
 
     /** Whether we have completed this "game" */
