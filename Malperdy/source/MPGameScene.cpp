@@ -52,7 +52,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -4.9f
+#define DEFAULT_GRAVITY -9.8f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -283,7 +283,7 @@ void GameScene::populate() {
     }
 
 #pragma mark Reynard
-    Vec2 reyPos = REYNARD_POS;
+    Vec2 reyPos = Vec2(3, 9);
     // Create image for Reynard
     std::shared_ptr<Texture> image;
     image = _assets->get<Texture>("rocket");

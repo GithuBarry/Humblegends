@@ -52,8 +52,6 @@
 #pragma mark Physics Constants
 /** Cooldown (in animation frames) for jumping */
 #define JUMP_COOLDOWN   5
-/** Cooldown (in animation frames) for shooting */
-#define SHOOT_COOLDOWN  20
 /** The amount to shrink the body fixture (vertically) relative to the image */
 #define DUDE_VSHRINK  0.95f
 /** The amount to shrink the body fixture (horizontally) relative to the image */
@@ -99,15 +97,13 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
     if (BoxObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);
         setFriction(0.0f);      // HE WILL STICK TO WALLS IF YOU FORGET
-        setFixedRotation(true); // OTHERWISE, HE IS A WEEBLE WOBBLE
+        setFixedRotation(true); // To ensure it will not rotate
 
         // Gameplay attributes
         _isGrounded = false;
-        _isShooting = false;
         _isJumping  = false;
         _faceRight  = true;
         
-        _shootCooldown = 0;
         _jumpCooldown  = 0;
         _drawScale = drawScale;
         return true;
@@ -127,6 +123,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
  * @param value left/right movement of this character.
  */
 void ReynardModel::setMovement(float value) {
+    CULog("MOVE");
     _movement = value;
     bool face = _movement > 0;
     if (_movement == 0 || _faceRight == face) {
@@ -148,7 +145,7 @@ void ReynardModel::setMovement(float value) {
  * Create new fixtures for this body, defining the shape
  *
  * This is the primary method to override for custom physics objects
- */
+ *
 void ReynardModel::createFixtures() {
     if (_body == nullptr) {
         return;
@@ -176,13 +173,13 @@ void ReynardModel::createFixtures() {
     sensorDef.shape = &sensorShape;
     sensorDef.userData.pointer = reinterpret_cast<uintptr_t>(getSensorName());
     _sensorFixture = _body->CreateFixture(&sensorDef);
-}
+}*/
 
 /**
  * Release the fixtures for this body, reseting the shape
  *
  * This is the primary method to override for custom physics objects.
- */
+ *
 void ReynardModel::releaseFixtures() {
     if (_body != nullptr) {
         return;
@@ -193,7 +190,7 @@ void ReynardModel::releaseFixtures() {
         _body->DestroyFixture(_sensorFixture);
         _sensorFixture = nullptr;
     }
-}
+}*/
 
 /**
  * Disposes all resources and assets of this DudeModel
@@ -210,7 +207,7 @@ void ReynardModel::dispose() {
  * Applies the force to the body of this dude
  *
  * This method should be called after the force attribute is set.
- */
+ *
 void ReynardModel::applyForce() {
     if (!isEnabled()) {
         return;
@@ -243,7 +240,7 @@ void ReynardModel::applyForce() {
         b2Vec2 force(0, DUDE_JUMP);
         _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
     }
-}
+}*/
 
 /**
  * Updates the object's physics state (NOT GAME LOGIC).
@@ -261,13 +258,10 @@ void ReynardModel::update(float dt) {
         _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
     }
     
-    if (isShooting()) {
-        _shootCooldown = SHOOT_COOLDOWN;
-    } else {
-        _shootCooldown = (_shootCooldown > 0 ? _shootCooldown-1 : 0);
-    }
-    
-    BoxObstacle::update(dt);
+    //BoxObstacle::update(dt);
+
+    //CULog("Position: %f, %f", getPosition().x, getPosition().y);
+    //CULog("Scaled Position: %f, %f", getPosition().x*_drawScale, getPosition().y*_drawScale);
     
     if (_node != nullptr) {
         _node->setPosition(getPosition()*_drawScale);

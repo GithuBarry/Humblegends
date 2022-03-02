@@ -92,12 +92,8 @@ protected:
     int _jumpCooldown;
     /** Whether we are actively jumping */
     bool _isJumping;
-    /** How long until we can shoot again */
-    int _shootCooldown;
     /** Whether our feet are on the ground */
     bool _isGrounded;
-    /** Whether we are actively shooting */
-    bool _isShooting;
     /** Ground sensor to represent our feet */
     b2Fixture *_sensorFixture;
     /** Reference to the sensor name (since a constant cannot have a pointer) */
@@ -264,24 +260,6 @@ public:
     void setMovement(float value);
 
     /**
-     * Returns true if the dude is actively firing.
-     *
-     * @return true if the dude is actively firing.
-     */
-    bool isShooting() const {
-        return _isShooting && _shootCooldown <= 0;
-    }
-
-    /**
-     * Sets whether the dude is actively firing.
-     *
-     * @param value whether the dude is actively firing.
-     */
-    void setShooting(bool value) {
-        _isShooting = value;
-    }
-
-    /**
      * Returns true if the dude is actively jumping.
      *
      * @return true if the dude is actively jumping.
@@ -378,6 +356,7 @@ public:
      * @param value  the current position for this physics body
      */
     virtual void setPosition(const Vec2 value) override {
+        CULog("CALLED");
         SimpleObstacle::setPosition(value);
         _node->setPosition(value * _drawScale);
     }
@@ -394,15 +373,15 @@ public:
      * @param world Box2D world to store body
      *
      * @return true if object allocation succeeded
-     */
+     *
     void createFixtures() override;
 
     /**
      * Release the fixtures for this body, reseting the shape
      *
      * This is the primary method to override for custom physics objects.
-     */
-    void releaseFixtures() override;
+     *
+    void releaseFixtures() override;*/
 
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
