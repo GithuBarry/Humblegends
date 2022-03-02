@@ -73,7 +73,7 @@ using namespace std;
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
 
-float REYNARD_POS[] = { 20.0f, 10.0f};
+float REYNARD_POS[] = { 30, 10 };
 
 #pragma mark Physics Constants
 
@@ -109,7 +109,7 @@ _debug(false)
  * @return true if the controller is initialized properly, false otherwise.
  */
 bool GameScene::init(const std::shared_ptr<AssetManager>& assets) {
-    return init(assets,Rect(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT),Vec2(0,DEFAULT_GRAVITY));
+    return init(assets, Rect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT), Vec2(0, DEFAULT_GRAVITY));
 }
 
 /**
@@ -129,7 +129,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets) {
  * @return  true if the controller is initialized properly, false otherwise.
  */
 bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rect) {
-    return init(assets,rect,Vec2(0,DEFAULT_GRAVITY));
+    return init(assets, rect, Vec2(0, DEFAULT_GRAVITY));
 }
 
 /**
@@ -154,7 +154,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
 
     if (assets == nullptr) {
         return false;
-    } else if (!Scene2::init(dimen)) {
+    }
+    else if (!Scene2::init(dimen)) {
         return false;
     }
 
@@ -163,20 +164,20 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _input.init();
 
     // Create the world and attach the listeners.
-    _world = physics2::ObstacleWorld::alloc(rect,gravity);
+    _world = physics2::ObstacleWorld::alloc(rect, gravity);
     _world->activateCollisionCallbacks(true);
     _world->onEndContact = [this](b2Contact* contact) {
         endContact(contact);
     };
-    
+
     _world->beforeSolve = [this](b2Contact* contact, const b2Manifold* oldManifold) {
-        beforeSolve(contact,oldManifold);
+        beforeSolve(contact, oldManifold);
     };
 
     // IMPORTANT: SCALING MUST BE UNIFORM
     // This means that we cannot change the aspect ratio of the physics world. Shift to center if a bad fit
-    _scale = dimen.width == SCENE_WIDTH ? dimen.width/rect.size.width : dimen.height/rect.size.height;
-    Vec2 offset((dimen.width-SCENE_WIDTH)/2.0f,(dimen.height-SCENE_HEIGHT)/2.0f);
+    _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
+    Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f);
 
     // Create the scene graph
     _worldnode = scene2::SceneNode::alloc();
@@ -195,7 +196,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     populate();
     _active = true;
     _complete = false;
-    setDebug(false);
+    setDebug(true);
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::CORNFLOWER);
@@ -249,20 +250,8 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
-#pragma mark Reynard
-    Vec2 reyPos = REYNARD_POS;
-    std::shared_ptr<Texture> image;
-    std::shared_ptr<scene2::PolygonNode> sprite;
-    image = _assets->get<Texture>("rocket");
-    _reynard = ReynardModel::alloc(reyPos,image->getSize()/_scale);
-    sprite = scene2::PolygonNode::allocWithTexture(image);
-    _reynard->setSceneNode(sprite);
-    addObstacle(_reynard,sprite); // Put this at the very front
-
-  
-
     //TODO waiting for Reynard Controller and ReynardModel
-    
+
     //_reynard = ReynardModel::alloc(Vec2(50,50));
     //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
     //_reynardController = ReynardController(_reynard)
@@ -272,26 +261,39 @@ void GameScene::populate() {
     /////////////////////////////////////
     // DEBUG: add room to scene graph
     /////////////////////////////////////
-    shared_ptr<GridModel> _grid = make_shared<GridModel>();
+    /*shared_ptr<GridModel> _grid = make_shared<GridModel>();
     _grid->init(true, 10, 10);
-    //shared_ptr<RoomModel> _room = RoomModel::alloc(50, 50, "leftrightup");
 
     _worldnode->addChild(_grid);
-    _grid->setScale(0.3);
-    _grid->setPosition(100,-100);
+    _grid->setScale(0.5);
+    _grid->setPosition(-100,-100);
     _grid->getPhysicsObjects();
-    _grid->swapRooms(Vec2(0,0), Vec2(1,1));
+    _grid->swapRooms(Vec2(0,0), Vec2(1,1));*/
 
+    shared_ptr<RoomModel> _room = RoomModel::alloc(0, 0, "leftrightup");
+    _worldnode->addChild(_room);
 
-
-
-    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
+    //shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
 
     vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
 
-    for(itr = physics_objects->begin(); itr != physics_objects->end(); ++itr){
+    for (itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
     }
+
+#pragma mark Reynard
+    Vec2 reyPos = REYNARD_POS;
+    // Create image for Reynard
+    std::shared_ptr<Texture> image;
+    image = _assets->get<Texture>("rocket");
+    // Create sprite for Reynard from texture
+    std::shared_ptr<scene2::SpriteNode> sprite;
+    sprite = scene2::SpriteNode::alloc(image, 1, 1);
+    // Create a model for Reynard based on his image texture
+    _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
+    _reynard->setSceneNode(sprite);
+    addObstacle(_reynard, sprite); // Put this at the very front
 }
 
 
@@ -307,21 +309,21 @@ void GameScene::populate() {
  * param node   The scene graph node to attach it to
  */
 void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle>& obj,
-                            const std::shared_ptr<scene2::SceneNode>& node) {
+    const std::shared_ptr<scene2::SceneNode>& node) {
     _world->addObstacle(obj);
     obj->setDebugScene(_debugnode);
 
     // Position the scene graph node (enough for static objects)
-    node->setPosition(obj->getPosition()*_scale);
+    node->setPosition(obj->getPosition() * _scale);
     _worldnode->addChild(node);
 
     // Dynamic objects need constant updating
     if (obj->getBodyType() == b2_dynamicBody) {
         scene2::SceneNode* weak = node.get(); // No need for smart pointer in callback
-        obj->setListener([=](physics2::Obstacle* obs){
-            weak->setPosition(obs->getPosition()*_scale);
+        obj->setListener([=](physics2::Obstacle* obs) {
+            weak->setPosition(obs->getPosition() * _scale);
             weak->setAngle(obs->getAngle());
-        });
+            });
     }
 }
 
@@ -347,41 +349,15 @@ void GameScene::update(float dt) {
         setDebug(!isDebug());
 
     }
+    // Reset Process toggled by key command
     if (_input.didReset()) { reset(); }
-    if (_input.didExit())  {
+    // Exit Process toggled by key command
+    if (_input.didExit()) {
         CULog("Shutting down");
         Application::get()->quit();
     }
-    if (_input.didPress()) {
-        //TODO: check if reynard is in the room before selecting or swapping
-        //TODO: debug the commented code below
-        /*CULog("did press");
-        bool hasSwapped = false;
-        if (_envController->hasSelected()) {
-            CULog("Trying to select a room");
-            bool check = _envController->swapWithSelected(_input.getPosition());
-            if (check) CULog("Selected a room successfully");
-        }
-        else {
-            hasSwapped = _envController->selectRoom(_input.getPosition());
-            if (hasSwapped) CULog("Swapped rooms successfully");
-        }*/
-        //TODO: test code below once above chunk has been debugged
-        /*if (hasSwapped) {
-            _world->clear();
-
-            shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects;
-            physics_objects = _grid->getPhysicsObjects();
-            vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
-            vector<shared_ptr<physics2::PolygonObstacle>> physics_vec;
-            physics_vec = *physics_objects;
-            for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++) {
-                _world->addObstacle(*ptr);
-            }
-        }*/
-    }
-    //TODO: delete once code above has been debugged
-    /*if (_input.didEndSwipe()) {
+    // Swipe command toggled by key command
+    if (_input.didEndSwipe()) {
         Vec2 start;
         Vec2 end;
         start = _input.getSwipeStartEnd()[0];
@@ -389,35 +365,31 @@ void GameScene::update(float dt) {
         _envController->selectRoom(start);
         _envController->swapWithSelected(end);
         _world->clear();
-        
+
         shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects;
         physics_objects = _grid->getPhysicsObjects();
         vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
         vector<shared_ptr<physics2::PolygonObstacle>> physics_vec;
         physics_vec = *physics_objects;
-        for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++){
+        for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++) {
             _world->addObstacle(*ptr);
         }
-    }*/
-    if (_input.didDashLeft()){
+    }
+    if (_input.didDashLeft()) {
 
     }
-    if (_input.didDashRight()){
+    if (_input.didDashRight()) {
 
     }
-    if (_input.didJump()){
+    if (_input.didJump()) {
 
     }
-    if (_input.didZoomIn()){
+    if (_input.didZoomIn()) {
 
     }
-    if (_input.didZoomOut()){
+    if (_input.didZoomOut()) {
 
     }
-
-
-
-
 
 
     _world->update(_stateController->getScaledDtForPhysics(dt));
@@ -436,26 +408,27 @@ void GameScene::update(float dt) {
  * @param  contact  The two bodies that collided
  */
 void GameScene::endContact(b2Contact* contact) {
-        b2Body* body1 = contact->GetFixtureA()->GetBody();
-        b2Body* body2 = contact->GetFixtureB()->GetBody();
-        b2Body* wall;
-        // If we hit the "win" door, we are done
-        intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
-    
-        if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
-            if (body1->GetUserData().pointer == rptr){
-                wall = body2;
-            }else{
-                wall = body1;
-            }
-            b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
-            int last_idx = contact->GetManifold()->pointCount-1;
-            b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
-            if (first_collision.x == last_collision.x){
-                //_reynardController->switchDirection; //TODO waiting for Spencer
-            }
-    
+    b2Body* body1 = contact->GetFixtureA()->GetBody();
+    b2Body* body2 = contact->GetFixtureB()->GetBody();
+    b2Body* wall;
+    // If we hit the "win" door, we are done
+    intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
+
+    if (body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
+        if (body1->GetUserData().pointer == rptr) {
+            wall = body2;
         }
+        else {
+            wall = body1;
+        }
+        b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
+        int last_idx = contact->GetManifold()->pointCount - 1;
+        b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
+        if (first_collision.x == last_collision.x) {
+            //_reynardController->switchDirection; //TODO waiting for Spencer
+        }
+
+    }
 
 }
 
@@ -511,13 +484,13 @@ void GameScene::beforeSolve(b2Contact* contact, const b2Manifold* oldManifold) {
     contact->GetWorldManifold(&worldManifold);
     b2PointState state1[2], state2[2];
     b2GetPointStates(state1, state2, oldManifold, contact->GetManifold());
-    for(int ii =0; ii < 2; ii++) {
+    for (int ii = 0; ii < 2; ii++) {
         if (state2[ii] == b2_addState) {
             b2Vec2 wp = worldManifold.points[0];
             b2Vec2 v1 = body1->GetLinearVelocityFromWorldPoint(wp);
             b2Vec2 v2 = body2->GetLinearVelocityFromWorldPoint(wp);
-            b2Vec2 dv = v1-v2;
-            speed = b2Dot(dv,worldManifold.normal);
+            b2Vec2 dv = v1 - v2;
+            speed = b2Dot(dv, worldManifold.normal);
         }
     }
 
@@ -531,12 +504,13 @@ void GameScene::beforeSolve(b2Contact* contact, const b2Manifold* oldManifold) {
  */
 Size GameScene::computeActiveSize() const {
     Size dimen = Application::get()->getDisplaySize();
-    float ratio1 = dimen.width/dimen.height;
-    float ratio2 = ((float)SCENE_WIDTH)/((float)SCENE_HEIGHT);
+    float ratio1 = dimen.width / dimen.height;
+    float ratio2 = ((float)SCENE_WIDTH) / ((float)SCENE_HEIGHT);
     if (ratio1 < ratio2) {
-        dimen *= SCENE_WIDTH/dimen.width;
-    } else {
-        dimen *= SCENE_HEIGHT/dimen.height;
+        dimen *= SCENE_WIDTH / dimen.width;
+    }
+    else {
+        dimen *= SCENE_HEIGHT / dimen.height;
     }
     return dimen;
 }
@@ -547,6 +521,6 @@ Size GameScene::computeActiveSize() const {
  * @param batch The SpriteBatch to draw with.
 
  */
-void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
+void GameScene::render(const std::shared_ptr<SpriteBatch>& batch) {
     Scene2::render(batch);
 }
