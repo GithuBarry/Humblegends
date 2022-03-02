@@ -10,6 +10,9 @@
 //  Contributors: Spencer Hurst, Jordan Selin
 //  Version: 3/01/2022
 //
+// Later Edited by Spencer Hurst on 2/25/22.
+// Copyright (c) 2022 Humblegends. All rights reserved.
+//
 #ifndef __MP_INPUT_H__
 #define __MP_INPUT_H__
 #include <cugl/cugl.h>

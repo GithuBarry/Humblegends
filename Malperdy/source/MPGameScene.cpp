@@ -73,6 +73,8 @@ using namespace std;
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
 
+float REYNARD_POS[] = { 30, 10};
+
 #pragma mark Physics Constants
 
 
@@ -166,7 +168,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _world->onEndContact = [this](b2Contact* contact) {
         endContact(contact);
     };
-    
+
     _world->beforeSolve = [this](b2Contact* contact, const b2Manifold* oldManifold) {
         beforeSolve(contact,oldManifold);
     };
@@ -246,12 +248,19 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
-#pragma mark Reynard
-    //TODO waiting for Reynard Controller and ReynardModel
-    
-    //_reynard = ReynardModel::alloc(Vec2(50,50));
-    //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
-    //_reynardController = ReynardController(_reynard)
+
+    Vec2 reyPos = REYNARD_POS;
+    std::shared_ptr<Texture> image;
+    std::shared_ptr<scene2::PolygonNode> sprite;
+    image = _assets->get<Texture>("rocket");
+    _reynard = ReynardModel::alloc(reyPos,image->getSize()/_scale);
+    sprite = scene2::PolygonNode::allocWithTexture(image);
+    _reynard->setSceneNode(sprite);
+    addObstacle(_reynard,sprite); // Put this at the very front
+
+
+
+    //TODO needs help
 
 #pragma mark Rooms
     /////////////////////////////////////
@@ -269,7 +278,7 @@ void GameScene::populate() {
 
 
 
-    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
     vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
 
     for(itr = physics_objects->begin(); itr != physics_objects->end(); ++itr){
@@ -330,41 +339,15 @@ void GameScene::update(float dt) {
         setDebug(!isDebug());
 
     }
+    // Reset Process toggled by key command
     if (_input.didReset()) { reset(); }
+    // Exit Process toggled by key command
     if (_input.didExit())  {
         CULog("Shutting down");
         Application::get()->quit();
     }
-    if (_input.didPress()) {
-        //TODO: check if reynard is in the room before selecting or swapping
-        //TODO: debug the commented code below
-        /*CULog("did press");
-        bool hasSwapped = false;
-        if (_envController->hasSelected()) {
-            CULog("Trying to select a room");
-            bool check = _envController->swapWithSelected(_input.getPosition());
-            if (check) CULog("Selected a room successfully");
-        }
-        else {
-            hasSwapped = _envController->selectRoom(_input.getPosition());
-            if (hasSwapped) CULog("Swapped rooms successfully");
-        }*/
-        //TODO: test code below once above chunk has been debugged
-        /*if (hasSwapped) {
-            _world->clear();
-
-            shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects;
-            physics_objects = _grid->getPhysicsObjects();
-            vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
-            vector<shared_ptr<physics2::PolygonObstacle>> physics_vec;
-            physics_vec = *physics_objects;
-            for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++) {
-                _world->addObstacle(*ptr);
-            }
-        }*/
-    }
-    //TODO: delete once code above has been debugged
-    /*if (_input.didEndSwipe()) {
+    // Swipe command toggled by key command
+    if (_input.didEndSwipe()){
         Vec2 start;
         Vec2 end;
         start = _input.getSwipeStartEnd()[0];
@@ -372,7 +355,7 @@ void GameScene::update(float dt) {
         _envController->selectRoom(start);
         _envController->swapWithSelected(end);
         _world->clear();
-        
+
         shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects;
         physics_objects = _grid->getPhysicsObjects();
         vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
@@ -399,10 +382,6 @@ void GameScene::update(float dt) {
     }
 
 
-
-
-
-
     _world->update(_stateController->getScaledDtForPhysics(dt));
 }
 
@@ -424,7 +403,7 @@ void GameScene::endContact(b2Contact* contact) {
         b2Body* wall;
         // If we hit the "win" door, we are done
         intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
-    
+
         if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
             if (body1->GetUserData().pointer == rptr){
                 wall = body2;
@@ -437,7 +416,7 @@ void GameScene::endContact(b2Contact* contact) {
             if (first_collision.x == last_collision.x){
                 //_reynardController->switchDirection; //TODO waiting for Spencer
             }
-    
+
         }
 
 }
