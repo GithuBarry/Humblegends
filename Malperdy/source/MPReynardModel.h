@@ -41,7 +41,6 @@ protected:
     enum class ReynardState : int{
         SPAWN,
         MOVING,
-        /** Form of moving when game is zoomed out */
         SLOWMOVING, 
         DASHING,
         JUMPING,
@@ -51,10 +50,12 @@ protected:
     ReynardState _currentState;
     /** Bool representing if Reynard is currently jumping */ 
     bool _isJumping; 
-    /** How long till Reynard can hump again */ 
-    float _jumpCooldown;
-    /** Bool representing if Reyanrd is current dashing */ 
-    bool _isDashing; 
+    /** How long until we can jump again */
+    int  _jumpCooldown;
+    /** Bool representing if Reyanrd is current dashing */
+    bool _isDashing;
+    /** How long until we can dash again */
+    int  _dashCooldown;
     /** The scene graph node for Reynard. */
     std::shared_ptr<cugl::scene2::SceneNode> _reyardNode;
 
@@ -126,10 +127,16 @@ public:
     void setCurrentState(const ReynardState cS) { _currentState = cS; }
 
     /**
+     * Returns true if the dude is actively jumping.
+     *
+     * @return true if the dude is actively jumping.
      */
-    bool getIsJumping() const { return _isJumping; }
-
+    bool isJumping() const { return _isJumping && _jumpCooldown <= 0; }
+    
     /**
+     * Sets whether the dude is actively jumping.
+     *
+     * @param value whether the dude is actively jumping.
      */
     void setJumping(bool value) { _isJumping = value; }
 
@@ -151,30 +158,43 @@ public:
 
 #pragma mark -
 #pragma mark Physics
+ 
     /**
-     * Applies jump action to Reynard
+     * Creates the physics Body(s) for this object, adding them to the world.
+     *
+     * This method overrides the base method to keep your ship from spinning.
+     *
+     * @param world Box2D world to store body
+     *
+     * @return true if object allocation succeeded
      */
-    void applyJump();
-
+    void createFixtures() override;
+    
     /**
-     * Applies dash action to Reynard
+     * Release the fixtures for this body, reseting the shape
+     *
+     * This is the primary method to override for custom physics objects.
      */
-    void applyDash();
+    void releaseFixtures() override;
 
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
      *
-     * This method is called AFTER the collision resolution state. Therefore, it
-     * should not be used to process actions or any other gameplay information.
-     * Its primary purpose is to adjust changes to the fixture, which have to
-     * take place after collision.
+     * We use this method to reset cooldowns.
      *
-     * In other words, this is the method that updates the scene graph.  If you
-     * forget to call it, it will not draw your changes.
-     *
-     * @param delta Timing values from parent loop
+     * @param delta Number of seconds since last animation frame
      */
     virtual void update(float delta) override;
+    
+    /**
+     * Applies the force to the body of this dude
+     *
+     * This method should be called after the force attribute is set.
+     */
+    void applyForce();
+
+    
+    
     };
 
 
