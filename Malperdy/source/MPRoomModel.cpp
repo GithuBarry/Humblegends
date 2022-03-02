@@ -68,6 +68,8 @@ void RoomModel::buildGeometry(string roomID) {
 
 	// Initialize vector of physics objects for the room
 	_physicsGeometry = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
+	// Initialize vector of polygons for the room
+	_geometry = make_shared<vector<Poly2>>();
 
 	// Initialize Path and EarclipTriangulator variables to generate polygon
 	Path2 path;
@@ -91,6 +93,7 @@ void RoomModel::buildGeometry(string roomID) {
 		polyNode->setAnchor(0, 0);
 		polyNode->setPosition(path.getBounds().origin);
 		addChild(polyNode);
+		_geometry->push_back(et.getPolygon());
 
 		// Generate PolygonObstacle and set the corresponding properties for level geometry
 		shared_ptr<physics2::PolygonObstacle> physPoly = physics2::PolygonObstacle::alloc(et.getPolygon(), Vec2::ZERO);
@@ -143,3 +146,5 @@ void RoomModel::dispose() {
 	removeAllChildren();
 	_physicsGeometry = nullptr;
 }
+
+//void RoomModel::draw() {}

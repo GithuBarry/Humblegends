@@ -95,11 +95,13 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size) {
+bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float drawScale) {
     Size nsize = size;
     nsize.width  *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
-    _drawScale = 1;
+    _drawScale = drawScale;
+
+    _position = pos;
 
     if (BoxObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);
@@ -114,7 +116,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size) {
 //        TODO: Prevent an issue here about spawning him on the left side of rooms by including a part in the init function maybe
 //        Specifically for moments where we come from the left side of a room to go to the right.
         _faceRight  = true;
-
+        
         _jumpCooldown  = 0;
         _dashCooldown  = 0;
         return true;
@@ -134,6 +136,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size) {
  * @param value left/right movement of this character.
  */
 void ReynardModel::setMovement(float value) {
+    CULog("MOVE");
     _movement = value;
     bool face = _movement > 0;
     if (_movement == 0 || _faceRight == face) {
@@ -289,6 +292,10 @@ void ReynardModel::update(float dt) {
         _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
         
     }
+
+    //CULog("Position: %f, %f", getPosition().x, getPosition().y);
+    //CULog("Scaled Position: %f, %f", getPosition().x*_drawScale, getPosition().y*_drawScale);
+    
     if (isDashing()) {
         _dashCooldown = DASH_COOLDOWN;
     } else {
@@ -297,7 +304,6 @@ void ReynardModel::update(float dt) {
     }
 
 
-//GOOD BELOW
     BoxObstacle::update(dt);
 
     if (_node != nullptr) {
