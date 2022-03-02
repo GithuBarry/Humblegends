@@ -52,7 +52,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -9.8f
+#define DEFAULT_GRAVITY -1000.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -266,7 +266,7 @@ void GameScene::populate() {
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.5);
-    _grid->setPosition(-100,-100);
+    _grid->setPosition(0,-240);
     _grid->getPhysicsObjects();
     _grid->swapRooms(Vec2(0,0), Vec2(1,1));
 
@@ -280,6 +280,7 @@ void GameScene::populate() {
 
     for (itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
+        CULog("CENTROID 2: %f, %f", (*itr)->getCentroid().x, (*itr)->getCentroid().y);
     }
     
 
@@ -298,10 +299,10 @@ void GameScene::populate() {
     
     CULog("reynard position is:  %f,%f", _reynard->getPosition().x, _reynard->getPosition().y);
     
-    PolyFactory pf;
+    /*PolyFactory pf;
     shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
     po->init(pf.makeNgon(Vec2(3,3), 2, 4));
-    _world->addObstacle(po);
+    _world->addObstacle(po);*/
     
 }
 

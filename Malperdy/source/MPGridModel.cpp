@@ -250,12 +250,14 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
                 
                 Poly2 poly = p->getPolygon();
                 poly += offset;
-                poly = convertToScreen(poly);
-                poly /= _physics_scale;
+                Poly2 poly2 = convertToScreen(poly);
+                poly2 /= _physics_scale;
 
-                shared_ptr<physics2::PolygonObstacle> obstacleCopy = physics2::PolygonObstacle::alloc(poly, Vec2::ZERO);
+                shared_ptr<physics2::PolygonObstacle> obstacleCopy = physics2::PolygonObstacle::allocWithAnchor(poly2, Vec2::ANCHOR_CENTER);
                 obstacleCopy->setBodyType(b2_staticBody);
                 obstacles->push_back(obstacleCopy);
+
+                CULog("CENTROID 1: %f, %f", obstacleCopy->getCentroid().x, obstacleCopy->getCentroid().y);
             }
             c++;
         }
