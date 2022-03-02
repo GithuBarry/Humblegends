@@ -245,9 +245,9 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
-    //_reynard = ReynardModel::alloc(Vec2(50,50));
+    _reynard = ReynardModel::alloc(Vec2(10,10));
     //TODO needs help
-    //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
+    addObstacle((const shared_ptr<physics2::BoxObstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode>) _reynard->getCharacterNode());
 
     //    _grid = GridModel::alloc();
     //    _grid->init(true,10,10);

@@ -31,9 +31,7 @@ public:
     //{@note by Barry on Feb 26: feature request: alloc() which returns shared ptr so I dont gave to make_shared in Gamescene}
 
 protected:
-    cugl::Vec2 _force;;
-
-    /** Vec2 representing speed + direction */ 
+    /** Vec2 representing speed + direction */
     cugl::Vec2 _velocity;
     /** Vec2 representing position */ 
     cugl::Vec2 _position;
@@ -59,6 +57,14 @@ protected:
 
 public:
 #pragma mark Accessors
+    
+    /**
+     * Returns the velocity vector for Reynard
+     *
+     * @return the velocity vector applied to Reynard
+     */
+    const std::shared_ptr<cugl::scene2::SceneNode>& getCharacterNode() { return _reyardNode; };
+    
     /**
      * Returns the velocity vector for Reynard 
      *

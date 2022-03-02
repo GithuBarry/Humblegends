@@ -58,7 +58,7 @@ using namespace cugl;
  * @return  true if Reynard is initialized properly, false otherwise.
  */
 bool ReynardModel::init(const Vec2 pos) {
-    physics2::BoxObstacle::init(pos);
+    physics2::BoxObstacle::init(pos, Size(1.0,1.0));
     setPosition(pos);
     _velocity = Vec2(1.0, 1.0);
     setVelocity(_velocity);
