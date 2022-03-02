@@ -1,16 +1,13 @@
 //
-//  RDInput.cpp
-//  Rocket Demo
+//  MPInput.cpp
+//  Malperdy
 //
-//  This input controller is primarily designed for keyboard control.  On mobile
-//  you will notice that we use gestures to emulate keyboard commands. They even
-//  use the same variables (though we need other variables for internal keyboard
-//  emulation).  This simplifies our design quite a bit.
+//  This file is based on the CS 4152 RocketDemo by Walker White, 2017
+//  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //
-//  This file is based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
-//
-//  Author: Walker White
-//  Version: 1/10/17
+//  Author: Humblegends
+//  Contributors: Spencer Hurst, Jordan Selin
+//  Version: 3/01/2022
 //
 #include "MPInput.h"
 
@@ -66,6 +63,12 @@ _keyReset(false),
 _keyDebug(false),
 _keyExit(false),
 
+//Touch Support
+_currDown(false),
+_prevDown(false),
+_mouseDown(false),
+_mouseKey(0),
+
 //Reynard Direct Presses
 _spaceDown(false),
 _qDown(false),
@@ -78,8 +81,6 @@ _dashRightPressed(false),
 _dashLeftPressed(false),
 _zoomInPressed(false),
 _zoomOutPressed(false)
-//_horizontal(0.0f),
-//_vertical(0.0f)
 {
 }
 
@@ -93,6 +94,10 @@ void InputController::dispose() {
     if (_active) {
 #ifndef CU_TOUCH_SCREEN
         Input::deactivate<Keyboard>();
+        Mouse* mouse = Input::get<Mouse>();
+        mouse->removePressListener(_mouseKey);
+        mouse->removeReleaseListener(_mouseKey); 
+        mouse->setPointerAwareness(Mouse::PointerAwareness::BUTTON);
 #else
         Input::deactivate<Accelerometer>();
         Touchscreen* touch = Input::get<Touchscreen>();
@@ -116,9 +121,21 @@ bool InputController::init() {
     _timestamp.mark();
     bool success = true;
     
-    // Only process keyboard on desktop
+    // Only process keyboard and mouse on desktop
 #ifndef CU_TOUCH_SCREEN
     success = Input::activate<Keyboard>();
+    Mouse* mouse = Input::get<Mouse>();
+    if (mouse) {
+        mouse->setPointerAwareness(Mouse::PointerAwareness::DRAG);
+        _mouseKey = mouse->acquireKey();
+        mouse->addPressListener(_mouseKey, [=](const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
+            this->buttonDownCB(event, clicks, focus);
+            });
+        mouse->addReleaseListener(_mouseKey, [=](const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
+            this->buttonUpCB(event, clicks, focus);
+});
+    }
+    else success = false;
 #else
     success = Input::activate<Accelerometer>();
     Touchscreen* touch = Input::get<Touchscreen>();
@@ -155,6 +172,7 @@ void InputController::update(float dt) {
     
     int space = false;
 
+    _prevDown = _currDown;
 
 #ifndef CU_TOUCH_SCREEN
     // DESKTOP CONTROLS
@@ -172,6 +190,8 @@ void InputController::update(float dt) {
     _eDown = keys->keyPressed(ZOOM_OUT_KEY);
 
     space = keys->keyDown(KeyCode::SPACE);
+
+    _currDown = _mouseDown;
     
 //    TODO: This code serves as a reference for the //Mobile controls section
 //    TODO: Please delete this section post second Sprint.
@@ -205,28 +225,6 @@ void InputController::update(float dt) {
     _zoomInPressed = _qDown;
     _zoomOutPressed = _eDown;
 
-    
-    
-    
-//TRUNCATED CODE TO BE DELETED BEFORE PUSHING
-//    // Directional controls
-//    _horizontal = 0.0f;
-//    if (rght) {
-//        _horizontal += 1.0f;
-//    }
-//    if (left) {
-//        _horizontal -= 1.0f;
-//    }
-//
-//    _vertical = 0.0f;
-//    if (up) {
-//        _vertical += 1.0f;
-//    }
-//    if (down) {
-//        _vertical -= 1.0f;
-//    }
-
-
 // If it does not support keyboard, we must reset "virtual" keyboard
 //    TODO: ADD TO THIS WHEN DOING SPRINT 2 (Might cause bugs without it)
 #ifdef CU_TOUCH_SCREEN
@@ -250,17 +248,46 @@ void InputController::clear() {
     _dashLeftPressed = false;
     _zoomInPressed = false;
     _zoomOutPressed = false;
-
-    
-// DECREENTED CODE TOBE DELETED PRIOR TO PUSHING
-//    _horizontal = 0.0f;
-//    _vertical   = 0.0f;
     
     _dtouch = Vec2::ZERO;
     _timestamp.mark();
 }
 
 #pragma mark -
+#pragma mark Mouse Callbacks
+/**
+ * Call back to execute when a mouse button is first pressed.
+ *
+ * This function will record a press only if the left button is pressed.
+ *
+ * @param event     The event with the mouse information
+ * @param clicks    The number of clicks (for double clicking) (UNUSED)
+ * @param focus     Whether this device has focus (UNUSED)
+ */
+void InputController::buttonDownCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
+    // Only recognize the left mouse button
+    if (!_mouseDown && event.buttons.hasLeft()) {
+        _mouseDown = true;
+        _mousePos = event.position;
+    }
+}
+
+/**
+ * Call back to execute when a mouse button is first released.
+ *
+ * This function will record a release for the left mouse button.
+ *
+ * @param event     The event with the mouse information
+ * @param clicks    The number of clicks (for double clicking) (UNUSED)
+ * @param focus     Whether this device has focus (UNUSED)
+ */
+void InputController::buttonUpCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
+    // Only recognize the left mouse button
+    if (_mouseDown && event.buttons.hasLeft()) {
+        _mouseDown = false;
+    }
+}
+
 #pragma mark Touch Callbacks
 
 ///**
