@@ -346,7 +346,7 @@ void GameScene::update(float dt) {
 
     // Process the toggled key commands
     if (_input.didDebug()) {
-        setDebug(!isDebug());
+        //setDebug(!isDebug());
 
     }
     // Reset Process toggled by key command
@@ -408,35 +408,32 @@ void GameScene::update(float dt) {
  * @param  contact  The two bodies that collided
  */
 void GameScene::endContact(b2Contact* contact) {
-        b2Body* body1 = contact->GetFixtureA()->GetBody();
-        b2Body* body2 = contact->GetFixtureB()->GetBody();
-        b2Body* wall;
-        // If we hit the "win" door, we are done
-        intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
+    b2Body* body1 = contact->GetFixtureA()->GetBody();
+    b2Body* body2 = contact->GetFixtureB()->GetBody();
+    b2Body* wall;
+    // If we hit the "win" door, we are done
+    intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
 
-        if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
-            if (body1->GetUserData().pointer == rptr){
-                wall = body2;
-            }else{
-                wall = body1;
-            }
-            b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
-            int last_idx = contact->GetManifold()->pointCount-1;
-            b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
-            if (first_collision.x == last_collision.x){
-                //_reynardController->switchDirection; //TODO waiting for Spencer
-            }
-
+    if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
+        if (body1->GetUserData().pointer == rptr){
+            wall = body2;
+        }else{
+            wall = body1;
         }
-        b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
-        int last_idx = contact->GetManifold()->pointCount - 1;
-        b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
-        if (first_collision.x == last_collision.x) {
+        b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
+        int last_idx = contact->GetManifold()->pointCount-1;
+        b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
+        if (first_collision.x == last_collision.x){
             //_reynardController->switchDirection; //TODO waiting for Spencer
         }
 
     }
-
+    b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
+    int last_idx = contact->GetManifold()->pointCount - 1;
+    b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
+    if (first_collision.x == last_collision.x) {
+        //_reynardController->switchDirection; //TODO waiting for Spencer
+    }
 }
 
 ///**

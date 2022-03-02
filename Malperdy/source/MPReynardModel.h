@@ -401,7 +401,7 @@ public:
      * @param world Box2D world to store body
      *
      * @return true if object allocation succeeded
-     *
+     */
     void createFixtures() override;
 
     /**

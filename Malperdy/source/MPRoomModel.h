@@ -56,6 +56,8 @@ private:
     bool locked = false;
 
     // GEOMETRY
+    /** Vector of polygons forming the room's geometry */
+    shared_ptr<vector<Poly2>> _geometry;
     /** Vector of physics objects forming the room's geometry */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> _physicsGeometry;
     /** Vector constant representing by how much the room geometry needs to be scaled */
@@ -295,6 +297,8 @@ public:
      * Sets this room to be unlocked, meaning it can now be swapped.
      */
     void unlock() { locked = false; }
+
+    //void draw() override;
 };
 
 #endif /* MPRoomModel_h */

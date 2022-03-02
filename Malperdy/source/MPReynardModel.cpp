@@ -99,7 +99,9 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
     Size nsize = size;
     nsize.width  *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
-    _drawScale = 1;
+    _drawScale = drawScale;
+
+    _position = pos;
 
     if (BoxObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);
@@ -116,7 +118,6 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
         _faceRight  = true;
         
         _jumpCooldown  = 0;
-        _drawScale = drawScale;
         _dashCooldown  = 0;
         return true;
     }
@@ -157,7 +158,7 @@ void ReynardModel::setMovement(float value) {
  * Create new fixtures for this body, defining the shape
  *
  * This is the primary method to override for custom physics objects
- *
+ */
 void ReynardModel::createFixtures() {
     if (_body == nullptr) {
         return;
@@ -185,13 +186,13 @@ void ReynardModel::createFixtures() {
     sensorDef.shape = &sensorShape;
     sensorDef.userData.pointer = reinterpret_cast<uintptr_t>(getSensorName());
     _sensorFixture = _body->CreateFixture(&sensorDef);
-}*/
+}
 
 /**
  * Release the fixtures for this body, reseting the shape
  *
  * This is the primary method to override for custom physics objects.
- *
+ */
 void ReynardModel::releaseFixtures() {
     if (_body != nullptr) {
         return;
@@ -202,7 +203,7 @@ void ReynardModel::releaseFixtures() {
         _body->DestroyFixture(_sensorFixture);
         _sensorFixture = nullptr;
     }
-}*/
+}
 
 /**
  * Disposes all resources and assets of this DudeModel
@@ -219,7 +220,7 @@ void ReynardModel::dispose() {
  * Applies the force to the body of this dude
  *
  * This method should be called after the force attribute is set.
- *
+ */
 void ReynardModel::applyForce() {
     if (!isEnabled()) {
         return;
@@ -252,7 +253,7 @@ void ReynardModel::applyForce() {
         b2Vec2 force(0, DUDE_JUMP);
         _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
     }
-}*/
+}
 
 // The reason for this duplicate code existing is complicated and will be gone over with Barry.
 bool ReynardModel::applyJumpForce() {
@@ -291,8 +292,6 @@ void ReynardModel::update(float dt) {
         _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
         
     }
-    
-    //BoxObstacle::update(dt);
 
     //CULog("Position: %f, %f", getPosition().x, getPosition().y);
     //CULog("Scaled Position: %f, %f", getPosition().x*_drawScale, getPosition().y*_drawScale);
@@ -305,7 +304,6 @@ void ReynardModel::update(float dt) {
     }
 
 
-//GOOD BELOW
     BoxObstacle::update(dt);
 
     if (_node != nullptr) {
