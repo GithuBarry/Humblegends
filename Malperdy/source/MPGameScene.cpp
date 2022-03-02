@@ -382,8 +382,7 @@ void GameScene::update(float dt) {
  * this method to test if it is the "right" kind of collision.  In particular, we
  * use it to test if we need to turn around reynard.
  *
- * To do that , we check if reynard was given force that has a horizontal component opposite to its
- * horizontal velocity.
+ * To do that , we check if reynard's contact points align vertically
  *
  * @param  contact  The two bodies that collided
  */
