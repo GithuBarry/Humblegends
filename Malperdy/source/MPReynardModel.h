@@ -43,6 +43,7 @@
 //
 #ifndef __MP_REYNARD_MODEL_H__
 #define __MP_REYNARD_MODEL_H__
+
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUBoxObstacle.h>
 #include <cugl/physics2/CUCapsuleObstacle.h>
@@ -68,6 +69,7 @@
 
 #pragma mark -
 #pragma mark Reynard Model
+
 /**
 * Player avatar for the plaform game.
 *
@@ -78,7 +80,7 @@
 class ReynardModel : public cugl::physics2::BoxObstacle {
 private:
     /** This macro disables the copy constructor (not allowed on physics objects) */
-   
+
 
 protected:
     /** The current horizontal movement of the character */
@@ -86,17 +88,17 @@ protected:
     /** Which direction is the character facing */
     bool _faceRight;
     /** How long until we can jump again */
-    int  _jumpCooldown;
+    int _jumpCooldown;
     /** Whether we are actively jumping */
     bool _isJumping;
     /** How long until we can shoot again */
-    int  _shootCooldown;
+    int _shootCooldown;
     /** Whether our feet are on the ground */
     bool _isGrounded;
     /** Whether we are actively shooting */
     bool _isShooting;
     /** Ground sensor to represent our feet */
-    b2Fixture*  _sensorFixture;
+    b2Fixture *_sensorFixture;
     /** Reference to the sensor name (since a constant cannot have a pointer) */
     std::string _sensorName;
     /** The node for debugging the sensor */
@@ -106,7 +108,7 @@ protected:
     std::shared_ptr<cugl::scene2::SceneNode> _node;
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
     float _drawScale;
-    
+
 
     /**
     * Redraws the outline of the physics fixtures to the debug node
@@ -118,30 +120,34 @@ protected:
     virtual void resetDebug() override;
 
 public:
-    enum class ReynardState : int{
-            SPAWN,
-            MOVING,
-            /** Form of moving when game is zoomed out */
-            SLOWMOVING,
-            DASHING,
-            JUMPING,
-            TRAPPED
-        };
-    
+    enum class ReynardState : int {
+        SPAWN,
+        MOVING,
+        /** Form of moving when game is zoomed out */
+        SLOWMOVING,
+        DASHING,
+        JUMPING,
+        TRAPPED
+    };
+
 #pragma mark Hidden Constructors
+
     /**
      * Creates a degenerate Dude object.
      *
      * This constructor does not initialize any of the dude values beyond
      * the defaults.  To use a DudeModel, you must call init().
      */
-    ReynardModel() : BoxObstacle(), _sensorName(SENSOR_NAME) { }
-    
+    ReynardModel() : BoxObstacle(), _sensorName(SENSOR_NAME) {
+    }
+
     /**
      * Destroys this DudeModel, releasing all resources.
      */
-    virtual ~ReynardModel(void) { dispose(); }
-    
+    virtual ~ReynardModel(void) {
+        dispose();
+    }
+
     /**
      * Disposes all resources and assets of this DudeModel
      *
@@ -149,7 +155,7 @@ public:
      * disposed, a DudeModel may not be used until it is initialized again.
      */
     void dispose();
-    
+
     /**
      * Initializes a new dude at the given position.
      *
@@ -166,9 +172,9 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, const cugl::Size& size, float drawScale);
+    virtual bool init(const cugl::Vec2 &pos, const cugl::Size &size, float drawScale);
 
-    
+
 #pragma mark -
 #pragma mark Static Constructors
 
@@ -187,15 +193,15 @@ public:
      *
      * @return  A newly allocated DudeModel at the given position with the given scale
      */
-    static std::shared_ptr<ReynardModel> alloc(const cugl::Vec2& pos, const cugl::Size& size,float drawScale) {
+    static std::shared_ptr<ReynardModel> alloc(const cugl::Vec2 &pos, const cugl::Size &size, float drawScale) {
         std::shared_ptr<ReynardModel> result = std::make_shared<ReynardModel>();
-        return (result->init(pos, size,drawScale) ? result : nullptr);
+        return (result->init(pos, size, drawScale) ? result : nullptr);
     }
 
-    
 
 #pragma mark -
 #pragma mark Animation
+
     /**
      * Returns the scene graph node representing this DudeModel.
      *
@@ -205,7 +211,9 @@ public:
      *
      * @return the scene graph node representing this DudeModel.
      */
-    const std::shared_ptr<cugl::scene2::SceneNode>& getSceneNode() const { return _node; }
+    const std::shared_ptr<cugl::scene2::SceneNode> &getSceneNode() const {
+        return _node;
+    }
 
     /**
      * Sets the scene graph node representing this DudeModel.
@@ -225,14 +233,15 @@ public:
      *
      * @param node  The scene graph node representing this DudeModel, which has been added to the world node already.
      */
-    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode>& node) {
+    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode> &node) {
         _node = node;
         _node->setPosition(getPosition() * _drawScale);
     }
 
-    
+
 #pragma mark -
 #pragma mark Attribute Properties
+
     /**
      * Returns left/right movement of this character.
      *
@@ -240,8 +249,10 @@ public:
      *
      * @return left/right movement of this character.
      */
-    float getMovement() const { return _movement; }
-    
+    float getMovement() const {
+        return _movement;
+    }
+
     /**
      * Sets left/right movement of this character.
      *
@@ -250,49 +261,61 @@ public:
      * @param value left/right movement of this character.
      */
     void setMovement(float value);
-    
+
     /**
      * Returns true if the dude is actively firing.
      *
      * @return true if the dude is actively firing.
      */
-    bool isShooting() const { return _isShooting && _shootCooldown <= 0; }
-    
+    bool isShooting() const {
+        return _isShooting && _shootCooldown <= 0;
+    }
+
     /**
      * Sets whether the dude is actively firing.
      *
      * @param value whether the dude is actively firing.
      */
-    void setShooting(bool value) { _isShooting = value; }
-    
+    void setShooting(bool value) {
+        _isShooting = value;
+    }
+
     /**
      * Returns true if the dude is actively jumping.
      *
      * @return true if the dude is actively jumping.
      */
-    bool isJumping() const { return _isJumping && _jumpCooldown <= 0; }
-    
+    bool isJumping() const {
+        return _isJumping && _jumpCooldown <= 0;
+    }
+
     /**
      * Sets whether the dude is actively jumping.
      *
      * @param value whether the dude is actively jumping.
      */
-    void setJumping(bool value) { _isJumping = value; }
-    
+    void setJumping(bool value) {
+        _isJumping = value;
+    }
+
     /**
      * Returns true if the dude is on the ground.
      *
      * @return true if the dude is on the ground.
      */
-    bool isGrounded() const { return _isGrounded; }
-    
+    bool isGrounded() const {
+        return _isGrounded;
+    }
+
     /**
      * Sets whether the dude is on the ground.
      *
      * @param value whether the dude is on the ground.
      */
-    void setGrounded(bool value) { _isGrounded = value; }
-    
+    void setGrounded(bool value) {
+        _isGrounded = value;
+    }
+
     /**
      * Returns how much force to apply to get the dude moving
      *
@@ -300,15 +323,19 @@ public:
      *
      * @return how much force to apply to get the dude moving
      */
-    float getForce() const { return DUDE_FORCE; }
-    
+    float getForce() const {
+        return DUDE_FORCE;
+    }
+
     /**
      * Returns ow hard the brakes are applied to get a dude to stop moving
      *
      * @return ow hard the brakes are applied to get a dude to stop moving
      */
-    float getDamping() const { return DUDE_DAMPING; }
-    
+    float getDamping() const {
+        return DUDE_DAMPING;
+    }
+
     /**
      * Returns the upper limit on dude left-right movement.
      *
@@ -316,8 +343,10 @@ public:
      *
      * @return the upper limit on dude left-right movement.
      */
-    float getMaxSpeed() const { return DUDE_MAXSPEED; }
-    
+    float getMaxSpeed() const {
+        return DUDE_MAXSPEED;
+    }
+
     /**
      * Returns the name of the ground sensor
      *
@@ -325,18 +354,37 @@ public:
      *
      * @return the name of the ground sensor
      */
-    std::string* getSensorName() { return &_sensorName; }
-    
+    std::string *getSensorName() {
+        return &_sensorName;
+    }
+
     /**
      * Returns true if this character is facing right
      *
      * @return true if this character is facing right
      */
-    bool isFacingRight() const { return _faceRight; }
+    bool isFacingRight() const {
+        return _faceRight;
+    }
 
-    
+
+    /**
+     * Sets the current position for this physics body
+     *
+     * This method converts from a CUGL vector type to a Box2D vector type. This
+     * cuts down on the confusion between vector types.
+     *
+     * @param value  the current position for this physics body
+     */
+    virtual void setPosition(const Vec2 value) override {
+        setPosition(value.x, value.y);
+        _node->setPosition(x * _drawScale, y * _drawScale);
+    }
+
+
 #pragma mark -
 #pragma mark Physics Methods
+
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      *
@@ -347,14 +395,14 @@ public:
      * @return true if object allocation succeeded
      */
     void createFixtures() override;
-    
+
     /**
      * Release the fixtures for this body, reseting the shape
      *
      * This is the primary method to override for custom physics objects.
      */
     void releaseFixtures() override;
-    
+
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
      *
@@ -363,7 +411,7 @@ public:
      * @param delta Number of seconds since last animation frame
      */
     void update(float dt) override;
-    
+
     /**
      * Applies the force to the body of this dude
      *
@@ -372,7 +420,6 @@ public:
     void applyForce();
 
 
-    
 };
 
 #endif /* __PF_REYNARD_MODEL_H__ */
