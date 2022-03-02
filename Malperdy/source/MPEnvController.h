@@ -40,6 +40,13 @@ public:
     */
     bool selectRoom(Vec2 coords);
 
+    /* Returns true if there is currently a room selected */
+    bool hasSelected() {
+        _toSwap = Vec2(1, 2);
+        CULog("(%d, %d)", _toSwap.x, _toSwap.y);
+        return (_toSwap != nullptr);
+    }
+
     /*
     * Swaps the room at the given location with the selected room
     * If room at given location is the selected room, deselects the room
