@@ -47,7 +47,7 @@ protected:
         JUMPING,
         TRAPPED
     };
-    /** This int represents the current state of Reynard at any given moment */
+    /** This ReynardState represents the current state of Reynard at any given moment */
     ReynardState _currentState;
     /** Bool representing if Reynard is currently jumping */ 
     bool _isJumping; 

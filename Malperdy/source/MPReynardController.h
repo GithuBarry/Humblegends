@@ -24,7 +24,7 @@ public:
 
     /** [update] This will automatically update Reynard's position and look at other
      * things in the future like health.*/
-    void update();
+    void update(float delta);
 
     /**This function contains a giant switch statement between what should happen given
      * the various character modes of the character. This includes his Jumping, Dashing, Running,

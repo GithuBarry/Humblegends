@@ -3,6 +3,7 @@
 // Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
+#define VELOCITY = 10;
 #include "MPReynardController.h"
 
 /**This is the constructor of the Reynard Controller**/
@@ -13,8 +14,8 @@ ReynardController::ReynardController(ReynardModel r){
 
 /** [update] This will automatically update Reynard's position and look at other
  * things in the future like health.*/
-void ReynardController::update(){
-    
+void ReynardController::update(float delta){
+    _reynard.update(delta);
 }
 
 /**This function contains a giant switch statement between what should happen given
@@ -57,8 +58,15 @@ void ReynardController::switchDirection(){
  * can jump it makes him jump and return true (if he cannot it will return false)
  * If Reynard's state is already jumping**/
 bool ReynardController::resolveJump(){
+//    if(_reynard.getCurrentState()==ReynardModel::ReynardState::JUMPING){
+//        return false;
+//    }
+//    Vec2 rVel = _reynard.getVelocity();
+//    rVel.y = rVel.y + 10;
+//    _reynard.setVelocity(const cugl::Vec2 &value)
     return true;
 }
+
 
 bool ReynardController::resolveDash(){
     return true;
