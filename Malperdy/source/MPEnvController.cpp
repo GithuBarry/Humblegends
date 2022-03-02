@@ -16,7 +16,7 @@ EnvController::EnvController(){
 	CULog("initializing env controller");
 	_grid = std::make_shared<GridModel>();
 	CULog("location B");
-	_grid->init();
+	_grid->init(1, true, 10, 10);
 	CULog("location C");
 	_toSwap = NULL;
 }

@@ -394,7 +394,7 @@ void GameScene::update(float dt) {
         for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++){
             _world->addObstacle(*ptr);
         }
-    }
+    }*/
 
     if (_input.didDashLeft()){
 
