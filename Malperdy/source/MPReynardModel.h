@@ -66,6 +66,7 @@
 /** The maximum character speed */
 #define DUDE_MAXSPEED   5.0f
 
+using namespace cugl;
 
 #pragma mark -
 #pragma mark Reynard Model
@@ -377,8 +378,8 @@ public:
      * @param value  the current position for this physics body
      */
     virtual void setPosition(const Vec2 value) override {
-        setPosition(value.x, value.y);
-        _node->setPosition(x * _drawScale, y * _drawScale);
+        SimpleObstacle::setPosition(value);
+        _node->setPosition(value* _drawScale);
     }
 
 
