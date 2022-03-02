@@ -153,6 +153,17 @@ public:
     /** returns all the physics geometry in the grid
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsObjects();
+    
+    Vec2 gridSpaceToRoom(Vec2 coord){
+        int x = static_cast<int>(coord.x/720.0);
+        int y = static_cast<int>(_size.y-coord.y/480.0);
+        return Vec2(x,y);
+    }
+    
+    Vec2 worldSpaceToRoom(Vec2 coord){
+        Vec2 gridcoords = this->worldToNodeCoords(coord);
+        return gridSpaceToRoom(gridcoords);
+    }
 
 #pragma mark Setters
 
