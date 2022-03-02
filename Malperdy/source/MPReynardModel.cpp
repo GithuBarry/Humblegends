@@ -52,6 +52,10 @@
 #pragma mark Physics Constants
 /** Cooldown (in animation frames) for jumping */
 #define JUMP_COOLDOWN   5
+/** Cooldown (in animation frames) for Dashing */
+#define DASH_COOLDOWN   20
+/** Cooldown (in animation frames) for shooting */
+#define SHOOT_COOLDOWN  20
 /** The amount to shrink the body fixture (vertically) relative to the image */
 #define DUDE_VSHRINK  0.95f
 /** The amount to shrink the body fixture (horizontally) relative to the image */
@@ -64,6 +68,8 @@
 #define DUDE_DENSITY    1.0f
 /** The impulse for the character jump */
 #define DUDE_JUMP       5.5f
+/** The impulse for the character dash */
+#define DUDE_DASH       10.0f
 /** Debug color for the sensor */
 #define DEBUG_COLOR     Color4::RED
 
@@ -93,19 +99,25 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
     Size nsize = size;
     nsize.width  *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
-    
+    _drawScale = 1;
+
     if (BoxObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);
         setFriction(0.0f);      // HE WILL STICK TO WALLS IF YOU FORGET
-        setFixedRotation(true); // To ensure it will not rotate
+        setFixedRotation(true); // OTHERWISE, HE IS A WEEBLE WOBBLE
+        _currentState = ReynardState::SPAWN;
 
         // Gameplay attributes
         _isGrounded = false;
         _isJumping  = false;
+        _isDashing  = false;
+//        TODO: Prevent an issue here about spawning him on the left side of rooms by including a part in the init function maybe
+//        Specifically for moments where we come from the left side of a room to go to the right.
         _faceRight  = true;
         
         _jumpCooldown  = 0;
         _drawScale = drawScale;
+        _dashCooldown  = 0;
         return true;
     }
     return false;
@@ -129,7 +141,7 @@ void ReynardModel::setMovement(float value) {
     if (_movement == 0 || _faceRight == face) {
         return;
     }
-    
+
     // Change facing
     scene2::TexturedNode* image = dynamic_cast<scene2::TexturedNode*>(_node.get());
     if (image != nullptr) {
@@ -150,12 +162,12 @@ void ReynardModel::createFixtures() {
     if (_body == nullptr) {
         return;
     }
-    
+
     BoxObstacle::createFixtures();
     b2FixtureDef sensorDef;
     sensorDef.density = DUDE_DENSITY;
     sensorDef.isSensor = true;
-    
+
     // Sensor dimensions
     b2Vec2 corners[4];
     corners[0].x = -DUDE_SSHRINK*getWidth()/2.0f;
@@ -166,10 +178,10 @@ void ReynardModel::createFixtures() {
     corners[2].y = (-getHeight()-SENSOR_HEIGHT)/2.0f;
     corners[3].x =  DUDE_SSHRINK*getWidth()/2.0f;
     corners[3].y = (-getHeight()+SENSOR_HEIGHT)/2.0f;
-    
+
     b2PolygonShape sensorShape;
     sensorShape.Set(corners,4);
-    
+
     sensorDef.shape = &sensorShape;
     sensorDef.userData.pointer = reinterpret_cast<uintptr_t>(getSensorName());
     _sensorFixture = _body->CreateFixture(&sensorDef);
@@ -184,7 +196,7 @@ void ReynardModel::releaseFixtures() {
     if (_body != nullptr) {
         return;
     }
-    
+
     BoxObstacle::releaseFixtures();
     if (_sensorFixture != nullptr) {
         _body->DestroyFixture(_sensorFixture);
@@ -212,8 +224,8 @@ void ReynardModel::applyForce() {
     if (!isEnabled()) {
         return;
     }
-    
-    // Don't want to be moving. Damp out player motion
+
+//  TODO: Dampen Player Movement
     if (getMovement() == 0.0f) {
         if (isGrounded()) {
             // Instant friction on the ground
@@ -226,7 +238,7 @@ void ReynardModel::applyForce() {
             _body->ApplyForce(force,_body->GetPosition(),true);
         }
     }
-    
+
     // Velocity too high, clamp it
     if (fabs(getVX()) >= getMaxSpeed()) {
         setVX(SIGNUM(getVX())*getMaxSpeed());
@@ -234,13 +246,34 @@ void ReynardModel::applyForce() {
         b2Vec2 force(getMovement(),0);
         _body->ApplyForce(force,_body->GetPosition(),true);
     }
-    
+
     // Jump!
     if (isJumping() && isGrounded()) {
         b2Vec2 force(0, DUDE_JUMP);
         _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
     }
 }*/
+
+// The reason for this duplicate code existing is complicated and will be gone over with Barry.
+bool ReynardModel::applyJumpForce() {
+    if (isJumping() && isGrounded()) {
+        b2Vec2 force(0, DUDE_JUMP);
+        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        return true;
+    }
+    return false;
+}
+
+bool ReynardModel::applyDashForce() {
+    if (isDashing()) {
+        b2Vec2 force(DUDE_DASH, 0);
+        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        return true;
+//      TODO: TEST THAT THIS WILL GET
+    }
+    return false;
+}
+
 
 /**
  * Updates the object's physics state (NOT GAME LOGIC).
@@ -256,6 +289,7 @@ void ReynardModel::update(float dt) {
     } else {
         // Only cooldown while grounded
         _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
+        
     }
     
     //BoxObstacle::update(dt);
@@ -263,6 +297,17 @@ void ReynardModel::update(float dt) {
     //CULog("Position: %f, %f", getPosition().x, getPosition().y);
     //CULog("Scaled Position: %f, %f", getPosition().x*_drawScale, getPosition().y*_drawScale);
     
+    if (isDashing()) {
+        _dashCooldown = DASH_COOLDOWN;
+    } else {
+        // Only cooldown while grounded
+        _dashCooldown = (_dashCooldown > 0 ? _dashCooldown-1 : 0);
+    }
+
+
+//GOOD BELOW
+    BoxObstacle::update(dt);
+
     if (_node != nullptr) {
         _node->setPosition(getPosition()*_drawScale);
         _node->setAngle(getAngle());
@@ -290,7 +335,3 @@ void ReynardModel::resetDebug() {
     _sensorNode->setPosition(Vec2(_debug->getContentSize().width/2.0f, 0.0f));
     _debug->addChild(_sensorNode);
 }
-
-
-
-

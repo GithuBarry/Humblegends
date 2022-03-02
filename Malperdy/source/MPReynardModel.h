@@ -84,15 +84,23 @@ private:
 
 
 protected:
+    
+
     /** The current horizontal movement of the character */
     float _movement;
+    /** Vec2 representing position */
+    cugl::Vec2 _position;
     /** Which direction is the character facing */
     bool _faceRight;
     /** How long until we can jump again */
     int _jumpCooldown;
     /** Whether we are actively jumping */
     bool _isJumping;
-    /** Whether our feet are on the ground */
+    /** Bool representing if Reyanrd is current dashing */
+    bool _isDashing;
+    /** How long until we can dash again */
+    int  _dashCooldown;
+    /** How long until we can shoot again */
     bool _isGrounded;
     /** Ground sensor to represent our feet */
     b2Fixture *_sensorFixture;
@@ -117,15 +125,19 @@ protected:
     virtual void resetDebug() override;
 
 public:
-    enum class ReynardState : int {
-        SPAWN,
-        MOVING,
-        /** Form of moving when game is zoomed out */
-        SLOWMOVING,
-        DASHING,
-        JUMPING,
-        TRAPPED
-    };
+    
+    enum class ReynardState : int{
+            SPAWN,
+            MOVING,
+            SLOWMOVING,
+            DASHING,
+            JUMPING,
+            TRAPPED
+        };
+    
+    /** This ReynardState represents the current state of Reynard at any given moment */
+    ReynardState _currentState;
+
 
 #pragma mark Hidden Constructors
 
@@ -135,15 +147,12 @@ public:
      * This constructor does not initialize any of the dude values beyond
      * the defaults.  To use a DudeModel, you must call init().
      */
-    ReynardModel() : BoxObstacle(), _sensorName(SENSOR_NAME) {
-    }
+    ReynardModel() : BoxObstacle(), _sensorName(SENSOR_NAME) { }
 
     /**
      * Destroys this DudeModel, releasing all resources.
      */
-    virtual ~ReynardModel(void) {
-        dispose();
-    }
+    virtual ~ReynardModel(void) { dispose(); }
 
     /**
      * Disposes all resources and assets of this DudeModel
@@ -246,9 +255,7 @@ public:
      *
      * @return left/right movement of this character.
      */
-    float getMovement() const {
-        return _movement;
-    }
+    float getMovement() const { return _movement; }
 
     /**
      * Sets left/right movement of this character.
@@ -260,6 +267,20 @@ public:
     void setMovement(float value);
 
     /**
+     * This function will return the current state of our boy Reynard.
+     *
+     * @return the enum Reynard State of the instantiated reynard model.
+     */
+    ReynardState getCurrentState() const { return _currentState; }
+
+    /**
+     * This function allows you to set the current state of Reynard .
+     *
+     * @return the enum Reynard State of the instantiated reynard model.
+     */
+    void setCurrentState(const ReynardState cS) { _currentState = cS; }
+
+    /**
      * Returns true if the dude is actively jumping.
      *
      * @return true if the dude is actively jumping.
@@ -269,31 +290,46 @@ public:
     }
 
     /**
+     * Returns true if the dude is actively jumping.
+     *
+     * @return true if the dude is actively jumping.
+     */
+    bool isDashing() const { return _isDashing && _dashCooldown <= 0; }
+    
+    /**
      * Sets whether the dude is actively jumping.
      *
      * @param value whether the dude is actively jumping.
      */
-    void setJumping(bool value) {
-        _isJumping = value;
-    }
+    void setJumping(bool value) { _isJumping = value; }
+
+    /**
+     * Returns true if the dude is actively jumping.
+     *
+     * @return true if the dude is actively jumping.
+     */
+    float getCooldownJump() const { return _jumpCooldown; }
+    
+    /**
+     * Returns true if the dude is actively jumping.
+     *
+     * @return true if the dude is actively jumping.
+     */
+    float getCooldownDash() const { return _dashCooldown; }
 
     /**
      * Returns true if the dude is on the ground.
      *
      * @return true if the dude is on the ground.
      */
-    bool isGrounded() const {
-        return _isGrounded;
-    }
+    bool isGrounded() const { return _isGrounded; }
 
     /**
      * Sets whether the dude is on the ground.
      *
      * @param value whether the dude is on the ground.
      */
-    void setGrounded(bool value) {
-        _isGrounded = value;
-    }
+    void setGrounded(bool value) { _isGrounded = value; }
 
     /**
      * Returns how much force to apply to get the dude moving
@@ -302,18 +338,14 @@ public:
      *
      * @return how much force to apply to get the dude moving
      */
-    float getForce() const {
-        return DUDE_FORCE;
-    }
+    float getForce() const { return DUDE_FORCE; }
 
     /**
      * Returns ow hard the brakes are applied to get a dude to stop moving
      *
      * @return ow hard the brakes are applied to get a dude to stop moving
      */
-    float getDamping() const {
-        return DUDE_DAMPING;
-    }
+    float getDamping() const { return DUDE_DAMPING; }
 
     /**
      * Returns the upper limit on dude left-right movement.
@@ -322,9 +354,7 @@ public:
      *
      * @return the upper limit on dude left-right movement.
      */
-    float getMaxSpeed() const {
-        return DUDE_MAXSPEED;
-    }
+    float getMaxSpeed() const { return DUDE_MAXSPEED; }
 
     /**
      * Returns the name of the ground sensor
@@ -333,9 +363,7 @@ public:
      *
      * @return the name of the ground sensor
      */
-    std::string *getSensorName() {
-        return &_sensorName;
-    }
+    std::string* getSensorName() { return &_sensorName; }
 
     /**
      * Returns true if this character is facing right
@@ -380,8 +408,8 @@ public:
      * Release the fixtures for this body, reseting the shape
      *
      * This is the primary method to override for custom physics objects.
-     *
-    void releaseFixtures() override;*/
+     */
+    void releaseFixtures() override;
 
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
@@ -398,6 +426,20 @@ public:
      * This method should be called after the force attribute is set.
      */
     void applyForce();
+
+    /**
+     * Applies the jump force to the body of Reynard
+     *
+     * This method should be called after the force attribute is set.
+     */
+    bool applyJumpForce();
+
+    /**
+     * Applies the jump force to the body of Reynard
+     *
+     * This method should be called after the force attribute is set.
+     */
+    bool applyDashForce();
 
 
 };
