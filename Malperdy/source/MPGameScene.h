@@ -29,11 +29,13 @@
 #include <box2d/b2_world_callbacks.h>
 #include <vector>
 #include "MPReynardModel.h"
+#include "MPReynardController.h"
 #include "MPCharacterModel.h"
 #include "MPInput.h"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
 #include "MPGridModel.h"
+
 #include "MPEnvController.h"
 
 /**
@@ -77,9 +79,11 @@ protected:
 
     /** Reference to the Reynard avatar */
     std::shared_ptr<ReynardModel> _reynard;
+//    std::shared_ptr<ReynardController> _reynardController; //TODO waiting for ReynardController
     std::shared_ptr<GridModel> _grid;
     std::shared_ptr<EnvController> _envController;
     std::shared_ptr<GameStateController> _stateController;
+    
 
     /** Whether we have completed this "game" */
     bool _complete;
@@ -293,11 +297,11 @@ public:
      *
      * This method is called when we first get a collision between two objects. 
      * We use this method to test if it is the "right" kind of collision.  In 
-     * particular, we use it to test if we make it to the win door.
+     * particular, we use it to test if reynard needs to turn around
      *
      * @param  contact  The two bodies that collided
      */
-    void beginContact(b2Contact *contact);
+    void endContact(b2Contact *contact);
 
     /**
      * Handles any modifications necessary before collision re

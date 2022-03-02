@@ -64,7 +64,9 @@ public:
      * Creates an empty grid model.
      * @return an empty grid model
      */
-    GridModel(){};
+    GridModel(){
+        CULog("child Offset: %i", this->_childOffset);
+    };
 
     /**
      * @return shared pointer to an empty grid model
@@ -80,7 +82,7 @@ public:
      * @param json - whether to use json loader or not
      * @return a grid with 3x3 rooms, each room the default
      */
-    bool init(bool json=false, float hgap = 0, float vgap = 0);
+    bool init(float scale=1, bool json=false, float hgap = 0, float vgap = 0);
 
     /**
      * Init given size
@@ -155,6 +157,17 @@ public:
     /** returns all the physics geometry in the grid
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsObjects();
+    
+    Vec2 gridSpaceToRoom(Vec2 coord){
+        int x = static_cast<int>(coord.x/720.0);
+        int y = static_cast<int>(_size.y-coord.y/480.0);
+        return Vec2(x,y);
+    }
+    
+    Vec2 worldSpaceToRoom(Vec2 coord){
+        Vec2 gridcoords = this->worldToNodeCoords(coord);
+        return gridSpaceToRoom(gridcoords);
+    }
 
 #pragma mark Setters
 

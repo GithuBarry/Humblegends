@@ -28,7 +28,7 @@ bool EnvController::selectRoom(Vec2 coords){
 }
 
 bool EnvController::swapWithSelected(Vec2 coords){
-	if (_toSwap == NULL) {
+	if (!hasSelected()) {
 		return false;
 	}
 	Vec2 room2 = _grid->worldToRoomCoords(coords);
@@ -44,5 +44,5 @@ bool EnvController::swapWithSelected(Vec2 coords){
 }
 
 void EnvController::deselectRoom(){
-	_toSwap = NULL;
+	_toSwap = nullptr;
 }
