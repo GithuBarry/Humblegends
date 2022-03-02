@@ -81,6 +81,8 @@ private:
 
 
 protected:
+    
+
     /** The current horizontal movement of the character */
     float _movement;
     /** Vec2 representing position */
@@ -99,8 +101,6 @@ protected:
     bool _isGrounded;
     /** Whether we are actively shooting */
     bool _isShooting;
-    /** This ReynardState represents the current state of Reynard at any given moment */
-    ReynardState _currentState;
     /** Ground sensor to represent our feet */
     b2Fixture*  _sensorFixture;
     /** Reference to the sensor name (since a constant cannot have a pointer) */
@@ -124,6 +124,7 @@ protected:
     virtual void resetDebug() override;
 
 public:
+    
     enum class ReynardState : int{
             SPAWN,
             MOVING,
@@ -133,6 +134,10 @@ public:
             JUMPING,
             TRAPPED
         };
+    
+    /** This ReynardState represents the current state of Reynard at any given moment */
+    ReynardState _currentState;
+
 
 #pragma mark Hidden Constructors
     /**

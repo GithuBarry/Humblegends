@@ -50,8 +50,8 @@ void ReynardController::updateMode(ReynardModel::ReynardState c){
  * His velocity will be turned to whatever the negative of whatever the Constant his speed
  * should be. **/
 void ReynardController::switchDirection(){
-    Vec2 vel = _reynard.getVelocity();
-    _reynard.setVelocity(-vel);
+//    cugl::Vec2 vel = _reynard.getVelocity();
+//    _reynard.setVelocity(-vel);
 }
 
 /**This function is what is jused to check if Reynard could jump at a given time and if he

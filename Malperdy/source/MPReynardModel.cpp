@@ -109,7 +109,6 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size) {
         _isJumping  = false;
         _faceRight  = true;
 
-        _shootCooldown = 0;
         _jumpCooldown  = 0;
         return true;
     }
@@ -262,11 +261,6 @@ void ReynardModel::update(float dt) {
         _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
     }
 
-    if (isShooting()) {
-        _shootCooldown = SHOOT_COOLDOWN;
-    } else {
-        _shootCooldown = (_shootCooldown > 0 ? _shootCooldown-1 : 0);
-    }
 
     BoxObstacle::update(dt);
 
