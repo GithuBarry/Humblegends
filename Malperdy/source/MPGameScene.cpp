@@ -249,18 +249,12 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
-    Vec2 reyPos = REYNARD_POS;
-    std::shared_ptr<Texture> image;
-    std::shared_ptr<scene2::PolygonNode> sprite;
-    image = _assets->get<Texture>("rocket");
-    _reynard = ReynardModel::alloc(reyPos,image->getSize()/_scale);
-    sprite = scene2::PolygonNode::allocWithTexture(image);
-    _reynard->setSceneNode(sprite);
-    addObstacle(_reynard,sprite); // Put this at the very front
+    //TODO waiting for Reynard Controller and ReynardModel
+    
+    //_reynard = ReynardModel::alloc(Vec2(50,50));
+    //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
+    //_reynardController = ReynardController(_reynard)
 
-
-
-    //TODO needs help
 
 #pragma mark Rooms
     /////////////////////////////////////
@@ -268,22 +262,38 @@ void GameScene::populate() {
     /////////////////////////////////////
     shared_ptr<GridModel> _grid = make_shared<GridModel>();
     _grid->init(true, 10, 10);
-    //shared_ptr<RoomModel> _room = RoomModel::alloc(50, 50, "leftrightup");
 
     _worldnode->addChild(_grid);
-    _grid->setScale(0.3);
-    _grid->setPosition(100,-100);
+    _grid->setScale(0.5);
+    _grid->setPosition(-100,-100);
     _grid->getPhysicsObjects();
     _grid->swapRooms(Vec2(0,0), Vec2(1,1));
 
+    /*shared_ptr<RoomModel> _room = RoomModel::alloc(0, 0, "leftrightup");
+    _worldnode->addChild(_room);*/
 
+    //shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
 
-    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
     vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
 
     for(itr = physics_objects->begin(); itr != physics_objects->end(); ++itr){
         _world->addObstacle(*itr);
     }
+
+#pragma mark Reynard
+    Vec2 reyPos = REYNARD_POS;
+    // Create image for Reynard
+    std::shared_ptr<Texture> image;
+    image = _assets->get<Texture>("rocket");
+    // Create sprite for Reynard from texture
+    std::shared_ptr<scene2::SpriteNode> sprite;
+    sprite = scene2::SpriteNode::alloc(image, 1, 1);
+    // Create a model for Reynard based on his image texture
+    _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale);
+    _reynard->setSceneNode(sprite);
+    addObstacle(_reynard, sprite); // Put this at the very front
+    _reynard->setPosition(50, 300);
 }
 
 
