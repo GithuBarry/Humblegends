@@ -166,7 +166,7 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, const cugl::Size& size);
+    virtual bool init(const cugl::Vec2& pos, const cugl::Size& size, float drawScale);
 
     
 #pragma mark -
@@ -187,9 +187,9 @@ public:
      *
      * @return  A newly allocated DudeModel at the given position with the given scale
      */
-    static std::shared_ptr<ReynardModel> alloc(const cugl::Vec2& pos, const cugl::Size& size) {
+    static std::shared_ptr<ReynardModel> alloc(const cugl::Vec2& pos, const cugl::Size& size,float drawScale) {
         std::shared_ptr<ReynardModel> result = std::make_shared<ReynardModel>();
-        return (result->init(pos, size) ? result : nullptr);
+        return (result->init(pos, size,drawScale) ? result : nullptr);
     }
 
     

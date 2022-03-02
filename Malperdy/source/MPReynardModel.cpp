@@ -91,17 +91,16 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size) {
+bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float drawScale) {
     Size nsize = size;
     nsize.width  *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
-    _drawScale = 1;
     
     if (BoxObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);
         setFriction(0.0f);      // HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true); // OTHERWISE, HE IS A WEEBLE WOBBLE
-        
+
         // Gameplay attributes
         _isGrounded = false;
         _isShooting = false;
@@ -110,6 +109,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size) {
         
         _shootCooldown = 0;
         _jumpCooldown  = 0;
+        _drawScale = drawScale;
         return true;
     }
     return false;
