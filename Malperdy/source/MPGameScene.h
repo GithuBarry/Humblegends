@@ -29,10 +29,13 @@
 #include <box2d/b2_world_callbacks.h>
 #include <vector>
 #include "MPReynardModel.h"
+#include "MPCharacterModel.h"
 #include "MPInput.h"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
 #include "MPGridModel.h"
+
+#include "MPEnvController.h"
 
 /**
  * This class is the primary gameplay constroller for the demo.
@@ -75,6 +78,9 @@ protected:
 
     /** Reference to the Reynard avatar */
     std::shared_ptr<ReynardModel> _reynard;
+    std::shared_ptr<GridModel> _grid;
+    std::shared_ptr<EnvController> _envController;
+    std::shared_ptr<GameStateController> _stateController;
 
     /** Whether we have completed this "game" */
     bool _complete;
@@ -263,6 +269,15 @@ public:
      */
     void update(float timestep);
 
+#pragma mark Drawing
+
+    /**
+     * Draws all of the children in this scene with the given SpriteBatch. This method assumes that the sprite batch is not actively drawing. It will call both begin() and end().
+     * Rendering happens by traversing the the scene graph using an "Pre-Order" tree traversal algorithm ( https://en.wikipedia.org/wiki/Tree_traversal#Pre-order ).
+     * That means that parents are always draw before (and behind children). To override this draw order, you should place an scene2::OrderedNode in the scene graph to specify an alternative order.
+     * @param batch The SpriteBatch to draw with.
+     */
+    void render(const std::shared_ptr<SpriteBatch> &batch);
 
 
     /**

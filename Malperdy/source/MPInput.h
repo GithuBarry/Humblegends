@@ -47,6 +47,20 @@ private:
     bool  _keyDebug;
     /** Whether the exit key is down */
     bool  _keyExit;
+    
+    // KEYBOAD EMULATION FOR REYNARD:
+    /** Whether the Spacebar is down */
+    bool  _spaceDown;
+    /** Whether the q  key is down */
+    bool  _qDown;
+    /** Whether the e key is down */
+    bool  _eDown;
+    /** Whether the a key is down */
+    bool  _aDown;
+    /** Whether the c key is down */
+    bool  _dDown;
+
+
 
     // TOUCH SUPPORT
     /** The initial touch location for the current gesture */
@@ -62,10 +76,25 @@ protected:
     bool _debugPressed;
     /** Whether the exit action was chosen. */
     bool _exitPressed;
-    /** How much did we move horizontally? */
-    float _horizontal;
-    /** How much did we move vertically? */
-    float _vertical;
+//    /** How much did we move horizontally? */
+//    float _horizontal;
+//    /** How much did we move vertically? */
+//    float _vertical;
+    
+    // INPUT RESULTS SPECIFICALLY FOR REYNARD
+    /** Whether the jump action was chosen. */
+    bool _jumpPressed;
+    /** Whether the dash right action was chosen. */
+    bool _dashRightPressed;
+    /** Whether the dash left action was chosen. */
+    bool _dashLeftPressed;
+    /** Whether the zoom in toggle was chosen. */
+    bool _zoomInPressed;
+    /** Whether the zoom out toggle was chosen. */
+    bool _zoomOutPressed;
+
+
+
     
 public:
 #pragma mark -
@@ -160,16 +189,48 @@ public:
     bool didDebug() const { return _debugPressed; }
     
     /**
+     * Returns true if the player wants to go toggle the debug mode.
+     *
+     * @return true if the player wants to go toggle the debug mode.
+     */
+    bool didZoomIn() const { return _zoomInPressed; }
+
+    /**
+     * Returns true if the player wants to go toggle the debug mode.
+     *
+     * @return true if the player wants to go toggle the debug mode.
+     */
+    bool didZoomOut() const { return _zoomOutPressed; }
+    
+    /**
      * Returns true if the exit button was pressed.
      *
      * @return true if the exit button was pressed.
      */
     bool didExit() const { return _exitPressed; }
     
-    // TODO
-    // TODO {@note by Barry Feb 26: please complete documentation for these function}
-    bool didDash();
-    bool didJump();
+    /**
+     * Returns true if the dash RIGHT button was pressed.
+     *
+     * @return true if the dash button was pressed.
+     */
+    bool didDashRight() const { return _dashRightPressed; }
+    
+    /**
+     * Returns true if the dash LEFT button was pressed.
+     *
+     * @return true if the dash button was pressed.
+     */
+    bool didDashLeft() const { return _dashLeftPressed; }
+    
+    /**
+     * Returns true if the jump button was pressed.
+     *
+     * @return true if the jump button was pressed.
+     */
+    bool didJump() const { return _jumpPressed; }
+    
+    
     /**
      * @return Whether a swipe just ended
      */

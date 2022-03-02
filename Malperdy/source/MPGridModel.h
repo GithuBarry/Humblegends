@@ -25,7 +25,7 @@ private:
     // GRID LOADING
     /** Loads in grid format  from a JSON and is used to look up roomIDs for rooms */
     static shared_ptr<GridLoader> _gridLoader;
-    
+
     /** Horizontal gap between rooms in SCREEN SPACE  */
     float _horizontal_gap;
 
@@ -90,7 +90,7 @@ public:
      * @param height
      * @return a grid with width x height rooms
      */
-    bool init(int width, int height);
+    // Vector<RoomModel> rooms;
 
     /**
      *  Init given size and a room template
@@ -116,7 +116,7 @@ public:
     /**
      * Destroys this grid, releasing all resources.
      */
-    virtual ~GridModel(void) { dispose(); }
+    // RoomModel[] getRooms();
 
     /**
      * Disposes all resources and assets of this grid.
@@ -143,6 +143,10 @@ public:
 
     /** Returns a 1-D vector of all the rooms */
     vector<shared_ptr<RoomModel>> getRooms();
+
+    /** Returns the row and colum of the room located at the given coordinates
+    * If there is no room at the given coordinates, returns null*/
+    Vec2 worldToRoomCoords(Vec2 coord);
 
     /** Returns the ptr to the room located at the coordinate.
      *

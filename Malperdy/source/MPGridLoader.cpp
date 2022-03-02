@@ -32,7 +32,9 @@ bool GridLoader::init(const string path) {
     
     // Initialize JsonValue ptr cache to hold num cols
     shared_ptr<JsonValue> col = json->get(1);
+
     shared_ptr<vector<shared_ptr<JsonValue>>> colvec = make_shared<vector<shared_ptr<JsonValue>>>();
+
     colvec->push_back(col);
     lookup->emplace(json->get(1)->key(), colvec);
     

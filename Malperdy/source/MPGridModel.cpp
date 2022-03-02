@@ -73,17 +73,17 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
     return this->scene2::SceneNode::init();
 };
 
-/**
- * Init given size
- * @param width
- * @param height
- * @return a grid with width x height rooms
- */
-bool GridModel::init(int width, int height)
-{
-  _size = Vec2(height, width);
-  return init();
-};
+///**
+// * Init given size
+// * @param width
+// * @param height
+// * @return a grid with width x height rooms
+// */
+//bool GridModel::init(int width, int height)
+//{
+//  _size = Vec2(height, width);
+//  return init();
+//};
 
 /**
  *  Init given size and a room template
@@ -153,6 +153,17 @@ vector<shared_ptr<RoomModel>> GridModel::getRooms()
     }
   }
   return rooms;
+};
+
+/** Returns the ptr to the room located at the coordinate.
+ *
+ * If coord = (i,j), then this returns the room at the ith row from the bottom,
+ * jth column from the left */
+Vec2 GridModel::worldToRoomCoords(Vec2 coord)
+{
+    //TODO: convert to room row and column
+    //TODO: return null if not corresponding to a room
+    return coord;
 };
 
 /** Returns the ptr to the room located at the coordinate.

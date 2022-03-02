@@ -14,36 +14,37 @@
  * All game changes should be in a controller.
  */
 class CharacterModel : public cugl::physics2::BoxObstacle{
-    /**
-     * Apply non-game-logic changes
-     * apply velocity or what
-     * @param delta Time
-     */
-    void update(float delta);
-    /** Global Coord of the Character */
-    cugl::Vec2 _coord;
-    /** Velocity of the Character */
-    cugl::Vec2 _vel;
-
-    /**
-     * {@note by Barry:Feature request}
-     * after calling this function, I should be able to call setCharaterNode and get a PolygonNode
-     * @param texture
-     */
-    //void setTexture(Texture texture);
-
-
-    /**
-     * {@note by Barry: please complete documentation for every function}
-     * must be called after calling setTexture
-     * @return
-     */
-    const std::shared_ptr<cugl::scene2::PolygonNode>& getCharacterNode();
-    void setCharaterNode(const std::shared_ptr<cugl::scene2::SceneNode>& node);
-
-    //CharacterState getState();
-    //bool setState(CharacterState cs);
-
+//public:
+//    /**
+//     * Apply non-game-logic changes
+//     * apply velocity or what
+//     * @param delta Time
+//     */
+//    void update(float delta);
+//    /** Global Coord of the Character */
+//    cugl::Vec2 _coord;
+//    /** Velocity of the Character */
+//    cugl::Vec2 _vel;
+//
+//    /**
+//     * {@note by Barry:Feature request}
+//     * after calling this function, I should be able to call setCharaterNode and get a PolygonNode
+//     * @param texture
+//     */
+//    //void setTexture(Texture texture);
+//
+//
+//    /**
+//     * {@note by Barry: please complete documentation for every function}
+//     * must be called after calling setTexture
+//     * @return
+//     */
+//    const std::shared_ptr<cugl::scene2::PolygonNode>& getCharacterNode();
+//    void setCharaterNode(const std::shared_ptr<cugl::scene2::SceneNode>& node);
+//
+//    //CharacterState getState();
+//    //bool setState(CharacterState cs);
+//
 public:
     enum class CharacterState : int{
         MOVING,

@@ -34,6 +34,8 @@
 #include <sstream>
 
 using namespace cugl;
+using namespace std;
+
 
 
 #pragma mark -
@@ -85,7 +87,7 @@ using namespace cugl;
 GameScene::GameScene() : cugl::Scene2(),
 _complete(false),
 _debug(false)
-{    
+{
 }
 
 /**
@@ -151,10 +153,10 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     } else if (!Scene2::init(dimen)) {
         return false;
     }
-    
+
     // Start up the input handler
     _assets = assets;
-    _input.init();    
+    _input.init();
 
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect,gravity);
@@ -165,7 +167,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _world->beforeSolve = [this](b2Contact* contact, const b2Manifold* oldManifold) {
         beforeSolve(contact,oldManifold);
     };
-    
+
     // IMPORTANT: SCALING MUST BE UNIFORM
     // This means that we cannot change the aspect ratio of the physics world
     // Shift to center if a bad fit
@@ -176,27 +178,21 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _worldnode = scene2::SceneNode::alloc();
     _worldnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _worldnode->setPosition(offset);
-    
+
     _debugnode = scene2::SceneNode::alloc();
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
 
-//    _exitnode = scene2::Label::allocWithText("VICTORY!",_assets->get<Font>(PRIMARY_FONT));
-//	_exitnode->setAnchor(Vec2::ANCHOR_CENTER);
-//    _exitnode->setPosition(dimen/2.0f);
-//    _exitnode->setForeground(STATIC_COLOR);
-//    _exitnode->setVisible(false);
-    
+
     addChild(_worldnode);
     addChild(_debugnode);
-//    addChild(_exitnode);
-    
+
     populate();
     _active = true;
     _complete = false;
     setDebug(false);
-    
+
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::CORNFLOWER);
     return true;
@@ -212,7 +208,6 @@ void GameScene::dispose() {
         _world = nullptr;
         _worldnode = nullptr;
         _debugnode = nullptr;
-        //_exitnode = nullptr;
         _complete = false;
         _debug = false;
         Scene2::dispose();
@@ -232,7 +227,7 @@ void GameScene::reset() {
     _world->clear();
     _worldnode->removeAllChildren();
     _debugnode->removeAllChildren();
-    
+
     setComplete(false);
     populate();
 }
@@ -250,11 +245,17 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
+    //_reynard = ReynardModel::alloc(Vec2(50,50));
+    //TODO needs help
+    //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
 
-#pragma mark Models
-    //_reynard = make_shared<ReynardModel>(Vec2(50,50));
+    //    _grid = GridModel::alloc();
+    //    _grid->init(true,10,10);
+    //    _worldnode->addChild(_grid);
 
 
+    //    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
+    //    _grid->getPhysicsObjects();
 
 #pragma mark Rooms
     /////////////////////////////////////
@@ -269,70 +270,17 @@ void GameScene::populate() {
     _grid->setPosition(100,-100);
     _grid->getPhysicsObjects();
 
-    /////////////////////////////////////
-    // END DEBUG
-    /////////////////////////////////////
+
+
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
+    vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
+
+    for(itr = physics_objects->begin(); itr != physics_objects->end(); ++itr){
+        _world->addObstacle(*itr);
+    }
 }
-    
-//#pragma mark : Crates
-//    std::srand((int)std::time(0));
-//    for (int ii = 0; ii < 15; ii++) {
-//        // Pick a crate and random and generate the key
-//        int indx = (std::rand() % 2 == 0 ? 2 : 1);
-//        std::stringstream ss;
-//        ss << CRATE_PREFIX << (indx < 10 ? "0" : "" ) << indx;
-//
-//        // Create the sprite for this crate
-//        image  = _assets->get<Texture>(ss.str());
-//
-//        Vec2 boxPos(BOXES[2*ii], BOXES[2*ii+1]);
-//        Size boxSize(image->getSize()/_scale);
-//        auto crate = physics2::BoxObstacle::alloc(boxPos,boxSize);
-//        crate->setDebugColor(DYNAMIC_COLOR);
-//        crate->setName(ss.str());
-//        crate->setAngleSnap(0);             // Snap to the nearest degree
-//
-//        // Set the physics attributes
-//        crate->setDensity(CRATE_DENSITY);
-//        crate->setFriction(CRATE_FRICTION);
-//        crate->setAngularDamping(CRATE_DAMPING);
-//        crate->setRestitution(BASIC_RESTITUTION);
-//
-//        sprite = scene2::PolygonNode::allocWithTexture(image);
-//		sprite->setAnchor(Vec2::ANCHOR_CENTER);
-//        addObstacle(crate,sprite);   // PUT SAME TEXTURES IN SAME LAYER!!!
-//
-//    }
-//
-//#pragma mark : Rocket
-//    Vec2 rockPos = ((Vec2)ROCK_POS);
-//    image  = _assets->get<Texture>(ROCK_TEXTURE);
-//    Size rockSize(image->getSize()/_scale);
-//
-//    _rocket = RocketModel::alloc(rockPos,rockSize);
-//    _rocket->setDrawScale(_scale);
-//    _rocket->setDebugColor(DYNAMIC_COLOR);
-//
-//    auto rocketNode = scene2::PolygonNode::allocWithTexture(image);
-//	rocketNode->setAnchor(Vec2::ANCHOR_CENTER);
-//	_rocket->setShipNode(rocketNode);
-//
-//    // These will attach them to the ship node
-//    _rocket->setBurnerStrip(RocketModel::Burner::MAIN, _assets->get<Texture>(MAIN_FIRE_TEXTURE));
-//    _rocket->setBurnerStrip(RocketModel::Burner::LEFT, _assets->get<Texture>(LEFT_FIRE_TEXTURE));
-//    _rocket->setBurnerStrip(RocketModel::Burner::RIGHT,_assets->get<Texture>(RGHT_FIRE_TEXTURE));
-//
-//    // This just stores the keys
-//    _rocket->setBurnerSound(RocketModel::Burner::MAIN,  MAIN_FIRE_SOUND);
-//    _rocket->setBurnerSound(RocketModel::Burner::LEFT,  LEFT_FIRE_SOUND);
-//    _rocket->setBurnerSound(RocketModel::Burner::RIGHT, RGHT_FIRE_SOUND);
-//
-//    // Create the polygon node (empty, as the model will initialize)
-//    _worldnode->addChild(rocketNode);
-//    _rocket->setDebugScene(_debugnode);
-//    _world->addObstacle(_rocket);
-//}
-//
+
+
 /**
  * Adds the physics object to the physics world and loosely couples it to the scene graph
  *
@@ -379,11 +327,11 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle>& obj,
  */
 void GameScene::update(float dt) {
     _input.update(dt);
-    
+
     // Process the toggled key commands
     if (_input.didDebug()) {
         setDebug(!isDebug());
-        
+
     }
     if (_input.didReset()) { reset(); }
     if (_input.didExit())  {
@@ -395,22 +343,41 @@ void GameScene::update(float dt) {
         Vec2 end;
         start = _input.getSwipeStartEnd()[0];
         end = _input.getSwipeStartEnd()[1];
+        _envController->selectRoom(start);
+        _envController->swapWithSelected(end);
+        _world->clear();
+        
+        shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects;
+        physics_objects = _grid->getPhysicsObjects();
+        vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
+        vector<shared_ptr<physics2::PolygonObstacle>> physics_vec;
+        physics_vec = *physics_objects;
+        for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++){
+            _world->addObstacle(*ptr);
+        }
+    }
+    if (_input.didDashLeft()){
+
+    }
+    if (_input.didDashRight()){
+
+    }
+    if (_input.didJump()){
+
+    }
+    if (_input.didZoomIn()){
+
+    }
+    if (_input.didZoomOut()){
 
     }
 
-//    // Apply the force to the rocket
-//    _rocket->setFX(_input.getHorizontal() * _rocket->getThrust());
-//    _rocket->setFY(_input.getVertical() * _rocket->getThrust());
-//    _rocket->applyForce();
-//
-//    // Animate the three burners
-//    updateBurner(RocketModel::Burner::MAIN,  _rocket->getFY() >  1);
-//    updateBurner(RocketModel::Burner::LEFT,  _rocket->getFX() >  1);
-//    updateBurner(RocketModel::Burner::RIGHT, _rocket->getFX() <  -1);
 
-    // Turn the physics engine crank.
-    // TODO: Implement https://gafferongames.com/post/fix_your_timestep/
-    _world->update(dt);
+
+
+
+
+    _world->update(_stateController->getScaledDtForPhysics(dt));
 }
 
 
@@ -427,7 +394,11 @@ void GameScene::update(float dt) {
 void GameScene::beginContact(b2Contact* contact) {
     b2Body* body1 = contact->GetFixtureA()->GetBody();
     b2Body* body2 = contact->GetFixtureB()->GetBody();
-    
+
+//    if (body1 == _reynard or body2 == _reynard){
+//
+//    }
+
     // If we hit the "win" door, we are done
 //    intptr_t rptr = reinterpret_cast<intptr_t>(_rocket.get());
 //    intptr_t dptr = reinterpret_cast<intptr_t>(_goalDoor.get());
@@ -467,21 +438,7 @@ void GameScene::beforeSolve(b2Contact* contact, const b2Manifold* oldManifold) {
             speed = b2Dot(dv,worldManifold.normal);
         }
     }
-    
-    // Play a sound if above threshold
-//    if (speed > SOUND_THRESHOLD) {
-//        // These keys result in a low number of sounds.  Too many == distortion.
-//        physics2::Obstacle* data1 = reinterpret_cast<physics2::Obstacle*>(body1->GetUserData().pointer);
-//        physics2::Obstacle* data2 = reinterpret_cast<physics2::Obstacle*>(body2->GetUserData().pointer);
-//
-//        if (data1 != nullptr && data2 != nullptr) {
-//            std::string key = (data1->getName()+data2->getName());
-//            auto source = _assets->get<Sound>(COLLISION_SOUND);
-//            if (!AudioEngine::get()->isActive(key)) {
-//                AudioEngine::get()->play(key, source, false, source->getVolume());
-//            }
-//        }
-//    }
+
 }
 
 /**
@@ -500,4 +457,14 @@ Size GameScene::computeActiveSize() const {
         dimen *= SCENE_HEIGHT/dimen.height;
     }
     return dimen;
+}
+
+/**
+ * Render the scene. As this class is a scene and have many child node, calling super render will be enough
+ * A placeholder for future usage.
+ * @param batch The SpriteBatch to draw with.
+
+ */
+void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
+    Scene2::render(batch);
 }

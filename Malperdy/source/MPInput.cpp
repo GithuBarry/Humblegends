@@ -21,9 +21,19 @@ using namespace cugl;
 /** The key to use for reseting the game */
 #define RESET_KEY KeyCode::R
 /** The key for toggling the debug display */
-#define DEBUG_KEY KeyCode::D
+#define DEBUG_KEY KeyCode::P
 /** The key for exitting the game */
 #define EXIT_KEY  KeyCode::ESCAPE
+
+/** The key for exitting the game */
+#define DASH_RIGHT_KEY  KeyCode::D
+/** The key for exitting the game */
+#define DASH_LEFT_KEY  KeyCode::A
+/** The key for exitting the game */
+#define ZOOM_IN_KEY  KeyCode::Q
+/** The key for exitting the game */
+#define ZOOM_OUT_KEY  KeyCode::E
+
 
 /** How fast a double click must be in milliseconds */
 #define EVENT_DOUBLE_CLICK  400
@@ -55,8 +65,22 @@ _keyDown(false),
 _keyReset(false),
 _keyDebug(false),
 _keyExit(false),
-_horizontal(0.0f),
-_vertical(0.0f) {
+
+//Reynard Direct Presses
+_spaceDown(false),
+_qDown(false),
+_eDown(false),
+_aDown(false),
+_dDown(false),
+//Reynard Results/Outputs instantiated
+_jumpPressed(false),
+_dashRightPressed(false),
+_dashLeftPressed(false),
+_zoomInPressed(false),
+_zoomOutPressed(false)
+//_horizontal(0.0f),
+//_vertical(0.0f)
+{
 }
 
 /**
@@ -121,10 +145,16 @@ bool InputController::init() {
  * frame, so we need to accumulate all of the data together.
  */
 void InputController::update(float dt) {
-    int left = false;
-    int rght = false;
-    int up   = false;
-    int down = false;
+//    TODO: This code serves as a reference for the //Mobile controls section
+//    TODO: Please delete this section post second Sprint.
+    
+//    int left = false;
+//    int rght = false;
+//    int up   = false;
+//    int down = false;
+    
+    int space = false;
+
 
 #ifndef CU_TOUCH_SCREEN
     // DESKTOP CONTROLS
@@ -135,46 +165,70 @@ void InputController::update(float dt) {
     _keyDebug  = keys->keyPressed(DEBUG_KEY);
     _keyExit   = keys->keyPressed(EXIT_KEY);
     
-    left = keys->keyDown(KeyCode::ARROW_LEFT);
-    rght = keys->keyDown(KeyCode::ARROW_RIGHT);
-    up   = keys->keyDown(KeyCode::ARROW_UP);
-    down = keys->keyDown(KeyCode::ARROW_DOWN);
+    // Reynard Specific Code:
+    _dDown = keys->keyPressed(DASH_RIGHT_KEY);
+    _aDown = keys->keyPressed(DASH_LEFT_KEY);
+    _qDown = keys->keyPressed(ZOOM_IN_KEY);
+    _eDown = keys->keyPressed(ZOOM_OUT_KEY);
+
+    space = keys->keyDown(KeyCode::SPACE);
+    
+//    TODO: This code serves as a reference for the //Mobile controls section
+//    TODO: Please delete this section post second Sprint.
+//    left = keys->keyDown(KeyCode::ARROW_LEFT);
+//    rght = keys->keyDown(KeyCode::ARROW_RIGHT);
+//    up   = keys->keyDown(KeyCode::ARROW_UP);
+//    down = keys->keyDown(KeyCode::ARROW_DOWN);
+    
 #else
     // MOBILE CONTROLS
-    Vec3 acc = Input::get<Accelerometer>()->getAcceleration();
-    
-    // Measure the "steering wheel" tilt of the device
-    float pitch = atan2(-acc.x, sqrt(acc.y*acc.y + acc.z*acc.z));
-    
-    // Check if we turned left or right
-    left |= (pitch > EVENT_ACCEL_THRESH);
-    rght |= (pitch < -EVENT_ACCEL_THRESH);
-    up   |= _keyUp;
+//    TODO: This code is to be rewitten next sprint to allow for mobile controls
+//    Vec3 acc = Input::get<Accelerometer>()->getAcceleration();
+//
+//    // Measure the "steering wheel" tilt of the device
+//    float pitch = atan2(-acc.x, sqrt(acc.y*acc.y + acc.z*acc.z));
+//
+//    // Check if we turned left or right
+//    left |= (pitch > EVENT_ACCEL_THRESH);
+//    rght |= (pitch < -EVENT_ACCEL_THRESH);
+//    up   |= _keyUp;
 #endif
 
+    // USE INTERNAL PRIVATE VARIABLES TO CHANGE THE EXTERNAL FLAGS
     _resetPressed = _keyReset;
     _debugPressed = _keyDebug;
     _exitPressed  = _keyExit;
     
-    // Directional controls
-    _horizontal = 0.0f;
-    if (rght) {
-        _horizontal += 1.0f;
-    }
-    if (left) {
-        _horizontal -= 1.0f;
-    }
+    _jumpPressed = space;
+    _dashRightPressed = _dDown;
+    _dashLeftPressed = _aDown;
+    _zoomInPressed = _qDown;
+    _zoomOutPressed = _eDown;
 
-    _vertical = 0.0f;
-    if (up) {
-        _vertical += 1.0f;
-    }
-    if (down) {
-        _vertical -= 1.0f;
-    }
+    
+    
+    
+//TRUNCATED CODE TO BE DELETED BEFORE PUSHING
+//    // Directional controls
+//    _horizontal = 0.0f;
+//    if (rght) {
+//        _horizontal += 1.0f;
+//    }
+//    if (left) {
+//        _horizontal -= 1.0f;
+//    }
+//
+//    _vertical = 0.0f;
+//    if (up) {
+//        _vertical += 1.0f;
+//    }
+//    if (down) {
+//        _vertical -= 1.0f;
+//    }
 
 
 // If it does not support keyboard, we must reset "virtual" keyboard
+//    TODO: ADD TO THIS WHEN DOING SPRINT 2 (Might cause bugs without it)
 #ifdef CU_TOUCH_SCREEN
     _keyDebug = false;
     _keyReset = false;
@@ -184,14 +238,23 @@ void InputController::update(float dt) {
 
 /**
  * Clears any buffered inputs so that we may start fresh.
+ * This is primarily handled by setting all flags to false
  */
 void InputController::clear() {
     _resetPressed = false;
     _debugPressed = false;
     _exitPressed  = false;
     
-    _horizontal = 0.0f;
-    _vertical   = 0.0f;
+    _jumpPressed = false;
+    _dashRightPressed = false;
+    _dashLeftPressed = false;
+    _zoomInPressed = false;
+    _zoomOutPressed = false;
+
+    
+// DECREENTED CODE TOBE DELETED PRIOR TO PUSHING
+//    _horizontal = 0.0f;
+//    _vertical   = 0.0f;
     
     _dtouch = Vec2::ZERO;
     _timestamp.mark();
@@ -199,36 +262,39 @@ void InputController::clear() {
 
 #pragma mark -
 #pragma mark Touch Callbacks
-/**
- * Callback for the beginning of a touch event
- *
- * @param t     The touch information
- * @param event The associated event
- */
-void InputController::touchBeganCB(const cugl::TouchEvent& event, bool focus) {
-    // All touches correspond to key up
-    _keyUp = true;
-     
-    // Update the touch location for later gestures
-    _timestamp = event.timestamp;
-    _dtouch = event.position;
-}
+
+///**
+// * Callback for the beginning of a touch event
+// *
+// * @param t     The touch information
+// * @param event The associated event
+// */
+
+//void InputController::touchBeganCB(const cugl::TouchEvent& event, bool focus) {
+//    // All touches correspond to key up
+//    _keyUp = true;
+//
+//    // Update the touch location for later gestures
+//    _timestamp = event.timestamp;
+//    _dtouch = event.position;
+//}
  
-/**
- * Callback for the end of a touch event
- *
- * @param t     The touch information
- * @param event The associated event
- */
-void InputController::touchEndedCB(const cugl::TouchEvent& event, bool focus) {
-    // Gesture has ended.  Give it meaning.
-    cugl::Vec2 diff = event.position-_dtouch;
-    bool fast = (event.timestamp.ellapsedMillis(_timestamp) < EVENT_SWIPE_TIME);
-    _keyReset = fast && diff.x < -EVENT_SWIPE_LENGTH;
-    _keyExit  = fast && diff.x > EVENT_SWIPE_LENGTH;
-    _keyDebug = fast && diff.y > EVENT_SWIPE_LENGTH;
-    _keyUp = false;
-}
+///**
+// * Callback for the end of a touch event
+// *
+// * @param t     The touch information
+// * @param event The associated event
+// */
+
+//void InputController::touchEndedCB(const cugl::TouchEvent& event, bool focus) {
+//    // Gesture has ended.  Give it meaning.
+//    cugl::Vec2 diff = event.position-_dtouch;
+//    bool fast = (event.timestamp.ellapsedMillis(_timestamp) < EVENT_SWIPE_TIME);
+//    _keyReset = fast && diff.x < -EVENT_SWIPE_LENGTH;
+//    _keyExit  = fast && diff.x > EVENT_SWIPE_LENGTH;
+//    _keyDebug = fast && diff.y > EVENT_SWIPE_LENGTH;
+//    _keyUp = false;
+//}
 
 bool InputController::didEndSwipe() { 
     //TODO

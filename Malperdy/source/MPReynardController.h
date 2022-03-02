@@ -33,7 +33,7 @@ public:
      * and slowed (such as if he is zoomed out looking at the map).
      * [IF you want to change REYNARD and one of his interactions to something within the world
      * YOU DO THAT HERE]**/
-    void updateMode(CharacterModel::CharacterState c);
+    void updateMode(ReynardModel::ReynardState c);
 
     /**Whenever Reynard hits a horizontal wall, this function is called and turns him around
      * His velocity will be turned to whatever the negative of whatever the Constant his speed
@@ -43,7 +43,12 @@ public:
     /**This function is what is jused to check if Reynard could jump at a given time and if he
      * can jump it makes him jump and return true (if he cannot it will return false)
      * If Reynard's state is already jumping**/
-    bool resolveJump ();
+    bool resolveJump();
+    
+    /**This function is what is jused to check if Reynard could jump at a given time and if he
+     * can jump it makes him jump and return true (if he cannot it will return false)
+     * If Reynard's state is already jumping**/
+//    bool resolveDash();
 
 };
 
