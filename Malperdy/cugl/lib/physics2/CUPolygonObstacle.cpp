@@ -276,6 +276,7 @@ void PolygonObstacle::resetDebug() {
     if (_debug == nullptr) {
         _debug = scene2::WireNode::allocWithTraversal(_polygon,poly2::Traversal::INTERIOR);
         _debug->setColor(_dcolor);
+        _debug->setContentSize(_polygon.getBounds().size);
         if (_scene != nullptr) {
             _scene->addChild(_debug);
         }

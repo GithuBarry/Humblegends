@@ -61,8 +61,7 @@ protected:
     // VIEW
     /** Reference to the physics root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _worldnode;
-    /** Reference to the debug root of the scene graph */
-    std::shared_ptr<cugl::scene2::SceneNode> _debugnode;
+
     //    /** Reference to the exit message label */
     //    std::shared_ptr<cugl::scene2::Label> _exitnode;
 
@@ -123,6 +122,8 @@ protected:
 public:
 #pragma mark -
 #pragma mark Constructors
+    /** Reference to the debug root of the scene graph */
+    std::shared_ptr<cugl::scene2::SceneNode> _debugnode;
 
     /**
      * Creates a new game world with the default values.
