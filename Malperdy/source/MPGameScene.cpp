@@ -261,20 +261,20 @@ void GameScene::populate() {
     /////////////////////////////////////
     // DEBUG: add room to scene graph
     /////////////////////////////////////
-    /*shared_ptr<GridModel> _grid = make_shared<GridModel>();
+    shared_ptr<GridModel> _grid = make_shared<GridModel>();
     _grid->init(true, 10, 10);
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.5);
     _grid->setPosition(-100,-100);
     _grid->getPhysicsObjects();
-    _grid->swapRooms(Vec2(0,0), Vec2(1,1));*/
+    _grid->swapRooms(Vec2(0,0), Vec2(1,1));
 
-    shared_ptr<RoomModel> _room = RoomModel::alloc(0, 0, "leftrightup");
-    _worldnode->addChild(_room);
+    /*shared_ptr<RoomModel> _room = RoomModel::alloc(0, 0, "leftrightup");
+    _worldnode->addChild(_room);*/
 
-    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
-    //shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
+    //shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
 
     vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
 
