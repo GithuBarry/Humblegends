@@ -13,8 +13,11 @@
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController(){
+	CULog("initializing env controller");
 	_grid = std::make_shared<GridModel>();
+	CULog("location B");
 	_grid->init();
+	CULog("location C");
 	_toSwap = NULL;
 }
 

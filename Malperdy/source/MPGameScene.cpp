@@ -195,6 +195,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _complete = false;
     setDebug(false);
 
+    _envController = make_shared<EnvController>();
+
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::CORNFLOWER);
     return true;
