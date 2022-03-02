@@ -196,10 +196,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     populate();
     _active = true;
     _complete = false;
-    setDebug(true);
 
-    // XNA nostalgia
-    Application::get()->setClearColor(Color4f::CORNFLOWER);
+    // XNA nostalg_debugnodeia
+    Application::get()->setClearColor(Color4f::WHITE);
     return true;
 }
 
@@ -280,6 +279,8 @@ void GameScene::populate() {
 
     for (itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
+        (*itr)->setDebugScene(_debugnode);
+        (*itr)->setDebugColor(Color4::RED);
     }
     
 
@@ -321,6 +322,7 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle>& obj,
     const std::shared_ptr<scene2::SceneNode>& node) {
     _world->addObstacle(obj);
     obj->setDebugScene(_debugnode);
+    obj->setDebugColor(Color4::RED);
 
     // Position the scene graph node (enough for static objects)
     node->setPosition(obj->getPosition() * _scale);
@@ -355,9 +357,11 @@ void GameScene::update(float dt) {
 
     // Process the toggled key commands
     if (_input.didDebug()) {
-        //setDebug(!isDebug());
-
+        setDebug(!isDebug());
+        _worldnode->setVisible(! _worldnode->isVisible());
     }
+
+
     // Reset Process toggled by key command
     if (_input.didReset()) { reset(); }
     // Exit Process toggled by key command

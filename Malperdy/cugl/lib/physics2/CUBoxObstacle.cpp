@@ -109,6 +109,7 @@ void BoxObstacle::resize(const Size size) {
 void BoxObstacle::resetDebug() {
     if (_debug == nullptr) {
         _debug = scene2::WireNode::allocWithPath(Rect(Vec2::ZERO,_dimension));
+        _debug->setContentSize(_dimension);
         _debug->setColor(_dcolor);
         if (_scene != nullptr) {
             _scene->addChild(_debug);
