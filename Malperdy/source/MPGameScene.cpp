@@ -71,6 +71,8 @@ using namespace std;
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
 
+float REYNARD_POS[] = { 20.0f, 10.0f};
+
 #pragma mark Physics Constants
 
 
@@ -245,9 +247,18 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
-    _reynard = ReynardModel::alloc(Vec2(10,10));
+    Vec2 reyPos = REYNARD_POS;
+    std::shared_ptr<Texture> image;
+    std::shared_ptr<scene2::PolygonNode> sprite;
+    image = _assets->get<Texture>("rocket");
+    _reynard = ReynardModel::alloc(reyPos,image->getSize()/_scale);
+    sprite = scene2::PolygonNode::allocWithTexture(image);
+    _reynard->setSceneNode(sprite);
+    addObstacle(_reynard,sprite); // Put this at the very front
+
+  
+    
     //TODO needs help
-    addObstacle((const shared_ptr<physics2::BoxObstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode>) _reynard->getCharacterNode());
 
     //    _grid = GridModel::alloc();
     //    _grid->init(true,10,10);
@@ -268,7 +279,6 @@ void GameScene::populate() {
 
     shared_ptr<RoomModel> _room = RoomModel::alloc(50,50,"leftright");
     _worldnode->addChild(_room);
-
 
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
     vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
