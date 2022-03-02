@@ -1,16 +1,14 @@
 //
-//  RDInput.h
-//  Rocket Demo
+//  MPInput.h
+//  Malperdy
 //
-//  This input controller is primarily designed for keyboard control.  On mobile
-//  you will notice that we use gestures to emulate keyboard commands. They even
-//  use the same variables (though we need other variables for internal keyboard
-//  emulation).  This simplifies our design quite a bit.
+//  This file is based on the CS 4152 RocketDemo by Walker White, 2017
+//  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
+//  Additional reference was from the CS 4152 Geometry Labby Walker White, 2022
 //
-//  This file is based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
-//
-//  Author: Walker White
-//  Version: 1/10/17
+//  Author: Humblegends
+//  Contributors: Spencer Hurst, Jordan Selin
+//  Version: 3/01/2022
 //
 #ifndef __MP_INPUT_H__
 #define __MP_INPUT_H__
@@ -60,9 +58,22 @@ private:
     /** Whether the c key is down */
     bool  _dDown;
 
+    // GENERAL TOUCH SUPPORT
+    /** Whether there is an active button/touch press */
+    bool _currDown;
+    /** Whether there was an active button/touch press last frame*/
+    bool _prevDown;
+    /** The current touch/mouse position */
+    cugl::Vec2 _currPos;
 
+    // MOUSE SUPPORT
+    /** Whether the (left) mouse button is down */
+    bool _mouseDown;
+    /** The mouse position (for mice-based interfaces) */
+    cugl::Vec2 _mousePos;
+    /** The key for the mouse listeners */
+    Uint32 _mouseKey;
 
-    // TOUCH SUPPORT
     /** The initial touch location for the current gesture */
     cugl::Vec2 _dtouch;
     /** The timestamp for the beginning of the current gesture */
@@ -76,10 +87,6 @@ protected:
     bool _debugPressed;
     /** Whether the exit action was chosen. */
     bool _exitPressed;
-//    /** How much did we move horizontally? */
-//    float _horizontal;
-//    /** How much did we move vertically? */
-//    float _vertical;
     
     // INPUT RESULTS SPECIFICALLY FOR REYNARD
     /** Whether the jump action was chosen. */
@@ -156,24 +163,7 @@ public:
     
 #pragma mark -
 #pragma mark Input Results
-//    /**
-//     * Returns the amount of sideways movement.
-//     *
-//     * -1 = left, 1 = right, 0 = still
-//     *
-//     * @return the amount of sideways movement.
-//     */
-//    float getHorizontal() const { return _horizontal; }
-//
-//    /**
-//     * Returns the amount of vertical movement.
-//     *
-//     * -1 = down, 1 = up, 0 = still
-//     *
-//     * @return the amount of vertical movement.
-//     */
-//    float getVertical() const { return _vertical; }
-//
+    
     /**
      * Returns true if the reset button was pressed.
      *
@@ -229,12 +219,33 @@ public:
      * @return true if the jump button was pressed.
      */
     bool didJump() const { return _jumpPressed; }
-    
+
+    /**
+     * Return true if the user initiated a press this frame.
+     *
+     * A press means that the user is pressing (button/finger) this
+     * animation frame, but was not pressing during the last frame.
+     *
+     * @return true if the user initiated a press this frame.
+     */
+    bool didPress() const {
+        return !_prevDown && _currDown;
+    }
+
+    /**
+     * Returns the current mouse/touch position
+     *
+     * @return the current mouse/touch position
+     */
+    const cugl::Vec2& getPosition() const {
+        return _currPos;
+    }
     
     /**
      * @return Whether a swipe just ended
      */
     bool didEndSwipe();
+
     /**
      * @return the start and the end global coordinates of a swipe (mobile and mouse)
      * in form of [start_pos, end_pos]
@@ -244,6 +255,31 @@ public:
     
     
 #pragma mark -
+
+#pragma mark Mouse Callbacks
+private:
+    /**
+     * Call back to execute when a mouse button is first pressed.
+     *
+     * This function will record a press only if the left button is pressed.
+     *
+     * @param event     The event with the mouse information
+     * @param clicks    The number of clicks (for double clicking)
+     * @param focus     Whether this device has focus (UNUSED)
+     */
+    void buttonDownCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus);
+
+    /**
+     * Call back to execute when a mouse button is first released.
+     *
+     * This function will record a release for the left mouse button.
+     *
+     * @param event     The event with the mouse information
+     * @param clicks    The number of clicks (for double clicking)
+     * @param focus     Whether this device has focus (UNUSED)
+     */
+    void buttonUpCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus);
+
 #pragma mark Touch Callbacks
     /**
      * Callback for the beginning of a touch event

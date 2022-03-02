@@ -17,10 +17,12 @@
 //  classes and how they are initialized will need to be changed if you add
 //  dynamic level loading.
 //
-//  This file is based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
+//  This file is based on the CS 4152 RocketDemo by Walker White, 2017
+//  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //
-//  Author: Walker White
-//  Version: 1/10/17
+//  Author: Humblegends
+//  Contributors: Barry Wang, Jordan Selin
+//  Version: 3/01/2022
 //
 #include "MPGameScene.h"
 
@@ -333,7 +335,36 @@ void GameScene::update(float dt) {
         CULog("Shutting down");
         Application::get()->quit();
     }
-    if (_input.didEndSwipe()){
+    if (_input.didPress()) {
+        //TODO: check if reynard is in the room before selecting or swapping
+        //TODO: debug the commented code below
+        /*CULog("did press");
+        bool hasSwapped = false;
+        if (_envController->hasSelected()) {
+            CULog("Trying to select a room");
+            bool check = _envController->swapWithSelected(_input.getPosition());
+            if (check) CULog("Selected a room successfully");
+        }
+        else {
+            hasSwapped = _envController->selectRoom(_input.getPosition());
+            if (hasSwapped) CULog("Swapped rooms successfully");
+        }*/
+        //TODO: test code below once above chunk has been debugged
+        /*if (hasSwapped) {
+            _world->clear();
+
+            shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects;
+            physics_objects = _grid->getPhysicsObjects();
+            vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
+            vector<shared_ptr<physics2::PolygonObstacle>> physics_vec;
+            physics_vec = *physics_objects;
+            for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++) {
+                _world->addObstacle(*ptr);
+            }
+        }*/
+    }
+    //TODO: delete once code above has been debugged
+    /*if (_input.didEndSwipe()) {
         Vec2 start;
         Vec2 end;
         start = _input.getSwipeStartEnd()[0];
@@ -350,7 +381,7 @@ void GameScene::update(float dt) {
         for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++){
             _world->addObstacle(*ptr);
         }
-    }
+    }*/
     if (_input.didDashLeft()){
 
     }
