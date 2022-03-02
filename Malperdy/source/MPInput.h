@@ -58,11 +58,15 @@ private:
     /** Whether the c key is down */
     bool  _dDown;
 
-    // TOUCH SUPPORT
+    // GENERAL TOUCH SUPPORT
     /** Whether there is an active button/touch press */
     bool _currDown;
     /** Whether there was an active button/touch press last frame*/
     bool _prevDown;
+    /** The current touch/mouse position */
+    cugl::Vec2 _currPos;
+
+    // MOUSE SUPPORT
     /** Whether the (left) mouse button is down */
     bool _mouseDown;
     /** The mouse position (for mice-based interfaces) */
@@ -226,6 +230,15 @@ public:
      */
     bool didPress() const {
         return !_prevDown && _currDown;
+    }
+
+    /**
+     * Returns the current mouse/touch position
+     *
+     * @return the current mouse/touch position
+     */
+    const cugl::Vec2& getPosition() const {
+        return _currPos;
     }
     
     /**

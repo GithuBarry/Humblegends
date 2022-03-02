@@ -133,7 +133,7 @@ bool InputController::init() {
             });
         mouse->addReleaseListener(_mouseKey, [=](const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
             this->buttonUpCB(event, clicks, focus);
-});
+        });
     }
     else success = false;
 #else
@@ -192,6 +192,7 @@ void InputController::update(float dt) {
     space = keys->keyDown(KeyCode::SPACE);
 
     _currDown = _mouseDown;
+    _currPos = _mousePos;
     
 //    TODO: This code serves as a reference for the //Mobile controls section
 //    TODO: Please delete this section post second Sprint.
