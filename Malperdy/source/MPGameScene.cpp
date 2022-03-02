@@ -268,7 +268,7 @@ void GameScene::populate() {
     /////////////////////////////////////
     shared_ptr<GridModel> _grid = make_shared<GridModel>();
     _grid->init(true, 10, 10);
-    //shared_ptr<RoomModel> _room = RoomModel::alloc(50, 50, "leftrightup");
+    shared_ptr<RoomModel> _room = RoomModel::alloc(50, 50, "leftrightup");
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.3);
@@ -364,7 +364,8 @@ void GameScene::update(float dt) {
         for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++){
             _world->addObstacle(*ptr);
         }
-    }*/
+    }
+    
     if (_input.didDashLeft()){
 
     }
