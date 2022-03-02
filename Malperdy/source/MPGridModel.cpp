@@ -28,10 +28,11 @@ shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testleve
  * Deafult init
  * @return a grid with 3x3 rooms, each room the default
  */
-bool GridModel::init(bool json, float hgap, float vgap)
+bool GridModel::init(float scale, bool json, float hgap, float vgap)
 {
     _horizontal_gap = hgap;
     _vertical_gap = vgap;
+    _physics_scale =  scale;
     
     if(!json){
         _grid = vector<vector<shared_ptr<RoomModel>>>();
@@ -238,18 +239,11 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
                 pos = this->nodeToWorldCoords(pos);
                 
                 Poly2 poly = p->getPolygon();
+                poly += offset;
+                poly / _physics_scale;
 
                 shared_ptr<physics2::PolygonObstacle> obstacleCopy = physics2::PolygonObstacle::alloc(poly, Vec2::ZERO);
                 obstacleCopy->setBodyType(b2_staticBody);
-                
-                obstacleCopy->Obstacle::setPosition(pos);
-                
-//                CULog("We are in row: %i, col: %i", r, c);
-//                CULog("Creating obstacle at: %f, %f", obstacleCopy->Obstacle::getX(), obstacleCopy->Obstacle::getY());
-//
-//                Vec2 roomCoord = gridSpaceToRoom(obstacleCopy->getPosition());
-//                CULog("In room: %f,%f", roomCoord.x, roomCoord.y);
-                
                 obstacles->push_back(obstacleCopy);
             }
             c++;
@@ -282,7 +276,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     se.clear();
     se.set(path);
     se.calculate(0.1);
-    shared_ptr<physics2::PolygonObstacle> left = physics2::PolygonObstacle::alloc(se.getPolygon(), Vec2::ZERO);
+    shared_ptr<physics2::PolygonObstacle> left = physics2::PolygonObstacle::alloc(se.getPolygon()/_physics_scale, Vec2::ZERO);
     left->setBodyType(b2_staticBody);
     obstacles->push_back(left);
     
@@ -291,7 +285,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     se.clear();
     se.set(path);
     se.calculate(0.1);
-    shared_ptr<physics2::PolygonObstacle> right = physics2::PolygonObstacle::alloc(se.getPolygon(), Vec2::ZERO);
+    shared_ptr<physics2::PolygonObstacle> right = physics2::PolygonObstacle::alloc(se.getPolygon()/_physics_scale, Vec2::ZERO);
     right->setBodyType(b2_staticBody);
     obstacles->push_back(right);
     
@@ -300,7 +294,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     se.clear();
     se.set(path);
     se.calculate(0.1);
-    shared_ptr<physics2::PolygonObstacle> bottom = physics2::PolygonObstacle::alloc(se.getPolygon(), Vec2::ZERO);
+    shared_ptr<physics2::PolygonObstacle> bottom = physics2::PolygonObstacle::alloc(se.getPolygon()/_physics_scale, Vec2::ZERO);
     bottom->setBodyType(b2_staticBody);
     obstacles->push_back(bottom);
     
@@ -309,7 +303,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     se.clear();
     se.set(path);
     se.calculate(0.1);
-    shared_ptr<physics2::PolygonObstacle> top = physics2::PolygonObstacle::alloc(se.getPolygon(), Vec2::ZERO);
+    shared_ptr<physics2::PolygonObstacle> top = physics2::PolygonObstacle::alloc(se.getPolygon()/_physics_scale, Vec2::ZERO);
     top->setBodyType(b2_staticBody);
     obstacles->push_back(top);
     /// END MAKING BOUNDS OF LEVEL

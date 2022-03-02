@@ -265,6 +265,9 @@ void GameScene::populate() {
     //shared_ptr<RoomModel> _room = RoomModel::alloc(50, 50, "leftrightup");
 
     _worldnode->addChild(_grid);
+    _grid->setScale(0.3);
+    _grid->setPosition(100,-100);
+    _grid->getPhysicsObjects();
 
     /////////////////////////////////////
     // END DEBUG
