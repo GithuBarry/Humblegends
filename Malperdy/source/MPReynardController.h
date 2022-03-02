@@ -10,19 +10,17 @@
 #include "MPCharacterModel.h"
 #include "MPReynardModel.h"
 
-class MPReynardController {
+class ReynardController {
 
 private:
     ReynardModel _reynard;
 
 public:
     /**This is the constructor of the Reynard Controller**/
-    MPReynardController(ReynardModel r);
+    ReynardController(ReynardModel r);
 
     /**This allows someone to grab the instantiated Reynard from this controller**/
-    ReynardModel getReynard(){
-        return _reynard;
-    }
+    ReynardModel getReynard(){ return _reynard; }
 
     /** [update] This will automatically update Reynard's position and look at other
      * things in the future like health.*/
@@ -48,7 +46,7 @@ public:
     /**This function is what is jused to check if Reynard could jump at a given time and if he
      * can jump it makes him jump and return true (if he cannot it will return false)
      * If Reynard's state is already jumping**/
-//    bool resolveDash();
+    bool resolveDash();
 
 };
 

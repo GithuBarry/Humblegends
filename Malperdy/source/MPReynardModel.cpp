@@ -62,6 +62,7 @@ bool ReynardModel::init(const Vec2 pos) {
     setPosition(pos);
     _velocity = Vec2(1.0, 1.0);
     setVelocity(_velocity);
+    _currentState = ReynardState::SPAWN;
     setJumping(DEFAULT_IS_JUMPING);
     setDashing(DEFAULT_IS_DASHING);
     return true;

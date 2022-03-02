@@ -47,6 +47,8 @@ protected:
         JUMPING,
         TRAPPED
     };
+    /** This int represents the current state of Reynard at any given moment */
+    ReynardState _currentState;
     /** Bool representing if Reynard is currently jumping */ 
     bool _isJumping; 
     /** How long till Reynard can hump again */ 
@@ -108,6 +110,20 @@ public:
      * @return the x-component of the position applied to Reynard.
      */
     float getPositionY() const { return _position.y; }
+    
+    /**
+     * This function will return the current state of our boy Reynard.
+     *
+     * @return the enum Reynard State of the instantiated reynard model.
+     */
+    ReynardState getCurrentState() const { return _currentState; }
+    
+    /**
+     * This function allows you to set the current state of Reynard .
+     *
+     * @return the enum Reynard State of the instantiated reynard model.
+     */
+    void setCurrentState(const ReynardState cS) { _currentState = cS; }
 
     /**
      */

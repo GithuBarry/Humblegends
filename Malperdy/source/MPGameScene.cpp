@@ -373,8 +373,6 @@ void GameScene::update(float dt) {
 
 
 
-
-
     _world->update(_stateController->getScaledDtForPhysics(dt));
 }
 
