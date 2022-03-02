@@ -181,6 +181,12 @@ public:
 
     /** Returns whether the rooms can be swapped or not */
     bool canSwap(Vec2 room1, Vec2 room2);
+    
+#pragma mark Helpers
+
+    Poly2 convertToScreen(Poly2 poly);
 };
+
+
 
 #endif /* MPGridModel_h */

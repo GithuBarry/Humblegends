@@ -262,7 +262,7 @@ void GameScene::populate() {
     // DEBUG: add room to scene graph
     /////////////////////////////////////
     shared_ptr<GridModel> _grid = make_shared<GridModel>();
-    _grid->init(true, 10, 10);
+    _grid->init(_scale, true, 10, 10);
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.5);

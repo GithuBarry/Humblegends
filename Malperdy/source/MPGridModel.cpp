@@ -247,13 +247,11 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
             
             for (shared_ptr<physics2::PolygonObstacle> p : *room_obstacles)
             {
-                Vec2 pos = p->getPosition();
-                pos += offset;
-                pos = this->nodeToWorldCoords(pos);
                 
                 Poly2 poly = p->getPolygon();
                 poly += offset;
-                poly / _physics_scale;
+                poly = convertToScreen(poly);
+                poly /= _physics_scale;
 
                 shared_ptr<physics2::PolygonObstacle> obstacleCopy = physics2::PolygonObstacle::alloc(poly, Vec2::ZERO);
                 obstacleCopy->setBodyType(b2_staticBody);
@@ -322,4 +320,14 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     /// END MAKING BOUNDS OF LEVEL
 
     return obstacles;
+};
+
+#pragma mark Helpers
+
+Poly2 GridModel::convertToScreen(Poly2 poly){
+    vector<Vec2> verts;
+    for(Vec2 v  : poly.getVertices()){
+        verts.push_back(this->scene2::SceneNode::nodeToScreenCoords(v));
+    }
+    return Poly2(verts);
 };
