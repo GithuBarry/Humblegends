@@ -281,6 +281,7 @@ void GameScene::populate() {
     for (itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
     }
+    
 
 #pragma mark Reynard
     Vec2 reyPos = Vec2(3, 9);
@@ -294,6 +295,14 @@ void GameScene::populate() {
     _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
     _reynard->setSceneNode(sprite);
     addObstacle(_reynard, sprite); // Put this at the very front
+    
+    CULog("reynard position is:  %f,%f", _reynard->getPosition().x, _reynard->getPosition().y);
+    
+    PolyFactory pf;
+    shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
+    po->init(pf.makeNgon(Vec2(3,3), 2, 4));
+    _world->addObstacle(po);
+    
 }
 
 
