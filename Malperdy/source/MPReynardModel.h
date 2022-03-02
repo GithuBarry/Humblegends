@@ -43,6 +43,7 @@
 //
 #ifndef __MP_REYNARD_MODEL_H__
 #define __MP_REYNARD_MODEL_H__
+
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUBoxObstacle.h>
 #include <cugl/physics2/CUCapsuleObstacle.h>
@@ -65,9 +66,11 @@
 /** The maximum character speed */
 #define DUDE_MAXSPEED   5.0f
 
+using namespace cugl;
 
 #pragma mark -
 #pragma mark Reynard Model
+
 /**
 * Player avatar for the plaform game.
 *
@@ -90,7 +93,7 @@ protected:
     /** Which direction is the character facing */
     bool _faceRight;
     /** How long until we can jump again */
-    int  _jumpCooldown;
+    int _jumpCooldown;
     /** Whether we are actively jumping */
     bool _isJumping;
     /** Bool representing if Reyanrd is current dashing */
@@ -99,10 +102,8 @@ protected:
     int  _dashCooldown;
     /** How long until we can shoot again */
     bool _isGrounded;
-    /** Whether we are actively shooting */
-    bool _isShooting;
     /** Ground sensor to represent our feet */
-    b2Fixture*  _sensorFixture;
+    b2Fixture *_sensorFixture;
     /** Reference to the sensor name (since a constant cannot have a pointer) */
     std::string _sensorName;
     /** The node for debugging the sensor */
@@ -139,6 +140,7 @@ public:
 
 
 #pragma mark Hidden Constructors
+
     /**
      * Creates a degenerate Dude object.
      *
@@ -176,7 +178,7 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, const cugl::Size& size);
+    virtual bool init(const cugl::Vec2 &pos, const cugl::Size &size, float drawScale);
 
 
 #pragma mark -
@@ -197,15 +199,15 @@ public:
      *
      * @return  A newly allocated DudeModel at the given position with the given scale
      */
-    static std::shared_ptr<ReynardModel> alloc(const cugl::Vec2& pos, const cugl::Size& size) {
+    static std::shared_ptr<ReynardModel> alloc(const cugl::Vec2 &pos, const cugl::Size &size, float drawScale) {
         std::shared_ptr<ReynardModel> result = std::make_shared<ReynardModel>();
-        return (result->init(pos, size) ? result : nullptr);
+        return (result->init(pos, size, drawScale) ? result : nullptr);
     }
-
 
 
 #pragma mark -
 #pragma mark Animation
+
     /**
      * Returns the scene graph node representing this DudeModel.
      *
@@ -215,7 +217,9 @@ public:
      *
      * @return the scene graph node representing this DudeModel.
      */
-    const std::shared_ptr<cugl::scene2::SceneNode>& getSceneNode() const { return _node; }
+    const std::shared_ptr<cugl::scene2::SceneNode> &getSceneNode() const {
+        return _node;
+    }
 
     /**
      * Sets the scene graph node representing this DudeModel.
@@ -235,7 +239,7 @@ public:
      *
      * @param node  The scene graph node representing this DudeModel, which has been added to the world node already.
      */
-    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode>& node) {
+    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode> &node) {
         _node = node;
         _node->setPosition(getPosition() * _drawScale);
     }
@@ -243,6 +247,7 @@ public:
 
 #pragma mark -
 #pragma mark Attribute Properties
+
     /**
      * Returns left/right movement of this character.
      *
@@ -280,8 +285,10 @@ public:
      *
      * @return true if the dude is actively jumping.
      */
-    bool isJumping() const { return _isJumping && _jumpCooldown <= 0; }
-    
+    bool isJumping() const {
+        return _isJumping && _jumpCooldown <= 0;
+    }
+
     /**
      * Returns true if the dude is actively jumping.
      *
@@ -363,11 +370,29 @@ public:
      *
      * @return true if this character is facing right
      */
-    bool isFacingRight() const { return _faceRight; }
+    bool isFacingRight() const {
+        return _faceRight;
+    }
+
+
+    /**
+     * Sets the current position for this physics body
+     *
+     * This method converts from a CUGL vector type to a Box2D vector type. This
+     * cuts down on the confusion between vector types.
+     *
+     * @param value  the current position for this physics body
+     */
+    virtual void setPosition(const Vec2 value) override {
+        CULog("CALLED");
+        SimpleObstacle::setPosition(value);
+        _node->setPosition(value * _drawScale);
+    }
 
 
 #pragma mark -
 #pragma mark Physics Methods
+
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      *
