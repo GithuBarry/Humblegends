@@ -63,10 +63,10 @@ protected:
     std::shared_ptr<cugl::scene2::SceneNode> _worldnode;
     /** Reference to the debug root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _debugnode;
-//    /** Reference to the exit message label */
-//    std::shared_ptr<cugl::scene2::Label> _exitnode;
+    //    /** Reference to the exit message label */
+    //    std::shared_ptr<cugl::scene2::Label> _exitnode;
 
-    /** The Box2D world */
+        /** The Box2D world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
     float _scale;
@@ -79,11 +79,11 @@ protected:
 
     /** Reference to the Reynard avatar */
     std::shared_ptr<ReynardModel> _reynard;
-//    std::shared_ptr<ReynardController> _reynardController; //TODO waiting for ReynardController
+    //    std::shared_ptr<ReynardController> _reynardController; //TODO waiting for ReynardController
     std::shared_ptr<GridModel> _grid;
     std::shared_ptr<EnvController> _envController;
-    std::shared_ptr<GameStateController> _stateController;
-    
+    std::shared_ptr<GameStateController> _stateController = make_shared<GameStateController>();
+
 
     /** Whether we have completed this "game" */
     bool _complete;
@@ -109,8 +109,8 @@ protected:
      * param obj    The physics object to add
      * param node   The scene graph node to attach it to
      */
-    void addObstacle(const std::shared_ptr<cugl::physics2::Obstacle> &obj,
-            const std::shared_ptr<cugl::scene2::SceneNode> &node);
+    void addObstacle(const std::shared_ptr<cugl::physics2::Obstacle>& obj,
+        const std::shared_ptr<cugl::scene2::SceneNode>& node);
 
     /**
      * Returns the active screen size of this scene.
@@ -161,7 +161,7 @@ public:
      *
      * @return true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager> &assets);
+    bool init(const std::shared_ptr<cugl::AssetManager>& assets);
 
     /**
      * Initializes the controller contents, and starts the game
@@ -179,7 +179,7 @@ public:
      *
      * @return  true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager> &assets, const cugl::Rect rect);
+    bool init(const std::shared_ptr<cugl::AssetManager>& assets, const cugl::Rect rect);
 
     /**
      * Initializes the controller contents, and starts the game
@@ -198,7 +198,7 @@ public:
      *
      * @return  true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager> &assets, const cugl::Rect rect, const cugl::Vec2 gravity);
+    bool init(const std::shared_ptr<cugl::AssetManager>& assets, const cugl::Rect rect, const cugl::Vec2 gravity);
 
 
 #pragma mark -
@@ -256,7 +256,7 @@ public:
      */
     void setComplete(bool value) {
         _complete = value;
-//        _exitnode->setVisible(value);
+        //        _exitnode->setVisible(value);
     }
 
 
@@ -280,7 +280,7 @@ public:
      * That means that parents are always draw before (and behind children). To override this draw order, you should place an scene2::OrderedNode in the scene graph to specify an alternative order.
      * @param batch The SpriteBatch to draw with.
      */
-    void render(const std::shared_ptr<SpriteBatch> &batch);
+    void render(const std::shared_ptr<SpriteBatch>& batch);
 
 
     /**
@@ -295,26 +295,26 @@ public:
     /**
      * Processes the start of a collision
      *
-     * This method is called when we first get a collision between two objects. 
-     * We use this method to test if it is the "right" kind of collision.  In 
+     * This method is called when we first get a collision between two objects.
+     * We use this method to test if it is the "right" kind of collision.  In
      * particular, we use it to test if reynard needs to turn around
      *
      * @param  contact  The two bodies that collided
      */
-    void endContact(b2Contact *contact);
+    void endContact(b2Contact* contact);
 
     /**
      * Handles any modifications necessary before collision re
      * lution
      *
-     * This method is called just before Box2D resolves a collision.  We use 
-     * this method to implement sound on contact, using the algorithms outlined 
+     * This method is called just before Box2D resolves a collision.  We use
+     * this method to implement sound on contact, using the algorithms outlined
      * in Ian Parberry's "Introduction to Game Physics with Box2D".
      *
      * @param  contact  The two bodies that collided
      * @param  contact  The collision manifold before contact
      */
-    void beforeSolve(b2Contact *contact, const b2Manifold *oldManifold);
+    void beforeSolve(b2Contact* contact, const b2Manifold* oldManifold);
 };
 
 #endif /* __MP_GAME_MODE_H__ */
