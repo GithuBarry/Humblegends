@@ -52,6 +52,8 @@
 #pragma mark Physics Constants
 /** Cooldown (in animation frames) for jumping */
 #define JUMP_COOLDOWN   5
+/** Cooldown (in animation frames) for Dashing */
+#define DASH_COOLDOWN   20
 /** Cooldown (in animation frames) for shooting */
 #define SHOOT_COOLDOWN  20
 /** The amount to shrink the body fixture (vertically) relative to the image */
@@ -66,6 +68,8 @@
 #define DUDE_DENSITY    1.0f
 /** The impulse for the character jump */
 #define DUDE_JUMP       5.5f
+/** The impulse for the character dash */
+#define DUDE_DASH       10.0f
 /** Debug color for the sensor */
 #define DEBUG_COLOR     Color4::RED
 
@@ -105,11 +109,14 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size) {
 
         // Gameplay attributes
         _isGrounded = false;
-        _isShooting = false;
         _isJumping  = false;
+        _isDashing  = false;
+//        TODO: Prevent an issue here about spawning him on the left side of rooms by including a part in the init function maybe
+//        Specifically for moments where we come from the left side of a room to go to the right.
         _faceRight  = true;
 
         _jumpCooldown  = 0;
+        _dashCooldown  = 0;
         return true;
     }
     return false;
@@ -216,7 +223,7 @@ void ReynardModel::applyForce() {
         return;
     }
 
-    // Don't want to be moving. Damp out player motion
+//  TODO: Dampen Player Movement
     if (getMovement() == 0.0f) {
         if (isGrounded()) {
             // Instant friction on the ground
@@ -245,6 +252,27 @@ void ReynardModel::applyForce() {
     }
 }
 
+// The reason for this duplicate code existing is complicated and will be gone over with Barry.
+bool ReynardModel::applyJumpForce() {
+    if (isJumping() && isGrounded()) {
+        b2Vec2 force(0, DUDE_JUMP);
+        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        return true;
+    }
+    return false;
+}
+
+bool ReynardModel::applyDashForce() {
+    if (isDashing()) {
+        b2Vec2 force(DUDE_DASH, 0);
+        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        return true;
+//      TODO: TEST THAT THIS WILL GET
+    }
+    return false;
+}
+
+
 /**
  * Updates the object's physics state (NOT GAME LOGIC).
  *
@@ -259,9 +287,17 @@ void ReynardModel::update(float dt) {
     } else {
         // Only cooldown while grounded
         _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
+        
+    }
+    if (isDashing()) {
+        _dashCooldown = DASH_COOLDOWN;
+    } else {
+        // Only cooldown while grounded
+        _dashCooldown = (_dashCooldown > 0 ? _dashCooldown-1 : 0);
     }
 
 
+//GOOD BELOW
     BoxObstacle::update(dt);
 
     if (_node != nullptr) {

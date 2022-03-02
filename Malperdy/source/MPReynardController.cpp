@@ -3,7 +3,9 @@
 // Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
-#define VELOCITY = 10;
+#define VELOCITY    10
+#define DUDE_JUMP   5.5f
+
 #include "MPReynardController.h"
 
 /**This is the constructor of the Reynard Controller**/
@@ -17,6 +19,7 @@ ReynardController::ReynardController(ReynardModel r){
 void ReynardController::update(float delta){
     _reynard.update(delta);
 }
+//WARNING: This may lead to a double call of update if reynard himself is having his update called.
 
 /**This function contains a giant switch statement between what should happen given
  * the various character modes of the character. This includes his Jumping, Dashing, Running,
@@ -50,25 +53,28 @@ void ReynardController::updateMode(ReynardModel::ReynardState c){
  * His velocity will be turned to whatever the negative of whatever the Constant his speed
  * should be. **/
 void ReynardController::switchDirection(){
-//    cugl::Vec2 vel = _reynard.getVelocity();
-//    _reynard.setVelocity(-vel);
+    _currentMovement = -_reynard.getMovement();
+    _reynard.setMovement(-_currentMovement);
 }
+
+/**The beauty of this function is that it will always apply this internal variable which is what is updated directly
+ * in the Switch Directions functoin.. **/
+void ReynardController::resolveRunning(){
+//    The beauty of this is
+    _reynard.setMovement(_currentMovement);
+}
+
 
 /**This function is what is jused to check if Reynard could jump at a given time and if he
  * can jump it makes him jump and return true (if he cannot it will return false)
  * If Reynard's state is already jumping**/
 bool ReynardController::resolveJump(){
-//    if(_reynard.getCurrentState()==ReynardModel::ReynardState::JUMPING){
-//        return false;
-//    }
-//    Vec2 rVel = _reynard.getVelocity();
-//    rVel.y = rVel.y + 10;
-//    _reynard.setVelocity(const cugl::Vec2 &value)
-    return true;
+    bool r = _reynard.applyJumpForce();
+    return r;
 }
 
-
 bool ReynardController::resolveDash(){
-    return true;
+    bool r = _reynard.applyDashForce();
+    return r;
 }
 

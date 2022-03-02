@@ -71,7 +71,7 @@ using namespace std;
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
 
-float REYNARD_POS[] = { 20.0f, 10.0f};
+float REYNARD_POS[] = { 30, 10};
 
 #pragma mark Physics Constants
 
@@ -341,11 +341,14 @@ void GameScene::update(float dt) {
         setDebug(!isDebug());
 
     }
+    // Reset Process toggled by key command
     if (_input.didReset()) { reset(); }
+    // Exit Process toggled by key command
     if (_input.didExit())  {
         CULog("Shutting down");
         Application::get()->quit();
     }
+    // Swipe command toggled by key command
     if (_input.didEndSwipe()){
         Vec2 start;
         Vec2 end;
@@ -379,8 +382,6 @@ void GameScene::update(float dt) {
     if (_input.didZoomOut()){
 
     }
-
-
 
 
     _world->update(_stateController->getScaledDtForPhysics(dt));

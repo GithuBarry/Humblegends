@@ -6,6 +6,9 @@
 #ifndef MALPERDY_MPREYNARDCONTROLLER_H
 #define MALPERDY_MPREYNARDCONTROLLER_H
 
+#define MOVEMENT_FORCE 5.0F
+
+
 #include <cugl/cugl.h>
 #include "MPCharacterModel.h"
 #include "MPReynardModel.h"
@@ -14,6 +17,7 @@ class ReynardController {
 
 private:
     ReynardModel _reynard;
+    float _currentMovement = MOVEMENT_FORCE;
 
 public:
     /**This is the constructor of the Reynard Controller**/
@@ -37,6 +41,10 @@ public:
      * His velocity will be turned to whatever the negative of whatever the Constant his speed
      * should be. **/
     void switchDirection();
+    
+    /**Resolve the forces meant to constantly be acted upon him and make sure it automatically
+     * automatically sets his velocity every frame.**/
+    void resolveRunning();
 
     /**This function is what is jused to check if Reynard could jump at a given time and if he
      * can jump it makes him jump and return true (if he cannot it will return false)

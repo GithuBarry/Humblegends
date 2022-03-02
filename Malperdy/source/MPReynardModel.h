@@ -128,7 +128,6 @@ public:
     enum class ReynardState : int{
             SPAWN,
             MOVING,
-            /** Form of moving when game is zoomed out */
             SLOWMOVING,
             DASHING,
             JUMPING,
@@ -282,13 +281,34 @@ public:
      * @return true if the dude is actively jumping.
      */
     bool isJumping() const { return _isJumping && _jumpCooldown <= 0; }
-
+    
+    /**
+     * Returns true if the dude is actively jumping.
+     *
+     * @return true if the dude is actively jumping.
+     */
+    bool isDashing() const { return _isDashing && _dashCooldown <= 0; }
+    
     /**
      * Sets whether the dude is actively jumping.
      *
      * @param value whether the dude is actively jumping.
      */
     void setJumping(bool value) { _isJumping = value; }
+
+    /**
+     * Returns true if the dude is actively jumping.
+     *
+     * @return true if the dude is actively jumping.
+     */
+    float getCooldownJump() const { return _jumpCooldown; }
+    
+    /**
+     * Returns true if the dude is actively jumping.
+     *
+     * @return true if the dude is actively jumping.
+     */
+    float getCooldownDash() const { return _dashCooldown; }
 
     /**
      * Returns true if the dude is on the ground.
@@ -382,6 +402,19 @@ public:
      */
     void applyForce();
 
+    /**
+     * Applies the jump force to the body of Reynard
+     *
+     * This method should be called after the force attribute is set.
+     */
+    bool applyJumpForce();
+
+    /**
+     * Applies the jump force to the body of Reynard
+     *
+     * This method should be called after the force attribute is set.
+     */
+    bool applyDashForce();
 
 
 };
