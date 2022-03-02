@@ -272,7 +272,7 @@ void GameScene::populate() {
 
 
 
-    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
     vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
 
     for(itr = physics_objects->begin(); itr != physics_objects->end(); ++itr){
