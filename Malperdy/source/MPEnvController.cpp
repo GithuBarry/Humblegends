@@ -15,7 +15,7 @@
 EnvController::EnvController(){
 	_grid = std::make_shared<GridModel>();
 	_grid->init();
-	_toSwap = nullptr;
+	_toSwap = NULL;
 }
 
 bool EnvController::selectRoom(Vec2 coords){
@@ -36,7 +36,7 @@ bool EnvController::swapWithSelected(Vec2 coords){
 		return false;
 	}
 	if (room2.x == _toSwap.x && room2.y == _toSwap.y) {
-		_toSwap = nullptr;
+		_toSwap = NULL;
 		return false;
 	}
 

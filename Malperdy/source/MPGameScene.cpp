@@ -340,9 +340,10 @@ void GameScene::update(float dt) {
     }
     if (_input.didPress()) {
         //TODO: check if reynard is in the room before selecting or swapping
-        CULog("did press");
+        //TODO: debug the commented code below
+        /*CULog("did press");
         bool hasSwapped = false;
-        if (!_envController->hasSelected()) {
+        if (_envController->hasSelected()) {
             CULog("Trying to select a room");
             bool check = _envController->swapWithSelected(_input.getPosition());
             if (check) CULog("Selected a room successfully");
@@ -350,7 +351,8 @@ void GameScene::update(float dt) {
         else {
             hasSwapped = _envController->selectRoom(_input.getPosition());
             if (hasSwapped) CULog("Swapped rooms successfully");
-        }
+        }*/
+        //TODO: test code below once above chunk has been debugged
         /*if (hasSwapped) {
             _world->clear();
 
@@ -364,6 +366,7 @@ void GameScene::update(float dt) {
             }
         }*/
     }
+    //TODO: delete once code above has been debugged
     /*if (_input.didEndSwipe()) {
         Vec2 start;
         Vec2 end;

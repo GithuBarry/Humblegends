@@ -42,9 +42,11 @@ public:
 
     /* Returns true if there is currently a room selected */
     bool hasSelected() {
-        _toSwap = Vec2(1, 2);
+        //TODO: debug third line of chunk below (previous two are debugging lines)
+        /*_toSwap = Vec2(1, 2);
         CULog("(%d, %d)", _toSwap.x, _toSwap.y);
-        return (_toSwap != nullptr);
+        return (_toSwap != nullptr);*/
+        return false;
     }
 
     /*
