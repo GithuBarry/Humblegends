@@ -263,38 +263,38 @@ void InputController::clear() {
 #pragma mark -
 #pragma mark Touch Callbacks
 
-///**
-// * Callback for the beginning of a touch event
-// *
-// * @param t     The touch information
-// * @param event The associated event
-// */
+/**
+ * Callback for the beginning of a touch event
+ *
+ * @param t     The touch information
+ * @param event The associated event
+ */
 
-//void InputController::touchBeganCB(const cugl::TouchEvent& event, bool focus) {
-//    // All touches correspond to key up
-//    _keyUp = true;
-//
-//    // Update the touch location for later gestures
-//    _timestamp = event.timestamp;
-//    _dtouch = event.position;
-//}
+void InputController::touchBeganCB(const cugl::TouchEvent& event, bool focus) {
+    // All touches correspond to key up
+    _keyUp = true;
+
+    // Update the touch location for later gestures
+    _timestamp = event.timestamp;
+    _dtouch = event.position;
+}
  
-///**
-// * Callback for the end of a touch event
-// *
-// * @param t     The touch information
-// * @param event The associated event
-// */
+/**
+ * Callback for the end of a touch event
+ *
+ * @param t     The touch information
+ * @param event The associated event
+ */
 
-//void InputController::touchEndedCB(const cugl::TouchEvent& event, bool focus) {
-//    // Gesture has ended.  Give it meaning.
-//    cugl::Vec2 diff = event.position-_dtouch;
-//    bool fast = (event.timestamp.ellapsedMillis(_timestamp) < EVENT_SWIPE_TIME);
-//    _keyReset = fast && diff.x < -EVENT_SWIPE_LENGTH;
-//    _keyExit  = fast && diff.x > EVENT_SWIPE_LENGTH;
-//    _keyDebug = fast && diff.y > EVENT_SWIPE_LENGTH;
-//    _keyUp = false;
-//}
+void InputController::touchEndedCB(const cugl::TouchEvent& event, bool focus) {
+    // Gesture has ended.  Give it meaning.
+    cugl::Vec2 diff = event.position-_dtouch;
+    bool fast = (event.timestamp.ellapsedMillis(_timestamp) < EVENT_SWIPE_TIME);
+    _keyReset = fast && diff.x < -EVENT_SWIPE_LENGTH;
+    _keyExit  = fast && diff.x > EVENT_SWIPE_LENGTH;
+    _keyDebug = fast && diff.y > EVENT_SWIPE_LENGTH;
+    _keyUp = false;
+}
 
 bool InputController::didEndSwipe() { 
     //TODO
