@@ -257,17 +257,19 @@ void GameScene::populate() {
     //    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
     //    _grid->getPhysicsObjects();
 
-    //    physics_objects->push_back(_room->getPhysicsGeometry());
+#pragma mark Rooms
+    /////////////////////////////////////
+    // DEBUG: add room to scene graph
+    /////////////////////////////////////
+    shared_ptr<GridModel> _grid = make_shared<GridModel>();
+    _grid->init(true, 10, 10);
+    //shared_ptr<RoomModel> _room = RoomModel::alloc(50, 50, "leftrightup");
 
-    //    vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
-    //    vector<shared_ptr<physics2::PolygonObstacle>> physics_vec;
-    //    physics_vec = physics_objects;
-    //    for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++){
-    //        _world->addObstacle(ptr);
-    //    }
+    _worldnode->addChild(_grid);
+    _grid->setScale(0.3);
+    _grid->setPosition(100,-100);
+    _grid->getPhysicsObjects();
 
-    shared_ptr<RoomModel> _room = RoomModel::alloc(50,50,"leftright");
-    _worldnode->addChild(_room);
 
 
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();

@@ -28,10 +28,11 @@ shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testleve
  * Deafult init
  * @return a grid with 3x3 rooms, each room the default
  */
-bool GridModel::init(bool json, float hgap, float vgap)
+bool GridModel::init(float scale, bool json, float hgap, float vgap)
 {
     _horizontal_gap = hgap;
     _vertical_gap = vgap;
+    _physics_scale =  scale;
     
     if(!json){
         _grid = vector<vector<shared_ptr<RoomModel>>>();
@@ -45,7 +46,7 @@ bool GridModel::init(bool json, float hgap, float vgap)
           }
         }
 
-        return true;
+//        return true;
     }
     else{
         shared_ptr<vector<shared_ptr<JsonValue>>> rooms = _gridLoader->getRoomData();
@@ -61,15 +62,15 @@ bool GridModel::init(bool json, float hgap, float vgap)
           for (int j = 0; j < _size.x; j++)
           {
             _grid.at(i).push_back(make_shared<RoomModel>());
-            _grid.at(i).at(j)->init(j,i, rooms->at(_size.y * i+j)->asString());
+            _grid.at(i).at(j)->init(j*720 ,(_size.y-i)*480, rooms->at(_size.y * i+j)->asString());
             addChild(_grid.at(i).at(j));
           }
         }
         
         
-        return true;
+//        return true;
     }
-
+    return this->scene2::SceneNode::init();
 };
 
 ///**
@@ -228,16 +229,95 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
 {
   shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> obstacles = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
 
-  for (vector<shared_ptr<RoomModel>> v : _grid)
-  {
-    for (shared_ptr<RoomModel> p : v)
+    int c = 0;
+    int r = 0;
+    for (vector<shared_ptr<RoomModel>> v : _grid)
     {
-      shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> room_obstacles = p->getPhysicsGeometry();
-      for (shared_ptr<physics2::PolygonObstacle> p : *room_obstacles)
-      {
-        obstacles->push_back(p);
-      }
+        for (shared_ptr<RoomModel> p : v)
+        {
+            shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> room_obstacles = p->getPhysicsGeometry();
+            
+            Vec2 offset = Vec2(c*720, (_size.y - r)*480);
+            
+            for (shared_ptr<scene2::SceneNode> child : p->getChildren() ){
+                
+            }
+            
+            for (shared_ptr<physics2::PolygonObstacle> p : *room_obstacles)
+            {
+                Vec2 pos = p->getPosition();
+                pos += offset;
+                pos = this->nodeToWorldCoords(pos);
+                
+                Poly2 poly = p->getPolygon();
+                poly += offset;
+                poly / _physics_scale;
+
+                shared_ptr<physics2::PolygonObstacle> obstacleCopy = physics2::PolygonObstacle::alloc(poly, Vec2::ZERO);
+                obstacleCopy->setBodyType(b2_staticBody);
+                obstacles->push_back(obstacleCopy);
+            }
+            c++;
+        }
+        r++;
+        c = 0;
     }
-  }
-  return obstacles;
+    
+    // MAKE BOUNDS OF LEVEL
+    // DUMB WORKAROUND
+    Vec2 roomscale = Vec2(720,480);
+    float LEFTWALL[] = { 0, 0,
+        0, _size.y * roomscale.y
+    };
+    float RIGHTWALL[] = { _size.x * roomscale.x, 0,
+        _size.x * roomscale.x, _size.y * roomscale.y
+    };
+    float BOTTOMFLOOR[] = { 0, 0,
+        _size.x * roomscale.x, 0
+    };
+    float TOPFLOOR[] = { 0, _size.y * roomscale.y,
+        _size.x * roomscale.x, _size.y * roomscale.y
+    };
+    
+    Path2 path;
+    SimpleExtruder se = SimpleExtruder();
+    
+    path = Path2( reinterpret_cast<Vec2*>(LEFTWALL), size(LEFTWALL)/2);
+    path.closed =  true;
+    se.clear();
+    se.set(path);
+    se.calculate(0.1);
+    shared_ptr<physics2::PolygonObstacle> left = physics2::PolygonObstacle::alloc(se.getPolygon()/_physics_scale, Vec2::ZERO);
+    left->setBodyType(b2_staticBody);
+    obstacles->push_back(left);
+    
+    path = Path2( reinterpret_cast<Vec2*>(RIGHTWALL), size(RIGHTWALL)/2);
+    path.closed =  true;
+    se.clear();
+    se.set(path);
+    se.calculate(0.1);
+    shared_ptr<physics2::PolygonObstacle> right = physics2::PolygonObstacle::alloc(se.getPolygon()/_physics_scale, Vec2::ZERO);
+    right->setBodyType(b2_staticBody);
+    obstacles->push_back(right);
+    
+    path = Path2( reinterpret_cast<Vec2*>(BOTTOMFLOOR), size(BOTTOMFLOOR)/2);
+    path.closed =  true;
+    se.clear();
+    se.set(path);
+    se.calculate(0.1);
+    shared_ptr<physics2::PolygonObstacle> bottom = physics2::PolygonObstacle::alloc(se.getPolygon()/_physics_scale, Vec2::ZERO);
+    bottom->setBodyType(b2_staticBody);
+    obstacles->push_back(bottom);
+    
+    path = Path2( reinterpret_cast<Vec2*>(TOPFLOOR), size(TOPFLOOR)/2);
+    path.closed =  true;
+    se.clear();
+    se.set(path);
+    se.calculate(0.1);
+    shared_ptr<physics2::PolygonObstacle> top = physics2::PolygonObstacle::alloc(se.getPolygon()/_physics_scale, Vec2::ZERO);
+    top->setBodyType(b2_staticBody);
+    obstacles->push_back(top);
+    /// END MAKING BOUNDS OF LEVEL
+
+    return obstacles;
 };
