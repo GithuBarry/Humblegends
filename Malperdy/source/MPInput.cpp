@@ -22,14 +22,16 @@ using namespace cugl;
 /** The key for exitting the game */
 #define EXIT_KEY  KeyCode::ESCAPE
 
-/** The key for exitting the game */
+/** The key to dash right */
 #define DASH_RIGHT_KEY  KeyCode::D
-/** The key for exitting the game */
+/** The key to dash left */
 #define DASH_LEFT_KEY  KeyCode::A
-/** The key for exitting the game */
+/** The key to zoom in */
 #define ZOOM_IN_KEY  KeyCode::Q
-/** The key for exitting the game */
+/** The key to zoom out */
 #define ZOOM_OUT_KEY  KeyCode::E
+/** The key to jump */
+#define JUMP_KEY  KeyCode::E
 
 
 /** How fast a double click must be in milliseconds */
@@ -125,7 +127,9 @@ bool InputController::init() {
 #ifndef CU_TOUCH_SCREEN
     success = Input::activate<Keyboard>();
     Mouse* mouse = Input::get<Mouse>();
-    if (mouse) {
+    Keyboard* keyboard = Input::get<Keyboard>();
+    if (mouse && keyboard) {
+        // Set listeners for mouse inputs
         mouse->setPointerAwareness(Mouse::PointerAwareness::DRAG);
         _mouseKey = mouse->acquireKey();
         mouse->addPressListener(_mouseKey, [=](const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
@@ -136,6 +140,7 @@ bool InputController::init() {
         });
     }
     else success = false;
+
 #else
     success = Input::activate<Accelerometer>();
     Touchscreen* touch = Input::get<Touchscreen>();
@@ -169,8 +174,6 @@ void InputController::update(float dt) {
 //    int rght = false;
 //    int up   = false;
 //    int down = false;
-    
-    int space = false;
 
     _prevDown = _currDown;
 
@@ -189,7 +192,7 @@ void InputController::update(float dt) {
     _qDown = keys->keyPressed(ZOOM_IN_KEY);
     _eDown = keys->keyPressed(ZOOM_OUT_KEY);
 
-    space = keys->keyDown(KeyCode::SPACE);
+    _spaceDown = keys->keyPressed(JUMP_KEY);
 
     _currDown = _mouseDown;
     _currPos = _mousePos;
@@ -220,7 +223,7 @@ void InputController::update(float dt) {
     _debugPressed = _keyDebug;
     _exitPressed  = _keyExit;
     
-    _jumpPressed = space;
+    _jumpPressed = _spaceDown;
     _dashRightPressed = _dDown;
     _dashLeftPressed = _aDown;
     _zoomInPressed = _qDown;

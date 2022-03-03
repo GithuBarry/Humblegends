@@ -66,6 +66,12 @@
 /** The maximum character speed */
 #define DUDE_MAXSPEED   5.0f
 
+#pragma Movement Constants
+/** The rate at which Reynard accelerates */
+#define REYNARD_ACC 5000.0f
+/** The maximum speed at which Reynard can run */
+#define REYNARD_MAX_SPEED 120.0f
+
 using namespace cugl;
 
 #pragma mark -
@@ -253,7 +259,7 @@ public:
      *
      * This is the result of input times dude force.
      *
-     * @return left/right movement of this character.
+     * @return left/right movement of this character. (SHOULD ALWAYS BE 1, -1)
      */
     float getMovement() const { return _movement; }
 
@@ -427,19 +433,19 @@ public:
      */
     void applyForce();
 
-    /**
-     * Applies the jump force to the body of Reynard
-     *
-     * This method should be called after the force attribute is set.
-     */
-    bool applyJumpForce();
-
-    /**
-     * Applies the jump force to the body of Reynard
-     *
-     * This method should be called after the force attribute is set.
-     */
-    bool applyDashForce();
+//    /**
+//     * Applies the jump force to the body of Reynard
+//     *
+//     * This method should be called after the force attribute is set.
+//     */
+//    bool applyJumpForce();
+//
+//    /**
+//     * Applies the jump force to the body of Reynard
+//     *
+//     * This method should be called after the force attribute is set.
+//     */
+//    bool applyDashForce();
 
 
 };

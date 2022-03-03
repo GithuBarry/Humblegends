@@ -264,7 +264,7 @@ void GameScene::populate() {
     _grid->init(_scale, true, 10, 10);
 
     _worldnode->addChild(_grid);
-    //_grid->setScale(0.5);
+    _grid->setScale(0.5);
     //_grid->setPosition(0,-240);
     
     // Populate physics obstacles for grid
@@ -276,19 +276,20 @@ void GameScene::populate() {
     }    
 
 #pragma mark Reynard
-    Vec2 reyPos = Vec2(9, 9);
+    Vec2 reyPos = Vec2(5, 4);
     // Create image for Reynard
     std::shared_ptr<Texture> image;
-    image = _assets->get<Texture>("rocket");
+    image = _assets->get<Texture>("reynard");
     // Create sprite for Reynard from texture
     std::shared_ptr<scene2::SpriteNode> sprite;
     sprite = scene2::SpriteNode::alloc(image, 1, 1);
     // Create a model for Reynard based on his image texture
-    _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
-    _reynard->setSceneNode(sprite);
-    addObstacle(_reynard, sprite); // Put this at the very front
-    
-    CULog("reynard position is:  %f,%f", _reynard->getPosition().x, _reynard->getPosition().y);
+    shared_ptr<ReynardModel> reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
+    reynard->setSceneNode(sprite);
+    addObstacle(reynard, sprite); // Put this at the very front
+
+    // Create controller for Reynard and assign model to that controller
+    _reynardController = make_shared<ReynardController>(reynard);
     
     /*PolyFactory pf;
     shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
@@ -379,21 +380,27 @@ void GameScene::update(float dt) {
             _world->addObstacle(*ptr);
         }
     }
-    if (_input.didDashLeft()) {
 
-    }
-    if (_input.didDashRight()) {
-
-    }
+    // Update Reynard
+    _reynardController->update(dt);
+   
+    
+//    if (_input.didDashLeft()) {
+//
+//    }
+//    if (_input.didDashRight()) {
+//
+//    }
     if (_input.didJump()) {
-
+        cout<<"Pressing Jump Button"<<endl;
+        _reynardController->resolveJump();
     }
-    if (_input.didZoomIn()) {
-
-    }
-    if (_input.didZoomOut()) {
-
-    }
+//    if (_input.didZoomIn()) {
+//
+//    }
+//    if (_input.didZoomOut()) {
+//
+//    }
 
 
     _world->update(_stateController->getScaledDtForPhysics(dt));
@@ -405,7 +412,7 @@ void GameScene::update(float dt) {
  *
  * This method is called when we after get a collision between two objects.  We use
  * this method to test if it is the "right" kind of collision.  In particular, we
- * use it to test if we need to turn around reynard.
+ * use it to test if we need to turn around Reynard.
  *
  * To do that , we check if reynard's contact points align vertically
  *
@@ -428,7 +435,7 @@ void GameScene::endContact(b2Contact* contact) {
         int last_idx = contact->GetManifold()->pointCount-1;
         b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
         if (first_collision.x == last_collision.x){
-            //_reynardController->switchDirection; //TODO waiting for Spencer
+            _reynardController->switchDirection();
         }
 
     }
@@ -436,7 +443,7 @@ void GameScene::endContact(b2Contact* contact) {
     int last_idx = contact->GetManifold()->pointCount - 1;
     b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
     if (first_collision.x == last_collision.x) {
-        //_reynardController->switchDirection; //TODO waiting for Spencer
+        _reynardController->switchDirection();
     }
 }
 
@@ -480,7 +487,7 @@ void GameScene::endContact(b2Contact* contact) {
  * "Introduction to Game Physics with Box2D".
  *
  * @param  contact  	The two bodies that collided
- * @param  oldManfold  	The collision manifold before contact
+ * @param  oldManifold  	The collision manifold before contact
  */
 void GameScene::beforeSolve(b2Contact* contact, const b2Manifold* oldManifold) {
     float speed = 0;
