@@ -284,11 +284,12 @@ void GameScene::populate() {
     std::shared_ptr<scene2::SpriteNode> sprite;
     sprite = scene2::SpriteNode::alloc(image, 1, 1);
     // Create a model for Reynard based on his image texture
-    _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
-    _reynard->setSceneNode(sprite);
-    addObstacle(_reynard, sprite); // Put this at the very front
-    
-    CULog("reynard position is:  %f,%f", _reynard->getPosition().x, _reynard->getPosition().y);
+    shared_ptr<ReynardModel> reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
+    reynard->setSceneNode(sprite);
+    addObstacle(reynard, sprite); // Put this at the very front
+
+    // Create controller for Reynard and assign model to that controller
+    _reynardController = make_shared<ReynardController>(reynard);
     
     /*PolyFactory pf;
     shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
@@ -379,13 +380,10 @@ void GameScene::update(float dt) {
             _world->addObstacle(*ptr);
         }
     }
-    
-    _reynard->setMovement(_reynard->getMovement()*_reynard->getForce());
-    //Sigh to explain this function a bit better (backend stuff)
-    //the Jump code should only need know if you pressed the request button and will determine if you get a jump.
-    _reynard->setJumping(_input.didJump());
-    _reynard->applyForce();
 
+    // Update Reynard
+    _reynardController->update(dt);
+   
     
 //    if (_input.didDashLeft()) {
 //
@@ -395,6 +393,7 @@ void GameScene::update(float dt) {
 //    }
     if (_input.didJump()) {
         cout<<"Pressing Jump Button"<<endl;
+        _reynardController->resolveJump();
     }
 //    if (_input.didZoomIn()) {
 //
@@ -436,7 +435,7 @@ void GameScene::endContact(b2Contact* contact) {
         int last_idx = contact->GetManifold()->pointCount-1;
         b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
         if (first_collision.x == last_collision.x){
-            //_reynardController->switchDirection; //TODO waiting for Spencer
+            _reynardController->switchDirection();
         }
 
     }
@@ -444,7 +443,7 @@ void GameScene::endContact(b2Contact* contact) {
     int last_idx = contact->GetManifold()->pointCount - 1;
     b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
     if (first_collision.x == last_collision.x) {
-        //_reynardController->switchDirection; //TODO waiting for Spencer
+        _reynardController->switchDirection();
     }
 }
 

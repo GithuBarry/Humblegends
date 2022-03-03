@@ -8,16 +8,20 @@
 
 #include "MPReynardController.h"
 
+// TODO: construct a ReynardModel within the ReynardController
 /**This is the constructor of the Reynard Controller**/
-ReynardController::ReynardController(ReynardModel r){
+ReynardController::ReynardController(shared_ptr<ReynardModel> r){
     _reynard = r;
 }
 
+// TODO: add alloc method
 
 /** [update] This will automatically update Reynard's position and look at other
  * things in the future like health.*/
 void ReynardController::update(float delta){
-    _reynard.update(delta);
+    _reynard->setMovement(_reynard->getMovement() * _reynard->getForce());
+    _reynard->applyForce();
+    _reynard->update(delta);
 }
 //WARNING: This may lead to a double call of update if reynard himself is having his update called.
 
@@ -29,22 +33,22 @@ void ReynardController::update(float delta){
 void ReynardController::updateMode(ReynardModel::ReynardState c){
     switch (c){
         case ReynardModel::ReynardState::SPAWN:
-            _reynard.setCurrentState(ReynardModel::ReynardState::SPAWN);
+            _reynard->setCurrentState(ReynardModel::ReynardState::SPAWN);
             break;
         case ReynardModel::ReynardState::MOVING:
-            _reynard.setCurrentState(ReynardModel::ReynardState::MOVING);
+            _reynard->setCurrentState(ReynardModel::ReynardState::MOVING);
             break;
         case ReynardModel::ReynardState::SLOWMOVING:
-            _reynard.setCurrentState(ReynardModel::ReynardState::SLOWMOVING);
+            _reynard->setCurrentState(ReynardModel::ReynardState::SLOWMOVING);
             break;
         case ReynardModel::ReynardState::DASHING:
-            _reynard.setCurrentState(ReynardModel::ReynardState::DASHING);
+            _reynard->setCurrentState(ReynardModel::ReynardState::DASHING);
             break;
         case ReynardModel::ReynardState::JUMPING:
-            _reynard.setCurrentState(ReynardModel::ReynardState::JUMPING);
+            _reynard->setCurrentState(ReynardModel::ReynardState::JUMPING);
             break;
         case ReynardModel::ReynardState::TRAPPED:
-            _reynard.setCurrentState(ReynardModel::ReynardState::TRAPPED);
+            _reynard->setCurrentState(ReynardModel::ReynardState::TRAPPED);
             break;
     }
 }
@@ -53,15 +57,15 @@ void ReynardController::updateMode(ReynardModel::ReynardState c){
  * His velocity will be turned to whatever the negative of whatever the Constant his speed
  * should be. **/
 void ReynardController::switchDirection(){
-    _currentMovement = -_reynard.getMovement();
-    _reynard.setMovement(-_currentMovement);
+    _currentMovement = -_reynard->getMovement();
+    _reynard->setMovement(-_currentMovement);
 }
 
 /**The beauty of this function is that it will always apply this internal variable which is what is updated directly
  * in the Switch Directions functoin.. **/
 void ReynardController::resolveRunning(){
 //    The beauty of this is
-    _reynard.setMovement(_currentMovement);
+    _reynard->setMovement(_currentMovement);
 }
 
 
@@ -79,4 +83,3 @@ bool ReynardController::resolveDash(){
 //    bool r = _reynard.applyDashForce();
 //    return r;
 }
-
