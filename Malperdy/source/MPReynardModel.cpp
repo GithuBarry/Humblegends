@@ -239,14 +239,17 @@ void ReynardModel::applyForce() {
 //            _body->ApplyForce(force,_body->GetPosition(),true);
 //        }
 //    }
+    
+    // Get scalar representing Reynard's direction
+    int direction = _faceRight ? 1 : -1;
 
     // If Reynard has reached his max speed, then clamp his speed
     if (fabs(getVX()) >= REYNARD_MAX_SPEED) {
-        setVX(SIGNUM(getVX()) * REYNARD_MAX_SPEED);
+        setVX(SIGNUM(getVX()) * direction * REYNARD_MAX_SPEED);
     }
     // Otherwise, continue accelerating
     else {
-        b2Vec2 force(REYNARD_ACC,0);
+        b2Vec2 force(direction * REYNARD_ACC,0);
         _body->ApplyForce(force,_body->GetPosition(),true);
     }
 

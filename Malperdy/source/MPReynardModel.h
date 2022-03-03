@@ -285,6 +285,8 @@ public:
      * @return the enum Reynard State of the instantiated reynard model.
      */
     void setCurrentState(const ReynardState cS) { _currentState = cS; }
+    
+    void setFacingRight(bool v) { _faceRight = v; }
 
     /**
      * Returns true if the dude is actively jumping.

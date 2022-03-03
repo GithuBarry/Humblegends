@@ -50,8 +50,7 @@ void ReynardController::updateMode(ReynardModel::ReynardState c){
  * His velocity will be turned to whatever the negative of whatever the Constant his speed
  * should be. **/
 void ReynardController::switchDirection(){
-    _currentMovement = -_reynard->getMovement();
-    _reynard->setMovement(-_currentMovement);
+    _reynard->setFacingRight(!(_reynard->isFacingRight()));
 }
 
 /**The beauty of this function is that it will always apply this internal variable which is what is updated directly
