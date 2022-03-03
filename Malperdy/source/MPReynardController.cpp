@@ -69,12 +69,14 @@ void ReynardController::resolveRunning(){
  * can jump it makes him jump and return true (if he cannot it will return false)
  * If Reynard's state is already jumping**/
 bool ReynardController::resolveJump(){
-    bool r = _reynard.applyJumpForce();
-    return r;
+    return true;
+//    bool r = _reynard.applyJumpForce();
+//    return r;
 }
 
 bool ReynardController::resolveDash(){
-    bool r = _reynard.applyDashForce();
-    return r;
+    return true; 
+//    bool r = _reynard.applyDashForce();
+//    return r;
 }
 

@@ -388,21 +388,30 @@ void GameScene::update(float dt) {
             _world->addObstacle(*ptr);
         }
     }
-    if (_input.didDashLeft()) {
+    
+    _reynard->setMovement(_reynard->getMovement());
+    //Sigh to explain this function a bit better (backend stuff)
+    //The way this code works.
+    _reynard->setJumping(_input.didJump());
+    _reynard->applyForce();
 
-    }
-    if (_input.didDashRight()) {
-
-    }
+    
+//    if (_input.didDashLeft()) {
+//
+//    }
+//    if (_input.didDashRight()) {
+//
+//    }
     if (_input.didJump()) {
-
+        cout<<"HI IN HERE"<<endl;
+        _reynard->applyForce();
     }
-    if (_input.didZoomIn()) {
-
-    }
-    if (_input.didZoomOut()) {
-
-    }
+//    if (_input.didZoomIn()) {
+//
+//    }
+//    if (_input.didZoomOut()) {
+//
+//    }
 
 
     _world->update(_stateController->getScaledDtForPhysics(dt));

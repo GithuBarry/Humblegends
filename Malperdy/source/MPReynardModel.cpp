@@ -102,6 +102,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
     _drawScale = drawScale;
 
     _position = pos;
+    _movement = DUDE_FORCE;
 
     if (BoxObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);
@@ -256,24 +257,24 @@ void ReynardModel::applyForce() {
 }
 
 // The reason for this duplicate code existing is complicated and will be gone over with Barry.
-bool ReynardModel::applyJumpForce() {
-    if (isJumping() && isGrounded()) {
-        b2Vec2 force(0, DUDE_JUMP);
-        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
-        return true;
-    }
-    return false;
-}
-
-bool ReynardModel::applyDashForce() {
-    if (isDashing()) {
-        b2Vec2 force(DUDE_DASH, 0);
-        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
-        return true;
-//      TODO: TEST THAT THIS WILL GET
-    }
-    return false;
-}
+//bool ReynardModel::applyJumpForce() {
+//    if (isJumping() && isGrounded()) {
+//        b2Vec2 force(0, DUDE_JUMP);
+//        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+//        return true;
+//    }
+//    return false;
+//}
+//
+//bool ReynardModel::applyDashForce() {
+//    if (isDashing()) {
+//        b2Vec2 force(DUDE_DASH, 0);
+//        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+//        return true;
+////      TODO: TEST THAT THIS WILL GET
+//    }
+//    return false;
+//}
 
 
 /**
