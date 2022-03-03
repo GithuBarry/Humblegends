@@ -71,8 +71,9 @@ void RoomModel::buildGeometry(string roomID) {
 	// Initialize vector of polygons for the room
 	_geometry = make_shared<vector<shared_ptr<scene2::PolygonNode>>>();
 
-	// Initialize variable to temporarily hold polygon
+	// Initialize variable to temporarily hold polygon info
 	shared_ptr<Poly2> poly;
+	vector<Vec2> verts;
 
 	// For each set of polygon coordinates in the room's geometry
 	for (int k = 0; k < roomData->size(); k++) {
@@ -83,6 +84,12 @@ void RoomModel::buildGeometry(string roomID) {
 		poly->operator+=(Vec2(0, 1));
 		// Scale coordinates to default room size
 		poly->operator*=(ROOM_SCALE);
+		// Ensure that all points are integers
+		verts = poly->getVertices();
+		for (vector<Vec2>::iterator itr = verts.begin(); itr != verts.end(); ++itr) {
+			(*itr).x = floor((*itr).x);
+			(*itr).y = floor((*itr).y);
+		}
 
 		// Convert polygon into a scene graph node and add as a child to the room node
 		shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
@@ -123,12 +130,12 @@ bool RoomModel::init(float x, float y, string roomID) {
 	buildGeometry(roomID);
 
 	// Create path node for room boundary
-	Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), size(BOUND) / 2);
+	/*Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), size(BOUND) / 2);
 	boundPath.closed = true;
 	shared_ptr<scene2::PathNode> boundNode = scene2::PathNode::allocWithPath(boundPath, BOUND_WIDTH);
 	boundNode->setColor(Color4::BLACK);
 	boundNode->setClosed(true);
-	addChild(boundNode);
+	addChild(boundNode);*/
 
 	// Initialize with the default room width/height and given position
 	return this->initWithBounds(x, y, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
