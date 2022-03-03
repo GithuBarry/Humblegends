@@ -52,7 +52,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -9.8f
+#define DEFAULT_GRAVITY -1000.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -264,28 +264,19 @@ void GameScene::populate() {
     _grid->init(_scale, true, 10, 10);
 
     _worldnode->addChild(_grid);
-    _grid->setScale(0.5);
-    _grid->setPosition(-100,-100);
-    _grid->getPhysicsObjects();
-    _grid->swapRooms(Vec2(0,0), Vec2(1,1));
-
-    /*shared_ptr<RoomModel> _room = RoomModel::alloc(0, 0, "leftrightup");
-    _worldnode->addChild(_room);*/
-
-    //shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
+    //_grid->setScale(0.5);
+    //_grid->setPosition(0,-240);
+    
+    // Populate physics obstacles for grid
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
-
-    vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
-
-    for (itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
+    for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
         (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
-    }
-    
+    }    
 
 #pragma mark Reynard
-    Vec2 reyPos = Vec2(3, 9);
+    Vec2 reyPos = Vec2(9, 9);
     // Create image for Reynard
     std::shared_ptr<Texture> image;
     image = _assets->get<Texture>("rocket");
@@ -299,10 +290,10 @@ void GameScene::populate() {
     
     CULog("reynard position is:  %f,%f", _reynard->getPosition().x, _reynard->getPosition().y);
     
-    PolyFactory pf;
+    /*PolyFactory pf;
     shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
     po->init(pf.makeNgon(Vec2(3,3), 2, 4));
-    _world->addObstacle(po);
+    _world->addObstacle(po);*/
     
 }
 
