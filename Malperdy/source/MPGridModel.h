@@ -167,8 +167,8 @@ public:
     shared_ptr<vector<Poly2>> getGeometry();
     
     Vec2 gridSpaceToRoom(Vec2 coord){
-        int x = static_cast<int>(coord.x/720.0);
-        int y = static_cast<int>(_size.y-coord.y/480.0);
+        int x = static_cast<int>(coord.x / DEFAULT_ROOM_WIDTH);
+        int y = static_cast<int>(_size.y-coord.y / DEFAULT_ROOM_HEIGHT);
         return Vec2(x,y);
     }
     

@@ -62,7 +62,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
           for (int j = 0; j < _size.x; j++)
           {
             _grid.at(i).push_back(make_shared<RoomModel>());
-            _grid.at(i).at(j)->init(j*720 ,(_size.y-i)*480, rooms->at(_size.y * i+j)->asString());
+            _grid.at(i).at(j)->init(j*DEFAULT_ROOM_WIDTH ,i* DEFAULT_ROOM_HEIGHT, rooms->at(_size.y * i+j)->asString());
             addChild(_grid.at(i).at(j));
           }
         }
@@ -70,6 +70,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
         
 //        return true;
     }
+
     return this->scene2::SceneNode::init();
 };
 
@@ -205,8 +206,8 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
 
   _grid.at(room1.x).at(room1.y) = _grid.at(room2.x).at(room2.y);
   _grid.at(room2.x).at(room2.y) = temp;
-    _grid.at(room1.x).at(room1.y)->setPosition(Vec2(720*room1.x,480*(_size.y-room1.y)));
-    _grid.at(room2.x).at(room2.y)->setPosition(Vec2(720*room2.x,480*(_size.y-room2.y)));
+    _grid.at(room1.x).at(room1.y)->setPosition(Vec2(DEFAULT_ROOM_WIDTH*room1.x, DEFAULT_ROOM_HEIGHT *(_size.y-room1.y)));
+    _grid.at(room2.x).at(room2.y)->setPosition(Vec2(DEFAULT_ROOM_WIDTH *room2.x, DEFAULT_ROOM_HEIGHT *(_size.y-room2.y)));
   return true;
 };
 
@@ -268,7 +269,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     
     // MAKE BOUNDS OF LEVEL
     // DUMB WORKAROUND
-    Vec2 roomscale = Vec2(720,480);
+    Vec2 roomscale = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
     float LEFTWALL[] = { 0, 0,
         0, _size.y * roomscale.y
     };
