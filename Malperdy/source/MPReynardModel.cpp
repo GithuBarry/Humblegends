@@ -67,7 +67,7 @@
 /** The density of the character */
 #define DUDE_DENSITY    1.0f
 /** The impulse for the character jump */
-#define DUDE_JUMP       3000.0f
+#define DUDE_JUMP       1000.0f
 /** The impulse for the character dash */
 #define DUDE_DASH       10.0f
 /** Debug color for the sensor */
@@ -259,8 +259,9 @@ void ReynardModel::applyForce() {
 
 // The reason for this duplicate code existing is complicated and will be gone over with Barry.
 bool ReynardModel::applyJumpForce() {
-    if (isJumping() && isGrounded()) {
-        cout<<"ACTUALLYJUMPING"<<endl;
+//    TODO: Should only jump when grounded .
+    if (true) {
+        cout<<"ACTUALLY_JUMPING"<<endl;
         b2Vec2 force(0, DUDE_JUMP);
         _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
         return true;

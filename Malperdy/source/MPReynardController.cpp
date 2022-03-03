@@ -16,13 +16,6 @@ ReynardController::ReynardController(shared_ptr<ReynardModel> r){
 
 // TODO: add alloc method
 
-/** [update] This will automatically update Reynard's position and look at other
- * things in the future like health.*/
-void ReynardController::update(float delta){
-    _reynard->setMovement(_reynard->getMovement() * _reynard->getForce());
-    _reynard->applyForce();
-    _reynard->update(delta);
-}
 //WARNING: This may lead to a double call of update if reynard himself is having his update called.
 
 /**This function contains a giant switch statement between what should happen given
@@ -83,4 +76,12 @@ bool ReynardController::resolveDash(){
 //    return true; 
     bool r = _reynard->applyDashForce();
     return r;
+}
+
+/** [update] This will automatically update Reynard's position and look at other
+ * things in the future like health.*/
+void ReynardController::update(float delta){
+    _reynard->setMovement(_reynard->getMovement() * _reynard->getForce());
+    _reynard->applyForce();
+    _reynard->update(delta);
 }

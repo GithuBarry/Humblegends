@@ -52,7 +52,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -1000.0f
+#define DEFAULT_GRAVITY -10000.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -388,8 +388,9 @@ void GameScene::update(float dt) {
             _world->addObstacle(*ptr);
         }
     }
-//    _reynard->setJumping(_input.didJump());
-//    _reynard->applyForce();
+//    reynard->setJumping(_input.didJump());
+//    reynard->applyForce();
+//    reynard->update(dt);
     // Update Reynard
     _reynardController->update(dt);
    
