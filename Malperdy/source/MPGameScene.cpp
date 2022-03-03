@@ -430,6 +430,10 @@ void GameScene::beginContact(b2Contact* contact) {
         if ((contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) ) {
             _reynardController->switchDirection();
             CULog("Wall hit detected");
+            if (_reynard->getLinearVelocity().y>50){
+                _reynardController->resolveJump();
+            }
+
         }
 
     }
