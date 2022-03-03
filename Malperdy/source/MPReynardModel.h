@@ -253,7 +253,7 @@ public:
      *
      * This is the result of input times dude force.
      *
-     * @return left/right movement of this character.
+     * @return left/right movement of this character. (SHOULD ALWAYS BE 1, -1)
      */
     float getMovement() const { return _movement; }
 

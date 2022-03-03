@@ -228,18 +228,18 @@ void ReynardModel::applyForce() {
     }
 
 //  TODO: Dampen Player Movement
-    if (getMovement() == 0.0f) {
-        if (isGrounded()) {
-            // Instant friction on the ground
-            b2Vec2 vel = _body->GetLinearVelocity();
-            vel.x = 0; // If you set y, you will stop a jump in place
-            _body->SetLinearVelocity(vel);
-        } else {
-            // Damping factor in the air
-            b2Vec2 force(-getDamping()*getVX(),0);
-            _body->ApplyForce(force,_body->GetPosition(),true);
-        }
-    }
+//    if (getMovement() == 0.0f) {
+//        if (isGrounded()) {
+//            // Instant friction on the ground
+//            b2Vec2 vel = _body->GetLinearVelocity();
+//            vel.x = 0; // If you set y, you will stop a jump in place
+//            _body->SetLinearVelocity(vel);
+//        } else {
+//            // Damping factor in the air
+//            b2Vec2 force(-getDamping()*getVX(),0);
+//            _body->ApplyForce(force,_body->GetPosition(),true);
+//        }
+//    }
 
     // Velocity too high, clamp it
     if (fabs(getVX()) >= getMaxSpeed()) {

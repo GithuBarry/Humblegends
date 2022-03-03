@@ -389,9 +389,9 @@ void GameScene::update(float dt) {
         }
     }
     
-    _reynard->setMovement(_reynard->getMovement());
+    _reynard->setMovement(_reynard->getMovement()*_reynard->getForce());
     //Sigh to explain this function a bit better (backend stuff)
-    //The way this code works.
+    //the Jump code should only need know if you pressed the request button and will determine if you get a jump.
     _reynard->setJumping(_input.didJump());
     _reynard->applyForce();
 
@@ -403,8 +403,7 @@ void GameScene::update(float dt) {
 //
 //    }
     if (_input.didJump()) {
-        cout<<"HI IN HERE"<<endl;
-        _reynard->applyForce();
+        cout<<"Pressing Jump Button"<<endl;
     }
 //    if (_input.didZoomIn()) {
 //
