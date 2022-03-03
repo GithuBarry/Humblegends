@@ -166,8 +166,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect, gravity);
     _world->activateCollisionCallbacks(true);
-    _world->onEndContact = [this](b2Contact* contact) {
-        endContact(contact);
+    _world->onBeginContact = [this](b2Contact* contact) {
+        beginContact(contact);
     };
 
     _world->beforeSolve = [this](b2Contact* contact, const b2Manifold* oldManifold) {
@@ -418,7 +418,7 @@ void GameScene::update(float dt) {
  *
  * @param  contact  The two bodies that collided
  */
-void GameScene::endContact(b2Contact* contact) {
+void GameScene::beginContact(b2Contact* contact) {
     b2Body* body1 = contact->GetFixtureA()->GetBody();
     b2Body* body2 = contact->GetFixtureB()->GetBody();
     b2Body* wall;
@@ -442,7 +442,7 @@ void GameScene::endContact(b2Contact* contact) {
     b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
     int last_idx = contact->GetManifold()->pointCount - 1;
     b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
-    if (first_collision.x == last_collision.x) {
+    if (contact->GetManifold()->localNormal.x<-0.5) {
         _reynardController->switchDirection();
     }
 }

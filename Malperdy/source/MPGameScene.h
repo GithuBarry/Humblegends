@@ -303,7 +303,7 @@ public:
      *
      * @param  contact  The two bodies that collided
      */
-    void endContact(b2Contact* contact);
+    void beginContact(b2Contact* contact);
 
     /**
      * Handles any modifications necessary before collision re
