@@ -249,12 +249,6 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
-    //TODO waiting for Reynard Controller and ReynardModel
-
-    //_reynard = ReynardModel::alloc(Vec2(50,50));
-    //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
-    //_reynardController = ReynardController(_reynard)
-
 
 #pragma mark Rooms
     /////////////////////////////////////
@@ -284,12 +278,12 @@ void GameScene::populate() {
     std::shared_ptr<scene2::SpriteNode> sprite;
     sprite = scene2::SpriteNode::alloc(image, 1, 1);
     // Create a model for Reynard based on his image texture
-    shared_ptr<ReynardModel> reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
-    reynard->setSceneNode(sprite);
-    addObstacle(reynard, sprite); // Put this at the very front
+    _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
+    _reynard->setSceneNode(sprite);
+    addObstacle(_reynard, sprite); // Put this at the very front
 
     // Create controller for Reynard and assign model to that controller
-    _reynardController = make_shared<ReynardController>(reynard);
+    _reynardController = make_shared<ReynardController>(_reynard);
     
     /*PolyFactory pf;
     shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
@@ -422,62 +416,26 @@ void GameScene::beginContact(b2Contact* contact) {
     b2Body* body1 = contact->GetFixtureA()->GetBody();
     b2Body* body2 = contact->GetFixtureB()->GetBody();
     b2Body* wall;
-    // If we hit the "win" door, we are done
-    intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
 
-    if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
-        if (body1->GetUserData().pointer == rptr){
+    if(body1 == _reynard->getBody() || body2 == _reynard->getBody()) {
+        if (body1 == _reynard->getBody()){
             wall = body2;
         }else{
             wall = body1;
         }
-        b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
-        int last_idx = contact->GetManifold()->pointCount-1;
-        b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
-        if (first_collision.x == last_collision.x){
+        b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
+        int last_idx = contact->GetManifold()->pointCount - 1;
+        b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
+
+        if ((contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) ) {
             _reynardController->switchDirection();
+            CULog("Wall hit detected");
         }
 
     }
-    b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
-    int last_idx = contact->GetManifold()->pointCount - 1;
-    b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
-    if (contact->GetManifold()->localNormal.x<-0.5) {
-        _reynardController->switchDirection();
-    }
+
 }
 
-///**
-// * Processes the start of a collision
-// *
-// * This method is called when we first get a collision between two objects.  We use
-// * this method to test if it is the "right" kind of collision.  In particular, we
-// * use it to test if we make it to the win door.
-// *
-// * @param  contact  The two bodies that collided
-// */
-//void GameScene::beginContact(b2Contact* contact) {
-//    b2Body* body1 = contact->GetFixtureA()->GetBody();
-//    b2Body* body2 = contact->GetFixtureB()->GetBody();
-//    b2Body* wall;
-//    // If we hit the "win" door, we are done
-//    intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
-//
-//    if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
-//        if (body1->GetUserData().pointer == rptr){
-//            wall = body2;
-//        }else{
-//            wall = body1;
-//        }
-//        b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
-//        int last_idx = contact->GetManifold()->pointCount-1;
-//        b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
-//        b2Vec2 wall_pos_bl = wall->GetPosition(); //bottom left point of the obstacle
-//        b2Vec2 wall_pos_ur = wall->GetPosition(); //
-//
-//    }
-//
-//}
 
 /**
  * Handles any modifications necessary before collision resolution
