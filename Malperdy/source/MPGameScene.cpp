@@ -264,7 +264,7 @@ void GameScene::populate() {
     _grid->init(_scale, true, 10, 10);
 
     _worldnode->addChild(_grid);
-    //_grid->setScale(0.5);
+    _grid->setScale(0.5);
     //_grid->setPosition(0,-240);
     
     // Populate physics obstacles for grid
@@ -276,10 +276,10 @@ void GameScene::populate() {
     }    
 
 #pragma mark Reynard
-    Vec2 reyPos = Vec2(9, 9);
+    Vec2 reyPos = Vec2(5, 4);
     // Create image for Reynard
     std::shared_ptr<Texture> image;
-    image = _assets->get<Texture>("rocket");
+    image = _assets->get<Texture>("reynard");
     // Create sprite for Reynard from texture
     std::shared_ptr<scene2::SpriteNode> sprite;
     sprite = scene2::SpriteNode::alloc(image, 1, 1);

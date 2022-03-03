@@ -102,7 +102,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
     _drawScale = drawScale;
 
     _position = pos;
-    _movement = DUDE_FORCE;
+    _movement = 0.0f;
 
     if (BoxObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);
@@ -137,7 +137,6 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
  * @param value left/right movement of this character.
  */
 void ReynardModel::setMovement(float value) {
-    CULog("MOVE");
     _movement = value;
     bool face = _movement > 0;
     if (_movement == 0 || _faceRight == face) {
@@ -241,16 +240,18 @@ void ReynardModel::applyForce() {
 //        }
 //    }
 
-    // Velocity too high, clamp it
-    if (fabs(getVX()) >= getMaxSpeed()) {
-        setVX(SIGNUM(getVX())*getMaxSpeed());
-    } else {
-        b2Vec2 force(getMovement(),0);
+    // If Reynard has reached his max speed, then clamp his speed
+    if (fabs(getVX()) >= REYNARD_MAX_SPEED) {
+        setVX(SIGNUM(getVX()) * REYNARD_MAX_SPEED);
+    }
+    // Otherwise, continue accelerating
+    else {
+        b2Vec2 force(REYNARD_ACC,0);
         _body->ApplyForce(force,_body->GetPosition(),true);
     }
 
     // Jump!
-    if (isJumping() && isGrounded()) {
+    if (!isJumping() && isGrounded()) {
         b2Vec2 force(0, DUDE_JUMP);
         _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
     }
@@ -294,9 +295,6 @@ void ReynardModel::update(float dt) {
         
     }
 
-    //CULog("Position: %f, %f", getPosition().x, getPosition().y);
-    //CULog("Scaled Position: %f, %f", getPosition().x*_drawScale, getPosition().y*_drawScale);
-    
     if (isDashing()) {
         _dashCooldown = DASH_COOLDOWN;
     } else {
@@ -304,7 +302,7 @@ void ReynardModel::update(float dt) {
         _dashCooldown = (_dashCooldown > 0 ? _dashCooldown-1 : 0);
     }
 
-
+    // Update physics obstacle
     BoxObstacle::update(dt);
 
     if (_node != nullptr) {

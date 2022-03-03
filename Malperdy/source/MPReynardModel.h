@@ -66,6 +66,12 @@
 /** The maximum character speed */
 #define DUDE_MAXSPEED   5.0f
 
+#pragma Movement Constants
+/** The rate at which Reynard accelerates */
+#define REYNARD_ACC 5000.0f
+/** The maximum speed at which Reynard can run */
+#define REYNARD_MAX_SPEED 120.0f
+
 using namespace cugl;
 
 #pragma mark -
