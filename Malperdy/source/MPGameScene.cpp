@@ -412,7 +412,7 @@ void GameScene::update(float dt) {
  *
  * This method is called when we after get a collision between two objects.  We use
  * this method to test if it is the "right" kind of collision.  In particular, we
- * use it to test if we need to turn around reynard.
+ * use it to test if we need to turn around Reynard.
  *
  * To do that , we check if reynard's contact points align vertically
  *
@@ -487,7 +487,7 @@ void GameScene::endContact(b2Contact* contact) {
  * "Introduction to Game Physics with Box2D".
  *
  * @param  contact  	The two bodies that collided
- * @param  oldManfold  	The collision manifold before contact
+ * @param  oldManifold  	The collision manifold before contact
  */
 void GameScene::beforeSolve(b2Contact* contact, const b2Manifold* oldManifold) {
     float speed = 0;
