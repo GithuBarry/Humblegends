@@ -167,10 +167,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _world = physics2::ObstacleWorld::alloc(rect, gravity);
     _world->activateCollisionCallbacks(true);
     _world->onBeginContact = [this](b2Contact* contact) {
-      beginContact(contact);
-    };
-    _world->onEndContact = [this](b2Contact* contact) {
-        endContact(contact);
+        beginContact(contact);
     };
 
     _world->beforeSolve = [this](b2Contact* contact, const b2Manifold* oldManifold) {
@@ -252,12 +249,6 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
-    //TODO waiting for Reynard Controller and ReynardModel
-
-    //_reynard = ReynardModel::alloc(Vec2(50,50));
-    //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
-    //_reynardController = ReynardController(_reynard)
-
 
 #pragma mark Rooms
     /////////////////////////////////////
@@ -269,14 +260,14 @@ void GameScene::populate() {
     _worldnode->addChild(_grid);
     _grid->setScale(0.5);
     //_grid->setPosition(0,-240);
-    
+
     // Populate physics obstacles for grid
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
         (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
-    }    
+    }
 
 #pragma mark Reynard
     Vec2 reyPos = Vec2(5, 4);
@@ -287,18 +278,18 @@ void GameScene::populate() {
     std::shared_ptr<scene2::SpriteNode> sprite;
     sprite = scene2::SpriteNode::alloc(image, 1, 1);
     // Create a model for Reynard based on his image texture
-    shared_ptr<ReynardModel> reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
-    reynard->setSceneNode(sprite);
-    addObstacle(reynard, sprite); // Put this at the very front
+    _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
+    _reynard->setSceneNode(sprite);
+    addObstacle(_reynard, sprite); // Put this at the very front
 
     // Create controller for Reynard and assign model to that controller
-    _reynardController = make_shared<ReynardController>(reynard);
-    
+    _reynardController = make_shared<ReynardController>(_reynard);
+
     /*PolyFactory pf;
     shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
     po->init(pf.makeNgon(Vec2(3,3), 2, 4));
     _world->addObstacle(po);*/
-    
+
 }
 
 
@@ -393,8 +384,8 @@ void GameScene::update(float dt) {
 //    reynard->update(dt);
     // Update Reynard
     _reynardController->update(dt);
-   
-    
+
+
 //    if (_input.didDashLeft()) {
 //
 //    }
@@ -424,67 +415,30 @@ void GameScene::update(float dt) {
  *
  * @param  contact  The two bodies that collided
  */
-void GameScene::endContact(b2Contact* contact) {
+void GameScene::beginContact(b2Contact* contact) {
     b2Body* body1 = contact->GetFixtureA()->GetBody();
     b2Body* body2 = contact->GetFixtureB()->GetBody();
     b2Body* wall;
-    // If we hit the "win" door, we are done
-    intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
 
-    if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
-        if (body1->GetUserData().pointer == rptr){
+    if(body1 == _reynard->getBody() || body2 == _reynard->getBody()) {
+        if (body1 == _reynard->getBody()){
             wall = body2;
         }else{
             wall = body1;
         }
-        b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
-        int last_idx = contact->GetManifold()->pointCount-1;
-        b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
-        if (first_collision.x == last_collision.x){
+        b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
+        int last_idx = contact->GetManifold()->pointCount - 1;
+        b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
+
+        if ((contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) ) {
             _reynardController->switchDirection();
+            CULog("Wall hit detected");
         }
 
     }
-    b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
-    int last_idx = contact->GetManifold()->pointCount - 1;
-    b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
-    if (first_collision.x == last_collision.x) {
-        _reynardController->switchDirection();
-    }
-}
-
-///**
-// * Processes the start of a collision
-// *
-// * This method is called when we first get a collision between two objects.  We use
-// * this method to test if it is the "right" kind of collision.  In particular, we
-// * use it to test if we make it to the win door.
-// *
-// * @param  contact  The two bodies that collided
-// */
-void GameScene::beginContact(b2Contact* contact) {
-    CULog("CONTACT BEGUN");
-    b2Fixture* fix1 = contact->GetFixtureA();
-    b2Fixture* fix2 = contact->GetFixtureB();
-
-    b2Body* body1 = fix1->GetBody();
-    b2Body* body2 = fix2->GetBody();
-
-    std::string* fd1 = reinterpret_cast<std::string*>(fix1->GetUserData().pointer);
-    std::string* fd2 = reinterpret_cast<std::string*>(fix2->GetUserData().pointer);
-
-    physics2::Obstacle* bd1 = reinterpret_cast<physics2::Obstacle*>(body1->GetUserData().pointer);
-    physics2::Obstacle* bd2 = reinterpret_cast<physics2::Obstacle*>(body2->GetUserData().pointer);
-
-    // See if we have landed on the ground.
-    if ((_reynard->getSensorName() == fd2 && _reynard.get() != bd1) ||
-        (_reynard->getSensorName() == fd1 && _reynard.get() != bd2)) {
-        _reynard->setGrounded(true);
-        // Could have more than one ground
-        _sensorFixtures.emplace(_reynard.get() == bd1 ? fix2 : fix1);
-    }
 
 }
+
 
 /**
  * Handles any modifications necessary before collision resolution
