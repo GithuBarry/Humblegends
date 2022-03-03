@@ -62,7 +62,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
           for (int j = 0; j < _size.x; j++)
           {
             _grid.at(i).push_back(make_shared<RoomModel>());
-            _grid.at(i).at(j)->init(j*720 ,(_size.y-i)*480, rooms->at(_size.y * i+j)->asString());
+            _grid.at(i).at(j)->init(j*DEFAULT_ROOM_WIDTH ,i* DEFAULT_ROOM_HEIGHT, rooms->at(_size.y * i+j)->asString());
             addChild(_grid.at(i).at(j));
           }
         }
@@ -70,6 +70,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
         
 //        return true;
     }
+
     return this->scene2::SceneNode::init();
 };
 
@@ -205,8 +206,8 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
 
   _grid.at(room1.x).at(room1.y) = _grid.at(room2.x).at(room2.y);
   _grid.at(room2.x).at(room2.y) = temp;
-    _grid.at(room1.x).at(room1.y)->setPosition(Vec2(720*room1.x,480*(_size.y-room1.y)));
-    _grid.at(room2.x).at(room2.y)->setPosition(Vec2(720*room2.x,480*(_size.y-room2.y)));
+    _grid.at(room1.x).at(room1.y)->setPosition(Vec2(DEFAULT_ROOM_WIDTH*room1.x, DEFAULT_ROOM_HEIGHT *(_size.y-room1.y)));
+    _grid.at(room2.x).at(room2.y)->setPosition(Vec2(DEFAULT_ROOM_WIDTH *room2.x, DEFAULT_ROOM_HEIGHT *(_size.y-room2.y)));
   return true;
 };
 
@@ -225,47 +226,46 @@ bool GridModel::canSwap(Vec2 room1, Vec2 room2)
            _grid.at(room2.x).at(room2.y)->isLocked());
 };
 
-/** returns all the physics geometry in the grid
+/**
+ * Returns a shared pointer to the vector of physics objects that compose
+ * the geometry of all rooms in the grid.
+ *
+ * @return  Shared pointer to vector of physics objects for room geometry
  */
 shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsObjects()
 {
-  shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> obstacles = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> obstacles = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
 
-    int c = 0;
-    int r = 0;
-    for (vector<shared_ptr<RoomModel>> v : _grid)
-    {
-        for (shared_ptr<RoomModel> p : v)
-        {
-            shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> room_obstacles = p->getPhysicsGeometry();
-            
-            Vec2 offset = Vec2(c*720, (_size.y - r)*480);
-            
-            for (shared_ptr<scene2::SceneNode> child : p->getChildren() ){
-                
-            }
-            
-            for (shared_ptr<physics2::PolygonObstacle> p : *room_obstacles)
-            {
-                
-                Poly2 poly = p->getPolygon();
-                poly += offset;
-                poly = convertToScreen(poly);
+    // Initialize variables to temporarily hold data
+    Poly2 poly;
+    shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> geometry;
+
+    // For each room in the grid
+    for (int col = 0; col < _size.x; col++) {
+        for (int row = 0; row < _size.y; row++) {
+            // Get pointers to PolygonNodes with the room's geometry
+            geometry = _grid[row][col]->getGeometry();
+
+            // For each polygon in the room
+            for (vector<shared_ptr<scene2::PolygonNode>>::iterator itr = geometry->begin(); itr != geometry->end(); ++itr) {
+                // Copy polygon data
+                poly = (*itr)->getPolygon();
+                // Get node to world transformation and apply to the polygon
+                poly *= (*itr)->getNodeToWorldTransform();
+                // Scale to physics space
                 poly /= _physics_scale;
 
-                shared_ptr<physics2::PolygonObstacle> obstacleCopy = physics2::PolygonObstacle::alloc(poly, Vec2::ZERO);
-                obstacleCopy->setBodyType(b2_staticBody);
-                obstacles->push_back(obstacleCopy);
+                // Create physics obstacle
+                shared_ptr<physics2::PolygonObstacle> obstacle = physics2::PolygonObstacle::alloc(poly, Vec2::ZERO);
+                obstacle->setBodyType(b2_staticBody);
+                obstacles->push_back(obstacle);
             }
-            c++;
         }
-        r++;
-        c = 0;
     }
     
     // MAKE BOUNDS OF LEVEL
     // DUMB WORKAROUND
-    Vec2 roomscale = Vec2(720,480);
+    Vec2 roomscale = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
     float LEFTWALL[] = { 0, 0,
         0, _size.y * roomscale.y
     };
@@ -327,7 +327,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
 Poly2 GridModel::convertToScreen(Poly2 poly){
     vector<Vec2> verts;
     for(Vec2 v  : poly.getVertices()){
-        verts.push_back(this->scene2::SceneNode::nodeToScreenCoords(v));
+        verts.push_back(this->scene2::SceneNode::nodeToWorldCoords(v));
     }
     return Poly2(verts);
 };

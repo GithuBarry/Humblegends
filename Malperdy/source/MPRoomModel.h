@@ -56,8 +56,8 @@ private:
     bool locked = false;
 
     // GEOMETRY
-    /** Vector of polygons forming the room's geometry */
-    shared_ptr<vector<Poly2>> _geometry;
+    /** Vector of polygon nodes forming the room's geometry */
+    shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> _geometry;
     /** Vector of physics objects forming the room's geometry */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> _physicsGeometry;
     /** Vector constant representing by how much the room geometry needs to be scaled */
@@ -278,6 +278,14 @@ public:
      * @return  Shared pointer to vector of physics objects for room geometry
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsGeometry() { return _physicsGeometry; }
+
+    /**
+     * Returns a shared pointer to the vector of polygon nodes that compose the
+     * room geometry.
+     *
+     * @return  Shared pointer to vector of polygon nodes for room geometry
+     */
+    shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> getGeometry() { return _geometry; }
 
     /**
      * Returns whether or not this room is currently locked, meaning it cannot

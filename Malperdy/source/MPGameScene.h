@@ -60,8 +60,7 @@ protected:
     // VIEW
     /** Reference to the physics root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _worldnode;
-    /** Reference to the debug root of the scene graph */
-    std::shared_ptr<cugl::scene2::SceneNode> _debugnode;
+
     //    /** Reference to the exit message label */
     //    std::shared_ptr<cugl::scene2::Label> _exitnode;
 
@@ -78,7 +77,8 @@ protected:
 
     /** Reference to the Reynard avatar */
     std::shared_ptr<ReynardModel> _reynard;
-    //    std::shared_ptr<ReynardController> _reynardController; //TODO waiting for ReynardController
+    /** Reference to the Reynard controller */
+    std::shared_ptr<ReynardController> _reynardController;
     std::shared_ptr<GridModel> _grid;
     std::shared_ptr<EnvController> _envController;
     std::shared_ptr<GameStateController> _stateController = make_shared<GameStateController>();
@@ -122,6 +122,8 @@ protected:
 public:
 #pragma mark -
 #pragma mark Constructors
+    /** Reference to the debug root of the scene graph */
+    std::shared_ptr<cugl::scene2::SceneNode> _debugnode;
 
     /**
      * Creates a new game world with the default values.

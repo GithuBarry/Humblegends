@@ -52,7 +52,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -9.8f
+#define DEFAULT_GRAVITY -1000.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -196,7 +196,6 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     populate();
     _active = true;
     _complete = false;
-    setDebug(true);
 
     _envController = make_shared<EnvController>();
 
@@ -268,42 +267,36 @@ void GameScene::populate() {
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.5);
-    _grid->setPosition(-100,-100);
-    _grid->getPhysicsObjects();
-    _grid->swapRooms(Vec2(0,0), Vec2(1,1));
+    //_grid->setPosition(0,-240);
 
-    /*shared_ptr<RoomModel> _room = RoomModel::alloc(0, 0, "leftrightup");
-    _worldnode->addChild(_room);*/
-
-    //shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
+    // Populate physics obstacles for grid
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
-
-    vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
-
-    for (itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
+    for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
+        (*itr)->setDebugScene(_debugnode);
+        (*itr)->setDebugColor(Color4::RED);
     }
 
-
 #pragma mark Reynard
-    Vec2 reyPos = Vec2(3, 9);
+    Vec2 reyPos = Vec2(5, 4);
     // Create image for Reynard
     std::shared_ptr<Texture> image;
-    image = _assets->get<Texture>("rocket");
+    image = _assets->get<Texture>("reynard");
     // Create sprite for Reynard from texture
     std::shared_ptr<scene2::SpriteNode> sprite;
     sprite = scene2::SpriteNode::alloc(image, 1, 1);
     // Create a model for Reynard based on his image texture
-    _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
-    _reynard->setSceneNode(sprite);
-    addObstacle(_reynard, sprite); // Put this at the very front
+    shared_ptr<ReynardModel> reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
+    reynard->setSceneNode(sprite);
+    addObstacle(reynard, sprite); // Put this at the very front
 
-    CULog("reynard position is:  %f,%f", _reynard->getPosition().x, _reynard->getPosition().y);
+    // Create controller for Reynard and assign model to that controller
+    _reynardController = make_shared<ReynardController>(reynard);
 
-    PolyFactory pf;
+    /*PolyFactory pf;
     shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
     po->init(pf.makeNgon(Vec2(3,3), 2, 4));
-    _world->addObstacle(po);
+    _world->addObstacle(po);*/
 
 }
 
@@ -323,6 +316,7 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle>& obj,
     const std::shared_ptr<scene2::SceneNode>& node) {
     _world->addObstacle(obj);
     obj->setDebugScene(_debugnode);
+    obj->setDebugColor(Color4::RED);
 
     // Position the scene graph node (enough for static objects)
     node->setPosition(obj->getPosition() * _scale);
@@ -357,9 +351,11 @@ void GameScene::update(float dt) {
 
     // Process the toggled key commands
     if (_input.didDebug()) {
-        //setDebug(!isDebug());
-
+        setDebug(!isDebug());
+        _worldnode->setVisible(! _worldnode->isVisible());
     }
+
+
     // Reset Process toggled by key command
     if (_input.didReset()) { reset(); }
     // Exit Process toggled by key command
@@ -413,23 +409,28 @@ void GameScene::update(float dt) {
         for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++) {
             _world->addObstacle(*ptr);
         }
-    }*/
-
-    if (_input.didDashLeft()){
-
     }
-    if (_input.didDashRight()) {
 
-    }
+    // Update Reynard
+    _reynardController->update(dt);
+
+
+//    if (_input.didDashLeft()) {
+//
+//    }
+//    if (_input.didDashRight()) {
+//
+//    }
     if (_input.didJump()) {
-
+        cout<<"Pressing Jump Button"<<endl;
+        _reynardController->resolveJump();
     }
-    if (_input.didZoomIn()) {
-
-    }
-    if (_input.didZoomOut()) {
-
-    }
+//    if (_input.didZoomIn()) {
+//
+//    }
+//    if (_input.didZoomOut()) {
+//
+//    }
 
 
     _world->update(_stateController->getScaledDtForPhysics(dt));
@@ -441,7 +442,7 @@ void GameScene::update(float dt) {
  *
  * This method is called when we after get a collision between two objects.  We use
  * this method to test if it is the "right" kind of collision.  In particular, we
- * use it to test if we need to turn around reynard.
+ * use it to test if we need to turn around Reynard.
  *
  * To do that , we check if reynard's contact points align vertically
  *
@@ -464,7 +465,7 @@ void GameScene::endContact(b2Contact* contact) {
         int last_idx = contact->GetManifold()->pointCount-1;
         b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
         if (first_collision.x == last_collision.x){
-            //_reynardController->switchDirection; //TODO waiting for Spencer
+            _reynardController->switchDirection();
         }
 
     }
@@ -472,7 +473,7 @@ void GameScene::endContact(b2Contact* contact) {
     int last_idx = contact->GetManifold()->pointCount - 1;
     b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
     if (first_collision.x == last_collision.x) {
-        //_reynardController->switchDirection; //TODO waiting for Spencer
+        _reynardController->switchDirection();
     }
 }
 
@@ -516,7 +517,7 @@ void GameScene::endContact(b2Contact* contact) {
  * "Introduction to Game Physics with Box2D".
  *
  * @param  contact  	The two bodies that collided
- * @param  oldManfold  	The collision manifold before contact
+ * @param  oldManifold  	The collision manifold before contact
  */
 void GameScene::beforeSolve(b2Contact* contact, const b2Manifold* oldManifold) {
     float speed = 0;

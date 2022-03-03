@@ -16,15 +16,15 @@
 class ReynardController {
 
 private:
-    ReynardModel _reynard;
+    shared_ptr<ReynardModel> _reynard;
     float _currentMovement = MOVEMENT_FORCE;
 
 public:
     /**This is the constructor of the Reynard Controller**/
-    ReynardController(ReynardModel r);
+    ReynardController(shared_ptr<ReynardModel> r);
 
     /**This allows someone to grab the instantiated Reynard from this controller**/
-    ReynardModel getReynard(){ return _reynard; }
+    shared_ptr<ReynardModel> getReynard(){ return _reynard; }
 
     /** [update] This will automatically update Reynard's position and look at other
      * things in the future like health.*/

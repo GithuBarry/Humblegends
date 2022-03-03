@@ -224,6 +224,7 @@ void CapsuleObstacle::resetDebug() {
     
     if (_debug == nullptr) {
         _debug = scene2::WireNode::allocWithPath(path);
+        _debug->setContentSize(_dimension);
         _debug->setColor(_dcolor);
         if (_scene != nullptr) {
             _scene->addChild(_debug);
