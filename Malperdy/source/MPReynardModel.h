@@ -433,19 +433,19 @@ public:
      */
     void applyForce();
 
-//    /**
-//     * Applies the jump force to the body of Reynard
-//     *
-//     * This method should be called after the force attribute is set.
-//     */
-//    bool applyJumpForce();
-//
-//    /**
-//     * Applies the jump force to the body of Reynard
-//     *
-//     * This method should be called after the force attribute is set.
-//     */
-//    bool applyDashForce();
+    /**
+     * Applies the jump force to the body of Reynard
+     *
+     * This method should be called after the force attribute is set.
+     */
+    bool applyJumpForce();
+
+    /**
+     * Applies the jump force to the body of Reynard
+     *
+     * This method should be called after the force attribute is set.
+     */
+    bool applyDashForce();
 
 
 };

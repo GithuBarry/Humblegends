@@ -365,7 +365,8 @@ void GameScene::update(float dt) {
         Application::get()->quit();
     }
     if (_input.didJump()) {
-        cout<<"Pressing Jump Button"<<endl;
+        _reynardController->resolveJump();
+        cout<<"Press Jump Button"<<endl;
     }
 
     // Swipe command toggled by key command
@@ -387,7 +388,8 @@ void GameScene::update(float dt) {
             _world->addObstacle(*ptr);
         }
     }
-
+//    _reynard->setJumping(_input.didJump());
+//    _reynard->applyForce();
     // Update Reynard
     _reynardController->update(dt);
    
