@@ -229,7 +229,8 @@ bool GridModel::canSwap(Vec2 room1, Vec2 room2)
  */
 shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsObjects()
 {
-  shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> obstacles = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
+
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> obstacles = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
 
     int c = 0;
     int r = 0;
@@ -239,7 +240,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
         {
             shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> room_obstacles = p->getPhysicsGeometry();
             
-            Vec2 offset = Vec2(c*720, (_size.y - r)*480);
+            Vec2 offset = Vec2(c*DEFAULT_ROOM_WIDTH, (_size.y - r)* DEFAULT_ROOM_HEIGHT);
             
             for (shared_ptr<scene2::SceneNode> child : p->getChildren() ){
                 
@@ -253,7 +254,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
                 Poly2 poly2 = convertToScreen(poly);
                 poly2 /= _physics_scale;
 
-                shared_ptr<physics2::PolygonObstacle> obstacleCopy = physics2::PolygonObstacle::allocWithAnchor(poly2, Vec2::ANCHOR_CENTER);
+                shared_ptr<physics2::PolygonObstacle> obstacleCopy = physics2::PolygonObstacle::alloc(poly2, Vec2::ZERO);
                 obstacleCopy->setBodyType(b2_staticBody);
                 obstacles->push_back(obstacleCopy);
 
@@ -324,12 +325,46 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     return obstacles;
 };
 
+/**
+ * Returns the polygons that compose each room in the grid, with coordinates
+ * transformed to the room's location.
+ * 
+ * @return  Shared pointer to vector of polygons of all rooms in the grid
+ */
+shared_ptr<vector<Poly2>> GridModel::getGeometry() {
+    // Initialize vector of polygons to return
+    shared_ptr<vector<Poly2>> geometry = make_shared<vector<Poly2>>();
+
+    // Initialize vector of a room's polygons
+    shared_ptr<vector<Poly2>> roomPoly = make_shared<vector<Poly2>>();
+    // Initialize Vec2 to store a room's offset in grid space
+    Vec2 offset;
+
+    // For each room in the grid
+    for (int col = 0; col < _size.x; col++) {
+        for (int row = 0; row < _size.y; row++) {
+            // Get room's polygons
+            roomPoly = _grid[row][col]->getGeometry();
+
+            // Calculate room's offset in grid space
+            offset = Vec2(col * DEFAULT_ROOM_WIDTH, (_size.y - row) * DEFAULT_ROOM_HEIGHT);
+
+            // Transform each polygon by the offset and save to be returned later
+            for (vector<Poly2>::iterator itr = roomPoly->begin(); itr != roomPoly->end(); ++itr) {
+                geometry->push_back((*itr + offset) * this->getScale());
+            }
+        }
+    }
+
+    return geometry;
+}
+
 #pragma mark Helpers
 
 Poly2 GridModel::convertToScreen(Poly2 poly){
     vector<Vec2> verts;
     for(Vec2 v  : poly.getVertices()){
-        verts.push_back(this->scene2::SceneNode::nodeToScreenCoords(v));
+        verts.push_back(this->scene2::SceneNode::nodeToWorldCoords(v));
     }
     return Poly2(verts);
 };

@@ -280,6 +280,14 @@ public:
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsGeometry() { return _physicsGeometry; }
 
     /**
+     * Returns a shared pointer to the vector of polygons that compose the
+     * room geometry.
+     *
+     * @return  Shared pointer to vector of polygons for room geometry
+     */
+    shared_ptr<vector<Poly2>> getGeometry() { return _geometry; }
+
+    /**
      * Returns whether or not this room is currently locked, meaning it cannot
      * be swapped.
      * 
