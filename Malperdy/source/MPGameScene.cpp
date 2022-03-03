@@ -166,6 +166,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect, gravity);
     _world->activateCollisionCallbacks(true);
+    _world->onBeginContact = [this](b2Contact* contact) {
+      beginContact(contact);
+    };
     _world->onEndContact = [this](b2Contact* contact) {
         endContact(contact);
     };
@@ -361,6 +364,10 @@ void GameScene::update(float dt) {
         CULog("Shutting down");
         Application::get()->quit();
     }
+    if (_input.didJump()) {
+        cout<<"Pressing Jump Button"<<endl;
+    }
+
     // Swipe command toggled by key command
     if (_input.didEndSwipe()) {
         Vec2 start;
@@ -391,10 +398,6 @@ void GameScene::update(float dt) {
 //    if (_input.didDashRight()) {
 //
 //    }
-    if (_input.didJump()) {
-        cout<<"Pressing Jump Button"<<endl;
-        _reynardController->resolveJump();
-    }
 //    if (_input.didZoomIn()) {
 //
 //    }
@@ -456,28 +459,29 @@ void GameScene::endContact(b2Contact* contact) {
 // *
 // * @param  contact  The two bodies that collided
 // */
-//void GameScene::beginContact(b2Contact* contact) {
-//    b2Body* body1 = contact->GetFixtureA()->GetBody();
-//    b2Body* body2 = contact->GetFixtureB()->GetBody();
-//    b2Body* wall;
-//    // If we hit the "win" door, we are done
-//    intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
-//
-//    if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
-//        if (body1->GetUserData().pointer == rptr){
-//            wall = body2;
-//        }else{
-//            wall = body1;
-//        }
-//        b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
-//        int last_idx = contact->GetManifold()->pointCount-1;
-//        b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
-//        b2Vec2 wall_pos_bl = wall->GetPosition(); //bottom left point of the obstacle
-//        b2Vec2 wall_pos_ur = wall->GetPosition(); //
-//
-//    }
-//
-//}
+void GameScene::beginContact(b2Contact* contact) {
+    CULog("CONTACT BEGUN");
+    b2Fixture* fix1 = contact->GetFixtureA();
+    b2Fixture* fix2 = contact->GetFixtureB();
+
+    b2Body* body1 = fix1->GetBody();
+    b2Body* body2 = fix2->GetBody();
+
+    std::string* fd1 = reinterpret_cast<std::string*>(fix1->GetUserData().pointer);
+    std::string* fd2 = reinterpret_cast<std::string*>(fix2->GetUserData().pointer);
+
+    physics2::Obstacle* bd1 = reinterpret_cast<physics2::Obstacle*>(body1->GetUserData().pointer);
+    physics2::Obstacle* bd2 = reinterpret_cast<physics2::Obstacle*>(body2->GetUserData().pointer);
+
+    // See if we have landed on the ground.
+    if ((_reynard->getSensorName() == fd2 && _reynard.get() != bd1) ||
+        (_reynard->getSensorName() == fd1 && _reynard.get() != bd2)) {
+        _reynard->setGrounded(true);
+        // Could have more than one ground
+        _sensorFixtures.emplace(_reynard.get() == bd1 ? fix2 : fix1);
+    }
+
+}
 
 /**
  * Handles any modifications necessary before collision resolution

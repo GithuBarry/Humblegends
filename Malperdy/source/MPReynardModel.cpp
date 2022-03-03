@@ -266,7 +266,7 @@ void ReynardModel::applyForce() {
 //    }
 //    return false;
 //}
-//
+
 //bool ReynardModel::applyDashForce() {
 //    if (isDashing()) {
 //        b2Vec2 force(DUDE_DASH, 0);

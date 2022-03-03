@@ -83,6 +83,9 @@ protected:
     std::shared_ptr<GridModel> _grid;
     std::shared_ptr<EnvController> _envController;
     std::shared_ptr<GameStateController> _stateController = make_shared<GameStateController>();
+    /** Mark set to handle more sophisticated collision callbacks */
+    std::unordered_set<b2Fixture*> _sensorFixtures;
+
 
 
     /** Whether we have completed this "game" */
@@ -293,6 +296,17 @@ public:
 
 #pragma mark -
 #pragma mark Collision Handling
+
+    /**
+    * Processes the start of a collision
+    *
+    * This method is called when we first get a collision between two objects.  We use
+    * this method to test if it is the "right" kind of collision.  In particular, we
+    * use it to test if we make it to the win door.  We also us it to eliminate bullets.
+    *
+    * @param  contact  The two bodies that collided
+    */
+    void beginContact(b2Contact* contact);
 
     /**
      * Processes the start of a collision
