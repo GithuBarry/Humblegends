@@ -42,10 +42,7 @@ public:
 
     /* Returns true if there is currently a room selected */
     bool hasSelected() {
-        _toSwap = Vec2(1, 2); // Debug code that's also throwing an error
-        CULog("(%d, %d)", _toSwap.x, _toSwap.y); // Debug code that's also throwing an error
-        return (_toSwap != NULL); // The actual code which is throwing an error
-        //return false; //TODO: delete this
+        return (_toSwap.x != -1 || _toSwap.y != -1);
     }
 
     /*

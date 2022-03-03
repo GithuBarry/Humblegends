@@ -144,10 +144,6 @@ public:
     /** Returns a 1-D vector of all the rooms */
     vector<shared_ptr<RoomModel>> getRooms();
 
-    /** Returns the row and colum of the room located at the given coordinates
-    * If there is no room at the given coordinates, returns null*/
-    Vec2 worldToRoomCoords(Vec2 coord);
-
     /** Returns the ptr to the room located at the coordinate.
      *
      * If coord = (i,j), then this returns the room at the ith row from the bottom,

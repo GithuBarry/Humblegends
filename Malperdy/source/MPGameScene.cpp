@@ -369,13 +369,14 @@ void GameScene::update(float dt) {
         CULog("did press");
         bool hasSwapped = false;
         if (_envController->hasSelected()) { //Where the bug is happening currently
-            CULog("Trying to select a room");
+            CULog("Trying to swap rooms");
             bool check = _envController->swapWithSelected(_input.getPosition());
-            if (check) CULog("Selected a room successfully");
+            if (check) CULog("Swapped rooms successfully");
         }
         else {
+            CULog("Trying to select a room");
             hasSwapped = _envController->selectRoom(_input.getPosition());
-            if (hasSwapped) CULog("Swapped rooms successfully");
+            if (hasSwapped) CULog("Selected a room successfully");
         }
         //TODO: test code below once above chunk has been debugged
         /*if (hasSwapped) {

@@ -19,12 +19,13 @@ EnvController::EnvController(){
 }
 
 bool EnvController::selectRoom(Vec2 coords){
-	Vec2 room1 = _grid->worldToRoomCoords(coords);
-	if (room1 == NULL) {
+	Vec2 room1 = _grid->worldSpaceToRoom(coords);
+	if (room1.x==-1 || room1.y == -1) {
 		_toSwap = Vec2(-1, -1);
 		return false;
 	}
 	_toSwap = room1;
+	CULog("Room selected: (%f, %f)", _toSwap.x, _toSwap.y);
 	return true;
 }
 
@@ -32,16 +33,22 @@ bool EnvController::swapWithSelected(Vec2 coords){
 	if (!hasSelected()) {
 		return false;
 	}
-	Vec2 room2 = _grid->worldToRoomCoords(coords);
-	if (room2.x == -1) {
+	Vec2 room2 = _grid->worldSpaceToRoom(coords);
+	if (room2.x == -1 || room2.y == -1) {
 		return false;
 	}
 	if (room2.x == _toSwap.x && room2.y == _toSwap.y) {
-		_toSwap = NULL;
+		CULog("Tried to swap with itself");
+		_toSwap = Vec2(-1, -1);
 		return false;
 	}
 
-	return _grid->swapRooms(_toSwap, room2);
+	bool success = _grid->swapRooms(_toSwap, room2);
+	if (success) {
+		CULog("Swapping with: (%f, %f)", room2.x, room2.y);
+		_toSwap = Vec2(-1, -1);
+	}
+	return success;
 }
 
 void EnvController::deselectRoom(){
