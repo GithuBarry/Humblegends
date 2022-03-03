@@ -67,7 +67,7 @@
 /** The density of the character */
 #define DUDE_DENSITY    1.0f
 /** The impulse for the character jump */
-#define DUDE_JUMP       5.5f
+#define DUDE_JUMP       1000.0f
 /** The impulse for the character dash */
 #define DUDE_DASH       10.0f
 /** Debug color for the sensor */
@@ -239,14 +239,17 @@ void ReynardModel::applyForce() {
 //            _body->ApplyForce(force,_body->GetPosition(),true);
 //        }
 //    }
+    
+    // Get scalar representing Reynard's direction
+    int direction = _faceRight ? 1 : -1;
 
     // If Reynard has reached his max speed, then clamp his speed
     if (fabs(getVX()) >= REYNARD_MAX_SPEED) {
-        setVX(SIGNUM(getVX()) * REYNARD_MAX_SPEED);
+        setVX(SIGNUM(getVX()) * direction * REYNARD_MAX_SPEED);
     }
     // Otherwise, continue accelerating
     else {
-        b2Vec2 force(REYNARD_ACC,0);
+        b2Vec2 force(direction * REYNARD_ACC,0);
         _body->ApplyForce(force,_body->GetPosition(),true);
     }
 
@@ -258,24 +261,27 @@ void ReynardModel::applyForce() {
 }
 
 // The reason for this duplicate code existing is complicated and will be gone over with Barry.
-//bool ReynardModel::applyJumpForce() {
-//    if (isJumping() && isGrounded()) {
-//        b2Vec2 force(0, DUDE_JUMP);
-//        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
-//        return true;
-//    }
-//    return false;
-//}
-//
-//bool ReynardModel::applyDashForce() {
-//    if (isDashing()) {
-//        b2Vec2 force(DUDE_DASH, 0);
-//        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
-//        return true;
-////      TODO: TEST THAT THIS WILL GET
-//    }
-//    return false;
-//}
+bool ReynardModel::applyJumpForce() {
+//    TODO: Should only jump when grounded .
+    if (true) {
+        cout<<"ACTUALLY_JUMPING"<<endl;
+        b2Vec2 force(0, DUDE_JUMP);
+        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        return true;
+    }
+    return false;
+}
+
+bool ReynardModel::applyDashForce() {
+//    TODO: Check what direction this is going in before calling ti. 
+    if (isDashing()) {
+        b2Vec2 force(DUDE_DASH, 0);
+        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        return true;
+//      TODO: TEST THAT THIS WILL GET
+    }
+    return false;
+}
 
 
 /**

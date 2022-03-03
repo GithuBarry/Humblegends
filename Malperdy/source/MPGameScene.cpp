@@ -52,7 +52,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -1000.0f
+#define DEFAULT_GRAVITY -10000.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -260,14 +260,14 @@ void GameScene::populate() {
     _worldnode->addChild(_grid);
     _grid->setScale(0.5);
     //_grid->setPosition(0,-240);
-    
+
     // Populate physics obstacles for grid
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
         (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
-    }    
+    }
 
 #pragma mark Reynard
     Vec2 reyPos = Vec2(5, 4);
@@ -284,12 +284,12 @@ void GameScene::populate() {
 
     // Create controller for Reynard and assign model to that controller
     _reynardController = make_shared<ReynardController>(_reynard);
-    
+
     /*PolyFactory pf;
     shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
     po->init(pf.makeNgon(Vec2(3,3), 2, 4));
     _world->addObstacle(po);*/
-    
+
 }
 
 
@@ -355,6 +355,11 @@ void GameScene::update(float dt) {
         CULog("Shutting down");
         Application::get()->quit();
     }
+    if (_input.didJump()) {
+        _reynardController->resolveJump();
+        cout<<"Press Jump Button"<<endl;
+    }
+
     // Swipe command toggled by key command
     if (_input.didEndSwipe()) {
         Vec2 start;
@@ -374,21 +379,19 @@ void GameScene::update(float dt) {
             _world->addObstacle(*ptr);
         }
     }
-
+//    reynard->setJumping(_input.didJump());
+//    reynard->applyForce();
+//    reynard->update(dt);
     // Update Reynard
     _reynardController->update(dt);
-   
-    
+
+
 //    if (_input.didDashLeft()) {
 //
 //    }
 //    if (_input.didDashRight()) {
 //
 //    }
-    if (_input.didJump()) {
-        cout<<"Pressing Jump Button"<<endl;
-        _reynardController->resolveJump();
-    }
 //    if (_input.didZoomIn()) {
 //
 //    }

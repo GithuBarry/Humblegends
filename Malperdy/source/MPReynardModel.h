@@ -285,6 +285,8 @@ public:
      * @return the enum Reynard State of the instantiated reynard model.
      */
     void setCurrentState(const ReynardState cS) { _currentState = cS; }
+    
+    void setFacingRight(bool v) { _faceRight = v; }
 
     /**
      * Returns true if the dude is actively jumping.
@@ -433,19 +435,19 @@ public:
      */
     void applyForce();
 
-//    /**
-//     * Applies the jump force to the body of Reynard
-//     *
-//     * This method should be called after the force attribute is set.
-//     */
-//    bool applyJumpForce();
-//
-//    /**
-//     * Applies the jump force to the body of Reynard
-//     *
-//     * This method should be called after the force attribute is set.
-//     */
-//    bool applyDashForce();
+    /**
+     * Applies the jump force to the body of Reynard
+     *
+     * This method should be called after the force attribute is set.
+     */
+    bool applyJumpForce();
+
+    /**
+     * Applies the jump force to the body of Reynard
+     *
+     * This method should be called after the force attribute is set.
+     */
+    bool applyDashForce();
 
 
 };

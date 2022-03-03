@@ -16,13 +16,6 @@ ReynardController::ReynardController(shared_ptr<ReynardModel> r){
 
 // TODO: add alloc method
 
-/** [update] This will automatically update Reynard's position and look at other
- * things in the future like health.*/
-void ReynardController::update(float delta){
-    _reynard->setMovement(_reynard->getMovement() * _reynard->getForce());
-    _reynard->applyForce();
-    _reynard->update(delta);
-}
 //WARNING: This may lead to a double call of update if reynard himself is having his update called.
 
 /**This function contains a giant switch statement between what should happen given
@@ -57,8 +50,7 @@ void ReynardController::updateMode(ReynardModel::ReynardState c){
  * His velocity will be turned to whatever the negative of whatever the Constant his speed
  * should be. **/
 void ReynardController::switchDirection(){
-    _currentMovement = -_reynard->getMovement();
-    _reynard->setMovement(-_currentMovement);
+    _reynard->setFacingRight(!(_reynard->isFacingRight()));
 }
 
 /**The beauty of this function is that it will always apply this internal variable which is what is updated directly
@@ -73,13 +65,22 @@ void ReynardController::resolveRunning(){
  * can jump it makes him jump and return true (if he cannot it will return false)
  * If Reynard's state is already jumping**/
 bool ReynardController::resolveJump(){
-    return true;
-//    bool r = _reynard.applyJumpForce();
-//    return r;
+//    return true;
+    bool r = _reynard->applyJumpForce();
+    cout<<"apply JF"<<endl;
+    return r;
 }
 
 bool ReynardController::resolveDash(){
-    return true; 
-//    bool r = _reynard.applyDashForce();
-//    return r;
+//    return true; 
+    bool r = _reynard->applyDashForce();
+    return r;
+}
+
+/** [update] This will automatically update Reynard's position and look at other
+ * things in the future like health.*/
+void ReynardController::update(float delta){
+    _reynard->setMovement(_reynard->getMovement() * _reynard->getForce());
+    _reynard->applyForce();
+    _reynard->update(delta);
 }
