@@ -352,7 +352,7 @@ void GameScene::update(float dt) {
     // Process the toggled key commands
     if (_input.didDebug()) {
         setDebug(!isDebug());
-        _worldnode->setVisible(! _worldnode->isVisible());
+        _worldnode->setVisible(!_worldnode->isVisible());
     }
 
 
@@ -391,6 +391,7 @@ void GameScene::update(float dt) {
             }
         }*/
     }
+}
     //TODO: delete once code above has been debugged
     /*if (_input.didEndSwipe()) {
         Vec2 start;
