@@ -165,7 +165,8 @@ public:
     }
     
     Vec2 worldSpaceToRoom(Vec2 coord){
-        Vec2 gridcoords = this->worldToNodeCoords(coord);
+        Vec2 gridcoords = this->screenToNodeCoords(coord);
+        CULog("Grid Model: (%f, %f)", gridcoords.x, gridcoords.y);
         return gridSpaceToRoom(gridcoords);
     }
 
