@@ -13,17 +13,15 @@
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController(){
-	CULog("initializing env controller");
 	_grid = std::make_shared<GridModel>();
-	CULog("location B");
 	_grid->init(1, true, 10, 10);
-	CULog("location C");
-	_toSwap = NULL;
+	_toSwap = Vec2(-1, -1);
 }
 
 bool EnvController::selectRoom(Vec2 coords){
 	Vec2 room1 = _grid->worldToRoomCoords(coords);
 	if (room1 == NULL) {
+		_toSwap = Vec2(-1, -1);
 		return false;
 	}
 	_toSwap = room1;
@@ -35,7 +33,7 @@ bool EnvController::swapWithSelected(Vec2 coords){
 		return false;
 	}
 	Vec2 room2 = _grid->worldToRoomCoords(coords);
-	if (room2 == NULL) {
+	if (room2.x == -1) {
 		return false;
 	}
 	if (room2.x == _toSwap.x && room2.y == _toSwap.y) {
