@@ -266,39 +266,17 @@ void GameScene::populate() {
     _worldnode->addChild(_grid);
     //_grid->setScale(0.5);
     //_grid->setPosition(0,-240);
-    _grid->getPhysicsObjects();
-    //_grid->swapRooms(Vec2(0,0), Vec2(1,1));
-
-    /*shared_ptr<RoomModel> _room = RoomModel::alloc(0, 0, "leftrightup");
-    _worldnode->addChild(_room);*/
-
-    //shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _room->getPhysicsGeometry();
+    
+    // Populate physics obstacles for grid
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
-
-    vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr;
-
-    for (itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
+    for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
         (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
-    }
-
-    //// Get normal polygons of grid
-    //shared_ptr<vector<Poly2>> polygons = _grid->getGeometry();
-    //// Draw the grid polygons
-    //for (vector<Poly2>::iterator itr = polygons->begin(); itr != polygons->end(); ++itr) {
-    //    // Create new PolygonNode for each polygon
-    //    shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
-    //    polyNode->setPolygon(*itr);
-    //    polyNode->setColor(Color4::RED);
-    //    polyNode->setAbsolute(true);
-    //    _worldnode->addChild(polyNode);
-    //    CULog("Position: %f, %f", polyNode->getPosition().x, polyNode->getPosition().y);
-    //}
-    
+    }    
 
 #pragma mark Reynard
-    Vec2 reyPos = Vec2(3, 9);
+    Vec2 reyPos = Vec2(9, 9);
     // Create image for Reynard
     std::shared_ptr<Texture> image;
     image = _assets->get<Texture>("rocket");

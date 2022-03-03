@@ -37,7 +37,7 @@ using namespace cugl;
 shared_ptr<RoomLoader> RoomModel::_roomLoader = RoomLoader::alloc("json/rooms.json");
 
 #pragma mark -
-#pragma mark Room Display Constants
+#pragma mark Constants
 /** Initialize scale by which rooms should be scaled to be in pixel space */
 const Vec2 RoomModel::ROOM_SCALE = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
 
@@ -69,15 +69,19 @@ void RoomModel::buildGeometry(string roomID) {
 	// Initialize vector of physics objects for the room
 	_physicsGeometry = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
 	// Initialize vector of polygons for the room
-	_geometry = make_shared<vector<Poly2>>();
+	_geometry = make_shared<vector<shared_ptr<scene2::PolygonNode>>>();
 
 	// Initialize variable to temporarily hold polygon
 	shared_ptr<Poly2> poly;
 
 	// For each set of polygon coordinates in the room's geometry
 	for (int k = 0; k < roomData->size(); k++) {
-		// Get polygon and scale to correct room size
+		// Get polygon
 		poly = make_shared<Poly2>(roomData->at(k));
+		// Flip polygon over the horizontal midline of the room to be right side up
+		poly->operator*=(Vec2(1,-1));
+		poly->operator+=(Vec2(0, 1));
+		// Scale coordinates to default room size
 		poly->operator*=(ROOM_SCALE);
 
 		// Convert polygon into a scene graph node and add as a child to the room node
@@ -88,7 +92,7 @@ void RoomModel::buildGeometry(string roomID) {
 		polyNode->setAbsolute(true);
 		// Set position of polygon node accordingly
 		addChild(polyNode);
-		_geometry->push_back(*poly);
+		_geometry->push_back(polyNode);
 
 		// Generate PolygonObstacle and set the corresponding properties for level geometry
 		shared_ptr<physics2::PolygonObstacle> physPoly = physics2::PolygonObstacle::alloc(*poly, Vec2::ZERO);

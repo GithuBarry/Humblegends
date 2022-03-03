@@ -154,17 +154,13 @@ public:
      * jth column from the left */
     shared_ptr<RoomModel> getRoom(Vec2 coord);
 
-    /** returns all the physics geometry in the grid
+    /**
+     * Returns a shared pointer to the vector of physics objects that compose
+     * the geometry of all rooms in the grid.
+     *
+     * @return  Shared pointer to vector of physics objects for room geometry
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsObjects();
-
-    /**
-     * Returns the polygons that compose each room in the grid, with coordinates
-     * transformed to the room's location.
-     * 
-     * @return  Shared pointer to vector of polygons of all rooms in the grid
-     */
-    shared_ptr<vector<Poly2>> getGeometry();
     
     Vec2 gridSpaceToRoom(Vec2 coord){
         int x = static_cast<int>(coord.x / DEFAULT_ROOM_WIDTH);
