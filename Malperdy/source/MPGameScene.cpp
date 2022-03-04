@@ -258,7 +258,7 @@ void GameScene::populate() {
     _grid->init(_scale, true, 10, 10);
 
     _worldnode->addChild(_grid);
-    _grid->setScale(0.5);
+    _grid->setScale(0.4);
     //_grid->setPosition(0,-240);
 
     // Populate physics obstacles for grid
@@ -430,10 +430,10 @@ void GameScene::beginContact(b2Contact* contact) {
         int last_idx = contact->GetManifold()->pointCount - 1;
         b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
         b2Vec2 temp = _reynard->getBody()->GetPosition()- contact->GetManifold()->localPoint;
-        if(abs(temp.x)>2 && ((contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )){
+        if(abs(temp.x)>_reynard->getWidth() && ((contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )){
             CULog("He is doing it again! Blocked switching %f",temp.x);
         }
-        if (abs(temp.x)<=2 && ( (contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )) {
+        if (abs(temp.x)<=_reynard->getWidth() && ( (contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )) {
 
             _reynardController->switchDirection();
             CULog("Wall hit detected %f %f",temp.x,temp.y);
