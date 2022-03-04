@@ -430,7 +430,7 @@ void GameScene::beginContact(b2Contact* contact) {
         int last_idx = contact->GetManifold()->pointCount - 1;
         b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
         b2Vec2 temp = contact->GetManifold()->points[0].localPoint-contact->GetManifold()->points[1].localPoint;
-        if ((fabs(temp.y)>_reynard->getHeight()*0.5 && (fabs(temp.y)<=_reynard->getHeight()))&&( (contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )) {
+        if (( (contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )) {
 
             _reynardController->switchDirection();
 
