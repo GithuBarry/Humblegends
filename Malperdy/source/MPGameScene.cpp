@@ -429,11 +429,12 @@ void GameScene::beginContact(b2Contact* contact) {
         b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
         int last_idx = contact->GetManifold()->pointCount - 1;
         b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
-
-        if (( (contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )) {
+        b2Vec2 temp = contact->GetManifold()->points[0].localPoint-contact->GetManifold()->points[1].localPoint;
+        if ((fabs(temp.y)>_reynard->getHeight()*0.5 && (fabs(temp.y)<=_reynard->getHeight()))&&( (contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )) {
 
             _reynardController->switchDirection();
-            CULog("Wall hit detected %f %f",contact->GetManifold()->localPoint.x,contact->GetManifold()->localPoint.y);
+
+            CULog("Wall hit detected %f %f",temp.x,temp.y);
             if (_reynard->getLinearVelocity().y>50){
                 _reynardController->resolveJump();
             }
