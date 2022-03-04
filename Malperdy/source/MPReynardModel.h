@@ -65,6 +65,8 @@
 #define DUDE_DAMPING    10.0f
 /** The maximum character speed */
 #define DUDE_MAXSPEED   5.0f
+/** The amount to reduce gravity by when Reynard is sliding down a wall */
+#define WALL_SLIDE_GRAV_SCALE 0.3f
 
 #pragma Movement Constants
 /** The rate at which Reynard accelerates */
@@ -98,6 +100,12 @@ protected:
     cugl::Vec2 _position;
     /** Which direction is the character facing */
     bool _faceRight;
+    /** Whether Reynard is sliding down a wall */
+    bool _onWall = false;
+    /** How long until Reynard drops off a wall */
+    float _wallSlideDuration;
+    /** Whether Reynard is actively falling off a wall (wall slide ended) */
+    bool _isFallingOffWall = false;
     /** How long until we can jump again */
     int _jumpCooldown;
     /** Whether we are actively jumping */
@@ -106,7 +114,7 @@ protected:
     bool _isDashing;
     /** How long until we can dash again */
     int  _dashCooldown;
-    /** How long until we can shoot again */
+    /** Whether Reynard's feet are on the ground */
     bool _isGrounded;
     /** Ground sensor to represent our feet */
     b2Fixture *_sensorFixture;
@@ -343,7 +351,7 @@ public:
      *
      * @param value whether the dude is on the ground.
      */
-    void setGrounded(bool value) { _isGrounded = value; }
+    void setGrounded(bool value) { _isGrounded = value; _isFallingOffWall = false; }
 
     /**
      * Returns how much force to apply to get the dude moving
@@ -387,6 +395,25 @@ public:
     bool isFacingRight() const {
         return _faceRight;
     }
+
+    /**
+     * Sets Reynard to "stick" on the wall, or releases him.
+     * 
+     * @param onWall    Whether or not Reynard is sticking on the wall
+     */
+    void setOnWall(bool onWall) {
+        _onWall = onWall;
+        setGravityScale(onWall ? WALL_SLIDE_GRAV_SCALE : 1.0f);
+    }
+
+    /**
+     * Returns whether Reynard is falling off a wall, meaning his wall
+     * slide duration is over and he shouldn't start moving again until
+     * he hits the floor.
+     *
+     * @return  Whether Reynard has just fallen off a wall
+     */
+    bool getFallingOffWall() { return _isFallingOffWall; }
 
 
     /**

@@ -274,7 +274,7 @@ void GameScene::populate() {
     }
 
 #pragma mark Reynard
-    Vec2 reyPos = Vec2(5, 4);
+    Vec2 reyPos = Vec2(5, 3);
     // Create image for Reynard
     std::shared_ptr<Texture> image;
     image = _assets->get<Texture>("reynard");
@@ -423,17 +423,30 @@ void GameScene::beginContact(b2Contact* contact) {
         int last_idx = contact->GetManifold()->pointCount - 1;
         b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
         b2Vec2 temp = _reynard->getBody()->GetPosition()- contact->GetManifold()->localPoint;
+
+        // To catch weird edge cases
         if(abs(temp.x)>_reynard->getWidth() && ((contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )){
             CULog("He is doing it again! Blocked switching %f",temp.x);
         }
-        if (abs(temp.x)<=_reynard->getWidth() && ( (contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )) {
+        // If he's hit a horizontal wall
+        else if (abs(temp.x)<=_reynard->getWidth() && ( (contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )) {
 
-            _reynardController->switchDirection();
-            CULog("Wall hit detected %f %f",temp.x,temp.y);
-            if (_reynard->getLinearVelocity().y>50){
-                _reynardController->resolveJump();
+            // If he's in the air and has hit a wall
+            if (fabs(_reynard->getLinearVelocity().y)>10) {
+                CULog("WALL JUMP");
+                _reynardController->stickToWall();
+                _reynardController->switchDirection();
+            }
+            // Otherwise, if he's just running and hit a wall
+            else {
+                CULog("Wall hit detected %f %f", temp.x, temp.y);
+                _reynardController->switchDirection();
             }
 
+        }
+        // Otherwise, if he's hit floor
+        else {
+            _reynardController->landOnGround();
         }
 
     }
