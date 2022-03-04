@@ -189,7 +189,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
-
+    setDebug(false);
 
     addChild(_worldnode);
     addChild(_debugnode);
@@ -432,7 +432,7 @@ void GameScene::beginContact(b2Contact* contact) {
         else if (abs(temp.x)<=_reynard->getWidth() && ( (contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )) {
 
             // If he's in the air and has hit a wall
-            if (fabs(_reynard->getLinearVelocity().y)>10) {
+            if (fabs(_reynard->getLinearVelocity().y)>5) {
                 CULog("WALL JUMP");
                 _reynardController->stickToWall();
                 _reynardController->switchDirection();
