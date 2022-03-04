@@ -67,7 +67,7 @@
 /** The density of the character */
 #define DUDE_DENSITY    1.0f
 /** The impulse for the character jump */
-#define DUDE_JUMP       1000.0f
+#define DUDE_JUMP       500.0f
 /** The impulse for the character dash */
 #define DUDE_DASH       10.0f
 /** Debug color for the sensor */
@@ -242,21 +242,25 @@ void ReynardModel::applyForce() {
     
     // Get scalar representing Reynard's direction
     int direction = _faceRight ? 1 : -1;
+    
+    // Set velocity direction according to Reynard's direction
+    setVX(direction * REYNARD_MAX_SPEED);
 
     // If Reynard has reached his max speed, then clamp his speed
-    if (fabs(getVX()) >= REYNARD_MAX_SPEED) {
-        setVX((getVX() / fabs(getVX())) * REYNARD_MAX_SPEED);
-    }
-    // Otherwise, continue accelerating
-    else {
-        b2Vec2 force(direction * REYNARD_ACC,0);
-        _body->ApplyForce(force,_body->GetPosition(),true);
-    }
+//    if (fabs(getVX()) >= REYNARD_MAX_SPEED) {
+//        setVX((getVX() / fabs(getVX())) * REYNARD_MAX_SPEED);
+//    }
+//    // Otherwise, continue accelerating
+//    else {
+//        b2Vec2 force(direction * REYNARD_ACC,0);
+//        _body->ApplyForce(force,_body->GetPosition(),true);
+//    }
 
     // Jump!
     if (!isJumping() && isGrounded()) {
-        b2Vec2 force(0, DUDE_JUMP);
-        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        //b2Vec2 force(0, DUDE_JUMP);
+        //_body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        setVY(50.0f);
     }
 }
 

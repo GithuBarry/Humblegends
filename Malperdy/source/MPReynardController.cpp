@@ -51,6 +51,7 @@ void ReynardController::updateMode(ReynardModel::ReynardState c){
  * should be. **/
 void ReynardController::switchDirection(){
     _reynard->setFacingRight(!(_reynard->isFacingRight()));
+    
 }
 
 /**The beauty of this function is that it will always apply this internal variable which is what is updated directly
