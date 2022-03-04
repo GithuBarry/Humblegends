@@ -50,14 +50,13 @@ void ReynardController::updateMode(ReynardModel::ReynardState c){
  * His velocity will be turned to whatever the negative of whatever the Constant his speed
  * should be. **/
 void ReynardController::switchDirection(){
-    _reynard->setFacingRight(!(_reynard->isFacingRight()));
+    if (!_reynard->getFallingOffWall()) _reynard->setFacingRight(!(_reynard->isFacingRight()));
     
 }
 
 /**The beauty of this function is that it will always apply this internal variable which is what is updated directly
  * in the Switch Directions functoin.. **/
 void ReynardController::resolveRunning(){
-//    The beauty of this is
     _reynard->setMovement(_currentMovement);
 }
 
@@ -76,6 +75,37 @@ bool ReynardController::resolveDash(){
 //    return true; 
     bool r = _reynard->applyDashForce();
     return r;
+}
+
+/**
+ * Sets Reynard to be sliding down a wall for a short amount of time.
+ *
+ * @return  Whether Reynard is successfully stuck to the wall
+ */
+bool ReynardController::stickToWall() {
+    _reynard->setOnWall(true);
+    return true;
+}
+
+/**
+ * If Reynard is sliding down a wall already, unsticks him and drops
+ * him to the ground.
+ *
+ * @return  Whether Reynard is successfully unstuck from the wall
+ */
+bool ReynardController::unstickFromWall() {
+    _reynard->setOnWall(false);
+    return true;
+}
+
+/**
+ * Sets Reynard to be on the ground.
+ *
+ * @return  Whether Reynard is successfully marked as being on the ground
+ */
+bool ReynardController::landOnGround() {
+    _reynard->setGrounded(true);
+    return true;
 }
 
 /** [update] This will automatically update Reynard's position and look at other

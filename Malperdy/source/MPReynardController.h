@@ -56,6 +56,28 @@ public:
      * If Reynard's state is already jumping**/
     bool resolveDash();
 
+    /**
+     * Sets Reynard to be sliding down a wall for a short amount of time.
+     * 
+     * @return  Whether Reynard is successfully stuck to the wall
+     */
+    bool stickToWall();
+
+    /**
+     * If Reynard is sliding down a wall already, unsticks him and drops
+     * him to the ground.
+     *
+     * @return  Whether Reynard is successfully unstuck from the wall
+     */
+    bool unstickFromWall();
+
+    /**
+     * Sets Reynard to be on the ground.
+     * 
+     * @return  Whether Reynard is successfully marked as being on the ground
+     */
+    bool landOnGround();
+
 };
 
 

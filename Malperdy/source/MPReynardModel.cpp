@@ -54,8 +54,8 @@
 #define JUMP_COOLDOWN   5
 /** Cooldown (in animation frames) for Dashing */
 #define DASH_COOLDOWN   20
-/** Cooldown (in animation frames) for shooting */
-#define SHOOT_COOLDOWN  20
+/** Amount of time (in seconds) for wall slide duration */
+#define WALL_SLIDE_DURATION 1.5f
 /** The amount to shrink the body fixture (vertically) relative to the image */
 #define DUDE_VSHRINK  0.95f
 /** The amount to shrink the body fixture (horizontally) relative to the image */
@@ -120,6 +120,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
         
         _jumpCooldown  = 0;
         _dashCooldown  = 0;
+        _wallSlideDuration = 0;
         return true;
     }
     return false;
@@ -244,7 +245,15 @@ void ReynardModel::applyForce() {
     int direction = _faceRight ? 1 : -1;
     
     // Set velocity direction according to Reynard's direction
-    setVX(direction * REYNARD_MAX_SPEED);
+    // If on the wall, then set all velocity to 0 as he "sticks"
+    if (_onWall) {
+        setVX(0);
+        setVY(0);
+    }
+    // Otherwise, set his velocity in the opposite direction
+    else if (isGrounded()) {
+        setVX(direction * REYNARD_MAX_SPEED);
+    }
 
     // If Reynard has reached his max speed, then clamp his speed
 //    if (fabs(getVX()) >= REYNARD_MAX_SPEED) {
@@ -255,25 +264,25 @@ void ReynardModel::applyForce() {
 //        b2Vec2 force(direction * REYNARD_ACC,0);
 //        _body->ApplyForce(force,_body->GetPosition(),true);
 //    }
-
-    // Jump!
-    if (!isJumping() && isGrounded()) {
-        //b2Vec2 force(0, DUDE_JUMP);
-        //_body->ApplyLinearImpulse(force,_body->GetPosition(),true);
-        setVY(50.0f);
-    }
 }
 
-// The reason for this duplicate code existing is complicated and will be gone over with Barry.
+/**
+ * Applies vertical jump force if Reynard is on the ground, or that with an additional
+ * horizontal force if he's on a wall for a wall jump.
+ */
 bool ReynardModel::applyJumpForce() {
-//    TODO: Should only jump when grounded .
-    if (true) {
-        cout<<"ACTUALLY_JUMPING"<<endl;
-        b2Vec2 force(0, DUDE_JUMP);
-        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
-        return true;
+    // Automatically set him to no longer be on the ground
+    setGrounded(false);
+
+    // If Reynard is on a wall, then also give him a horizontal velocity away
+    if (_onWall) {
+        setVX((_faceRight ? 1 : -1)* REYNARD_MAX_SPEED);
+        // And unstick from wall
+        setOnWall(false);
     }
-    return false;
+    // Jump up
+    setVY(150.0f);
+    return true;
 }
 
 bool ReynardModel::applyDashForce() {
@@ -311,6 +320,22 @@ void ReynardModel::update(float dt) {
         // Only cooldown while grounded
         _dashCooldown = (_dashCooldown > 0 ? _dashCooldown-1 : 0);
     }
+
+    // Check to make sure Reynard can still continue wall sliding, if he already is
+    if (_onWall) {
+        // If Reynard is out of time
+        if (_wallSlideDuration >= WALL_SLIDE_DURATION) {
+            setOnWall(false);
+            setGrounded(false);
+            _wallSlideDuration = 0;
+            _isFallingOffWall = true;
+        }
+        // Otherwise, just increment duration
+        else {
+            _wallSlideDuration += dt;
+        }
+    }
+    else _wallSlideDuration = 0;
 
     // Update physics obstacle
     CapsuleObstacle::update(dt);
