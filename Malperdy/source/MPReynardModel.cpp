@@ -245,7 +245,7 @@ void ReynardModel::applyForce() {
 
     // If Reynard has reached his max speed, then clamp his speed
     if (fabs(getVX()) >= REYNARD_MAX_SPEED) {
-        setVX(direction * REYNARD_MAX_SPEED);
+        setVX((getVX() / fabs(getVX())) * REYNARD_MAX_SPEED);
     }
     // Otherwise, continue accelerating
     else {
