@@ -173,6 +173,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _world->beforeSolve = [this](b2Contact* contact, const b2Manifold* oldManifold) {
         beforeSolve(contact, oldManifold);
     };
+    _envController = make_shared<EnvController>();
 
     // IMPORTANT: SCALING MUST BE UNIFORM
     // This means that we cannot change the aspect ratio of the physics world. Shift to center if a bad fit
@@ -197,10 +198,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     _active = true;
     _complete = false;
 
-    _envController = make_shared<EnvController>();
 
     // XNA nostalgia
-    Application::get()->setClearColor(Color4f::CORNFLOWER);
+    Application::get()->setClearColor(Color4f::WHITE);
     return true;
 }
 
@@ -256,11 +256,13 @@ void GameScene::populate() {
     /////////////////////////////////////
     // DEBUG: add room to scene graph
     /////////////////////////////////////
-    shared_ptr<GridModel> _grid = make_shared<GridModel>();
+    _grid = make_shared<GridModel>();
     _grid->init(_scale, true, 10, 10);
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.4);
+    _envController->setGrid(_grid);
+
     //_grid->setPosition(0,-240);
 
     // Populate physics obstacles for grid
@@ -352,7 +354,7 @@ void GameScene::update(float dt) {
 
 
     // Reset Process toggled by key command
-    if (_input.didReset()) { reset(); }
+    if (_input.didReset()) {reset();}
     // Exit Process toggled by key command
     if (_input.didExit()) {
         CULog("Shutting down");
@@ -363,16 +365,36 @@ void GameScene::update(float dt) {
         //TODO: check if reynard is in the room before selecting or swapping
         //TODO: debug the code below
         Vec2 pos = _input.getPosition();
-        pos.y = getSize().height - pos.y;
+//        pos.y = getSize().height - pos.y;
         CULog("pos: (%f, %f)", pos.x, pos.y);
 
         bool hasSwapped = false;
         if (_envController->hasSelected()) { //Where the bug is happening currently
             bool check = _envController->swapWithSelected(pos);
-        }
-        else {
+        } else {
             hasSwapped = _envController->selectRoom(pos);
         }
+
+
+
+
+//    if (_input.didDashLeft()) {
+//
+//    }
+//    if (_input.didDashRight()) {
+//
+//    }
+//    if (_input.didZoomIn()) {
+//
+//    }
+//    if (_input.didZoomOut()) {
+//
+//    }
+
+    }
+    _reynardController->update(dt);
+    _world->update(_stateController->getScaledDtForPhysics(dt));
+
 }
 
 /**

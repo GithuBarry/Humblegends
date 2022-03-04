@@ -5,7 +5,7 @@
 //  Controller for the house of Malperdy
 //
 //  Authors: Jordan Selin
-//  Copyright © 2022 Humblegends. All rights reserved.
+//  Copyright ï¿½ 2022 Humblegends. All rights reserved.
 //  Version: 2/28/22
 //
 
@@ -17,6 +17,7 @@ EnvController::EnvController(){
 	_grid->init(1, true, 10, 10);
 	_toSwap = Vec2(-1, -1);
 }
+
 
 bool EnvController::selectRoom(Vec2 coords){
 	Vec2 room1 = _grid->worldSpaceToRoom(coords);

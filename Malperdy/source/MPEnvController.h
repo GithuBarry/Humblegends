@@ -45,6 +45,10 @@ public:
         return (_toSwap.x != -1 || _toSwap.y != -1);
     }
 
+    void setGrid(std::shared_ptr<GridModel> grid){
+        _grid = grid;
+    }
+
     /*
     * Swaps the room at the given location with the selected room
     * If room at given location is the selected room, deselects the room

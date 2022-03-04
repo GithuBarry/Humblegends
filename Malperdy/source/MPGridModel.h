@@ -160,7 +160,7 @@ public:
     
     Vec2 gridSpaceToRoom(Vec2 coord){
         int x = static_cast<int>(coord.x / DEFAULT_ROOM_WIDTH);
-        int y = static_cast<int>(_size.y-coord.y / DEFAULT_ROOM_HEIGHT);
+        int y = static_cast<int>(coord.y/ DEFAULT_ROOM_HEIGHT);
         return Vec2(x,y);
     }
     
