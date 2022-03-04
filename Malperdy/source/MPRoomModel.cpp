@@ -94,7 +94,7 @@ void RoomModel::buildGeometry(string roomID) {
 		// Convert polygon into a scene graph node and add as a child to the room node
 		shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
 		polyNode->setPolygon(*poly);
-		polyNode->setColor(Color4::BLACK);
+		polyNode->setColor(Color4::GRAY);
 		// Ensure that polygons are drawn to their absolute coordinates
 		polyNode->setAbsolute(true);
 		// Set position of polygon node accordingly
@@ -133,7 +133,7 @@ bool RoomModel::init(float x, float y, string roomID) {
 	Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), size(BOUND) / 2);
 	boundPath.closed = true;
 	shared_ptr<scene2::PathNode> boundNode = scene2::PathNode::allocWithPath(boundPath, BOUND_WIDTH);
-	boundNode->setColor(Color4::BLACK);
+	boundNode->setColor(Color4::GRAY);
 	boundNode->setClosed(true);
 	addChild(boundNode);
 

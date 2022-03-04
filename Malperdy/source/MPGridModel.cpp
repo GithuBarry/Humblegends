@@ -190,13 +190,13 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
   {
     return false;
   }
-
+    Vec2 pos1 =   _grid.at(room1.x).at(room1.y)->getPosition();
+    Vec2 pos2 =   _grid.at(room2.x).at(room2.y)->getPosition();
   shared_ptr<RoomModel> temp = _grid.at(room1.x).at(room1.y);
-
   _grid.at(room1.x).at(room1.y) = _grid.at(room2.x).at(room2.y);
   _grid.at(room2.x).at(room2.y) = temp;
-    _grid.at(room1.x).at(room1.y)->setPosition(Vec2(DEFAULT_ROOM_WIDTH*room1.x, DEFAULT_ROOM_HEIGHT *(_size.y-room1.y)));
-    _grid.at(room2.x).at(room2.y)->setPosition(Vec2(DEFAULT_ROOM_WIDTH *room2.x, DEFAULT_ROOM_HEIGHT *(_size.y-room2.y)));
+    _grid.at(room1.x).at(room1.y)->setPosition(pos1);
+    _grid.at(room2.x).at(room2.y)->setPosition(pos2);
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = _grid.at(room1.x).at(room1.y)->getPhysicsGeometry()->begin(); itr != _grid.at(room1.x).at(room1.y)->getPhysicsGeometry()->end(); ++itr) {
         (*itr)->setEnabled(false);// TODO Replace me with obstacles translation
     }

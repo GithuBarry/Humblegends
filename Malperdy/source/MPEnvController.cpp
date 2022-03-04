@@ -24,9 +24,12 @@ bool EnvController::selectRoom(Vec2 coords){
 	if (room1.x==-1 || room1.y == -1) {
 		_toSwap = Vec2(-1, -1);
 		return false;
+	}else{
+		_grid->getRoom(Vec2(room1.y,room1.x))->setColor(Color4::RED);
 	}
 	_toSwap = room1;
 	CULog("Room selected: (%f, %f)", _toSwap.x, _toSwap.y);
+
 	return true;
 }
 
@@ -38,13 +41,14 @@ bool EnvController::swapWithSelected(Vec2 coords){
 	if (room2.x == -1 || room2.y == -1) {
 		return false;
 	}
+	_grid->getRoom(Vec2(_toSwap.y,_toSwap.x))->setColor(Color4::WHITE);
 	if (room2.x == _toSwap.x && room2.y == _toSwap.y) {
 		CULog("Tried to swap with itself");
 		_toSwap = Vec2(-1, -1);
 		return false;
 	}
 
-	bool success = _grid->swapRooms(_toSwap, room2);
+	bool success = _grid->swapRooms(Vec2(_toSwap.y,_toSwap.x), Vec2(room2.y, room2.x));
 	if (success) {
 		CULog("Swapping with: (%f, %f)", room2.x, room2.y);
 		_toSwap = Vec2(-1, -1);
