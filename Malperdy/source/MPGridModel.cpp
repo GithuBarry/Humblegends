@@ -35,38 +35,41 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
     _physics_scale =  scale;
     
     if(!json){
-        _grid = vector<vector<shared_ptr<RoomModel>>>();
+        _grid = shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>>();
         for (int i = 0; i < _size.y; i++)
         {
-          _grid.push_back(vector<shared_ptr<RoomModel>>());
+          _grid->push_back(make_shared<vector<shared_ptr<RoomModel>>>());
           for (int j = 0; j < _size.x; j++)
           {
-            _grid.at(i).push_back(make_shared<RoomModel>());
-            addChild(_grid.at(i).at(j));
+            _grid->at(i)->push_back(make_shared<RoomModel>());
+            addChild(_grid->at(i)->at(j));
           }
         }
 
 //        return true;
     }
     else{
-        shared_ptr<vector<shared_ptr<JsonValue>>> rooms = _gridLoader->getRoomData();
-        shared_ptr<JsonValue> rows = _gridLoader->getRows();
-        shared_ptr<JsonValue> cols = _gridLoader->getCols();
-        
-        _size = Vec2(cols->asInt(), rows->asInt());
-        
-        _grid = vector<vector<shared_ptr<RoomModel>>>();
-        for (int i = 0; i < _size.y; i++)
-        {
-          _grid.push_back(vector<shared_ptr<RoomModel>>());
-          for (int j = 0; j < _size.x; j++)
-          {
-            _grid.at(i).push_back(make_shared<RoomModel>());
-            _grid.at(i).at(j)->init(j*DEFAULT_ROOM_WIDTH ,i* DEFAULT_ROOM_HEIGHT, rooms->at(_size.y * i+j)->asString());
-            addChild(_grid.at(i).at(j));
-          }
-        }
-        
+        // Get level dimensions        
+        _size = _gridLoader->getDims();
+        // Initialize grid to store RoomModels in level
+        _grid = make_shared<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>>();
+        // Initialize pointer to temporarily point to RoomModels
+        shared_ptr<RoomModel> room;
+
+        // For each room in the level
+        for (int y = 0; y < _size.y; y++) {
+            // Initialize vector for a row of rooms
+            shared_ptr<vector<shared_ptr<RoomModel>>> roomRow = make_shared<vector<shared_ptr<RoomModel>>>();
+            // Construct and store the RoomModel corresponding to the ID of the room at this location
+            for (int x = 0; x < _size.x; x++) {
+                room = RoomModel::alloc(x, y, _gridLoader->getRoomAt(x, y));
+                roomRow->push_back(room);
+                // Add room to scene graph
+                addChild(room);
+            }
+            // Add row of rooms to the full grid
+            _grid->push_back(roomRow);
+        }        
         
 //        return true;
     }
@@ -93,26 +96,26 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
  * @param room
  * @return a grid with width x height rooms, is of the form specified by roomID
  */
-bool GridModel::init(int width, int height, string roomID)
-{
-  _size = Vec2(height, width);
-  _horizontal_gap = 0;
-  _vertical_gap = 0;
-
-  _grid = vector<vector<shared_ptr<RoomModel>>>();
-  for (int i = 0; i < _size.y; i++)
-  {
-    _grid.push_back(vector<shared_ptr<RoomModel>>());
-    for (int j = 0; j < _size.x; j++)
-    {
-      _grid.at(i).push_back(make_shared<RoomModel>());
-        _grid.at(i).at(j)->init(j,i,roomID);
-      addChild(_grid.at(i).at(j));
-    }
-  }
-
-  return true;
-};
+//bool GridModel::init(int width, int height, string roomID)
+//{
+//  _size = Vec2(height, width);
+//  _horizontal_gap = 0;
+//  _vertical_gap = 0;
+//
+//  _grid = vector<vector<shared_ptr<RoomModel>>>();
+//  for (int i = 0; i < _size.y; i++)
+//  {
+//    _grid.push_back(vector<shared_ptr<RoomModel>>());
+//    for (int j = 0; j < _size.x; j++)
+//    {
+//      _grid.at(i).push_back(make_shared<RoomModel>());
+//        _grid.at(i).at(j)->init(j,i,roomID);
+//      addChild(_grid.at(i).at(j));
+//    }
+//  }
+//
+//  return true;
+//};
 
 /**
  * {@note by Barry feature request}
@@ -146,71 +149,90 @@ vector<shared_ptr<RoomModel>> GridModel::getRooms()
 {
   vector<shared_ptr<RoomModel>> rooms = vector<shared_ptr<RoomModel>>();
 
-  for (vector<shared_ptr<RoomModel>> v : _grid)
+  for (vector<shared_ptr<vector<shared_ptr<RoomModel>>>>::iterator rowItr = _grid->begin(); rowItr != _grid->end(); ++rowItr)
   {
-    for (shared_ptr<RoomModel> p : v)
-    {
-      rooms.push_back(p);
-    }
+      for (vector<shared_ptr<RoomModel>>::iterator colItr = (*rowItr)->begin(); colItr != (*rowItr)->end(); ++colItr)
+      {
+          rooms.push_back(*colItr);
+      }
   }
   return rooms;
 };
 
-/** Returns the ptr to the room located at the coordinate.
+/**
+ * Returns the ptr to the room located at the given coordinate,
+ * where the x-coordinate is the column from the left and the
+ * y-coordinate is the row from the bottom.
+ * 
+ * If the coordinate is out of bounds, then a null pointer is
+ * returned.
  *
- * If coord = (i,j), then this returns the room at the ith row from the bottom,
- * jth column from the left */
-Vec2 GridModel::worldToRoomCoords(Vec2 coord)
+ * @param coord The coordinates of the desired room in (column, row) form
+ * @return      The room located at the given coordinates
+ */
+shared_ptr<RoomModel> GridModel::getRoom(int x, int y)
 {
-    //TODO: convert to room row and column
-    //TODO: return null if not corresponding to a room
-    return coord;
-};
-
-/** Returns the ptr to the room located at the coordinate.
- *
- * If coord = (i,j), then this returns the room at the ith row from the bottom,
- * jth column from the left */
-shared_ptr<RoomModel> GridModel::getRoom(Vec2 coord)
-{
-  if (coord.x > _size.x || coord.y > _size.y)
-  {
-    return nullptr;
-  }
-  return _grid.at(coord.x).at(coord.y);
+    // Return null pointer if out of bounds
+    if (x >= _size.x || y >= _size.y)
+    {
+        return nullptr;
+    }
+  return _grid->at(y)->at(x);
 };
 
 #pragma mark Setters
 
-/** Sets the room located at the ith row from the bottom, jth column from the left  */
-void GridModel::setRoom(Vec2 coord, shared_ptr<RoomModel> room)
+/**
+ * Sets the given room to be located in the xth column from the
+ * left and the yth row from the bottom.
+ * 
+ * Returns whether or not the room was set successfully.
+ *
+ * @param x     The column from the left that the desired room is located in
+ * @param y     The row from the bottom that the desired room is located in
+ * @param room  The room to be placed at the given coordinates
+ * @return      Whether the room was set successfully
+ */
+bool GridModel::setRoom(int x, int y, shared_ptr<RoomModel> room)
 {
-  if (coord.x > _size.x || coord.y > _size.y)
-  {
-    return;
-  }
-  _grid.at(coord.x).at(coord.y) = room;
+    // Return false if coordinate is out of bounds
+    if (x >= _size.x || y >= _size.y)
+    {
+        return false;
+    }
+    // Otherwise, set room at coordinate to be given room and return true
+    _grid->at(y)->at(x) = room;
+    return true;
 };
 
-/** Swaps two rooms given two room coordinates.
- * room = (i,j) meaning the room at row i, col j
- * returns true if the swap occurs successfully, returns false if rooms cannot be swapped */
+/**
+ * Swaps the two rooms at the given coordinates, where the x-coordinate is
+ * the column from the left and the y-coordinate is the row from the bottom.
+ * 
+ * Returns true if the swap was successfully performed.
+ * 
+ * @param room1 The coordinates of the first room to swap in (column, row) form
+ * @param room2 The coordinates of the second room to swap in (column, row) form
+ * @return      Whether the swap was performed successfully
+ */
 bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
 {
-  if (!canSwap(room1, room2))
-  {
-    return false;
-  }
+    if (!canSwap(room1, room2)) return false;
 
-  shared_ptr<RoomModel> temp = _grid.at(room1.x).at(room1.y);
-
-  _grid.at(room1.x).at(room1.y) = _grid.at(room2.x).at(room2.y);
-  _grid.at(room2.x).at(room2.y) = temp;
-    _grid.at(room1.x).at(room1.y)->setPosition(Vec2(DEFAULT_ROOM_WIDTH*room1.x, DEFAULT_ROOM_HEIGHT *(_size.y-room1.y)));
-    _grid.at(room2.x).at(room2.y)->setPosition(Vec2(DEFAULT_ROOM_WIDTH *room2.x, DEFAULT_ROOM_HEIGHT *(_size.y-room2.y)));
-  return true;
+    shared_ptr<RoomModel> temp = getRoom(room1);
+    // Store Room2 at Room1's old location
+    setRoom(room1, getRoom(room2));
+    // Update Room2's location accordingly
+    getRoom(room2)->setPosition(room1);
+    // Store Room1 at Room2's old location
+    setRoom(room2, temp);
+    // Update Room1's location accordingly
+    temp->setPosition(room2);
+  
+    return true;
 };
 
+// TODO: update this
 /** Returns whether the rooms can be swapped or not */
 bool GridModel::canSwap(Vec2 room1, Vec2 room2)
 {
@@ -222,8 +244,8 @@ bool GridModel::canSwap(Vec2 room1, Vec2 room2)
   {
     return false;
   }
-  return !(_grid.at(room1.x).at(room1.y)->isLocked() ||
-           _grid.at(room2.x).at(room2.y)->isLocked());
+  return !(_grid->at(room1.x)->at(room1.y)->isLocked() ||
+           _grid->at(room2.x)->at(room2.y)->isLocked());
 };
 
 /**
@@ -244,7 +266,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     for (int col = 0; col < _size.x; col++) {
         for (int row = 0; row < _size.y; row++) {
             // Get pointers to PolygonNodes with the room's geometry
-            geometry = _grid[row][col]->getGeometry();
+            geometry = getRoom(col, row)->getGeometry();
 
             // For each polygon in the room
             for (vector<shared_ptr<scene2::PolygonNode>>::iterator itr = geometry->begin(); itr != geometry->end(); ++itr) {
@@ -323,6 +345,18 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
 };
 
 #pragma mark Helpers
+
+/**
+ * Returns the ptr to the room located at the coordinate.
+ *
+ * If coord = (i,j), then this returns the room at the ith row from the bottom,
+ * jth column from the left */
+Vec2 GridModel::worldToRoomCoords(Vec2 coord)
+{
+    //TODO: convert to room row and column
+    //TODO: return null if not corresponding to a room
+    return coord;
+};
 
 Poly2 GridModel::convertToScreen(Poly2 poly){
     vector<Vec2> verts;

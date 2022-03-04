@@ -43,19 +43,7 @@ private:
     /*
      * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
      */
-    vector<vector<shared_ptr<RoomModel>>> _grid;
-
-    // /** Rebuilds the geometry for all the rooms.
-    //  *
-    //  * Propogates the call down to each of the rooms.
-    //  **/
-    // void buildGeometry();
-
-    // /** Rebuilds the physics assets for all the rooms.
-    //  *
-    //  * Propogates the call down to each of the rooms.
-    //  **/
-    // void buildPhysicsGeometry();
+    shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> _grid;
 
 public:
 #pragma mark Constructors
@@ -99,7 +87,7 @@ public:
      * @param room
      * @return a grid with width x height rooms, is of the form specified by roomID
      */
-    bool init(int width, int height, string roomID);
+    //bool init(int width, int height, string roomID);
 
     /**
      * {@note by Barry feature request}
@@ -144,15 +132,31 @@ public:
     /** Returns a 1-D vector of all the rooms */
     vector<shared_ptr<RoomModel>> getRooms();
 
-    /** Returns the row and colum of the room located at the given coordinates
-    * If there is no room at the given coordinates, returns null*/
-    Vec2 worldToRoomCoords(Vec2 coord);
+    /**
+     * Returns the ptr to the room located at the given coordinate,
+     * where the x-coordinate is the column from the left and the
+     * y-coordinate is the row from the bottom.
+     * 
+     * If the coordinate is out of bounds, then a null pointer is
+     * returned.
+     * 
+     * @param coord The coordinates of the desired room in (column, row) form
+     * @return      The room located at the given coordinates
+     */
+    shared_ptr<RoomModel> getRoom(Vec2 coord) { return getRoom(coord.x, coord.y); };
 
-    /** Returns the ptr to the room located at the coordinate.
-     *
-     * If coord = (i,j), then this returns the room at the ith row from the bottom,
-     * jth column from the left */
-    shared_ptr<RoomModel> getRoom(Vec2 coord);
+    /**
+     * Returns the pointer to the room located in the xth column
+     * from the left and the yth row from the bottom.
+     * 
+     * If the coordinate is out of bounds, then a null pointer is
+     * returned.
+     * 
+     * @param x The column from the left that the desired room is located in
+     * @param y The row from the bottom that the desired room is located in
+     * @return  The room located at the given coordinates
+     */
+    shared_ptr<RoomModel> getRoom(int x, int y);
 
     /**
      * Returns a shared pointer to the vector of physics objects that compose
@@ -173,10 +177,37 @@ public:
         return gridSpaceToRoom(gridcoords);
     }
 
+    /** Returns the row and colum of the room located at the given coordinates
+    * If there is no room at the given coordinates, returns null*/
+    Vec2 worldToRoomCoords(Vec2 coord);
+
 #pragma mark Setters
 
-    /** Sets the room located at the ith row from the bottom, jth column from the left  */
-    void setRoom(Vec2 coord, shared_ptr<RoomModel> room);
+    /**
+     * Sets the room at the given coordinate to be the given room,
+     * where the x-coordinate is the column from the left and the
+     * y-coordinate is the row from the bottom.
+     * 
+     * Returns whether or not the room was set successfully.
+     * 
+     * @param coord The coordinates of the desired room in (column, row) form
+     * @param room  The room to be placed at the given coordinates
+     * @return      Whether the room was set successfully
+     */
+    bool setRoom(Vec2 coord, shared_ptr<RoomModel> room) { return setRoom(coord.x, coord.y, room); }
+
+    /**
+     * Sets the given room to be located in the xth column from the
+     * left and the yth row from the bottom.
+     * 
+     * Returns whether or not the room was set successfully.
+     *
+     * @param x     The column from the left that the desired room is located in
+     * @param y     The row from the bottom that the desired room is located in
+     * @param room  The room to be placed at the given coordinates
+     * @return      Whether the room was set successfully
+     */
+    bool setRoom(int x, int y, shared_ptr<RoomModel> room);
 
     /** Swaps two rooms given two room coordinates.
      * room = (i,j) meaning the room at row i, col j

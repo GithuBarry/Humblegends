@@ -16,44 +16,25 @@
  * @return      Whether all rooms were loaded successfully from the JSON
  */
 bool GridLoader::init(const string path) {
-    // Initialize lookup table
-    lookup = make_shared<map<string, shared_ptr<vector<shared_ptr<JsonValue>>>>>();
+    // Initialize array to store level data in
+    _level = make_shared<vector<shared_ptr<vector<string>>>>();
 
     // Initialize JSON reader
     std::shared_ptr<JsonReader> reader = JsonReader::alloc(path);
     // Read and get JSON file
     std::shared_ptr<JsonValue> json = reader->readJson();
 
-    // Initialize JsonValue ptr cache to hold num rows
-    shared_ptr<JsonValue> row = json->get(0);
-    shared_ptr<vector<shared_ptr<JsonValue>>> rowvec = make_shared<vector<shared_ptr<JsonValue>>>();
-    rowvec->push_back(row);
-    lookup->emplace(json->get(0)->key(), rowvec);
+    // Read dimensions of level from JSON
+    _dims = Vec2(json->getInt("cols"), json->getInt("rows"));
     
-    // Initialize JsonValue ptr cache to hold num cols
-    shared_ptr<JsonValue> col = json->get(1);
+    // Get all rooms in the level
+    shared_ptr<JsonValue> rooms = json->get("rooms");
 
-    shared_ptr<vector<shared_ptr<JsonValue>>> colvec = make_shared<vector<shared_ptr<JsonValue>>>();
-
-    colvec->push_back(col);
-    lookup->emplace(json->get(1)->key(), colvec);
-    
-    // Initialize JsonValue ptr cache to hold num cols
-    shared_ptr<JsonValue> rooms = json->get(2);
-    
-    shared_ptr<vector<shared_ptr<JsonValue>>> roomvec = make_shared<vector<shared_ptr<JsonValue>>>();
-
-    // For each room in the JSON, store its geometry in the map with its name as the key
-    for (int ii = 0; ii < rooms->size(); ii++) {
-        
-        // Get JSON object for the array of room data
-        shared_ptr<JsonValue> room_row = rooms->get(ii);
-        
-        for(int jj = 0; jj < room_row->size(); jj++){
-            roomvec->push_back(room_row->get(jj));
-        }
+    // For each room in the JSON, store the room's ID in a grid where it can be accessed via its coordinates
+    for (int row = 0; row < _dims.y; row++) {
+        // Get IDs for row of rooms and store for later reference
+        _level->push_back(make_shared<vector<string>>((rooms->get(row))->asStringArray()));
     }
-    lookup->emplace(json->get(2)->key(), roomvec);
 
     // Return that loading of rooms was successful
     return true;
