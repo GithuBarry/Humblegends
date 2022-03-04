@@ -104,7 +104,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
     _position = pos;
     _movement = 0.0f;
 
-    if (BoxObstacle::init(pos,nsize)) {
+    if (CapsuleObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);
         setFriction(0.0f);      // HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true); // OTHERWISE, HE IS A WEEBLE WOBBLE
@@ -164,7 +164,7 @@ void ReynardModel::createFixtures() {
         return;
     }
 
-    BoxObstacle::createFixtures();
+    CapsuleObstacle::createFixtures();
     b2FixtureDef sensorDef;
     sensorDef.density = DUDE_DENSITY;
     sensorDef.isSensor = true;
@@ -198,7 +198,7 @@ void ReynardModel::releaseFixtures() {
         return;
     }
 
-    BoxObstacle::releaseFixtures();
+    CapsuleObstacle::releaseFixtures();
     if (_sensorFixture != nullptr) {
         _body->DestroyFixture(_sensorFixture);
         _sensorFixture = nullptr;
@@ -309,7 +309,7 @@ void ReynardModel::update(float dt) {
     }
 
     // Update physics obstacle
-    BoxObstacle::update(dt);
+    CapsuleObstacle::update(dt);
 
     if (_node != nullptr) {
         _node->setPosition(getPosition()*_drawScale);
@@ -328,7 +328,7 @@ void ReynardModel::update(float dt) {
  * the texture (e.g. a circular shape attached to a square texture).
  */
 void ReynardModel::resetDebug() {
-    BoxObstacle::resetDebug();
+    CapsuleObstacle::resetDebug();
     float w = DUDE_SSHRINK*_dimension.width;
     float h = SENSOR_HEIGHT;
     Poly2 poly(Rect(-w/2.0f,-h/2.0f,w,h));
