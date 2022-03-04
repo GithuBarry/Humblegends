@@ -1,0 +1,24 @@
+{
+  "rows": 3,
+  "cols": 3,
+  "rooms": [
+    [
+      "leftright",
+      "leftrightdown",
+      "leftdown",
+      "rightupdown"
+    ],
+    [
+      "leftrightupdown",
+      "leftup",
+      "rightup",
+      "leftrightupdown"
+    ],
+    [
+      "leftup",
+      "leftup",
+      "leftup",
+      "rightup"
+    ]
+  ]
+}

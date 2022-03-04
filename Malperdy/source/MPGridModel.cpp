@@ -20,7 +20,7 @@
 using namespace cugl;
 
 /** Initialize RoomLoader for loading in rooms from a JSON */
-shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testlevel.json");
+shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testlevel2.json");
 
 #pragma mark Constructors
 

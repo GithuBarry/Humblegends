@@ -72,7 +72,7 @@
 /** The rate at which Reynard accelerates */
 #define REYNARD_ACC 5000.0f
 /** The maximum speed at which Reynard can run */
-#define REYNARD_MAX_SPEED 120.0f
+#define REYNARD_MAX_SPEED 130.0f
 
 using namespace cugl;
 
@@ -402,6 +402,7 @@ public:
      * @param onWall    Whether or not Reynard is sticking on the wall
      */
     void setOnWall(bool onWall) {
+        if (_isFallingOffWall) return;
         _onWall = onWall;
         setGravityScale(onWall ? WALL_SLIDE_GRAV_SCALE : 1.0f);
     }
