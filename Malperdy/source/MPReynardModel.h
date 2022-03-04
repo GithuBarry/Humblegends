@@ -84,7 +84,7 @@ using namespace cugl;
 * experience, using a rectangular shape for a character will regularly snag
 * on a platform.  The round shapes on the end caps lead to smoother movement.
 */
-class ReynardModel : public cugl::physics2::BoxObstacle {
+class ReynardModel : public cugl::physics2::CapsuleObstacle {
 private:
     /** This macro disables the copy constructor (not allowed on physics objects) */
 
@@ -153,7 +153,7 @@ public:
      * This constructor does not initialize any of the dude values beyond
      * the defaults.  To use a DudeModel, you must call init().
      */
-    ReynardModel() : BoxObstacle(), _sensorName(SENSOR_NAME) { }
+    ReynardModel() : CapsuleObstacle(), _sensorName(SENSOR_NAME) { }
 
     /**
      * Destroys this DudeModel, releasing all resources.
