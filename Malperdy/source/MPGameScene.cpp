@@ -52,7 +52,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -1000.0f
+#define DEFAULT_GRAVITY -10000.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -166,8 +166,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager>& assets, const Rect rec
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect, gravity);
     _world->activateCollisionCallbacks(true);
-    _world->onEndContact = [this](b2Contact* contact) {
-        endContact(contact);
+    _world->onBeginContact = [this](b2Contact* contact) {
+        beginContact(contact);
     };
 
     _world->beforeSolve = [this](b2Contact* contact, const b2Manifold* oldManifold) {
@@ -251,12 +251,6 @@ void GameScene::reset() {
  */
 void GameScene::populate() {
 
-    //TODO waiting for Reynard Controller and ReynardModel
-
-    //_reynard = ReynardModel::alloc(Vec2(50,50));
-    //addObstacle((const shared_ptr<physics2::Obstacle> &)  _reynard,(const shared_ptr<scene2::SceneNode> &) _reynard->getCharacterNode());
-    //_reynardController = ReynardController(_reynard)
-
 
 #pragma mark Rooms
     /////////////////////////////////////
@@ -266,7 +260,7 @@ void GameScene::populate() {
     _grid->init(_scale, true, 10, 10);
 
     _worldnode->addChild(_grid);
-    _grid->setScale(0.5);
+    _grid->setScale(0.4);
     //_grid->setPosition(0,-240);
 
     // Populate physics obstacles for grid
@@ -286,12 +280,13 @@ void GameScene::populate() {
     std::shared_ptr<scene2::SpriteNode> sprite;
     sprite = scene2::SpriteNode::alloc(image, 1, 1);
     // Create a model for Reynard based on his image texture
-    shared_ptr<ReynardModel> reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
-    reynard->setSceneNode(sprite);
-    addObstacle(reynard, sprite); // Put this at the very front
+    _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
+    _reynard->setSceneNode(sprite);
+    addObstacle(_reynard, sprite); // Put this at the very front
 
     // Create controller for Reynard and assign model to that controller
-    _reynardController = make_shared<ReynardController>(reynard);
+
+    _reynardController = make_shared<ReynardController>(_reynard);
 
     /*PolyFactory pf;
     shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
@@ -363,6 +358,7 @@ void GameScene::update(float dt) {
         CULog("Shutting down");
         Application::get()->quit();
     }
+
     if (_input.didPress()) {
         //TODO: check if reynard is in the room before selecting or swapping
         //TODO: debug the code below
@@ -377,66 +373,7 @@ void GameScene::update(float dt) {
         else {
             hasSwapped = _envController->selectRoom(pos);
         }
-        //TODO: test code below once above chunk has been debugged
-        /*if (hasSwapped) {
-            _world->clear();
-
-            shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects;
-            physics_objects = _grid->getPhysicsObjects();
-            vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
-            vector<shared_ptr<physics2::PolygonObstacle>> physics_vec;
-            physics_vec = *physics_objects;
-            for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++) {
-                _world->addObstacle(*ptr);
-            }
-        }*/
-    }
 }
-    //TODO: delete once code above has been debugged
-    /*if (_input.didEndSwipe()) {
-        Vec2 start;
-        Vec2 end;
-        start = _input.getSwipeStartEnd()[0];
-        end = _input.getSwipeStartEnd()[1];
-        _envController->selectRoom(start);
-        _envController->swapWithSelected(end);
-        _world->clear();
-
-        shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects;
-        physics_objects = _grid->getPhysicsObjects();
-        vector<shared_ptr<physics2::PolygonObstacle>>::iterator ptr;
-        vector<shared_ptr<physics2::PolygonObstacle>> physics_vec;
-        physics_vec = *physics_objects;
-        for (ptr = physics_vec.begin(); ptr < physics_vec.end(); ptr++) {
-            _world->addObstacle(*ptr);
-        }
-    }
-
-    // Update Reynard
-    _reynardController->update(dt);
-
-
-//    if (_input.didDashLeft()) {
-//
-//    }
-//    if (_input.didDashRight()) {
-//
-//    }
-    if (_input.didJump()) {
-        cout<<"Pressing Jump Button"<<endl;
-        _reynardController->resolveJump();
-    }
-//    if (_input.didZoomIn()) {
-//
-//    }
-//    if (_input.didZoomOut()) {
-//
-//    }
-
-
-    _world->update(_stateController->getScaledDtForPhysics(dt));
-}
-
 
 /**
  * Processes the end of a collision
@@ -449,66 +386,38 @@ void GameScene::update(float dt) {
  *
  * @param  contact  The two bodies that collided
  */
-void GameScene::endContact(b2Contact* contact) {
+void GameScene::beginContact(b2Contact* contact) {
     b2Body* body1 = contact->GetFixtureA()->GetBody();
     b2Body* body2 = contact->GetFixtureB()->GetBody();
     b2Body* wall;
-    // If we hit the "win" door, we are done
-    intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
 
-    if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
-        if (body1->GetUserData().pointer == rptr){
+    if(body1 == _reynard->getBody() || body2 == _reynard->getBody()) {
+        if (body1 == _reynard->getBody()){
             wall = body2;
         }else{
             wall = body1;
         }
-        b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
-        int last_idx = contact->GetManifold()->pointCount-1;
-        b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
-        if (first_collision.x == last_collision.x){
+        b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
+        int last_idx = contact->GetManifold()->pointCount - 1;
+        b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
+        b2Vec2 temp = _reynard->getBody()->GetPosition()- contact->GetManifold()->localPoint;
+        if(abs(temp.x)>_reynard->getWidth() && ((contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )){
+            CULog("He is doing it again! Blocked switching %f",temp.x);
+        }
+        if (abs(temp.x)<=_reynard->getWidth() && ( (contact->GetManifold()->localNormal.x<-0.5 && _reynard->isFacingRight()) ||(contact->GetManifold()->localNormal.x>0.5 && !_reynard->isFacingRight()) )) {
+
             _reynardController->switchDirection();
+            CULog("Wall hit detected %f %f",temp.x,temp.y);
+            if (_reynard->getLinearVelocity().y>50){
+                _reynardController->resolveJump();
+            }
+
         }
 
     }
-    b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
-    int last_idx = contact->GetManifold()->pointCount - 1;
-    b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
-    if (first_collision.x == last_collision.x) {
-        _reynardController->switchDirection();
-    }
+
 }
 
-///**
-// * Processes the start of a collision
-// *
-// * This method is called when we first get a collision between two objects.  We use
-// * this method to test if it is the "right" kind of collision.  In particular, we
-// * use it to test if we make it to the win door.
-// *
-// * @param  contact  The two bodies that collided
-// */
-//void GameScene::beginContact(b2Contact* contact) {
-//    b2Body* body1 = contact->GetFixtureA()->GetBody();
-//    b2Body* body2 = contact->GetFixtureB()->GetBody();
-//    b2Body* wall;
-//    // If we hit the "win" door, we are done
-//    intptr_t rptr = reinterpret_cast<intptr_t>(_reynard.get());
-//
-//    if(body1->GetUserData().pointer == rptr || body2->GetUserData().pointer == rptr) {
-//        if (body1->GetUserData().pointer == rptr){
-//            wall = body2;
-//        }else{
-//            wall = body1;
-//        }
-//        b2Vec2 first_collision =contact->GetManifold()->points[0].localPoint;
-//        int last_idx = contact->GetManifold()->pointCount-1;
-//        b2Vec2 last_collision =contact->GetManifold()->points[last_idx].localPoint;
-//        b2Vec2 wall_pos_bl = wall->GetPosition(); //bottom left point of the obstacle
-//        b2Vec2 wall_pos_ur = wall->GetPosition(); //
-//
-//    }
-//
-//}
 
 /**
  * Handles any modifications necessary before collision resolution

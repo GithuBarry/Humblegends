@@ -52,7 +52,7 @@
 #pragma mark -
 #pragma mark Drawing Constants
 /** The texture for the character avatar */
-#define DUDE_TEXTURE    "rocket"
+#define DUDE_TEXTURE    "reynard"
 /** Identifier to allow us to track the sensor in ContactListener */
 #define SENSOR_NAME     "reynardsensor"
 
@@ -84,7 +84,7 @@ using namespace cugl;
 * experience, using a rectangular shape for a character will regularly snag
 * on a platform.  The round shapes on the end caps lead to smoother movement.
 */
-class ReynardModel : public cugl::physics2::BoxObstacle {
+class ReynardModel : public cugl::physics2::CapsuleObstacle {
 private:
     /** This macro disables the copy constructor (not allowed on physics objects) */
 
@@ -153,7 +153,7 @@ public:
      * This constructor does not initialize any of the dude values beyond
      * the defaults.  To use a DudeModel, you must call init().
      */
-    ReynardModel() : BoxObstacle(), _sensorName(SENSOR_NAME) { }
+    ReynardModel() : CapsuleObstacle(), _sensorName(SENSOR_NAME) { }
 
     /**
      * Destroys this DudeModel, releasing all resources.
@@ -285,6 +285,14 @@ public:
      * @return the enum Reynard State of the instantiated reynard model.
      */
     void setCurrentState(const ReynardState cS) { _currentState = cS; }
+    
+    void setFacingRight(bool v) {
+        _faceRight = v;
+        scene2::TexturedNode* image = dynamic_cast<scene2::TexturedNode*>(_node.get());
+        if (image != nullptr) {
+            image->flipHorizontal(!image->isFlipHorizontal());
+        }
+    }
 
     /**
      * Returns true if the dude is actively jumping.
@@ -433,19 +441,19 @@ public:
      */
     void applyForce();
 
-//    /**
-//     * Applies the jump force to the body of Reynard
-//     *
-//     * This method should be called after the force attribute is set.
-//     */
-//    bool applyJumpForce();
-//
-//    /**
-//     * Applies the jump force to the body of Reynard
-//     *
-//     * This method should be called after the force attribute is set.
-//     */
-//    bool applyDashForce();
+    /**
+     * Applies the jump force to the body of Reynard
+     *
+     * This method should be called after the force attribute is set.
+     */
+    bool applyJumpForce();
+
+    /**
+     * Applies the jump force to the body of Reynard
+     *
+     * This method should be called after the force attribute is set.
+     */
+    bool applyDashForce();
 
 
 };

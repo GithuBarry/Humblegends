@@ -67,7 +67,7 @@
 /** The density of the character */
 #define DUDE_DENSITY    1.0f
 /** The impulse for the character jump */
-#define DUDE_JUMP       5.5f
+#define DUDE_JUMP       500.0f
 /** The impulse for the character dash */
 #define DUDE_DASH       10.0f
 /** Debug color for the sensor */
@@ -104,7 +104,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
     _position = pos;
     _movement = 0.0f;
 
-    if (BoxObstacle::init(pos,nsize)) {
+    if (CapsuleObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);
         setFriction(0.0f);      // HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true); // OTHERWISE, HE IS A WEEBLE WOBBLE
@@ -164,7 +164,7 @@ void ReynardModel::createFixtures() {
         return;
     }
 
-    BoxObstacle::createFixtures();
+    CapsuleObstacle::createFixtures();
     b2FixtureDef sensorDef;
     sensorDef.density = DUDE_DENSITY;
     sensorDef.isSensor = true;
@@ -198,7 +198,7 @@ void ReynardModel::releaseFixtures() {
         return;
     }
 
-    BoxObstacle::releaseFixtures();
+    CapsuleObstacle::releaseFixtures();
     if (_sensorFixture != nullptr) {
         _body->DestroyFixture(_sensorFixture);
         _sensorFixture = nullptr;
@@ -239,43 +239,53 @@ void ReynardModel::applyForce() {
 //            _body->ApplyForce(force,_body->GetPosition(),true);
 //        }
 //    }
+    
+    // Get scalar representing Reynard's direction
+    int direction = _faceRight ? 1 : -1;
+    
+    // Set velocity direction according to Reynard's direction
+    setVX(direction * REYNARD_MAX_SPEED);
 
     // If Reynard has reached his max speed, then clamp his speed
-    if (fabs(getVX()) >= REYNARD_MAX_SPEED) {
-        setVX(SIGNUM(getVX()) * REYNARD_MAX_SPEED);
-    }
-    // Otherwise, continue accelerating
-    else {
-        b2Vec2 force(REYNARD_ACC,0);
-        _body->ApplyForce(force,_body->GetPosition(),true);
-    }
+//    if (fabs(getVX()) >= REYNARD_MAX_SPEED) {
+//        setVX((getVX() / fabs(getVX())) * REYNARD_MAX_SPEED);
+//    }
+//    // Otherwise, continue accelerating
+//    else {
+//        b2Vec2 force(direction * REYNARD_ACC,0);
+//        _body->ApplyForce(force,_body->GetPosition(),true);
+//    }
 
     // Jump!
     if (!isJumping() && isGrounded()) {
-        b2Vec2 force(0, DUDE_JUMP);
-        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        //b2Vec2 force(0, DUDE_JUMP);
+        //_body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        setVY(50.0f);
     }
 }
 
 // The reason for this duplicate code existing is complicated and will be gone over with Barry.
-//bool ReynardModel::applyJumpForce() {
-//    if (isJumping() && isGrounded()) {
-//        b2Vec2 force(0, DUDE_JUMP);
-//        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
-//        return true;
-//    }
-//    return false;
-//}
-//
-//bool ReynardModel::applyDashForce() {
-//    if (isDashing()) {
-//        b2Vec2 force(DUDE_DASH, 0);
-//        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
-//        return true;
-////      TODO: TEST THAT THIS WILL GET
-//    }
-//    return false;
-//}
+bool ReynardModel::applyJumpForce() {
+//    TODO: Should only jump when grounded .
+    if (true) {
+        cout<<"ACTUALLY_JUMPING"<<endl;
+        b2Vec2 force(0, DUDE_JUMP);
+        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        return true;
+    }
+    return false;
+}
+
+bool ReynardModel::applyDashForce() {
+//    TODO: Check what direction this is going in before calling ti. 
+    if (isDashing()) {
+        b2Vec2 force(DUDE_DASH, 0);
+        _body->ApplyLinearImpulse(force,_body->GetPosition(),true);
+        return true;
+//      TODO: TEST THAT THIS WILL GET
+    }
+    return false;
+}
 
 
 /**
@@ -303,7 +313,7 @@ void ReynardModel::update(float dt) {
     }
 
     // Update physics obstacle
-    BoxObstacle::update(dt);
+    CapsuleObstacle::update(dt);
 
     if (_node != nullptr) {
         _node->setPosition(getPosition()*_drawScale);
@@ -322,7 +332,7 @@ void ReynardModel::update(float dt) {
  * the texture (e.g. a circular shape attached to a square texture).
  */
 void ReynardModel::resetDebug() {
-    BoxObstacle::resetDebug();
+    CapsuleObstacle::resetDebug();
     float w = DUDE_SSHRINK*_dimension.width;
     float h = SENSOR_HEIGHT;
     Poly2 poly(Rect(-w/2.0f,-h/2.0f,w,h));

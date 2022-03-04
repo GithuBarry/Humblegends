@@ -31,7 +31,7 @@ using namespace cugl;
 /** The key to zoom out */
 #define ZOOM_OUT_KEY  KeyCode::E
 /** The key to jump */
-#define JUMP_KEY  KeyCode::E
+#define JUMP_KEY  KeyCode::W
 
 
 /** How fast a double click must be in milliseconds */
@@ -202,7 +202,7 @@ void InputController::update(float dt) {
 //    left = keys->keyDown(KeyCode::ARROW_LEFT);
 //    rght = keys->keyDown(KeyCode::ARROW_RIGHT);
 //    up   = keys->keyDown(KeyCode::ARROW_UP);
-//    down = keys->keyDown(KeyCode::ARROW_DOWN);
+  keys->keyDown(KeyCode::ARROW_DOWN);
     
 #else
     // MOBILE CONTROLS
