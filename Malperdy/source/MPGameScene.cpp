@@ -68,6 +68,7 @@ using namespace std;
 #define SOME_COLOR   Color4::YELLOW
 
 /** The key for collisions sounds {@example} */
+
 #define SOME_SOUND     "somesoundname"
 
 /** The key for the font reference */
@@ -271,6 +272,7 @@ void GameScene::populate() {
         _world->addObstacle(*itr);
         (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
+        CULog("populate: %f %f ",(*itr)->getPosition().x);
     }
 
 #pragma mark Reynard
@@ -365,8 +367,6 @@ void GameScene::update(float dt) {
         //TODO: check if reynard is in the room before selecting or swapping
         //TODO: debug the code below
         Vec2 pos = _input.getPosition();
-//        pos.y = getSize().height - pos.y;
-        CULog("pos: (%f, %f)", pos.x, pos.y);
 
         bool hasSwapped = false;
         if (_envController->hasSelected()) { //Where the bug is happening currently
@@ -374,8 +374,6 @@ void GameScene::update(float dt) {
         } else {
             hasSwapped = _envController->selectRoom(pos);
         }
-
-
 
 
 //    if (_input.didDashLeft()) {
