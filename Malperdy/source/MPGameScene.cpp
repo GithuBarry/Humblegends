@@ -186,7 +186,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
-    setDebug(false);
+    setDebug(true);
 
     addChild(_worldnode);
     addChild(_debugnode);

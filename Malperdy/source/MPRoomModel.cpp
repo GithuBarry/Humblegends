@@ -79,9 +79,6 @@ void RoomModel::buildGeometry(string roomID) {
 	for (int k = 0; k < roomData->size(); k++) {
 		// Get polygon
 		poly = make_shared<Poly2>(roomData->at(k));
-		// Flip polygon over the horizontal midline of the room to be right side up
-		poly->operator*=(Vec2(1,-1));
-		poly->operator+=(Vec2(0, 1));
 		// Scale coordinates to default room size
 		poly->operator*=(ROOM_SCALE);
 		// Ensure that all points are integers
@@ -138,7 +135,7 @@ bool RoomModel::init(float x, float y, string roomID) {
 	addChild(boundNode);
 
 	// Initialize with the default room width/height and given position
-	return this->initWithBounds(x, y, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+	return this->initWithBounds(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
 }
 
 #pragma mark Destructors

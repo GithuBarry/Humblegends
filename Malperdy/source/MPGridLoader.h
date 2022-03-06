@@ -18,7 +18,10 @@ using namespace cugl;
 
 class GridLoader {
 private:
-    shared_ptr<map<string, shared_ptr<vector<shared_ptr<JsonValue>>>>> lookup;
+    /** Array that stores IDs of rooms that form the level */
+    shared_ptr<vector<shared_ptr<vector<string>>>> _level;
+    /** Dimensions of the level */
+    Vec2 _dims;
     
 public:
 #pragma mark Constructors
@@ -31,7 +34,6 @@ public:
      */
     bool init(const string path);
     
-    
     /**
      * Returns a newly-allocated loader that will be used to read in grid formats from
      * a JSON and can be queried to get room types for each coord.
@@ -43,31 +45,23 @@ public:
         std::shared_ptr<GridLoader> result = std::make_shared<GridLoader>();
         return (result->init(path) ? result : nullptr);
     }
-    
+
     /**
-     * Returns a pointer to the array of JsonValue pointers representing the
-     * roomIDs
-     *
-     *
-     * @return  Pointer to vector of roomIDs
+     * Returns the ID of the room at the given location in the level grid.
+     * 
+     * @param col   The column of the location to get the room ID from
+     * @param row   The row of the location to get the room ID from
+     * @return      ID of the room at the given location
      */
-    shared_ptr<vector<shared_ptr<JsonValue>>> getRoomData() { return lookup->at("rooms"); }
-    
+    string getRoomAt(int col, int row) { return _level->at(_dims.y - row - 1)->at(col); }
+
     /**
-     * Returns a pointer of JsonValue representing the num rows
-     *
-     *
-     * @return  Pointer to JsonValue of num rowss
+     * Returns the dimensions of the level as a vector, where the x-value is
+     * the number of columns and the y-value is the number of rows.
+     * 
+     * @return  Dimensions of the level
      */
-    shared_ptr<JsonValue> getRows() { return (lookup->at("rows"))->at(0); }
-    
-    /**
-     * Returns a pointer of JsonValue representing the num cols
-     *
-     *
-     * @return  Pointer to JsonValue of num cols
-     */
-    shared_ptr<JsonValue> getCols() { return (lookup->at("cols"))->at(0); }
+    Vec2 getDims() { return _dims; }
     
 };
 
