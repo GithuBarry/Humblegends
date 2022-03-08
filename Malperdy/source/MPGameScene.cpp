@@ -280,7 +280,8 @@ void GameScene::populate() {
     std::shared_ptr<scene2::SpriteNode> sprite;
     sprite = scene2::SpriteNode::alloc(image, 1, 1);
     // Create a model for Reynard based on his image texture
-    _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
+    _reynardController = ReynardController::allocReynard(reyPos, image->getSize() / _scale, _scale);
+    _reynard = _reynardController->getReynard();
     _reynard->setSceneNode(sprite);
     addObstacle(_reynard, sprite); // Put this at the very front
 
@@ -373,7 +374,7 @@ void GameScene::update(float dt) {
     }
 
     if (_input.didJump()) {
-        _reynardController->resolveJump();
+        _reynardController->jump();
         cout << "Press Jump Button" << endl;
     }
 
@@ -434,18 +435,18 @@ void GameScene::beginContact(b2Contact *contact) {
             if (fabs(_reynard->getLinearVelocity().y) > 5) {
                 CULog("WALL JUMP");
                 _reynardController->stickToWall();
-                _reynardController->switchDirection();
+                _reynardController->turn();
             }
                 // Otherwise, if he's just running and hit a wall
             else {
                 CULog("Wall hit detected %f %f", temp.x, temp.y);
-                _reynardController->switchDirection();
+                _reynardController->turn();
             }
 
         }
             // Otherwise, if he's hit floor
         else {
-            _reynardController->landOnGround();
+            _reynardController->land();
         }
 
     }
