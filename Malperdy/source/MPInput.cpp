@@ -63,7 +63,6 @@ _resetPressed(false),
 _debugPressed(false),
 _exitPressed(false),
 _keyUp(false),
-_keyDown(false),
 _keyReset(false),
 _keyDebug(false),
 _keyExit(false),
@@ -118,10 +117,10 @@ bool InputController::init() {
         mouse->setPointerAwareness(Mouse::PointerAwareness::DRAG);
         _mouseKey = mouse->acquireKey();
         mouse->addPressListener(_mouseKey, [=](const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
-            this->buttonDownCB(event, clicks, focus);
+            this->mouseDownCB(event, clicks, focus);
             });
         mouse->addReleaseListener(_mouseKey, [=](const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
-            this->buttonUpCB(event, clicks, focus);
+            this->mouseUpCB(event, clicks, focus);
             });
     }
     else success = false;
@@ -241,30 +240,6 @@ void InputController::clear() {
 }
 
 #pragma mark -
-#pragma mark Input Results
-
-/**
-* Returns whether a swipe just ended
-*
-* @return whether a swipe just ended
-*/
-bool InputController::didEndSwipe() {
-    //TODO
-    return false;
-}
-
-/**
-* @return the start and the end global coordinates of a swipe (mobile and mouse)
-* Coordinates are in form of [start_pos, end_pos]
-*
-* @return null when didEndSwipe() is false
-*/
-std::vector<cugl::Vec2> InputController::getSwipeStartEnd() {
-    //TODO
-    return std::vector<cugl::Vec2>();
-}
-
-#pragma mark -
 #pragma mark Mouse Callbacks
 /**
  * Call back to execute when a mouse button is first pressed.
@@ -275,7 +250,7 @@ std::vector<cugl::Vec2> InputController::getSwipeStartEnd() {
  * @param clicks    The number of clicks (for double clicking) (UNUSED)
  * @param focus     Whether this device has focus (UNUSED)
  */
-void InputController::buttonDownCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
+void InputController::mouseDownCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
     if (!_mouseDown && event.buttons.hasLeft()) {
         _mouseDown = true;
         _mousePos = event.position;
@@ -291,7 +266,7 @@ void InputController::buttonDownCB(const cugl::MouseEvent& event, Uint8 clicks, 
  * @param clicks    The number of clicks (for double clicking) (UNUSED)
  * @param focus     Whether this device has focus (UNUSED)
  */
-void InputController::buttonUpCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
+void InputController::mouseUpCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
     if (_mouseDown && event.buttons.hasLeft()) {
         _mouseDown = false;
     }
@@ -306,6 +281,7 @@ void InputController::buttonUpCB(const cugl::MouseEvent& event, Uint8 clicks, bo
  * @param event The associated event
  */
 void InputController::touchBeganCB(const cugl::TouchEvent& event, bool focus) {
+    //TODO: implement
     // All touches correspond to key up
     _keyUp = true;
 
@@ -321,6 +297,7 @@ void InputController::touchBeganCB(const cugl::TouchEvent& event, bool focus) {
  * @param event The associated event
  */
 void InputController::touchEndedCB(const cugl::TouchEvent& event, bool focus) {
+    //TODO: implement
     // Gesture has ended.  Give it meaning.
     cugl::Vec2 diff = event.position-_dtouch;
     bool fast = (event.timestamp.ellapsedMillis(_timestamp) < EVENT_SWIPE_TIME);

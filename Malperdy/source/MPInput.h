@@ -69,8 +69,6 @@ private:
     // KEYBOAD EMULATION FOR REYNARD:
     /** Whether the up arrow key is pressed */
     bool  _keyUp;
-    /** Whether the down arrow key is pressed */
-    bool  _keyDown;
     /** Whether the Spacebar is pressed */
     bool  _spaceDown;
     /** Whether the q key is pressed */
@@ -234,21 +232,6 @@ public:
         return _currPos;
     }
     
-    /**
-     * Returns whether a swipe just ended
-     * 
-     * @return whether a swipe just ended
-     */
-    bool didEndSwipe();
-
-    /**
-     * @return the start and the end global coordinates of a swipe (mobile and mouse)
-     * Coordinates are in form of [start_pos, end_pos]
-     * 
-     * @return null when didEndSwipe() is false
-     */
-    std::vector<cugl::Vec2> getSwipeStartEnd();
-    
     
 #pragma mark -
 #pragma mark Mouse Callbacks
@@ -262,7 +245,7 @@ private:
      * @param clicks    The number of clicks (for double clicking) (UNUSED)
      * @param focus     Whether this device has focus (UNUSED)
      */
-    void buttonDownCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus);
+    void mouseDownCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus);
 
     /**
      * Call back to execute when a mouse button is first released.
@@ -273,12 +256,13 @@ private:
      * @param clicks    The number of clicks (for double clicking) (UNUSED)
      * @param focus     Whether this device has focus (UNUSED)
      */
-    void buttonUpCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus);
+    void mouseUpCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus);
 
 #pragma mark Touch Callbacks
     //TODO: fix below headers to match the parameters
     /**
      * Callback for the beginning of a touch event
+     * TODO: implement
      *
      * @param t     The touch information
      * @param event The associated event
@@ -287,6 +271,7 @@ private:
     
     /**
      * Callback for the end of a touch event
+     * TODO: implement
      *
      * @param t     The touch information
      * @param event The associated event
