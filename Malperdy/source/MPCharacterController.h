@@ -173,9 +173,6 @@ public:
      * @param delta The amount of time that has passed since the last frame
      */
     virtual void update(float delta) {
-        // Continue moving if in the run state
-        if (_character->isRunning()) run();
-
         // Update model
         _character->update(delta);
     }

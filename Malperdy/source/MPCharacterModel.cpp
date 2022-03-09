@@ -113,7 +113,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
         break;
     case MovementState::FALLING:
         // Ignore attempts to get on wall if character is falling
-        if (newState == MovementState::ONWALL) return false;
+        //if (newState == MovementState::ONWALL) return false;
         break;
     case MovementState::ONWALL:
         // Reset gravity to normal
@@ -255,6 +255,9 @@ void CharacterModel::update(float dt) {
     //    }
     //}
     //else _wallSlideDuration = 0;
+
+    // Continue moving if in the run state
+    if (isRunning()) setVX((_faceRight ? 1 : -1) * _speed);
 
     // Update physics obstacle
     CapsuleObstacle::update(dt);

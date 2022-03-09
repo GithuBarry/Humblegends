@@ -442,7 +442,8 @@ void GameScene::beginContact(b2Contact *contact) {
         }
             // Otherwise, if he's hit floor
         else {
-            _reynardController->land();
+            CULog("LANDED");
+            //_reynardController->land();
         }
 
     }
