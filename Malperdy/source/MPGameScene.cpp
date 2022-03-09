@@ -268,26 +268,22 @@ void GameScene::populate() {
         _world->addObstacle(*itr);
         (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
-        CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
 
 #pragma mark Reynard
-    Vec2 reyPos = Vec2(5, 3);
+    Vec2 reyPos = Vec2(4, 3);
     // Create image for Reynard
     std::shared_ptr<Texture> image;
     image = _assets->get<Texture>("reynard");
     // Create sprite for Reynard from texture
     std::shared_ptr<scene2::SpriteNode> sprite;
     sprite = scene2::SpriteNode::alloc(image, 1, 1);
-    // Create a model for Reynard based on his image texture
-    _reynardController = ReynardController::allocReynard(reyPos, image->getSize() / _scale, _scale);
-    _reynard = _reynardController->getReynard();
+    // Create a controller for Reynard based on his image texture
+    _reynardController = ReynardController::alloc(reyPos, image->getSize() / _scale, _scale);
+    // Get pointer to model for Reynard from controller
+    _reynard = _reynardController->getCharacter();
     _reynard->setSceneNode(sprite);
     addObstacle(_reynard, sprite); // Put this at the very front
-
-    // Create controller for Reynard and assign model to that controller
-
-    _reynardController = make_shared<ReynardController>(_reynard);
 
     /*PolyFactory pf;
     shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();

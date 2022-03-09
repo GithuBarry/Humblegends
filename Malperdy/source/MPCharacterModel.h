@@ -34,43 +34,12 @@ using namespace cugl;
 #define WALL_SLIDE_GRAV_SCALE 0.3f
 
 #pragma Movement Constants
-/** The rate at which Reynard accelerates */
-#define REYNARD_ACC 5000.0f
-/** The maximum speed at which Reynard can run */
-#define REYNARD_MAX_SPEED 130.0f
+/** The default speed at which this character runs */
+#define RUN_SPEED 130.0f
+/** The speed at which this character jumps */
+#define JUMP_SPEED 150.0f
 
 class CharacterModel : public cugl::physics2::CapsuleObstacle{
-//public:
-//    /**
-//     * Apply non-game-logic changes
-//     * apply velocity or what
-//     * @param delta Time
-//     */
-//    void update(float delta);
-//    /** Global Coord of the Character */
-//    cugl::Vec2 _coord;
-//    /** Velocity of the Character */
-//    cugl::Vec2 _vel;
-//
-//    /**
-//     * {@note by Barry:Feature request}
-//     * after calling this function, I should be able to call setCharaterNode and get a PolygonNode
-//     * @param texture
-//     */
-//    //void setTexture(Texture texture);
-//
-//
-//    /**
-//     * {@note by Barry: please complete documentation for every function}
-//     * must be called after calling setTexture
-//     * @return
-//     */
-//    const std::shared_ptr<cugl::scene2::PolygonNode>& getCharacterNode();
-//    void setCharaterNode(const std::shared_ptr<cugl::scene2::SceneNode>& node);
-//
-//    //CharacterState getState();
-//    //bool setState(CharacterState cs);
-//
 public:
     /** Enum representing the current state of movement that the character is in */
     enum class MovementState : int {
@@ -93,6 +62,8 @@ protected:
 
     /** Vec2 representing position */
     cugl::Vec2 _position;
+    /** The character's current run speed */
+    float _speed = RUN_SPEED;
     /** Which direction is the character facing */
     bool _faceRight;
     /** The current movement state of the character. */
@@ -233,6 +204,15 @@ public:
     }
 
     /**
+     * Returns true if the character is currently running.
+     *
+     * @return true if the character is currently running.
+     */
+    bool isRunning() const {
+        return (_moveState == MovementState::RUNNING);
+    }
+
+    /**
      * Returns true if the character is on the ground.
      *
      * @return true if the character is on the ground.
@@ -318,8 +298,7 @@ public:
      *
      * @param delta Number of seconds since last animation frame
      */
-    void update(float dt) override;
-
+    virtual void update(float dt) override;
 };
 
 #endif /* MPCharacterModel_h */

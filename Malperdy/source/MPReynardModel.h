@@ -66,10 +66,6 @@ using namespace cugl;
 class ReynardModel : public CharacterModel {
 
 protected:
-    /** Vec2 representing position */
-    cugl::Vec2 _position;
-    /** Which direction is the character facing */
-    bool _faceRight;
     /** How long until Reynard drops off a wall */
     float _wallSlideDuration;
     /** How long until we can jump again */
@@ -78,43 +74,8 @@ protected:
     int  _dashCooldown;
 
 public:
-    
-    enum class ReynardState : int{
-            SPAWN,
-            MOVING,
-            SLOWMOVING,
-            DASHING,
-            JUMPING,
-            TRAPPED
-        };
-    
-    /** This ReynardState represents the current state of Reynard at any given moment */
-    ReynardState _currentState;
 
-
-//#pragma mark Hidden Constructors
-//
-//    /**
-//     * Creates a degenerate Dude object.
-//     *
-//     * This constructor does not initialize any of the dude values beyond
-//     * the defaults.  To use a DudeModel, you must call init().
-//     */
-//    ReynardModel() : CharacterModel(), _sensorName(SENSOR_NAME) { }
-//
-//    /**
-//     * Destroys this DudeModel, releasing all resources.
-//     */
-//    virtual ~ReynardModel(void) { dispose(); }
-//
-//    /**
-//     * Disposes all resources and assets of this DudeModel
-//     *
-//     * Any assets owned by this object will be immediately released.  Once
-//     * disposed, a DudeModel may not be used until it is initialized again.
-//     */
-//    void dispose();
-//
+#pragma mark Hidden Constructors
     /**
      * Initializes Reynard at the given position.
      *
@@ -133,68 +94,6 @@ public:
      */
     bool init(const cugl::Vec2 &pos, const cugl::Size &size, float drawScale);
 
-#pragma mark -
-#pragma mark Static Constructors
-
-    /**
-     * Creates a new Reynard at the given position.
-     *
-     * Reynard has the given size, scaled so that 1 pixel = 1 Box2d unit
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param pos   Initial position in world coordinates
-     * @param size  The size of the dude in world units
-     *
-     * @return  A newly allocated ReynardModel at the given position with the given scale
-     */
-    static std::shared_ptr<ReynardModel> alloc(const cugl::Vec2 &pos, const cugl::Size &size, float drawScale) {
-        std::shared_ptr<ReynardModel> result = std::make_shared<ReynardModel>();
-        return (result->init(pos, size, drawScale) ? result : nullptr);
-    }
-
-
-//#pragma mark -
-//#pragma mark Animation
-//
-//    /**
-//     * Returns the scene graph node representing this DudeModel.
-//     *
-//     * By storing a reference to the scene graph node, the model can update
-//     * the node to be in sync with the physics info. It does this via the
-//     * {@link Obstacle#update(float)} method.
-//     *
-//     * @return the scene graph node representing this DudeModel.
-//     */
-//    const std::shared_ptr<cugl::scene2::SceneNode> &getSceneNode() const {
-//        return _node;
-//    }
-//
-//    /**
-//     * Sets the scene graph node representing this DudeModel.
-//     *
-//     * Note that this method also handles creating the nodes for the body parts
-//     * of this DudeModel. Since the obstacles are decoupled from the scene graph,
-//     * initialization (which creates the obstacles) occurs prior to the call to
-//     * this method. Therefore, to be drawn to the screen, the nodes of the attached
-//     * bodies must be added here.
-//     *
-//     * The bubbler also uses the world node when adding bubbles to the scene, so
-//     * the input node must be added to the world BEFORE this method is called.
-//     *
-//     * By storing a reference to the scene graph node, the model can update
-//     * the node to be in sync with the physics info. It does this via the
-//     * {@link Obstacle#update(float)} method.
-//     *
-//     * @param node  The scene graph node representing this DudeModel, which has been added to the world node already.
-//     */
-//    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode> &node) {
-//        _node = node;
-//        _node->setPosition(getPosition() * _drawScale);
-//    }
 };
 
-#endif /* __PF_REYNARD_MODEL_H__ */
+#endif //__MP_REYNARD_MODEL_H__

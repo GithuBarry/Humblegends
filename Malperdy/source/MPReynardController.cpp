@@ -8,31 +8,12 @@
 
 #include "MPReynardController.h"
 
-// TODO: construct a ReynardModel within the ReynardController
-/**This is the constructor of the Reynard Controller**/
-//ReynardController::ReynardController(shared_ptr<ReynardModel> r){
-//    _reynard = r;
-//}
-
-// TODO: add alloc method
-
 /**
- * Initializes a new controller for Reynard at the given position.
+ * This method handles anything about the character that needs to change over time.
  *
- * Reynard is sized according to the given drawing scale.
- *
- * The scene graph is completely decoupled from the physics system.
- * The node does not have to be the same size as the physics body. We
- * only guarantee that the scene graph node is positioned correctly
- * according to the drawing scale.
- *
- * @param pos   Initial position in world coordinates
- * @param size  The size of the character in world units
- * @param scale The drawing scale (world to screen)
- *
- * @return  true if Reynard is initialized properly, false otherwise.
+ * @param delta The amount of time that has passed since the last frame
  */
-bool ReynardController::init(const cugl::Vec2& pos, const cugl::Size& size, float drawScale) {
-    _reynard = ReynardModel::alloc(pos, size, drawScale);
-    return (_reynard != nullptr);
+void ReynardController::update(float delta) {
+	// Call parent method at the end
+	CharacterController::update(delta);
 }

@@ -103,6 +103,10 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
 
     _position = pos;
 
+    // Reynard's asset faces left, so start it flipped
+    _faceRight = false;
+    flipDirection();
+
     if (CapsuleObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);
         setFriction(0.0f);      // Ensure there is no friction between Reynard and walls
@@ -121,57 +125,3 @@ bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float dra
     }
     return false;
 }
-
-
-#pragma mark -
-#pragma mark Attribute Properties
-
-
-/**
- * Updates the object's physics state (NOT GAME LOGIC).
- *
- * We use this method to reset cooldowns.
- *
- * @param delta Number of seconds since last animation frame
- */
-//void ReynardModel::update(float dt) {
-//    // Apply cooldowns
-//    if (_moveState == MovementState::INAIR) {
-//        _jumpCooldown = JUMP_COOLDOWN;
-//    } else {
-//        // Only cooldown while grounded
-//        _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
-//        
-//    }
-//
-//    //if (isDashing()) {
-//    //    _dashCooldown = DASH_COOLDOWN;
-//    //} else {
-//    //    // Only cooldown while grounded
-//    //    _dashCooldown = (_dashCooldown > 0 ? _dashCooldown-1 : 0);
-//    //}
-//
-//    // Check to make sure Reynard can still continue wall sliding, if he already is
-//    if (_moveState == MovementState::ONWALL) {
-//        // If Reynard is out of time
-//        if (_wallSlideDuration >= WALL_SLIDE_DURATION) {
-//            setOnWall(false);
-//            setGrounded(false);
-//            _wallSlideDuration = 0;
-//            _isFallingOffWall = true;
-//        }
-//        // Otherwise, just increment duration
-//        else {
-//            _wallSlideDuration += dt;
-//        }
-//    }
-//    else _wallSlideDuration = 0;
-//
-//    // Update physics obstacle
-//    CapsuleObstacle::update(dt);
-//
-//    if (_node != nullptr) {
-//        _node->setPosition(getPosition()*_drawScale);
-//        _node->setAngle(getAngle());
-//    }
-//}

@@ -127,13 +127,13 @@ bool CharacterModel::setMoveState(MovementState newState) {
         break;
     case MovementState::RUNNING:
         // Set character moving in the given direction at the right speed
-        setVX((_faceRight ? 1 : -1) * REYNARD_MAX_SPEED);
+        setVX((_faceRight ? 1 : -1) * _speed);
         break;
     case MovementState::JUMPING:
         // Jump up
-        setVY(150.0f);
+        setVY(JUMP_SPEED);
         // If character is on a wall, then also give a horizontal velocity away
-        if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * REYNARD_MAX_SPEED);
+        if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * _speed);
         break;
     case MovementState::FALLING:
         break;

@@ -9,11 +9,15 @@
 #include <cugl/cugl.h>
 #include "MPCharacterModel.h"
 
-class CharacterController {
+#pragma mark -
+#pragma mark Templates
 
-private:
+// Type of the model that this character controller holds
+template<class ModelType, class ControllerType>
+class CharacterController {
+protected:
     /** The model storing this character's data */
-    shared_ptr<CharacterModel> _character;
+    shared_ptr<ModelType> _character;
 
 public:
 
@@ -44,7 +48,12 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, const cugl::Size& size, float drawScale);
+    virtual bool init(const cugl::Vec2& pos, const cugl::Size& size, float drawScale) {
+        // Get model cast to subclass type
+        _character = make_shared<ModelType>();
+        _character->init(pos, size, drawScale);
+        return (_character != nullptr);
+    }
 
 #pragma mark -
 #pragma mark Static Constructors
@@ -64,66 +73,77 @@ public:
      *
      * @return  A newly allocated CharacterController for the character at the given position with the given scale
      */
-    static std::shared_ptr<CharacterController> alloc(const cugl::Vec2& pos, const cugl::Size& size, float drawScale) {
-        std::shared_ptr<CharacterController> result = std::make_shared<CharacterController>();
+    static shared_ptr<ControllerType> alloc(const cugl::Vec2& pos, const cugl::Size& size, float drawScale) {
+        std::shared_ptr<ControllerType> result = std::make_shared<ControllerType>();
         return (result->init(pos, size, drawScale) ? result : nullptr);
     }
 
 #pragma mark -
 #pragma mark Attribute Methods
     /**This allows someone to grab the instantiated CharacterModel from this controller**/
-    virtual shared_ptr<CharacterModel> getCharacter(){ return _character; }
-
-    /**
-     * [update] This will automatically update the character's position and look at other
-     * things in the future like health.
-     */
-    void update(float delta);
+    shared_ptr<ModelType> getCharacter() { return _character; }
 
 #pragma mark -
 #pragma mark Actions
 
     /**
      * Turns the character around to face the opposite direction.
-     * 
+     *
      * @return  Whether the character turned successfully.
      */
-    bool turn();
+    bool turn() {
+        // Don't allow turning if character is falling
+        //if (!(_character->isFalling())) return false;
 
-    /**
-     * Stops the character from moving.
-     * 
-     * @return  Whether the character stopped moving successfully
-     */
-    bool stop();
-    
-    /**
-     * Starts the character running in the direction they're facing.
-     *
-     * @return  Whether the character started running successfully
-     */
-    bool run();
+        _character->flipDirection();
+        return true;
+
+    }
 
     /**
      * The character jumps upwards at a set velocity.
      *
      * @return  Whether the character jumped successfully
      */
-    bool jump();
-    
+    bool jump() {
+        return _character->setMoveState(CharacterModel::MovementState::JUMPING);
+    }
+
+    /**
+     * Stops the character from moving.
+     *
+     * @return  Whether the character stopped moving successfully
+     */
+    bool stop() {
+        return _character->setMoveState(CharacterModel::MovementState::STOPPED);
+    }
+
+    /**
+     * Starts the character running in the direction they're facing.
+     *
+     * @return  Whether the character started running successfully
+     */
+    bool run() {
+        return _character->setMoveState(CharacterModel::MovementState::RUNNING);
+    }
+
     /**
      * Sets the character to be falling through the air.
      *
      * @return  Whether the character was set to be falling successfully
      */
-    bool fall();
+    bool fall() {
+        return _character->setMoveState(CharacterModel::MovementState::FALLING);
+    }
 
     /**
      * Sets the character to be sliding down a wall for a short amount of time.
      *
      * @return  Whether the character is successfully stuck to the wall
      */
-    bool stickToWall();
+    bool stickToWall() {
+        return _character->setMoveState(CharacterModel::MovementState::ONWALL);
+    }
 
     /**
      * If the character is sliding down a wall already, unsticks them and drops
@@ -131,16 +151,36 @@ public:
      *
      * @return  Whether the character is successfully unstuck from the wall
      */
-    bool unstickFromWall();
+    bool unstickFromWall() {
+        return _character->setMoveState(CharacterModel::MovementState::FALLING);
+    }
 
     /**
      * Sets the character to be on the ground.
      *
      * @return  Whether the character is successfully marked as being on the ground
      */
-    bool land();
+    bool land() {
+        return _character->setMoveState(CharacterModel::MovementState::RUNNING);
+    }
+
+#pragma mark -
+#pragma mark Update
+
+    /** 
+     * This method handles anything about the character that needs to change over time.
+     * 
+     * @param delta The amount of time that has passed since the last frame
+     */
+    virtual void update(float delta) {
+        // Continue moving if in the run state
+        if (_character->isRunning()) run();
+
+        // Update model
+        _character->update(delta);
+    }
 
 };
 
 
-#endif //MALPERDY_MPREYNARDCONTROLLER_H
+#endif //__MP_CHARACTER_CONTROLLER_H__
