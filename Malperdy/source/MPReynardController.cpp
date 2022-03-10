@@ -120,4 +120,12 @@ void ReynardController::update(float delta){
     _reynard->setMovement(_reynard->getMovement() * _reynard->getForce());
     _reynard->applyForce();
     _reynard->update(delta);
+
+    if (_lastPositionValid) {
+        _delta = _reynard->getPosition() - _lastPosition;
+    } else {
+        _delta = Vec2(0, 0);
+        _lastPositionValid = true;
+    }
+    _lastPosition = _reynard->getPosition();
 }
