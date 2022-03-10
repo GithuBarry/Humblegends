@@ -24,8 +24,11 @@
 //  of all the room, and calling render() on the level grid SceneNode should draw all
 //  of the rooms accordingly.
 //
-//  Created by Kristina Gu on 2/21/22.
-//  Copyright © 2022 Humblegends. All rights reserved.
+//  Owner: Kristina Gu
+//  Contributors: Kristina Gu
+//  Version: 2/21/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #ifndef MPRoomModel_h

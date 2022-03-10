@@ -1,6 +1,12 @@
 //
-// Created by Spencer Hurst on 2/25/22.
-// Copyright (c) 2022 Humblegends. All rights reserved.
+//  MPReynardController.cpp
+//  Malperdy
+//
+//  Owner: Spencer Hurst
+//  Contributors: Spencer Hurst
+//  Version: 2/25/2022
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #define VELOCITY    10
