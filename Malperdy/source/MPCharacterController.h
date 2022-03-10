@@ -9,9 +9,6 @@
 #include <cugl/cugl.h>
 #include "MPCharacterModel.h"
 
-#pragma mark -
-#pragma mark Templates
-
 // Type of the model that this character controller holds
 template<class ModelType, class ControllerType>
 class CharacterController {
@@ -42,16 +39,16 @@ public:
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
      *
-     * @param pos   Initial position in world coordinates
-     * @param size  The size of the character in world units
-     * @param scale The drawing scale (world to screen)
+     * @param pos       Initial position in world coordinates
+     * @param drawScale The drawing scale (world to screen)
+     * @param image     The image for the character's appearance
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, const cugl::Size& size, float drawScale) {
+    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
         // Get model cast to subclass type
         _character = make_shared<ModelType>();
-        _character->init(pos, size, drawScale);
+        _character->init(pos, drawScale, image);
         return (_character != nullptr);
     }
 
@@ -68,20 +65,57 @@ public:
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
      *
-     * @param pos   Initial position in world coordinates
-     * @param size  The size of the character in world units
-     *
+     * @param pos       Initial position in world coordinates
+     * @param drawScale The drawing scale (world to screen)
+     * @param image     The image for the character's appearance
+     * 
      * @return  A newly allocated CharacterController for the character at the given position with the given scale
      */
-    static shared_ptr<ControllerType> alloc(const cugl::Vec2& pos, const cugl::Size& size, float drawScale) {
+    static shared_ptr<ControllerType> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
         std::shared_ptr<ControllerType> result = std::make_shared<ControllerType>();
-        return (result->init(pos, size, drawScale) ? result : nullptr);
+        return (result->init(pos, drawScale, image) ? result : nullptr);
     }
 
 #pragma mark -
 #pragma mark Attribute Methods
     /**This allows someone to grab the instantiated CharacterModel from this controller**/
     shared_ptr<ModelType> getCharacter() { return _character; }
+
+#pragma mark -
+#pragma mark Animation
+
+    /**
+     * Returns the scene graph node representing the CharacterModel owned
+     * by this controller.
+     *
+     * By storing a reference to the scene graph node, the model can update
+     * the node to be in sync with the physics info. It does this via the
+     * {@link Obstacle#update(float)} method.
+     *
+     * @return the scene graph node representing the owned CharacterModel.
+     */
+    const std::shared_ptr<cugl::scene2::SceneNode>& getSceneNode() const {
+        return _character->_node;
+    }
+
+    /**
+     * Sets the scene graph node representing this CharacterModel.
+     *
+     * Note that this method also handles creating the nodes for the body parts
+     * of this CharacterModel. Since the obstacles are decoupled from the scene graph,
+     * initialization (which creates the obstacles) occurs prior to the call to
+     * this method. Therefore, to be drawn to the screen, the nodes of the attached
+     * bodies must be added here.
+     *
+     * By storing a reference to the scene graph node, the model can update
+     * the node to be in sync with the physics info. It does this via the
+     * {@link Obstacle#update(float)} method.
+     *
+     * @param node  The scene graph node representing this CharacterModel, which has been added to the world node already.
+     */
+    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode>& node) {
+        _character->setSceneNode(node);
+    }
 
 #pragma mark -
 #pragma mark Actions

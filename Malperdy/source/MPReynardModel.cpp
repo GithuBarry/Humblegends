@@ -89,39 +89,18 @@ using namespace cugl;
  * only guarantee that the scene graph node is positioned correctly
  * according to the drawing scale.
  *
- * @param pos   Initial position in world coordinates
- * @param size  The size of the dude in world units
- * @param scale The drawing scale (world to screen)
+ * @param pos       Initial position in world coordinates
+ * @param drawScale The drawing scale (world to screen)
+ * @param image     The image for Reynard's appearance
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool ReynardModel::init(const cugl::Vec2& pos, const cugl::Size& size, float drawScale) {
-    Size nsize = size;
-    nsize.width  *= DUDE_HSHRINK;
-    nsize.height *= DUDE_VSHRINK;
-    _drawScale = drawScale;
+bool ReynardModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
+    // If initialization of parent class failed, return immediately
+    if (!(CharacterModel::init(pos, drawScale, image))) return false;
 
-    _position = pos;
+    // Have Reynard be running by default
+    _moveState = MovementState::RUNNING;
 
-    // Reynard's asset faces left, so start it flipped
-    _faceRight = false;
-    flipDirection();
-
-    if (CapsuleObstacle::init(pos,nsize)) {
-        setDensity(DUDE_DENSITY);
-        setFriction(0.0f);      // Ensure there is no friction between Reynard and walls
-        setFixedRotation(true); // Prevent character from rotating
-        _moveState = MovementState::RUNNING;
-
-        // Gameplay attributes
-//        TODO: Prevent an issue here about spawning him on the left side of rooms by including a part in the init function maybe
-//        Specifically for moments where we come from the left side of a room to go to the right.
-        _faceRight  = true;
-        
-        _jumpCooldown  = 0;
-        _dashCooldown  = 0;
-        _wallSlideDuration = 0;
-        return true;
-    }
-    return false;
+    return true;
 }

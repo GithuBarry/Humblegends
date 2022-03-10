@@ -16,7 +16,6 @@
 #define __MP_CHARACTER_MODEL_H__
 
 #include <cugl/cugl.h>
-#include <cugl/physics2/CUBoxObstacle.h>
 #include <cugl/physics2/CUCapsuleObstacle.h>
 #include <cugl/scene2/graph/CUWireNode.h>
 
@@ -24,8 +23,6 @@ using namespace cugl;
 
 #pragma mark -
 #pragma mark Drawing Constants
-/** The texture for the character avatar */
-#define CHAR_TEXTURE    "reynard"
 /** Identifier to allow us to track the sensor in ContactListener */
 #define SENSOR_NAME     "reynardsensor"
 
@@ -50,13 +47,19 @@ public:
         ONWALL
     };
 
+    /** SceneNode representing the sprite for the character */
+    shared_ptr<scene2::SceneNode> _node;
+
 protected:
 
 #pragma mark -
 #pragma mark Constants
 
-    /** The scene graph node for the character. */
-    std::shared_ptr<cugl::scene2::SceneNode> _node;
+    /** The texture for the character avatar */
+    const string CHARACTER_TEXTURE;
+
+#pragma mark Attributes
+
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
     float _drawScale;
 
@@ -65,7 +68,7 @@ protected:
     /** The character's current run speed */
     float _speed = RUN_SPEED;
     /** Which direction is the character facing */
-    bool _faceRight;
+    bool _faceRight = true;
     /** The current movement state of the character. */
     MovementState _moveState;
     /** Ground sensor to represent our feet */
@@ -120,13 +123,13 @@ public:
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
      *
-     * @param pos   Initial position in world coordinates
-     * @param size  The size of the character in world units
-     * @param scale The drawing scale (world to screen)
+     * @param pos       Initial position in world coordinates
+     * @param drawScale The drawing scale (world to screen)
+     * @param image     The image for the character's appearance
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, const cugl::Size& size, float drawScale);
+    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image);
 
 
 #pragma mark -
@@ -142,31 +145,19 @@ public:
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
      *
-     * @param pos   Initial position in world coordinates
-     * @param size  The size of the character in world units
+     * @param pos       Initial position in world coordinates
+     * @param drawScale The drawing scale (world to screen)
+     * @param image     The image for the character's appearance
      *
      * @return  A newly allocated CharacterModel at the given position with the given scale
      */
-    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2& pos, const cugl::Size& size, float drawScale) {
+    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
         std::shared_ptr<CharacterModel> result = std::make_shared<CharacterModel>();
-        return (result->init(pos, size, drawScale) ? result : nullptr);
+        return (result->init(pos, drawScale, image) ? result : nullptr);
     }
 
 #pragma mark -
 #pragma mark Animation
-
-    /**
-     * Returns the scene graph node representing this CharacterModel.
-     *
-     * By storing a reference to the scene graph node, the model can update
-     * the node to be in sync with the physics info. It does this via the
-     * {@link Obstacle#update(float)} method.
-     *
-     * @return the scene graph node representing this CharacterModel.
-     */
-    const std::shared_ptr<cugl::scene2::SceneNode>& getSceneNode() const {
-        return _node;
-    }
 
     /**
      * Sets the scene graph node representing this CharacterModel.

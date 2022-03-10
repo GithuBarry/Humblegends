@@ -86,13 +86,13 @@ public:
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
      *
-     * @param pos   Initial position in world coordinates
-     * @param size  The size of Reynard in world units
-     * @param scale The drawing scale (world to screen)
+     * @param pos       Initial position in world coordinates
+     * @param drawScale The drawing scale (world to screen)
+     * @param image     The image for Reynard's appearance
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    bool init(const cugl::Vec2 &pos, const cugl::Size &size, float drawScale);
+    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> image);
 
 };
 

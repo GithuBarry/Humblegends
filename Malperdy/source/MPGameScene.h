@@ -75,8 +75,6 @@ protected:
     /** Reference to the rocket/player avatar */
     //std::shared_ptr<RocketModel> _rocket;
 
-    /** Reference to the Reynard avatar */
-    std::shared_ptr<ReynardModel> _reynard;
     /** Reference to the Reynard controller */
     std::shared_ptr<ReynardController> _reynardController;
     std::shared_ptr<GridModel> _grid;

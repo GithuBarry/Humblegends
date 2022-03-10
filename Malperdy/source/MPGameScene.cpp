@@ -272,23 +272,10 @@ void GameScene::populate() {
 
 #pragma mark Reynard
     Vec2 reyPos = Vec2(4, 3);
-    // Create image for Reynard
-    std::shared_ptr<Texture> image;
-    image = _assets->get<Texture>("reynard");
-    // Create sprite for Reynard from texture
-    std::shared_ptr<scene2::SpriteNode> sprite;
-    sprite = scene2::SpriteNode::alloc(image, 1, 1);
     // Create a controller for Reynard based on his image texture
-    _reynardController = ReynardController::alloc(reyPos, image->getSize() / _scale, _scale);
-    // Get pointer to model for Reynard from controller
-    _reynard = _reynardController->getCharacter();
-    _reynard->setSceneNode(sprite);
-    addObstacle(_reynard, sprite); // Put this at the very front
-
-    /*PolyFactory pf;
-    shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
-    po->init(pf.makeNgon(Vec2(3,3), 2, 4));
-    _world->addObstacle(po);*/
+    _reynardController = ReynardController::alloc(reyPos, _scale, _assets->get<Texture>("reynard"));
+    // Add Reynard to physics world
+    addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 }
 
@@ -409,8 +396,8 @@ void GameScene::beginContact(b2Contact *contact) {
     b2Body *body2 = contact->GetFixtureB()->GetBody();
     b2Body *wall;
 
-    if (body1 == _reynard->getBody() || body2 == _reynard->getBody()) {
-        if (body1 == _reynard->getBody()) {
+    if (body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody()) {
+        if (body1 == _reynardController->getCharacter()->getBody()) {
             wall = body2;
         } else {
             wall = body1;
@@ -418,17 +405,17 @@ void GameScene::beginContact(b2Contact *contact) {
         b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
         int last_idx = contact->GetManifold()->pointCount - 1;
         b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
-        b2Vec2 temp = _reynard->getBody()->GetPosition() - contact->GetManifold()->localPoint;
+        b2Vec2 temp = _reynardController->getCharacter()->getBody()->GetPosition() - contact->GetManifold()->localPoint;
 
         // To catch weird edge cases
-        if (abs(temp.x) > _reynard->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynard->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynard->isFacingRight()))) {
+        if (abs(temp.x) > _reynardController->getCharacter()->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynardController->getCharacter()->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynardController->getCharacter()->isFacingRight()))) {
             CULog("He is doing it again! Blocked switching %f", temp.x);
         }
             // If he's hit a horizontal wall
-        else if (abs(temp.x) <= _reynard->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynard->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynard->isFacingRight()))) {
+        else if (abs(temp.x) <= _reynardController->getCharacter()->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynardController->getCharacter()->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynardController->getCharacter()->isFacingRight()))) {
 
             // If he's in the air and has hit a wall
-            if (fabs(_reynard->getLinearVelocity().y) > 5) {
+            if (fabs(_reynardController->getCharacter()->getLinearVelocity().y) > 5) {
                 CULog("WALL JUMP");
                 _reynardController->stickToWall();
                 _reynardController->turn();
@@ -443,7 +430,7 @@ void GameScene::beginContact(b2Contact *contact) {
             // Otherwise, if he's hit floor
         else {
             CULog("LANDED");
-            //_reynardController->land();
+            _reynardController->land();
         }
 
     }
