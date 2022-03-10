@@ -5,8 +5,11 @@
 //  GridModel system of rooms.
 //  Storing all data of rooms grid
 //
-//  Created by Barry Wang on 2/21/22.
-//  Copyright © 2022 Humblegends. All rights reserved.
+//  Owner: Evan Azari
+//  Contributors: Evan Azari, Barry Wang
+//  Version: 2/21/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #ifndef MPGridModel_h

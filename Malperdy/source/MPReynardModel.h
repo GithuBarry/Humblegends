@@ -1,45 +1,15 @@
 //
-//  PFDudeModel.h
-//  PlatformDemo
+//  MPReynardModel.h
+//  Malperdy
+//  
+//  This file is based on the CS 4152 PlatformDemo by Walker White, 2021
+//  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //
-//  This encapsulates all of the information for the character avatar.  Note how this
-//  class combines physics and animation.  This is a good template for models in
-//  your game.
-//
-//  WARNING: There are a lot of shortcuts in this design that will do not adapt well
-//  to data driven design.  This demo has a lot of simplifications to make it a bit
-//  easier to see how everything fits together.  However, the model classes and how
-//  they are initialized will need to be changed if you add dynamic level loading.
-//
-//  Pay close attention to how this class designed.  Subclasses of Cocos2d classes
-//  (which are all subclasses of the class Ref) should never have normal public
-//  constructors.  Instead, you should organize their constructors into three parts,
-//  just like we have done in this class.
-//
-//  NORMAL CONSTRUCTOR:
-//  The standard constructor should be protected (not private).  It should only
-//  initialize pointers to nullptr and primitives to their defaults (pointers are
-//  not always nullptr to begin with).  It should NOT take any arguments and should
-//  not allocate any memory or call any methods.
-//
-//  STATIC CONSTRUCTOR
-//  This is a static method that allocates the object and initializes it.  If
-//  initialization fails, it immediately disposes of the object.  Otherwise, it
-//  returns an autoreleased object, starting the garbage collection system.
-//  These methods all look the same.  You can copy-and-paste them from sample code.
-//  The only difference is the init method called.
-//
-//  INIT METHOD
-//  This is a protected method that acts like what how would normally think a
-//  constructor might work.  It allocates memory and initializes all values
-//  according to provided arguments.  As memory allocation can fail, this method
-//  needs to return a boolean indicating whether or not initialization was
-//  successful.
-//
-//  This file is based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
-//
-//  Author:  Walker White and Anthony Perello
-//  Version: 2/9/21
+//  Owner:  TBD
+//  Contributors: TBD
+//  Version: 2/21/2022
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #ifndef __MP_REYNARD_MODEL_H__
 #define __MP_REYNARD_MODEL_H__
