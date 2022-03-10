@@ -1,28 +1,15 @@
 //
-//  RDGameScene.h
-//  Rocket Demo
-//
-//  This is the most important class in this demo.  This class manages the
-//  gameplay for this demo.  It also handles collision detection. There is not
-//  much to do for collisions; our ObstacleWorld class takes care of all
-//  of that for us.  This controller mainly transforms input into gameplay.
-//
-//  You will notice that we do not use a Scene asset this time.  While we could
-//  have done this, we wanted to highlight the issues of connecting physics
-//  objects to scene graph objects.  Hence we include all of the API calls.
-//
-//  WARNING: There are a lot of shortcuts in this design that will do not adapt
-//  well to data driven design.  This demo has a lot of simplifications to make
-//  it a bit easier to see how everything fits together.  However, the model
-//  classes and how they are initialized will need to be changed if you add
-//  dynamic level loading.
+//  MPGameScene.h
+//  Malperdy
 //
 //  This file is based on the CS 4152 RocketDemo by Walker White, 2017
 //  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //
-//  Author: Humblegends
-//  Contributors: Barry Wang, Jordan Selin
-//  Version: 3/01/2022
+//  Owner: Barry Wang
+//  Contributors: Barry Wang
+//  Version: 3/01/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #include "MPGameScene.h"
 

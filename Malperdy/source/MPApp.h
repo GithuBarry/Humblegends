@@ -1,15 +1,20 @@
 //
-//  RDApp.h
-//  Rocket Demo
+//  MPApp.h
+//  Malperdy
+// 
 //  This is the root class for your game.  The file main.cpp accesses this class
 //  to run the application.  While you could put most of your game logic in
 //  this class, we prefer to break the game up into player modes and have a
 //  class for each mode.
 //
-//  This file is based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
+//  This file is based on the CS 4152 RocketDemo by Walker White, 2017
+//  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //
-//  Author: Walker White
-//  Version: 1/10/17
+//  Owner: Barry Wang
+//  Contributors: Barry Wang
+//  Version: 2/21/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #ifndef __MP_APP_H__
 #define __MP_APP_H__
