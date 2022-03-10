@@ -2,17 +2,19 @@
 //  MPGridModel.cpp
 //  Malperdy
 //
-// This class encapsulates all the information for the grid of rooms; meaning
-// the data structure storing all rooms in a level and their relative positions.
-// The grid is called to build the drawing and physics geometry for all its rooms.
+//  This class encapsulates all the information for the grid of rooms; meaning
+//  the data structure storing all rooms in a level and their relative positions.
+//  The grid is called to build the drawing and physics geometry for all its rooms.
 //
-// Grid is a subclass of SceneNode, and so all of SceneNode's methods can be used
+//  Grid is a subclass of SceneNode, and so all of SceneNode's methods can be used
 //  with it. This allows the whole grid and its contents to be scaled properly
 //  when zooming in and out. Each room is stored as child SceneNode of the grid.
 //
-//
-//  Created Evan Azari on 2/27/22.
-//  Copyright � 2022 Humblegends. All rights reserved.
+//  Owner: Evan Azari
+//  Contributors: Evan Azari, Barry Wang
+//  Version: 2/21/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #include "MPGridModel.h"

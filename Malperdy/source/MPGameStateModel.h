@@ -4,8 +4,11 @@
 //
 //  A data class for storing game state data.
 //
-//  Created by Barry Wang on 2/21/22.
-//  Copyright © 2022 Humblegends. All rights reserved.
+//  Owner: TBD
+//  Contributors: Barry Wang
+//  Version: 2/21/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #ifndef MPGameStateModel_h

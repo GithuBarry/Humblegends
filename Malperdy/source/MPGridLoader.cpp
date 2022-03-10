@@ -2,8 +2,11 @@
 //  MPGridLoader.cpp
 //  Malperdy
 //
-//  Created by Evan Azari on 2/27/22.
-//  Copyright © 2022 Cornell Game Design Initiative. All rights reserved.
+//  Owner: Evan Azari
+//  Contributors: Evan Azari
+//  Version: 2/27/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #include "MPGridLoader.h"

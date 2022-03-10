@@ -4,9 +4,10 @@
 //
 //  Controller for the house of Malperdy
 //
-//  Authors: Jordan Selin
+//  Owner: Jordan Selin
+//  Contributors: Jordan Selin, Barry Wang
 //  Copyright (c) 2022 Humblegends. All rights reserved.
-//  Version: 2/28/22
+//  Version: 3/10/22
 //
 
 #include "MPEnvController.h"

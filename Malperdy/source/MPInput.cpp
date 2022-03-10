@@ -6,7 +6,7 @@
 //  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //  Additional reference was from the CS 4152 Geometry Lab by Walker White, 2022
 //
-//  Author: Humblegends
+//  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Spencer Hurst
 //  Version: 3/07/2022
 // 
