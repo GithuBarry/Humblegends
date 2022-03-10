@@ -20,6 +20,7 @@
 #include "MPReynardModel.h"
 #include "MPReynardController.h"
 #include "MPCharacterModel.h"
+#include "MPEnemyController.h"
 #include "MPInput.h"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
@@ -72,7 +73,8 @@ protected:
     /** Mark set to handle more sophisticated collision callbacks */
     std::unordered_set<b2Fixture*> _sensorFixtures;
 
-
+    /** References to all the enemy controllers */
+    std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
     /** Whether we have completed this "game" */
     bool _complete;
