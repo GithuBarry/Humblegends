@@ -1,18 +1,14 @@
 //
-//  RDLoadingScene.cpp
-//  Rocket Demo
+//  MPLoadingScene.cpp
+//  Malperdy
 //
-//  This module provides a very barebones loading screen.  Most of the time you
-//  will not need a loading screen, because the assets will load so fast.  But
-//  just in case, this is a simple example you can use in your games.
-//
-//  We know from 3152 that you all like to customize this screen.  Therefore,
-//  we have kept it as simple as possible so that it is easy to modify. In
-//  fact, this loading screen uses the new modular JSON format for defining
-//  scenes.  See the file "loading.json" for how to change this scene.
-//
-//  Author: Walker White
-//  Version: 1/10/17
+//  This file is based on the CS 4152 RocketDemo by Walker White, 2017
+// 
+//  Owner: TBD
+//  Contributors: Barry Wang
+//  Version: 2/21/2022
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #include "MPLoadingScene.h"
 

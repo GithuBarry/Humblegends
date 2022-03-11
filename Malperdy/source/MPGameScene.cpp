@@ -1,28 +1,15 @@
 //
-//  RDGameScene.h
-//  Rocket Demo
-//
-//  This is the most important class in this demo.  This class manages the
-//  gameplay for this demo.  It also handles collision detection. There is not
-//  much to do for collisions; our ObstacleWorld class takes care of all
-//  of that for us.  This controller mainly transforms input into gameplay.
-//
-//  You will notice that we do not use a Scene asset this time.  While we could
-//  have done this, we wanted to highlight the issues of connecting physics
-//  objects to scene graph objects.  Hence we include all of the API calls.
-//
-//  WARNING: There are a lot of shortcuts in this design that will do not adapt
-//  well to data driven design.  This demo has a lot of simplifications to make
-//  it a bit easier to see how everything fits together.  However, the model
-//  classes and how they are initialized will need to be changed if you add
-//  dynamic level loading.
+//  MPGameScene.h
+//  Malperdy
 //
 //  This file is based on the CS 4152 RocketDemo by Walker White, 2017
 //  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //
-//  Author: Humblegends
-//  Contributors: Barry Wang, Jordan Selin
-//  Version: 3/01/2022
+//  Owner: Barry Wang
+//  Contributors: Barry Wang
+//  Version: 3/01/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #include "MPGameScene.h"
 
@@ -42,7 +29,8 @@ using namespace std;
 #pragma mark -
 #pragma mark Level Geography
 
-/** This is the size of the active portion of the screen */
+/** This is the size of the active portion of the scr
+ * een */
 #define SCENE_WIDTH 1024
 #define SCENE_HEIGHT 576
 
@@ -178,11 +166,11 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f);
 
     // Create the scene graph
-    _worldnode = scene2::SceneNode::alloc();
+    _worldnode = scene2::ScrollPane::allocWithBounds(10,10); // Number does not matter when constraint is false
     _worldnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _worldnode->setPosition(offset);
 
-    _debugnode = scene2::SceneNode::alloc();
+    _debugnode = scene2::ScrollPane::allocWithBounds(10,10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
@@ -260,7 +248,7 @@ void GameScene::populate() {
     _grid->setScale(0.4);
     _envController->setGrid(_grid);
 
-    //_grid->setPosition(0,-240);
+    //_grid->setDrawPosition(0,-240);
 
     // Populate physics obstacles for grid
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
@@ -377,21 +365,11 @@ void GameScene::update(float dt) {
         cout << "Press Jump Button" << endl;
     }
 
-//    if (_input.didDashLeft()) {
-//
-//    }
-//    if (_input.didDashRight()) {
-//
-//    }
-//    if (_input.didZoomIn()) {
-//
-//    }
-//    if (_input.didZoomOut()) {
-//
-//    }
-
 
     _reynardController->update(dt);
+
+    Vec2 move = _worldnode->applyPan(-_reynardController->getMovementSinceLastFrame().x * _scale,0);
+    _debugnode->applyPan(move/_scale);
     _world->update(_stateController->getScaledDtForPhysics(dt));
 
 }

@@ -1,26 +1,15 @@
 //
-//  RDGameScene.h
-//  Rocket Demo
+//  MPGameScene.h
+//  Malperdy
 //
-//  This is the most important class in this demo.  This class manages the
-//  gameplay for this demo.  It also handles collision detection. There is not
-//  much to do for collisions; our ObstacleWorld class takes care of all
-//  of that for us.  This controller mainly transforms input into gameplay.
-//
-//  You will notice that we do not use a Scene asset this time.  While we could
-//  have done this, we wanted to highlight the issues of connecting physics
-//  objects to scene graph objects.  Hence we include all of the API calls.
-//
-//  WARNING: There are a lot of shortcuts in this design that will do not adapt
-//  well to data driven design.  This demo has a lot of simplifications to make
-//  it a bit easier to see how everything fits together.  However, the model
-//  classes and how they are initialized will need to be changed if you add
-//  dynamic level loading.
-//
-//  This file is based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
-//
-//  Author: Walker White
-//  Version: 1/10/17
+//  This file is based on the CS 4152 RocketDemo by Walker White, 2017
+//  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
+//  
+//  Owner: Barry Wang
+//  Contributors: Barry Wang
+//  Version: 3/01/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #ifndef __MP_GAME_SCENE_H__
 #define __MP_GAME_SCENE_H__
@@ -59,7 +48,7 @@ protected:
 
     // VIEW
     /** Reference to the physics root of the scene graph */
-    std::shared_ptr<cugl::scene2::SceneNode> _worldnode;
+    std::shared_ptr<cugl::scene2::ScrollPane> _worldnode;
 
     //    /** Reference to the exit message label */
     //    std::shared_ptr<cugl::scene2::Label> _exitnode;
@@ -126,7 +115,7 @@ public:
 #pragma mark -
 #pragma mark Constructors
     /** Reference to the debug root of the scene graph */
-    std::shared_ptr<cugl::scene2::SceneNode> _debugnode;
+    std::shared_ptr<cugl::scene2::ScrollPane> _debugnode;
 
     /**
      * Creates a new game world with the default values.

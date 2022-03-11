@@ -9,9 +9,12 @@
 // 
 //  This class should never be used except by RoomModel, which constructs
 //  a single static instance to be used by all RoomModels.
-//
-//  Created by Kristina Gu on 2/26/22.
-//  Copyright � 2022 Humblegends. All rights reserved.
+//	
+//  Owner: Kristina Gu
+//  Contributors: Kristina Gu
+//  Version: 2/26/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #include "MPRoomLoader.h"

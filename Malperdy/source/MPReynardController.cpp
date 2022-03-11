@@ -1,6 +1,12 @@
 //
-// Created by Spencer Hurst on 2/25/22.
-// Copyright (c) 2022 Humblegends. All rights reserved.
+//  MPReynardController.cpp
+//  Malperdy
+//
+//  Owner: Spencer Hurst
+//  Contributors: Spencer Hurst
+//  Version: 2/25/2022
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #define VELOCITY    10
@@ -114,4 +120,12 @@ void ReynardController::update(float delta){
     _reynard->setMovement(_reynard->getMovement() * _reynard->getForce());
     _reynard->applyForce();
     _reynard->update(delta);
+
+    if (_lastPositionValid) {
+        _delta = _reynard->getPosition() - _lastPosition;
+    } else {
+        _delta = Vec2(0, 0);
+        _lastPositionValid = true;
+    }
+    _lastPosition = _reynard->getPosition();
 }
