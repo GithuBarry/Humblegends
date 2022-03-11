@@ -165,7 +165,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
     Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f);
 
-    CULog("Size: %f %f", getSize().width, getSize().height);
+    //CULog("Size: %f %f", getSize().width, getSize().height);
     // Create the scene graph
     _worldnode = scene2::ScrollPane::allocWithBounds(10,10); // Number does not matter when constraint is false
     _worldnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
