@@ -44,6 +44,11 @@ private:
      * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
      */
     shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> _grid;
+    
+    /*
+     * Holds all the physics objects of the grid
+     */
+    vector<vector<vector<shared_ptr<physics2::PolygonObstacle>>>> _physicsGeometry;
 
 public:
 #pragma mark Constructors
@@ -71,34 +76,6 @@ public:
      * @return a grid with 3x3 rooms, each room the default
      */
     bool init(float scale=1, bool json=false, float hgap = 0, float vgap = 0);
-
-    /**
-     * Init given size
-     * @param width
-     * @param height
-     * @return a grid with width x height rooms
-     */
-    // Vector<RoomModel> rooms;
-
-    /**
-     *  Init given size and a room template
-     * @param width
-     * @param height
-     * @param room
-     * @return a grid with width x height rooms, is of the form specified by roomID
-     */
-    //bool init(int width, int height, string roomID);
-
-    /**
-     * {@note by Barry feature request}
-     * @param width
-     * @param height
-     * @param jsonPath
-     * @param vgap: minimal gaps between rooms
-     * @param hgap: minimal hotizal gaps between rooms
-     * @return
-     */
-    bool init(int width, int height, string jsonPath, int vgap, int hgap);
 
 #pragma mark Destructors
     /**
@@ -178,9 +155,9 @@ public:
         return gridSpaceToRoom(gridcoords);
     }
 
-    /** Returns the row and colum of the room located at the given coordinates
-    * If there is no room at the given coordinates, returns null*/
-    Vec2 worldToRoomCoords(Vec2 coord);
+//    /** Returns the row and colum of the room located at the given coordinates
+//    * If there is no room at the given coordinates, returns null*/
+//    Vec2 worldToRoomCoords(Vec2 coord);
 
 #pragma mark Setters
 
@@ -221,6 +198,10 @@ public:
 #pragma mark Helpers
 
     Poly2 convertToScreen(Poly2 poly);
+    
+    void calculatePhysicsGeometry();
+    
+    shared_ptr<physics2::PolygonObstacle> makeStaticFromPath(Path2 path);
 };
 
 
