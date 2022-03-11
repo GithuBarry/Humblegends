@@ -21,8 +21,6 @@ class GameStateController {
 private:
     bool _zoomed_in = true;
     int SLOW_MO_SCALAR = 5;
-    Vec2 _lastPan;
-    float _lastZoom;
 public:
     /**
      * Change parameter as you need
@@ -71,6 +69,11 @@ public:
         }
     };
 
+    /**
+     * Base on the current zoom and state, return zoom to be applied to
+     * @param currentZoom current zoom value of a node
+     * @return zoom to be applied for this frame
+     */
     float getZoom(float currentZoom) {
         float maxZoom = 2.4;
         float minZoom = 1;
@@ -82,11 +85,19 @@ public:
         } else {
             result =  1;
         }
-        _lastZoom = result;
         return result;
 
     }
 
+    /**
+     *
+     * @param currentTranslation Current global translation of the scrollpane.
+     * @param reynardScreenPosition location of reynard to follow, on screen
+     * @param scale scale between drawing world and physics world
+     * @param screenSize screen size
+     * @param faceRight whether reynard is facing right.
+     * @return Pan to be applied to nodes
+     */
     Vec2 getPan(Vec2 currentTranslation, Vec2 reynardScreenPosition, float scale, Size screenSize, bool faceRight) {
         Vec2 result;
         if (_zoomed_in) {
@@ -100,16 +111,10 @@ public:
             }
         }
         result = result * result.length() / 3000;
-        _lastPan = result;
         return result;
     }
 
-    Vec2 getLastPan(){
-        return _lastPan;
-    }
-    float getLastZoom(){
-        return _lastZoom;
-    }
+
 };
 
 #endif /* MPGameStateController_h */

@@ -366,25 +366,21 @@ void GameScene::update(float dt) {
         //cout << "Press Jump Button" << endl;
     }
 
-    float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
-
-
     if (_input.didZoomIn()) {
         _gamestate.zoom_switch();
     }
 
+    float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
     _reynardController->update(scaled_dt);
-
-
-
-    _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynard->getSceneNode()->getPosition()), _scale, getSize(), _reynard->isFacingRight()));
-
-    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
-    _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
-
     _world->update(scaled_dt);
 
+    // Camera following reynard, with some non-linear smoothing
+    _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynard->getSceneNode()->getPosition()), _scale, getSize(), _reynard->isFacingRight()));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
+
+    // Copy World's zoom and transform
+    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
+    _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
     _debugnode->applyZoom(1 / _debugnode->getZoom());
     _debugnode->applyZoom(_worldnode->getZoom());
     CULog("%f %f", _worldnode->getZoom(), _debugnode->getZoom());
