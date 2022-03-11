@@ -68,6 +68,20 @@ public:
         }
     };
 
+    float getZoom(float currentZoom) {
+        float maxZoom = 2.4;
+        float minZoom = 1;
+        if (_zoomed_in && currentZoom < maxZoom){
+            float result = 1.0f+0.02f*(maxZoom-currentZoom)*(maxZoom-currentZoom);
+            return result;
+        }else if ( (!_zoomed_in) && currentZoom > minZoom){
+            return 0.975;
+        }
+        else{
+            return 1;
+        }
+
+    }
 };
 
 #endif /* MPGameStateController_h */

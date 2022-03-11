@@ -362,7 +362,7 @@ void GameScene::update(float dt) {
 
     if (_input.didJump()) {
         _reynardController->resolveJump();
-        cout << "Press Jump Button" << endl;
+        //cout << "Press Jump Button" << endl;
     }
 
 
@@ -372,6 +372,11 @@ void GameScene::update(float dt) {
     _debugnode->applyPan(move/_scale);
     _world->update(_stateController->getScaledDtForPhysics(dt));
 
+    if (_input.didZoomIn()){
+        _gamestate.zoom_switch();
+    }
+    _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
+    _debugnode->applyZoom(_gamestate.getZoom(_debugnode->getZoom()));
 }
 
 /**
@@ -403,20 +408,20 @@ void GameScene::beginContact(b2Contact *contact) {
 
         // To catch weird edge cases
         if (abs(temp.x) > _reynard->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynard->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynard->isFacingRight()))) {
-            CULog("He is doing it again! Blocked switching %f", temp.x);
+            //CULog("He is doing it again! Blocked switching %f", temp.x);
         }
             // If he's hit a horizontal wall
         else if (abs(temp.x) <= _reynard->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynard->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynard->isFacingRight()))) {
 
             // If he's in the air and has hit a wall
             if (fabs(_reynard->getLinearVelocity().y) > 5) {
-                CULog("WALL JUMP");
+                //CULog("WALL JUMP");
                 _reynardController->stickToWall();
                 _reynardController->switchDirection();
             }
                 // Otherwise, if he's just running and hit a wall
             else {
-                CULog("Wall hit detected %f %f", temp.x, temp.y);
+                //CULog("Wall hit detected %f %f", temp.x, temp.y);
                 _reynardController->switchDirection();
             }
 

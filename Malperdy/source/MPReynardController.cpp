@@ -73,7 +73,7 @@ void ReynardController::resolveRunning(){
 bool ReynardController::resolveJump(){
 //    return true;
     bool r = _reynard->applyJumpForce();
-    cout<<"apply JF"<<endl;
+    //cout<<"apply JF"<<endl;
     return r;
 }
 
