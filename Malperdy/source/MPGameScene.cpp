@@ -167,11 +167,11 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     CULog("Size: %f %f", getSize().width, getSize().height);
     // Create the scene graph
-    _worldnode = scene2::ScrollPane::allocWithBounds(getSize().width, getSize().height); // Number does not matter when constraint is false
+    _worldnode = scene2::ScrollPane::allocWithBounds(10,10); // Number does not matter when constraint is false
     _worldnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _worldnode->setPosition(offset);
 
-    _debugnode = scene2::ScrollPane::allocWithBounds(getSize().width / _scale, getSize().height / _scale); // Number does not matter when constraint is false
+    _debugnode = scene2::ScrollPane::allocWithBounds(10 ,10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
@@ -374,14 +374,17 @@ void GameScene::update(float dt) {
     }
 
     _reynardController->update(scaled_dt);
-    _world->update(scaled_dt);
 
 
-    _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
+
     _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynard->getSceneNode()->getPosition()), _scale, getSize(), _reynard->isFacingRight()));
 
-    _debugnode->resetPane();
+    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
     _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
+
+    _world->update(scaled_dt);
+
+    _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
     _debugnode->applyZoom(1 / _debugnode->getZoom());
     _debugnode->applyZoom(_worldnode->getZoom());
     CULog("%f %f", _worldnode->getZoom(), _debugnode->getZoom());
