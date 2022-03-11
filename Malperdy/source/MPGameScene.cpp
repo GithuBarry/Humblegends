@@ -348,8 +348,8 @@ void GameScene::update(float dt) {
         Application::get()->quit();
     }
 
-    if (_input.didPress()) {
-        //TODO: check if reynard is in the room before selecting or swapping
+    if (_input.didPress() && !_gamestate.zoomed_in()) {
+        //TODO: check if reynard is in the room before selecting or swapping (NOT HERE)
         //TODO: debug the code below
         Vec2 pos = _input.getPosition();
 
