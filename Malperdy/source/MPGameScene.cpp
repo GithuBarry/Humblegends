@@ -383,7 +383,6 @@ void GameScene::update(float dt) {
     _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
     _debugnode->applyZoom(1 / _debugnode->getZoom());
     _debugnode->applyZoom(_worldnode->getZoom());
-    CULog("%f %f", _worldnode->getZoom(), _debugnode->getZoom());
 
 
 
