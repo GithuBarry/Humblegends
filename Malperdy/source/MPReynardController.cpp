@@ -9,8 +9,8 @@
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
-#define VELOCITY    10
-#define DUDE_JUMP   5.5f
+#define VELOCITY    1
+#define DUDE_JUMP   0.55f
 
 #include "MPReynardController.h"
 
@@ -67,7 +67,8 @@ void ReynardController::resolveRunning(){
 }
 
 
-/**This function is what is jused to check if Reynard could jump at a given time and if he
+/**This function is what is jused to check if Reynard could jum
+ * p at a given time and if he
  * can jump it makes him jump and return true (if he cannot it will return false)
  * If Reynard's state is already jumping**/
 bool ReynardController::resolveJump(){
