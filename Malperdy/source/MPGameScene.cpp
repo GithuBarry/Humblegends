@@ -29,7 +29,8 @@ using namespace std;
 #pragma mark -
 #pragma mark Level Geography
 
-/** This is the size of the active portion of the screen */
+/** This is the size of the active portion of the scr
+ * een */
 #define SCENE_WIDTH 1024
 #define SCENE_HEIGHT 576
 
@@ -165,11 +166,11 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f);
 
     // Create the scene graph
-    _worldnode = scene2::SceneNode::alloc();
+    _worldnode = scene2::ScrollPane::allocWithBounds(10,10); // Number does not matter when constraint is false
     _worldnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _worldnode->setPosition(offset);
 
-    _debugnode = scene2::SceneNode::alloc();
+    _debugnode = scene2::ScrollPane::allocWithBounds(10,10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
@@ -247,7 +248,7 @@ void GameScene::populate() {
     _grid->setScale(0.4);
     _envController->setGrid(_grid);
 
-    //_grid->setPosition(0,-240);
+    //_grid->setDrawPosition(0,-240);
 
     // Populate physics obstacles for grid
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
@@ -357,21 +358,11 @@ void GameScene::update(float dt) {
         cout << "Press Jump Button" << endl;
     }
 
-//    if (_input.didDashLeft()) {
-//
-//    }
-//    if (_input.didDashRight()) {
-//
-//    }
-//    if (_input.didZoomIn()) {
-//
-//    }
-//    if (_input.didZoomOut()) {
-//
-//    }
-
 
     _reynardController->update(dt);
+
+    Vec2 move = _worldnode->applyPan(-_reynardController->getMovementSinceLastFrame().x * _scale,0);
+    _debugnode->applyPan(move/_scale);
     _world->update(_stateController->getScaledDtForPhysics(dt));
 
 }
