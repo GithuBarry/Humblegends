@@ -18,6 +18,10 @@
 
 class EnemyController : public CharacterController<EnemyModel, EnemyController> {
 
+private:
+    /** The last location at which this enemy saw Reynard */
+    Vec2 _lastKnownReynardLocation;
+
 public:
     /**
      * This method handles anything about the character that needs to change over time.

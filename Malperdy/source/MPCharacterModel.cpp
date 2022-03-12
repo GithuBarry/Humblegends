@@ -73,8 +73,6 @@ bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Tex
     nsize.height *= DUDE_VSHRINK;
     _drawScale = drawScale;
 
-    _position = pos;
-
     // Create physics
     if (CapsuleObstacle::init(pos,nsize)) {
         setDensity(DUDE_DENSITY);

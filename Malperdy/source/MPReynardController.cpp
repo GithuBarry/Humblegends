@@ -2,8 +2,8 @@
 //  MPReynardController.cpp
 //  Malperdy
 //
-//  Owner: Spencer Hurst
-//  Contributors: Spencer Hurst
+//  Owner: Abu Qader
+//  Contributors: Spencer Hurst, Kristina Gu
 //  Version: 2/25/2022
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.

@@ -36,7 +36,20 @@ using namespace cugl;
 */
 class EnemyModel : public CharacterModel {
 
+public:
+    /** Enum representing the current AI state that this enemy is in */
+    enum class AIState : int {
+        PATROLLING, // Enemy has not seen Reynard and is patrolling normally
+        REALIZING,  // Enemy has line of sight and is noticing Reynard's presence
+        CHASING,    // Enemy is chasing after Reynard
+        SEARCHING,  // Enemy has lost Reynard and is looking for him
+        RETURNING   // Enemy has given up on Reynard and is going home
+    };
+
 protected:
+    // CONSTANTS
+    /** How far the /
+
     /** How long until the enemy drops off a wall */
     float _wallSlideDuration;
     /** How long until the enemy can jump again */

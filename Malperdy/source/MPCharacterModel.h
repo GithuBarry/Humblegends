@@ -63,8 +63,6 @@ protected:
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
     float _drawScale;
 
-    /** Vec2 representing position */
-    cugl::Vec2 _position;
     /** The character's current run speed */
     float _speed = RUN_SPEED;
     /** Which direction is the character facing */
