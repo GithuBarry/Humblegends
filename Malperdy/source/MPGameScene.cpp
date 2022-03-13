@@ -349,15 +349,13 @@ void GameScene::update(float dt) {
     }
 
     if (_input.didPress() && !_gamestate.zoomed_in()) {
-        //TODO: check if reynard is in the room before selecting or swapping (NOT HERE)
-        //TODO: debug the code below
         Vec2 pos = _input.getPosition();
 
         bool hasSwapped = false;
-        if (_envController->hasSelected()) { //Where the bug is happening currently
-            bool check = _envController->swapWithSelected(pos);
+        if (_envController->hasSelected()) {
+            bool check = _envController->swapWithSelected(pos, _reynard);
         } else {
-            hasSwapped = _envController->selectRoom(pos);
+            hasSwapped = _envController->selectRoom(pos, _reynard);
         }
     }
 
