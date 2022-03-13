@@ -251,7 +251,7 @@ bool ReynardModel::applyJumpForce() {
         setOnWall(false);
     }
     // Jump up
-    setVY(150.0f);
+    setVY(10.0f);
     return true;
 }
 
