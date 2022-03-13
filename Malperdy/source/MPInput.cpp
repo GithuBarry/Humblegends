@@ -167,12 +167,12 @@ bool InputController::init() {
 void InputController::dispose() {
     if (_active) {
 #ifndef CU_TOUCH_SCREEN
-        Input::deactivate<Keyboard>();
-        Input::deactivate<Mouse>();
         Mouse* mouse = Input::get<Mouse>();
         mouse->removePressListener(_mouseKey);
         mouse->removeReleaseListener(_mouseKey); 
         mouse->setPointerAwareness(Mouse::PointerAwareness::BUTTON);
+        Input::deactivate<Keyboard>();
+        Input::deactivate<Mouse>();
 #else
         Input::deactivate<Touchscreen>();
         Input::deactivate<CoreGesture>();
