@@ -6,8 +6,8 @@
 //  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //
 //  Owner: Barry Wang
-//  Contributors: Barry Wang
-//  Version: 3/01/22
+//  Contributors: Barry Wang, Jordan Selin
+//  Version: 3/13/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -353,9 +353,9 @@ void GameScene::update(float dt) {
 
         bool hasSwapped = false;
         if (_envController->hasSelected()) {
-            bool check = _envController->swapWithSelected(pos, _reynard);
+            bool check = _envController->swapWithSelected(pos, _reynardController);
         } else {
-            hasSwapped = _envController->selectRoom(pos, _reynard);
+            hasSwapped = _envController->selectRoom(pos, _reynardController);
         }
     }
 

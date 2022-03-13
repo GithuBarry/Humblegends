@@ -7,7 +7,7 @@
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
 //  Copyright (c) 2022 Humblegends. All rights reserved.
-//  Version: 3/10/22
+//  Version: 3/13/22
 //
 
 #include "MPEnvController.h"
@@ -26,11 +26,11 @@ EnvController::EnvController(){
 * Does not currently check if the room is swappable
 *
 * @param coords     the coordinates of the selection in worldspace
-* @param reynard    the model for reynard
+* @param reynard    the controller for reynard
 *
 * @return true if room was successfully selected, and false otherwise
 */
-bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardModel>& reynard){
+bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController>& reynard){
 	Vec2 room1 = _grid->worldSpaceToRoom(coords);
 	bool isValidRoom = room1.x != -1 && room1.y != -1;
 	bool isOccupied = containsReynard(room1, reynard);
@@ -52,13 +52,13 @@ bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardModel>& reyn
 * Does not currently check if the room is swappable
 *
 * @param coords     the coordinates of the selection in worldspace
-* @param reynard    the model for reynard
+* @param reynard    the controller for reynard
 *
 * @return	true if rooms were successfully swapped
 *			false if room was the same as selected room & is now deselected
 *			false if no swap occurred
 */
-bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardModel>& reynard){
+bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardController>& reynard){
 	if (!hasSelected()) {
 		return false;
 	}
@@ -97,11 +97,11 @@ void EnvController::deselectRoom(){
 * Checks whether Reynard is inside the indicated room
 *
 * @param room		the row and column of the room to check
-* @param reynard    the model for reynard
+* @param reynard    the controller for reynard
 * 
 * @return true if Reynard is inside the given room
 */
-bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardModel>& reynard) {
+bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardController>& reynard) {
 	//TODO: uncomment once ReynardModel getters & setters have been merged
 	/*Vec2 pos; //= reynard->getPosition();
 	int width; //= reynard->getSize().width;
