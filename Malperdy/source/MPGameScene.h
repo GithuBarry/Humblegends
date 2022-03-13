@@ -70,7 +70,6 @@ protected:
     std::shared_ptr<ReynardController> _reynardController;
     std::shared_ptr<GridModel> _grid;
     std::shared_ptr<EnvController> _envController;
-    std::shared_ptr<GameStateController> _stateController = make_shared<GameStateController>();
     /** Mark set to handle more sophisticated collision callbacks */
     std::unordered_set<b2Fixture*> _sensorFixtures;
 

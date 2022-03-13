@@ -39,7 +39,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -10000.0f
+#define DEFAULT_GRAVITY -9.8f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -165,12 +165,13 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
     Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f);
 
+    //CULog("Size: %f %f", getSize().width, getSize().height);
     // Create the scene graph
     _worldnode = scene2::ScrollPane::allocWithBounds(10,10); // Number does not matter when constraint is false
     _worldnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _worldnode->setPosition(offset);
 
-    _debugnode = scene2::ScrollPane::allocWithBounds(10,10); // Number does not matter when constraint is false
+    _debugnode = scene2::ScrollPane::allocWithBounds(10 ,10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
@@ -256,7 +257,7 @@ void GameScene::populate() {
         _world->addObstacle(*itr);
         (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
-        CULog("populate: %f %f ", (*itr)->getPosition().x);
+        //CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
 
 #pragma mark Reynard
@@ -347,8 +348,8 @@ void GameScene::update(float dt) {
         Application::get()->quit();
     }
 
-    if (_input.didPress()) {
-        //TODO: check if reynard is in the room before selecting or swapping
+    if (_input.didPress() && !_gamestate.zoomed_in()) {
+        //TODO: check if reynard is in the room before selecting or swapping (NOT HERE)
         //TODO: debug the code below
         Vec2 pos = _input.getPosition();
 
@@ -362,15 +363,28 @@ void GameScene::update(float dt) {
 
     if (_input.didJump()) {
         _reynardController->resolveJump();
-        cout << "Press Jump Button" << endl;
+        //cout << "Press Jump Button" << endl;
     }
 
+    if (_input.didZoomIn()) {
+        _gamestate.zoom_switch();
+    }
 
-    _reynardController->update(dt);
+    float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
+    _reynardController->update(scaled_dt);
+    _world->update(scaled_dt);
 
-    Vec2 move = _worldnode->applyPan(-_reynardController->getMovementSinceLastFrame().x * _scale,0);
-    _debugnode->applyPan(move/_scale);
-    _world->update(_stateController->getScaledDtForPhysics(dt));
+    // Camera following reynard, with some non-linear smoothing
+    _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynard->getSceneNode()->getPosition()), _scale, getSize(), _reynard->isFacingRight()));
+    _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
+
+    // Copy World's zoom and transform
+    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
+    _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
+    _debugnode->applyZoom(1 / _debugnode->getZoom());
+    _debugnode->applyZoom(_worldnode->getZoom());
+
+
 
 }
 
@@ -403,20 +417,20 @@ void GameScene::beginContact(b2Contact *contact) {
 
         // To catch weird edge cases
         if (abs(temp.x) > _reynard->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynard->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynard->isFacingRight()))) {
-            CULog("He is doing it again! Blocked switching %f", temp.x);
+            //CULog("He is doing it again! Blocked switching %f", temp.x);
         }
             // If he's hit a horizontal wall
         else if (abs(temp.x) <= _reynard->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynard->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynard->isFacingRight()))) {
 
             // If he's in the air and has hit a wall
             if (fabs(_reynard->getLinearVelocity().y) > 5) {
-                CULog("WALL JUMP");
+                //CULog("WALL JUMP");
                 _reynardController->stickToWall();
                 _reynardController->switchDirection();
             }
                 // Otherwise, if he's just running and hit a wall
             else {
-                CULog("Wall hit detected %f %f", temp.x, temp.y);
+                //CULog("Wall hit detected %f %f", temp.x, temp.y);
                 _reynardController->switchDirection();
             }
 
