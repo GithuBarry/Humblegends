@@ -90,6 +90,23 @@ public:
         return _character->getPosition();
     }
 
+    /**
+     * Returns whether this character is currently on the ground.
+     * 
+     * @return  Whether this character is on the ground
+     */
+    bool isGrounded() {
+        return _character->isGrounded();
+    }
+
+    /**
+     * Returns whether the given body belongs to this character.
+     *
+     * @param body  The body to check if it belongs to this character
+     * @return      Whether the given body belongs to this character
+     */
+    bool isMyBody(b2Body *body) { return body == _character->getBody(); }
+
 #pragma mark -
 #pragma mark Animation
 

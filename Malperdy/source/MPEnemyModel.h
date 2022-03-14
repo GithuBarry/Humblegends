@@ -24,6 +24,9 @@
 
 using namespace cugl;
 
+/** Name of the detection sensor for an enemy */
+#define DETECTION_SENSOR_NAME 10
+
 #pragma mark -
 #pragma mark Enemy Model
 
@@ -47,9 +50,11 @@ public:
     };
 
 protected:
-    // CONSTANTS
+    // DETECTION
     /** How close to Reynard the enemy must be to start to notice him */
-    const float _detectionRadius = 2.0f;
+    const float _detectionRadius = 4.0f;
+    /** The fixture for the enemy's detection radius */
+    b2Fixture* _detectFixture;
 
     /** How long until the enemy drops off a wall */
     float _wallSlideDuration;
@@ -100,6 +105,25 @@ public:
      * @param delta Number of seconds since last animation frame
      */
     virtual void update(float dt) override;
+
+#pragma mark -
+#pragma mark Physics Methods
+    /**
+     * Create new fixtures for this body, defining the shape
+     *
+     * This is the primary method to override for custom physics objects
+     * 
+     * In addition to calling the parent method, enemies also have a
+     * fixture to act as their detection radius, which is also added here.
+     */
+    void createFixtures() override;
+
+    /**
+     * Release the fixtures for this body, reseting the shape
+     *
+     * This is the primary method to override for custom physics objects.
+     */
+    void releaseFixtures() override;
 
 };
 
