@@ -20,6 +20,22 @@
  * @param delta The amount of time that has passed since the last frame
  */
 void EnemyController::update(float delta) {
+	// Handle what the enemy does depending on their current behavior state
+	switch (_character->getBehaveState()) {
+	case (EnemyModel::BehaviorState::PATROLLING):
+		break;
+	case (EnemyModel::BehaviorState::REALIZING):
+		// When enemy has realized Reynard's there, do a little jump
+		jump();
+		break;
+	case (EnemyModel::BehaviorState::CHASING):
+		break;
+	case (EnemyModel::BehaviorState::SEARCHING):
+		break;
+	case (EnemyModel::BehaviorState::RETURNING):
+		break;
+	}
+
 	// Call parent method at the end
 	CharacterController::update(delta);
 }

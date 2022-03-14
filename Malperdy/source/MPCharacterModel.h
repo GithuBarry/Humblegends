@@ -32,9 +32,9 @@ using namespace cugl;
 
 #pragma Movement Constants
 /** The default speed at which this character runs */
-#define RUN_SPEED 130.0f
+#define RUN_SPEED 5.0f
 /** The speed at which this character jumps */
-#define JUMP_SPEED 150.0f
+#define JUMP_SPEED 10.0f
 
 class CharacterModel : public cugl::physics2::CapsuleObstacle{
 public:

@@ -13,8 +13,13 @@
 #define __MP_REYNARD_CONTROLLER_H__
 
 #include <cugl/cugl.h>
+
 #include "MPCharacterController.h"
 #include "MPReynardModel.h"
+
+/** How many frames' worth of "scent trail" locations Reynard should store. The longer
+this is, the further away enemies have to be before Reynard loses them */
+#define TRAIL_LENGTH 60
 
 class ReynardController : public CharacterController<ReynardModel, ReynardController> {
 
@@ -35,9 +40,10 @@ private:
      */
     bool _lastPositionValid = false;
 
-public:
+    /** Reynard's location in world space over the last TRAIL_LENGTH frames (queue) */
+    shared_ptr<deque<Vec2>> _trail = make_shared<deque<Vec2>>();
 
-    /**/
+public:
 
     /**
      * This method handles anything about the character that needs to change over time.

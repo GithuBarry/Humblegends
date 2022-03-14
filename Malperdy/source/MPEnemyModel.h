@@ -37,8 +37,8 @@ using namespace cugl;
 class EnemyModel : public CharacterModel {
 
 public:
-    /** Enum representing the current AI state that this enemy is in */
-    enum class AIState : int {
+    /** Enum representing the current behavior state that this enemy is in */
+    enum class BehaviorState : int {
         PATROLLING, // Enemy has not seen Reynard and is patrolling normally
         REALIZING,  // Enemy has line of sight and is noticing Reynard's presence
         CHASING,    // Enemy is chasing after Reynard
@@ -48,12 +48,18 @@ public:
 
 protected:
     // CONSTANTS
-    /** How far the /
+    /** How close to Reynard the enemy must be to start to notice him */
+    const float _detectionRadius = 2.0f;
 
     /** How long until the enemy drops off a wall */
     float _wallSlideDuration;
     /** How long until the enemy can jump again */
     int _jumpCooldown;
+
+    /** The enemy's current behavior state */
+    BehaviorState _behaveState;
+    /** The enemy's detection area, which is the circle within which the enemy can detect Reynard */
+    b2CircleShape _detectionArea;
 
 public:
 
@@ -75,6 +81,25 @@ public:
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
     bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> image);
+
+#pragma mark -
+#pragma mark Attribute Methods
+    /**
+     * Returns this enemy's current behavior state.
+     * 
+     * @return  This enemy's current behavior state.
+     */
+    BehaviorState getBehaveState() { return _behaveState; }
+
+#pragma mark Update
+    /**
+     * Updates the enemy's physics state (NOT GAME LOGIC).
+     *
+     * We use this method to reset cooldowns.
+     *
+     * @param delta Number of seconds since last animation frame
+     */
+    virtual void update(float dt) override;
 
 };
 

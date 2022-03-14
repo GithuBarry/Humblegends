@@ -272,6 +272,7 @@ void GameScene::populate() {
     // Add enemies to physics world
     vector<std::shared_ptr<EnemyController>>::iterator itr;
     for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+        (*itr)->setReynard(_reynardController);
         addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
     }
 }
@@ -367,7 +368,7 @@ void GameScene::update(float dt) {
     _world->update(scaled_dt);
 
     // Camera following reynard, with some non-linear smoothing
-    _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynard->getSceneNode()->getPosition()), _scale, getSize(), _reynard->isFacingRight()));
+    _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition()), _scale, getSize(), _reynardController->getCharacter()->isFacingRight()));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform

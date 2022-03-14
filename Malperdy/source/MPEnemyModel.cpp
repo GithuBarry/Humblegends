@@ -71,6 +71,57 @@ bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture
 
     // Have enemies be stopped by default
     _moveState = MovementState::STOPPED;
+    // Also have enemies be patrolling by default
+    _behaveState = BehaviorState::PATROLLING;
+
+	// DEBUG: Create a detection radius around the enemy
+	PolyFactory pf;
+	Poly2 circle = pf.makeCircle(getPosition() * _drawScale, _detectionRadius * _drawScale);
+	shared_ptr<scene2::PolygonNode> pn = scene2::PolygonNode::allocWithPoly(circle);
+	Color4 color = Color4::CORNFLOWER;
+	pn->setColor(color.scale(1.0f, 1.0f, 1.0f, 0.3f));
+	_node->addChild(pn);
+	pn->setAnchor(0.5f, 0.5f);
+	//pn->setPosition(getWidth() * _drawScale / 2.0f, getHeight() * _drawScale / 2.0f);
+	//pn->setPosition(0, 0);
 
     return true;
+}
+
+/**
+ * Updates the enemy's physics state (NOT GAME LOGIC).
+ *
+ * We use this method to reset cooldowns.
+ *
+ * @param delta Number of seconds since last animation frame
+ */
+void EnemyModel::update(float dt) {
+	// Update location of detection radius
+	Vec2 enemyLoc = getPosition() * _drawScale;
+	_detectionArea.m_p.Set(enemyLoc.x, enemyLoc.y);
+
+	// Handle the enemy's physics depending on their current behavior state
+	switch (_behaveState) {
+	case (EnemyModel::BehaviorState::PATROLLING):
+		// TODO: an actual patrol pattern
+		setMoveState(MovementState::STOPPED);
+		break;
+	case (EnemyModel::BehaviorState::REALIZING):
+		// Stop while realizing
+		setMoveState(MovementState::STOPPED);
+		break;
+	case (EnemyModel::BehaviorState::CHASING):
+		// If Reynard is within attack range, attack
+		// Otherwise, raycast to the point on Reynard's trail closest to Reynard that the enemy can see
+		// If no such point, move enemy to Searching state
+		// Otherwise, set enemy to be moving in Reynard's direction
+		break;
+	case (EnemyModel::BehaviorState::SEARCHING):
+		break;
+	case (EnemyModel::BehaviorState::RETURNING):
+		break;
+	}
+
+    // Call parent method at end
+    CharacterModel::update(dt);
 }

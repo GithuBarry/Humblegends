@@ -15,12 +15,14 @@
 #include <cugl/cugl.h>
 #include "MPCharacterController.h"
 #include "MPEnemyModel.h"
+#include "MPReynardController.h"
 
 class EnemyController : public CharacterController<EnemyModel, EnemyController> {
 
 private:
-    /** The last location at which this enemy saw Reynard */
-    Vec2 _lastKnownReynardLocation;
+
+    /** Pointer to Reynard's controller just for convenience */
+    shared_ptr<ReynardController> _reynard;
 
 public:
     /**
@@ -29,6 +31,8 @@ public:
      * @param delta The amount of time that has passed since the last frame
      */
     void update(float delta);
+
+    void setReynard(shared_ptr<ReynardController> reynard) { _reynard = reynard; }
 };
 
 
