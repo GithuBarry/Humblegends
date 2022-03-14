@@ -32,9 +32,14 @@ using namespace cugl;
 
 #pragma Movement Constants
 /** The default speed at which this character runs */
-#define RUN_SPEED 130.0f
+#define RUN_SPEED 4.0f
 /** The speed at which this character jumps */
-#define JUMP_SPEED 150.0f
+#define JUMP_SPEED 9.0f
+
+#pragma Gameplay Constants
+/** How many frames' worth of "scent trail" locations this character should store. The longer
+this is, the further away pursuers have to be before the character loses them */
+#define TRAIL_LENGTH 60
 
 class CharacterModel : public cugl::physics2::CapsuleObstacle{
 public:
@@ -50,7 +55,15 @@ public:
     /** SceneNode representing the sprite for the character */
     shared_ptr<scene2::SceneNode> _node;
 
+#pragma mark Gameplay Attributes
+    /** The character's current number of hearts */
+    float _hearts;
+    /** The character's location in world space over the last TRAIL_LENGTH frames (queue) */
+    shared_ptr<deque<Vec2>> _trail = make_shared<deque<Vec2>>();
+
 protected:
+    /** The current maximum number of hearts that this character can have */
+    float _maxHearts = 2;
 
 #pragma mark -
 #pragma mark Constants
@@ -63,8 +76,6 @@ protected:
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
     float _drawScale;
 
-    /** Vec2 representing position */
-    cugl::Vec2 _position;
     /** The character's current run speed */
     float _speed = RUN_SPEED;
     /** Which direction is the character facing */
@@ -72,7 +83,9 @@ protected:
     /** The current movement state of the character. */
     MovementState _moveState;
     /** Ground sensor to represent our feet */
-    b2Fixture* _sensorFixture;
+    b2Fixture* _feetFixture;
+    b2Fixture* _faceFixtureLeft;
+    b2Fixture* _faceFixtureRight;
     /** Reference to the sensor name (since a constant cannot have a pointer) */
     std::string _sensorName;
     /** The node for debugging the sensor */
@@ -204,6 +217,15 @@ public:
     }
 
     /**
+     * Returns true if the character is currently jumping.
+     *
+     * @return true if the character is currently jumping.
+     */
+    bool isJumping() const {
+        return (_moveState == MovementState::JUMPING);
+    }
+
+    /**
      * Returns true if the character is on the ground.
      *
      * @return true if the character is on the ground.
@@ -222,6 +244,15 @@ public:
     }
 
     /**
+     * Returns true if the character is on the wall.
+     *
+     * @return true if the character is on the wall.
+     */
+    bool isOnWall() const {
+        return (_moveState == MovementState::ONWALL);
+    }
+
+    /**
      * Returns the name of the ground sensor
      *
      * This is used by ContactListener
@@ -237,6 +268,14 @@ public:
      */
     bool isFacingRight() const {
         return _faceRight;
+    }
+
+    void setGrounded() {
+        _moveState = MovementState::RUNNING;
+    }
+
+    void setNotGrounded() {
+        _moveState = MovementState::FALLING;
     }
 
     /**
@@ -282,7 +321,6 @@ public:
      */
     void releaseFixtures() override;
 
-    //TODO: WRITE FUNCTION HERE
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
      *
@@ -290,8 +328,7 @@ public:
      *
      * @param delta Number of seconds since last animation frame
      */
-    void update(float dt) override;
-    
+    virtual void update(float dt) override;
 };
 
 #endif /* MPCharacterModel_h */

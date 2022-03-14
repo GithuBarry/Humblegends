@@ -1,15 +1,15 @@
 //
 //  MPCharacterModel.cpp
 //  Malperdy
-// 
+//
 //  This is a superclass for the model that will hold data for a character,
 //  which includes enemies and Reynard. The model will simply hold data
 //  about the character, and all changes will be done using the controller.
-// 
+//
 //  This class should only be instantiated by a controller.
 //
 //  Created by Kristina Gu on 3/8/22.
-//  Copyright © 2022 Humblegends. All rights reserved.
+//  Copyright ï¿½ 2022 Humblegends. All rights reserved.
 //
 
 #include "MPCharacterModel.h"
@@ -26,17 +26,15 @@
 /** Amount of time (in seconds) for wall slide duration */
 #define WALL_SLIDE_DURATION 1.5f
 /** The amount to shrink the body fixture (vertically) relative to the image */
-#define DUDE_VSHRINK  0.95f
+#define DUDE_VSHRINK  0.45f
 /** The amount to shrink the body fixture (horizontally) relative to the image */
-#define DUDE_HSHRINK  0.7f
+#define DUDE_HSHRINK  0.4f
 /** The amount to shrink the sensor fixture (horizontally) relative to the image */
-#define DUDE_SSHRINK  0.6f
+#define DUDE_SSHRINK  0.3f
 /** Height of the sensor attached to the player's feet */
 #define SENSOR_HEIGHT   0.1f
 /** The density of the character */
 #define DUDE_DENSITY    1.0f
-/** The impulse for the character jump */
-#define DUDE_JUMP       500.0f
 /** The impulse for the character dash */
 #define DUDE_DASH       10.0f
 /** Debug color for the sensor */
@@ -68,7 +66,8 @@ bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Tex
     // Create sprite for this character from texture and store
     setSceneNode(scene2::SpriteNode::alloc(image, 1, 1));
     _node->setAnchor(0.5, 0.5);
-    
+    _node->setScale(0.5);
+
     Size nsize = image->getSize() / drawScale;
     nsize.width  *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
@@ -79,7 +78,7 @@ bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Tex
         setDensity(DUDE_DENSITY);
         setFriction(0.0f);      // Ensure there is no friction between Reynard and walls
         setFixedRotation(true); // Prevent character from rotating
-        
+
         /*_jumpCooldown  = 0;
         _dashCooldown  = 0;
         _wallSlideDuration = 0;*/
@@ -100,6 +99,8 @@ bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Tex
  * @return      Whether the state change happened successfully
  */
 bool CharacterModel::setMoveState(MovementState newState) {
+    //if (newState != MovementState::STOPPED && newState != MovementState::RUNNING) CULog("%d", newState);
+
     // Do what needs to be done when leaving the old state
     switch (_moveState) {
     case MovementState::STOPPED:
@@ -162,10 +163,12 @@ void CharacterModel::createFixtures() {
     }
 
     CapsuleObstacle::createFixtures();
-    b2FixtureDef sensorDef;
-    sensorDef.density = DUDE_DENSITY;
-    sensorDef.isSensor = true;
 
+    // Ground fixtures
+    b2FixtureDef feetFixture;
+    b2PolygonShape feetFixtureShape;
+    // Setting it as sensor allows for overlapping elements
+    feetFixture.isSensor = true;
     // Sensor dimensions
     b2Vec2 corners[4];
     corners[0].x = -DUDE_SSHRINK*getWidth()/2.0f;
@@ -176,13 +179,35 @@ void CharacterModel::createFixtures() {
     corners[2].y = (-getHeight()-SENSOR_HEIGHT)/2.0f;
     corners[3].x =  DUDE_SSHRINK*getWidth()/2.0f;
     corners[3].y = (-getHeight()+SENSOR_HEIGHT)/2.0f;
+    feetFixtureShape.Set(corners,4);
+    feetFixture.shape = &feetFixtureShape;
+    feetFixture.userData.pointer = 4;
+    _feetFixture = _body->CreateFixture(&feetFixture);
 
-    b2PolygonShape sensorShape;
-    sensorShape.Set(corners,4);
+    // Vars needed for positioning on either side of characters
+    float halfWidth = getWidth()/2.0f;
+    float quarterWidth = halfWidth/2.0f;
 
-    sensorDef.shape = &sensorShape;
-    sensorDef.userData.pointer = reinterpret_cast<uintptr_t>(getSensorName());
-    _sensorFixture = _body->CreateFixture(&sensorDef);
+    // Left fixture
+    b2FixtureDef faceFixture;
+    b2PolygonShape faceFixtureShape;
+    faceFixture.isSensor = true;
+    faceFixture.density = 1;
+    faceFixtureShape.SetAsBox(quarterWidth/20.0f, .00001, b2Vec2(halfWidth + quarterWidth, .25), 0);
+    faceFixture.shape = &faceFixtureShape;
+    faceFixture.userData.pointer = 5;
+    _faceFixtureLeft = _body->CreateFixture(&faceFixture);
+
+    // Right fixture
+    b2FixtureDef faceFixtureR;
+    b2PolygonShape faceFixtureShapeR;
+    faceFixtureR.isSensor = true;
+    faceFixtureR.density = 1;
+    faceFixtureShapeR.SetAsBox(quarterWidth, .00001, b2Vec2(-quarterWidth, .25), 0);
+    faceFixtureR.shape = &faceFixtureShapeR;
+    faceFixtureR.userData.pointer = 6;
+    _faceFixtureRight = _body->CreateFixture(&faceFixtureR);
+
 }
 
 /**
@@ -196,9 +221,17 @@ void CharacterModel::releaseFixtures() {
     }
 
     CapsuleObstacle::releaseFixtures();
-    if (_sensorFixture != nullptr) {
-        _body->DestroyFixture(_sensorFixture);
-        _sensorFixture = nullptr;
+    if (_feetFixture != nullptr) {
+        _body->DestroyFixture(_feetFixture);
+        _feetFixture = nullptr;
+    }
+    if (_faceFixtureLeft != nullptr) {
+        _body->DestroyFixture(_faceFixtureLeft);
+        _faceFixtureLeft = nullptr;
+    }
+    if (_faceFixtureRight != nullptr) {
+        _body->DestroyFixture(_faceFixtureRight);
+        _faceFixtureRight = nullptr;
     }
 }
 
@@ -227,7 +260,7 @@ void CharacterModel::update(float dt) {
     //} else {
     //    // Only cooldown while grounded
     //    _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
-    //    
+    //
     //}
 
     //if (isDashing()) {
@@ -253,8 +286,28 @@ void CharacterModel::update(float dt) {
     //}
     //else _wallSlideDuration = 0;
 
-    // Continue moving if in the run state
-    if (isRunning()) setVX((_faceRight ? 1 : -1) * _speed);
+    // Get the character's position and add it to their trail
+    _trail->push_front(getPosition());
+    // Trim trail back down to size if necessary
+    if (_trail->size() > TRAIL_LENGTH) _trail->pop_back();
+
+    // Handle any necessary behavior for the current move state
+    switch (_moveState) {
+    case MovementState::STOPPED:
+        break;
+    case MovementState::RUNNING:
+        // Continue moving if in the run state
+        if (isRunning()) setVX((_faceRight ? 1 : -1) * _speed);
+        break;
+    case MovementState::JUMPING:
+        // If vertical velocity becomes negative, transition to Falling
+        if (getVY() <= 0) setMoveState(MovementState::FALLING);
+        break;
+    case MovementState::FALLING:
+        break;
+    case MovementState::ONWALL:
+        break;
+    }
 
     // Update physics obstacle
     CapsuleObstacle::update(dt);

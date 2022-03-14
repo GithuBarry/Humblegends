@@ -29,8 +29,7 @@ using namespace std;
 #pragma mark -
 #pragma mark Level Geography
 
-/** This is the size of the active portion of the scr
- * een */
+/** This is the size of the active portion of the screen */
 #define SCENE_WIDTH 1024
 #define SCENE_HEIGHT 576
 
@@ -39,7 +38,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -9.8f
+#define DEFAULT_GRAVITY -22.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -154,6 +153,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _world->onBeginContact = [this](b2Contact *contact) {
         beginContact(contact);
     };
+    _world->onEndContact = [this](b2Contact *contact) {
+        endContact(contact);
+    };
 
     _world->beforeSolve = [this](b2Contact *contact, const b2Manifold *oldManifold) {
         beforeSolve(contact, oldManifold);
@@ -167,11 +169,10 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
     // Create the scene graph
-    _worldnode = scene2::ScrollPane::allocWithBounds(10,10); // Number does not matter when constraint is false
-    _worldnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
+    _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _worldnode->setPosition(offset);
 
-    _debugnode = scene2::ScrollPane::allocWithBounds(10 ,10); // Number does not matter when constraint is false
+    _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
@@ -249,7 +250,7 @@ void GameScene::populate() {
     _grid->setScale(0.4);
     _envController->setGrid(_grid);
 
-    //_grid->setDrawPosition(0,-240);
+    //_grid->setPosition(0,-240);
 
     // Populate physics obstacles for grid
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
@@ -261,27 +262,11 @@ void GameScene::populate() {
     }
 
 #pragma mark Reynard
-    Vec2 reyPos = Vec2(5, 3);
-    // Create image for Reynard
-    std::shared_ptr<Texture> image;
-    image = _assets->get<Texture>("reynard");
-    // Create sprite for Reynard from texture
-    std::shared_ptr<scene2::SpriteNode> sprite;
-    sprite = scene2::SpriteNode::alloc(image, 1, 1);
-    // Create a model for Reynard based on his image texture
-    _reynard = ReynardModel::alloc(reyPos, image->getSize() / _scale, _scale);
-    _reynard->setSceneNode(sprite);
-    addObstacle(_reynard, sprite); // Put this at the very front
-
-    // Create controller for Reynard and assign model to that controller
-
-    _reynardController = make_shared<ReynardController>(_reynard);
-
-    /*PolyFactory pf;
-    shared_ptr<physics2::PolygonObstacle> po = make_shared<physics2::PolygonObstacle>();
-    po->init(pf.makeNgon(Vec2(3,3), 2, 4));
-    _world->addObstacle(po);*/
-
+    Vec2 pos = Vec2(4, 3);
+    // Create a controller for Reynard based on his image texture
+    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
+    // Add Reynard to physics world
+    addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 }
 
 
@@ -362,7 +347,7 @@ void GameScene::update(float dt) {
     }
 
     if (_input.didJump()) {
-        _reynardController->resolveJump();
+        _reynardController->jump();
         //cout << "Press Jump Button" << endl;
     }
 
@@ -375,7 +360,7 @@ void GameScene::update(float dt) {
     _world->update(scaled_dt);
 
     // Camera following reynard, with some non-linear smoothing
-    _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynard->getSceneNode()->getPosition()), _scale, getSize(), _reynard->isFacingRight()));
+    _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition()), _scale, getSize(), _reynardController->getCharacter()->isFacingRight()));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
@@ -386,10 +371,15 @@ void GameScene::update(float dt) {
 
 
 
+    // Update all enemies
+    vector<std::shared_ptr<EnemyController>>::iterator itr;
+    for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+        (*itr)->update(dt);
+    }
 }
 
 /**
- * Processes the end of a collision
+ * Processes the start of a collision
  *
  * This method is called when we after get a collision between two objects.  We use
  * this method to test if it is the "right" kind of collision.  In particular, we
@@ -399,51 +389,77 @@ void GameScene::update(float dt) {
  *
  * @param  contact  The two bodies that collided
  */
-void GameScene::beginContact(b2Contact *contact) {
+
+bool GameScene::isReynardCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    b2Body *wall;
-
-    if (body1 == _reynard->getBody() || body2 == _reynard->getBody()) {
-        if (body1 == _reynard->getBody()) {
-            wall = body2;
-        } else {
-            wall = body1;
-        }
-        b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
-        int last_idx = contact->GetManifold()->pointCount - 1;
-        b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
-        b2Vec2 temp = _reynard->getBody()->GetPosition() - contact->GetManifold()->localPoint;
-
-        // To catch weird edge cases
-        if (abs(temp.x) > _reynard->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynard->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynard->isFacingRight()))) {
-            //CULog("He is doing it again! Blocked switching %f", temp.x);
-        }
-            // If he's hit a horizontal wall
-        else if (abs(temp.x) <= _reynard->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynard->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynard->isFacingRight()))) {
-
-            // If he's in the air and has hit a wall
-            if (fabs(_reynard->getLinearVelocity().y) > 5) {
-                //CULog("WALL JUMP");
-                _reynardController->stickToWall();
-                _reynardController->switchDirection();
-            }
-                // Otherwise, if he's just running and hit a wall
-            else {
-                //CULog("Wall hit detected %f %f", temp.x, temp.y);
-                _reynardController->switchDirection();
-            }
-
-        }
-            // Otherwise, if he's hit floor
-        else {
-            _reynardController->landOnGround();
-        }
-
+    if (body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody()) {
+        return true;
     }
-
+    return false;
 }
 
+b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        return contact->GetFixtureA();
+    }
+    else {
+        return contact->GetFixtureB();
+    }
+}
+
+bool isCharacterGroundFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 4);
+}
+
+bool isCharacterLeftFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 6);
+}
+
+bool isCharacterRightFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 5);
+}
+
+
+
+void GameScene::beginContact(b2Contact *contact) {
+    if (isReynardCollision(contact)) {
+        // CULog("Is this a Reynard collision? %d", isReynardCollision(contact));
+        // CULog("Is Reyanrd facing right? %d", ReynardIsRight);
+        // CULog("Is Reyanrd grounded? %d", ReynardIsGrounded);
+        // CULog("Is this right fixture? %d", isCharacterRightFixture(reynardFixture));
+        // CULog("Is this left fixture? %d", isCharacterRightFixture(reynardFixture));
+        // CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
+        bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
+        b2Fixture* reynardFixture = getReynardFixture(contact);
+        if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
+            _reynardController->hitWall();
+        }
+        else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
+            _reynardController->hitWall();
+        }
+        else if (isCharacterGroundFixture(reynardFixture)) {
+            _reynardController->hitGround();
+        }
+        else {
+            CULog("Switching C");
+            // _reynardController->hitGround();
+        }
+    }
+}
+
+void GameScene::endContact(b2Contact *contact) {
+    // CULog("Is this a Reynard collision END? %d", isReynardCollision(contact));
+    // CULog("rey is off da ground");
+    if (isReynardCollision(contact)) {
+        b2Fixture* reynardFixture = getReynardFixture(contact);
+        if (isCharacterGroundFixture(reynardFixture)) {
+            _reynardController->offGround();
+        }
+    }
+}
 
 /**
  * Handles any modifications necessary before collision resolution
