@@ -226,7 +226,8 @@ void InputController::update(float dt) {
     keys->keyDown(KeyCode::ARROW_DOWN);
     
 #else
-    // TODO: MOBILE CONTROLS
+    _currDown = _touchDown;
+    _currPos = _touchPos;
 
 #endif
 
