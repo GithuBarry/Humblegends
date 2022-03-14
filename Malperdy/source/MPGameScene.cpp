@@ -267,17 +267,6 @@ void GameScene::populate() {
     _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
     // Add Reynard to physics world
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
-
-#pragma mark Enemies
-    //pos = Vec2(15, 3);
-    //// Create a controller for an enemy based on its image texture
-    //_enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit")));
-    //// Add enemies to physics world
-    //vector<std::shared_ptr<EnemyController>>::iterator itr;
-    //for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
-    //    (*itr)->setReynard(_reynardController);
-    //    addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
-    //}
 }
 
 
