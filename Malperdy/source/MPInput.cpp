@@ -67,11 +67,16 @@ _keyReset(false),
 _keyDebug(false),
 _keyExit(false),
 
-//Touch Support
+//General Touch Support
 _currDown(false),
 _prevDown(false),
+//Mouse-Specific Touch Support
 _mouseDown(false),
 _mouseKey(0),
+//Touchscreen-Specific Touch Support
+_touchKey(0),
+_touchDown(false),
+_multiKey(0),
 
 //Reynard Direct Presses
 _spaceDown(false),
@@ -126,7 +131,7 @@ bool InputController::init() {
     else success = false;
 
 #else
-    // Otherwise process touch
+    // Otherwise process touchscreen & multitouch gestures
     success = Input::activate<Touchscreen>() && Input::activate<CoreGesture>();
     Touchscreen* screen = Input::get<Touchscreen>();
     CoreGesture* multitouch = Input::get<CoreGesture>();
@@ -303,13 +308,11 @@ void InputController::mouseUpCB(const cugl::MouseEvent& event, Uint8 clicks, boo
  */
 void InputController::touchBeginCB(const cugl::TouchEvent& event, bool focus) {
     CULog("Touch Begin");
-    //TODO: implement
-    /*// All touches correspond to key up
-    _keyUp = true;
-
-    // Update the touch location for later gestures
-    _timestamp = event.timestamp;
-    _dtouch = event.position;*/
+    if (!_touchDown) {
+        _touchDown = true;
+        _currentTouch = event.touch;
+        _touchPos = event.position;
+    }
 }
 
 /*
@@ -318,7 +321,10 @@ void InputController::touchBeginCB(const cugl::TouchEvent& event, bool focus) {
 * @param event     The event with the touch information
 */
 void InputController::touchMotionCB(const cugl::TouchEvent& event, const cugl::Vec2 previous, bool focus) {
-    //TODO: implement
+    CULog("Touch Move");
+    if (_touchDown && event.touch == _currentTouch) {
+        _touchPos = event.position;
+    }
 }
  
 /**
@@ -328,14 +334,9 @@ void InputController::touchMotionCB(const cugl::TouchEvent& event, const cugl::V
  */
 void InputController::touchEndCB(const cugl::TouchEvent& event, bool focus) {
     CULog("Touch End");
-    //TODO: implement
-    /*// Gesture has ended.  Give it meaning.
-    cugl::Vec2 diff = event.position-_dtouch;
-    bool fast = (event.timestamp.ellapsedMillis(_timestamp) < EVENT_SWIPE_TIME);
-    _keyReset = fast && diff.x < -EVENT_SWIPE_LENGTH;
-    _keyExit  = fast && diff.x > EVENT_SWIPE_LENGTH;
-    _keyDebug = fast && diff.y > EVENT_SWIPE_LENGTH;
-    _keyUp = false;*/
+    if (_touchDown && event.touch == _currentTouch) {
+        _touchDown = false;
+    }
 }
 
 /*

@@ -81,16 +81,24 @@ private:
     bool  _dDown;
 
     // MOUSE SUPPORT
+    /* The key for the mouse listeners */
+    Uint32 _mouseKey;
     /* Whether the left mouse button is down */
     bool _mouseDown;
     /* The mouse position (for mice-based interfaces) */
     cugl::Vec2 _mousePos;
-    /* The key for the mouse listeners */
-    Uint32 _mouseKey;
 
-    // TOUCH SUPPORT
+    // TOUCHSCREEN SUPPORT
     /* The key for touchscreen listeners */
     Uint32 _touchKey;
+    /* Whether the left mouse button is down */
+    bool _touchDown;
+    /* The ID of the current touch, if _touchDown is true */
+    cugl::TouchID _currentTouch;
+    /* The position of the current touch (for touch-based interfaces) */
+    cugl::Vec2 _touchPos;
+
+    // MULTITOUCH SUPPORT
     /* The key for multitouch listeners */
     Uint32 _multiKey;
     
