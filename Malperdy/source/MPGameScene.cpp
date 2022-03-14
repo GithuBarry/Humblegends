@@ -397,53 +397,68 @@ void GameScene::update(float dt) {
  *
  * @param  contact  The two bodies that collided
  */
-void GameScene::beginContact(b2Contact *contact) {
+
+bool GameScene::isReynardCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    b2Body *wall;
-
     if (body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody()) {
-        if (body1 == _reynardController->getCharacter()->getBody()) {
-            wall = body2;
-        } else {
-            wall = body1;
-        }
-        b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
-        int last_idx = contact->GetManifold()->pointCount - 1;
-        b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
-        b2Vec2 temp = _reynardController->getCharacter()->getBody()->GetPosition() - contact->GetManifold()->localPoint;
-
-        // To catch weird edge cases
-        if (abs(temp.x) > _reynardController->getCharacter()->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynardController->getCharacter()->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynardController->getCharacter()->isFacingRight()))) {
-            //CULog("He is doing it again! Blocked switching %f", temp.x);
-        }
-            // If he's hit a horizontal wall
-        else if (abs(temp.x) <= _reynardController->getCharacter()->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynardController->getCharacter()->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynardController->getCharacter()->isFacingRight()))) {
-
-            // If he's in the air and has hit a wall
-            if (fabs(_reynardController->getCharacter()->getLinearVelocity().y) > 5) {
-                CULog("WALL JUMP");
-                _reynardController->stickToWall();
-                _reynardController->turn();
-            }
-                // Otherwise, if he's just running and hit a wall
-            else {
-                CULog("Wall hit detected %f %f", temp.x, temp.y);
-                _reynardController->turn();
-            }
-
-        }
-            // Otherwise, if he's hit floor
-        else {
-            CULog("LANDED");
-            _reynardController->land();
-        }
-
+        return true;
     }
-
+    return false;
 }
 
+b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        return contact->GetFixtureA();
+    }
+    else {
+        return contact->GetFixtureB();
+    }
+}
 
+bool isCharacterGroundFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 4);
+}
+
+bool isCharacterLeftFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 6);
+}
+
+bool isCharacterRightFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 5);
+}
+
+void GameScene::beginContact(b2Contact *contact) {
+    CULog("Is this a Reynard collision? %d", isReynardCollision(contact));
+    if (isReynardCollision(contact)) {
+        bool ReynardIsRight = _reynardController->getCharacter()->isFacingRight();
+        bool ReynardIsGrounded = _reynardController->getCharacter()->isGrounded();
+        CULog("Is Reyanrd facing right? %d", ReynardIsRight);
+        CULog("Is Reyanrd grounded? %d", ReynardIsGrounded);
+        b2Fixture* reynardFixture = getReynardFixture(contact);
+        CULog("Is this right fixture? %d", isCharacterRightFixture(reynardFixture));
+        CULog("Is this left fixture? %d", isCharacterRightFixture(reynardFixture));
+        CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
+        if (ReynardIsRight && isCharacterRightFixture(reynardFixture)) {
+            CULog("Switching A");
+            if (_reynardController->)
+            _reynardController->turn();
+        }
+        else if (!ReynardIsRight && isCharacterLeftFixture(reynardFixture)) {
+            CULog("Switching B");
+            _reynardController->turn();
+        }
+        else if (isCharacterGroundFixture(reynardFixture)) {
+            _reynardController->land();
+        }
+        else {
+            CULog("Switching C");
+            _reynardController->land();
+        }
+    }
+}
 /**
  * Handles any modifications necessary before collision resolution
  *
