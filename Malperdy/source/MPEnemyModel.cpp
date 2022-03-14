@@ -74,16 +74,10 @@ bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture
     // Also have enemies be patrolling by default
     _behaveState = BehaviorState::PATROLLING;
 
-	// DEBUG: Create a detection radius around the enemy
-	/*PolyFactory pf;
-	Poly2 circle = pf.makeCircle(getPosition() * _drawScale, _detectionRadius * _drawScale);
-	shared_ptr<scene2::PolygonNode> pn = scene2::PolygonNode::allocWithPoly(circle);
-	Color4 color = Color4::CORNFLOWER;
-	pn->setColor(color.scale(1.0f, 1.0f, 1.0f, 0.3f));
-	_node->addChild(pn);
-	pn->setAnchor(0.5f, 0.5f);*/
-	//pn->setPosition(getWidth() * _drawScale / 2.0f, getHeight() * _drawScale / 2.0f);
-	//pn->setPosition(0, 0);
+	// Set this enemy's max health according to the constant
+	_maxHearts = DEFAULT_ENEMY_MAX_HEARTS;
+	// Reset this enemy's health to full
+	_hearts = _maxHearts;
 
     return true;
 }

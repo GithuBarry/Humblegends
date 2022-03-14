@@ -26,6 +26,8 @@ using namespace cugl;
 
 /** Name of the detection sensor for an enemy */
 #define DETECTION_SENSOR_NAME 10
+/** Default max number of hearts an enemy will have */
+#define DEFAULT_ENEMY_MAX_HEARTS 1
 
 #pragma mark -
 #pragma mark Enemy Model
@@ -52,7 +54,7 @@ public:
 protected:
     // DETECTION
     /** How close to Reynard the enemy must be to start to notice him */
-    const float _detectionRadius = 4.0f;
+    float _detectionRadius = 4.0f;
     /** The fixture for the enemy's detection radius */
     b2Fixture* _detectFixture;
 

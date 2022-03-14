@@ -58,6 +58,13 @@ protected:
     /** The texture for the character avatar */
     const string CHARACTER_TEXTURE;
 
+#pragma mark Gameplay Attributes
+
+    /** The current maximum number of hearts that this character can have */
+    float _maxHearts = 2;
+    /** The character's current number of hearts */
+    float _hearts;
+
 #pragma mark Attributes
 
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
