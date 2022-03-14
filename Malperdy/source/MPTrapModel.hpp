@@ -11,6 +11,14 @@
 
 #include <stdio.h>
 #include <cugl/cugl.h>
+#include <cugl/physics2/CUCapsuleObstacle.h>
+#include <cugl/scene2/graph/CUWireNode.h>
+
+#pragma mark -
+#pragma mark Size Constants
+
+using namespace cugl;
+
 
 class TrapModel : public cugl::physics2::BoxObstacle{
 
@@ -20,6 +28,39 @@ public:
         ACTIVATED,
         DEACTIVATED
     };
+    
+    
+    /** SceneNode representing the sprite for the trap */
+    shared_ptr<scene2::SceneNode> _node;
+
+protected:
+#pragma mark -
+#pragma mark Constants
+
+    /** The texture for the character avatar */
+    const string CHARACTER_TEXTURE;
+
+    
+#pragma mark Attributes
+
+    /** A uniform value represneting scale between the physics world and the screen */
+    float _drawScale;
+    /** Vec2 representing position of the trap within the room */
+    cugl::Vec2 _position;
+    
+    /** The current movement state of the character. */
+    TrapState _trapState;
+
+    /**
+    * Redraws the outline of the physics fixtures to the debug node
+    *
+    * The debug node is use to outline the fixtures attached to this object.
+    * This is very useful when the fixtures have a very different shape than
+    * the texture (e.g. a circular shape attached to a square texture).
+    */
+    virtual void resetDebug() override;
+
+public: 
     
 #pragma mark Destructors
     /**
@@ -35,8 +76,6 @@ public:
      */
     void dispose();
 
-private:
-    TrapState _trapState;
 
 };
 
