@@ -387,7 +387,7 @@ void GameScene::update(float dt) {
 }
 
 /**
- * Processes the end of a collision
+ * Processes the start of a collision
  *
  * This method is called when we after get a collision between two objects.  We use
  * this method to test if it is the "right" kind of collision.  In particular, we

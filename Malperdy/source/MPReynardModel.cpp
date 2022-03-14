@@ -71,6 +71,8 @@ bool ReynardModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Textu
 
     // Have Reynard be running by default
     _moveState = MovementState::RUNNING;
+    // Set his health to full
+    _hearts = _maxHearts;
 
     return true;
 }

@@ -100,6 +100,8 @@ bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Tex
  * @return      Whether the state change happened successfully
  */
 bool CharacterModel::setMoveState(MovementState newState) {
+    //if (newState != MovementState::STOPPED && newState != MovementState::RUNNING) CULog("%d", newState);
+
     // Do what needs to be done when leaving the old state
     switch (_moveState) {
     case MovementState::STOPPED:
@@ -285,8 +287,23 @@ void CharacterModel::update(float dt) {
     //}
     //else _wallSlideDuration = 0;
 
-    // Continue moving if in the run state
-    if (isRunning()) setVX((_faceRight ? 1 : -1) * _speed);
+    // Handle any necessary behavior for the current move state
+    switch (_moveState) {
+    case MovementState::STOPPED:
+        break;
+    case MovementState::RUNNING:
+        // Continue moving if in the run state
+        if (isRunning()) setVX((_faceRight ? 1 : -1) * _speed);
+        break;
+    case MovementState::JUMPING:
+        // If vertical velocity becomes negative, transition to Falling
+        if (getVY() <= 0) setMoveState(MovementState::FALLING);
+        break;
+    case MovementState::FALLING:
+        break;
+    case MovementState::ONWALL:
+        break;
+    }
 
     // Update physics obstacle
     CapsuleObstacle::update(dt);
