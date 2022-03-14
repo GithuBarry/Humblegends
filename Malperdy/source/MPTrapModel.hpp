@@ -5,6 +5,10 @@
 //  Created by Spencer Hurst on 3/7/22.
 //  Copyright © 2022 Cornell Game Design Initiative. All rights reserved.
 //
+//  Owner: Spencer Hurst
+//  Contributors: Evan, Abu
+//  Copyright (c) 2022 Humblegends. All rights reserved.
+//  Version: 3/10/22
 
 #ifndef MPTrapModel_hpp
 #define MPTrapModel_hpp
