@@ -153,6 +153,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _world->onBeginContact = [this](b2Contact *contact) {
         beginContact(contact);
     };
+    _world->onEndContact = [this](b2Contact *contact) {
+        endContact(contact);
+    };
 
     _world->beforeSolve = [this](b2Contact *contact, const b2Manifold *oldManifold) {
         beforeSolve(contact, oldManifold);
@@ -443,22 +446,33 @@ void GameScene::beginContact(b2Contact *contact) {
         CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
         if (ReynardIsRight && isCharacterRightFixture(reynardFixture)) {
             CULog("Switching A");
-            if (_reynardController->)
-            _reynardController->turn();
+            _reynardController->hitWall();
         }
         else if (!ReynardIsRight && isCharacterLeftFixture(reynardFixture)) {
             CULog("Switching B");
-            _reynardController->turn();
+            _reynardController->hitWall();
         }
         else if (isCharacterGroundFixture(reynardFixture)) {
-            _reynardController->land();
+            _reynardController->hitGround();
         }
         else {
             CULog("Switching C");
-            _reynardController->land();
+            // _reynardController->hitGround();
         }
     }
 }
+
+void GameScene::endContact(b2Contact *contact) {
+    CULog("Is this a Reynard collision END? %d", isReynardCollision(contact));
+    if (isReynardCollision(contact)) {
+        b2Fixture* reynardFixture = getReynardFixture(contact);
+        if (isCharacterGroundFixture(reynardFixture)) {
+            CULog("rey is off da ground");
+            _reynardController->offGround();
+        }
+    }
+}
+
 /**
  * Handles any modifications necessary before collision resolution
  *

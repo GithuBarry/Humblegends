@@ -9,7 +9,7 @@
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
-#define VELOCITY    1
+#define VELOCITY    .5f
 #define DUDE_JUMP   0.55f
 
 #include "MPReynardController.h"

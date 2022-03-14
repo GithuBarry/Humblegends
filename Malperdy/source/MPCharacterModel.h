@@ -215,6 +215,16 @@ public:
      *
      * @return true if the character is on the ground.
      */
+    
+    /**
+     * Returns true if the character is currently jumping.
+     *
+     * @return true if the character is currently jumping.
+     */
+    bool isJumping() const {
+        return (_moveState == MovementState::JUMPING);
+    }
+    
     bool isGrounded() const {
         return (_moveState == MovementState::STOPPED || _moveState == MovementState::RUNNING);
     }
