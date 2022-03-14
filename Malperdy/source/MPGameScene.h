@@ -307,6 +307,15 @@ public:
      * @param  contact  The collision manifold before contact
      */
     void beforeSolve(b2Contact* contact, const b2Manifold* oldManifold);
+            
+    void endContact(b2Contact* contact);
+
+    bool isReynardCollision(b2Contact* contact);
+        
+    void isTurnEvent(b2Contact* contact);
+        
+    b2Fixture* getReynardFixture(b2Contact *contact);
+        
 };
 
 #endif /* __MP_GAME_MODE_H__ */

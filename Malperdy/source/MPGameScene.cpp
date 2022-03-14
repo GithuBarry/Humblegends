@@ -38,7 +38,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -9.8f
+#define DEFAULT_GRAVITY -22.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -153,6 +153,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _world->onBeginContact = [this](b2Contact *contact) {
         beginContact(contact);
     };
+    _world->onEndContact = [this](b2Contact *contact) {
+        endContact(contact);
+    };
 
     _world->beforeSolve = [this](b2Contact *contact, const b2Manifold *oldManifold) {
         beforeSolve(contact, oldManifold);
@@ -266,14 +269,15 @@ void GameScene::populate() {
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
-    pos = Vec2(15, 3);
-    // Create a controller for an enemy based on its image texture
-    _enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit")));
-    // Add enemies to physics world
-    vector<std::shared_ptr<EnemyController>>::iterator itr;
-    for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
-        addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
-    }
+    //pos = Vec2(15, 3);
+    //// Create a controller for an enemy based on its image texture
+    //_enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit")));
+    //// Add enemies to physics world
+    //vector<std::shared_ptr<EnemyController>>::iterator itr;
+    //for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+    //    (*itr)->setReynard(_reynardController);
+    //    addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
+    //}
 }
 
 
@@ -396,58 +400,77 @@ void GameScene::update(float dt) {
  *
  * @param  contact  The two bodies that collided
  */
-void GameScene::beginContact(b2Contact *contact) {
+
+bool GameScene::isReynardCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    b2Body *notReynard;
-
-    // If either option is Reynard
-    if (_reynardController->isMyBody(body1) || _reynardController->isMyBody(body2)) {
-        // Get the other thing based on which body was Reynard
-        notReynard = _reynardController->isMyBody(body1) ? body2 : body1;
-
-        // If notReynard is the enemy
-        if (_enemies->at(0)->isMyBody(notReynard)) {
-            //CULog("MINE");
-        }
-
-        // Weird math for Reynard-wall collision
-        b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
-        int last_idx = contact->GetManifold()->pointCount - 1;
-        b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
-        b2Vec2 temp = _reynardController->getCharacter()->getBody()->GetPosition() - contact->GetManifold()->localPoint;
-
-        // To catch weird edge cases
-        if (abs(temp.x) > _reynardController->getCharacter()->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynardController->getCharacter()->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynardController->getCharacter()->isFacingRight()))) {
-            //CULog("He is doing it again! Blocked switching %f", temp.x);
-        }
-            // If he's hit a horizontal wall
-        else if (abs(temp.x) <= _reynardController->getCharacter()->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynardController->getCharacter()->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynardController->getCharacter()->isFacingRight()))) {
-
-            // If he's in the air and has hit a wall
-            //if (fabs(_reynardController->getCharacter()->getLinearVelocity().y) > 5) {
-            //    //CULog("WALL JUMP");
-            //    _reynardController->stickToWall();
-            //    _reynardController->turn();
-            //}
-            //    // Otherwise, if he's just running and hit a wall
-            //else {
-            //    //CULog("Wall hit detected %f %f", temp.x, temp.y);
-            //    _reynardController->turn();
-            //}
-            _reynardController->hitWall();
-
-        }
-            // Otherwise, if he's hit floor
-        else {
-            //CULog("LANDED");
-            _reynardController->hitGround();
-        }
-
+    if (body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody()) {
+        return true;
     }
-
+    return false;
 }
 
+b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        return contact->GetFixtureA();
+    }
+    else {
+        return contact->GetFixtureB();
+    }
+}
+
+bool isCharacterGroundFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 4);
+}
+
+bool isCharacterLeftFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 6);
+}
+
+bool isCharacterRightFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 5);
+}
+
+
+
+void GameScene::beginContact(b2Contact *contact) {
+    if (isReynardCollision(contact)) {
+        // CULog("Is this a Reynard collision? %d", isReynardCollision(contact));
+        // CULog("Is Reyanrd facing right? %d", ReynardIsRight);
+        // CULog("Is Reyanrd grounded? %d", ReynardIsGrounded);
+        // CULog("Is this right fixture? %d", isCharacterRightFixture(reynardFixture));
+        // CULog("Is this left fixture? %d", isCharacterRightFixture(reynardFixture));
+        // CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
+        bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
+        b2Fixture* reynardFixture = getReynardFixture(contact);
+        if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
+            _reynardController->hitWall();
+        }
+        else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
+            _reynardController->hitWall();
+        }
+        else if (isCharacterGroundFixture(reynardFixture)) {
+            _reynardController->hitGround();
+        }
+        else {
+            CULog("Switching C");
+            // _reynardController->hitGround();
+        }
+    }
+}
+
+void GameScene::endContact(b2Contact *contact) {
+    // CULog("Is this a Reynard collision END? %d", isReynardCollision(contact));
+    // CULog("rey is off da ground");
+    if (isReynardCollision(contact)) {
+        b2Fixture* reynardFixture = getReynardFixture(contact);
+        if (isCharacterGroundFixture(reynardFixture)) {
+            _reynardController->offGround();
+        }
+    }
+}
 
 /**
  * Handles any modifications necessary before collision resolution

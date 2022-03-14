@@ -32,9 +32,9 @@ using namespace cugl;
 
 #pragma Movement Constants
 /** The default speed at which this character runs */
-#define RUN_SPEED 5.0f
+#define RUN_SPEED 4.0f
 /** The speed at which this character jumps */
-#define JUMP_SPEED 10.0f
+#define JUMP_SPEED 9.0f
 
 #pragma Gameplay Constants
 /** How many frames' worth of "scent trail" locations this character should store. The longer
@@ -83,7 +83,9 @@ protected:
     /** The current movement state of the character. */
     MovementState _moveState;
     /** Ground sensor to represent our feet */
-    b2Fixture* _sensorFixture;
+    b2Fixture* _feetFixture;
+    b2Fixture* _faceFixtureLeft;
+    b2Fixture* _faceFixtureRight;
     /** Reference to the sensor name (since a constant cannot have a pointer) */
     std::string _sensorName;
     /** The node for debugging the sensor */
@@ -228,10 +230,20 @@ public:
      *
      * @return true if the character is on the ground.
      */
+    
+    /**
+     * Returns true if the character is currently jumping.
+     *
+     * @return true if the character is currently jumping.
+     */
+    bool isJumping() const {
+        return (_moveState == MovementState::JUMPING);
+    }
+    
     bool isGrounded() const {
         return (_moveState == MovementState::STOPPED || _moveState == MovementState::RUNNING);
     }
-
+    
     /**
      * Returns true if the character is falling.
      *
@@ -268,6 +280,14 @@ public:
         return _faceRight;
     }
 
+    void setGrounded() {
+        _moveState = MovementState::RUNNING;
+    }
+    
+    void setNotGrounded() {
+        _moveState = MovementState::FALLING;
+    }
+    
     /**
      * Sets the character's movement state, changing physical attributes
      * accordingly as necessary.
