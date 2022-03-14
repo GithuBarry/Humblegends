@@ -51,6 +51,25 @@ public:
      */
     bool init(const Vec2 &pos, float drawScale, shared_ptr<Texture> image);
 
+    /**
+    * Redraws the outline of the physics fixtures to the debug node
+    *
+    * The debug node is use to outline the fixtures attached to this object.
+    * This is very useful when the fixtures have a very different shape than
+    * the texture (e.g. a circular shape attached to a square texture).
+    */
+    void resetDebug() override{
+        
+    }
+    
+    void createFixtures() override{
+        
+    }
+    
+    void releaseFixtures() override{
+        
+    }
+
     
 };
 

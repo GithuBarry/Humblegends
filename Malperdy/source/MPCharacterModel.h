@@ -282,6 +282,7 @@ public:
      */
     void releaseFixtures() override;
 
+    //TODO: WRITE FUNCTION HERE
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
      *
@@ -289,7 +290,10 @@ public:
      *
      * @param delta Number of seconds since last animation frame
      */
-    virtual void update(float dt) override;
+    void update(float dt) override{
+        
+    }
+    
 };
 
 #endif /* MPCharacterModel_h */

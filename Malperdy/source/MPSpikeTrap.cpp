@@ -41,3 +41,5 @@ bool SpikeTrap::init(const Vec2 &pos, float drawScale, shared_ptr<Texture> image
     _trapState = TrapState::DEACTIVATED;
     return true;
 }
+
+
