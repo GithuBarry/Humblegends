@@ -15,9 +15,7 @@
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUBoxObstacle.h>
 
-#include "MPTrapModel.h"
-#include "MPSpikeTrap.h"
-
+#include "MPSpikeTrap.hpp"
 
 using namespace cugl;
 
@@ -25,7 +23,10 @@ using namespace cugl;
 #pragma mark Constructors
 
 bool SpikeTrap::init(const Vec2 &pos, float drawScale, shared_ptr<Texture> image){
-    if(!TrapModel::init(pos, drawScale, image) return false){
+    if(!TrapModel::init(pos, drawScale, image)){
         return false;
     }
+    // Spike Traps are initially set to being deactivated
+    _trapState = TrapState::DEACTIVATED;
+    return true;
 }

@@ -18,8 +18,7 @@
 #include <cugl/physics2/CUCapsuleObstacle.h>
 #include <cugl/scene2/graph/CUWireNode.h>
 
-#include "MPTrapModel.h"
-
+#include "MPTrapModel.hpp"
 
 #include <stdio.h>
 using namespace cugl;
