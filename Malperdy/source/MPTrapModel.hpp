@@ -20,7 +20,7 @@
 using namespace cugl;
 
 
-class TrapModel : public cugl::physics2::BoxObstacle{
+class TrapModel : public cugl::physics2::BoxObstacle {
 
 
 public:

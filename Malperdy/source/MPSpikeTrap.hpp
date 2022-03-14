@@ -9,12 +9,30 @@
 #ifndef MPSpikeTrap_hpp
 #define MPSpikeTrap_hpp
 
-//#include "MPTrapModel.h"
-#include "Mp"
+#include <cugl/cugl.h>
+#include <cugl/physics2/CUBoxObstacle.h>
+#include <cugl/physics2/CUCapsuleObstacle.h>
+#include <cugl/scene2/graph/CUWireNode.h>
+#include "MPTrapModel.h"
+
 
 #include <stdio.h>
 
 class SpikeTrap : public TrapModel{
+    
+    
+public:
+    
+//    Ok so step 1 Create a constructor
+//    Step 2 assign all variables you think you will need. 
+    
+    
+    
+private:
+    
+    
+    
+    
     
 }
 
