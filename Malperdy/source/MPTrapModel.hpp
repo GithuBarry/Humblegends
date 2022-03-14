@@ -152,14 +152,14 @@ public:
      *
      * @return true if object allocation succeeded
      */
-    void createFixtures() override;
+    virtual void createFixtures() override;
 
     /**
      * Release the fixtures for this body, reseting the shape
      *
      * This is the primary method to override for custom physics objects.
      */
-    void releaseFixtures() override;
+    virtual void releaseFixtures() override;
 
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
