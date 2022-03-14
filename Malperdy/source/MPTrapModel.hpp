@@ -31,6 +31,9 @@ public:
         DEACTIVATED
     };
     
+    /** The current movement state of the character. */
+    TrapState _trapState;
+    
     
     /** SceneNode representing the sprite for the trap */
     shared_ptr<scene2::SceneNode> _node;
@@ -50,8 +53,6 @@ protected:
     /** Vec2 representing position of the trap within the room */
     cugl::Vec2 _position;
     
-    /** The current movement state of the character. */
-    TrapState _trapState;
     
     cugl::physics2::BoxObstacle _boxObstacle;
 
@@ -74,7 +75,7 @@ public:
      * The constructor will not initialize any of the character values beyond
      * the defaults. To create a TrapModel, you must call init().
      */
-    TrapModel () : SceneNode(){}
+    TrapModel(float x, float y) : SceneNode(){}
     
     
     /**
@@ -91,7 +92,7 @@ public:
      *
      * @return     Returns True if the space is initialized properly.
      */
-    virtual bool init(float x, float y);
+    //bool init(float x, float y);
 
     
     

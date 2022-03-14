@@ -28,7 +28,8 @@ using namespace cugl;
  *
  * @return     Returns True if the space is initialized properly.
  */
-bool TrapModel::init(float x, float y) {
+TrapModel(float x, float y) {
+    _boxObstacle = new BoxObstacle();
     _boxObstacle.Obstacle::setPosition(x, y);
     createFixtures();
     return true;
