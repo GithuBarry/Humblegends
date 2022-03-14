@@ -60,7 +60,64 @@ protected:
     */
     virtual void resetDebug() override;
 
-public: 
+public:
+    
+#pragma mark -
+#pragma mark Attribute Properties
+
+    /**
+     * Returns true if the trap is currently activated.
+     *
+     * @return true if the trap is currently active and can kill enemies and Reynard.
+     */
+    bool isActivated() const {
+        return (_trapState == TrapState::ACTIVATED);
+    }
+    
+    /**
+     * Sets the traps's state, changing physical attributes of the trap.
+     *
+     * @param state The new state the trap should be in
+     * @return      Whether the change happened successfully
+     */
+    bool setTrapState(TrapState newState);
+
+    //TODO: figure out what would be needed by creating a setPosition function
+    //TODO: And the difference between a cugl vector type and a box2d vector type.
+    
+    
+#pragma mark -
+#pragma mark Physics Methods
+
+//    TODO: are funcitons like this really needed in my code
+//    TODO: Think on this a bit more spencer
+    /**
+     * Creates the physics Body(s) for this object, adding them to the world.
+     *
+     * This method overrides the base method to keep your ship from spinning.
+     *
+     * @param world Box2D world to store body
+     *
+     * @return true if object allocation succeeded
+     */
+    void createFixtures() override;
+
+    /**
+     * Release the fixtures for this body, reseting the shape
+     *
+     * This is the primary method to override for custom physics objects.
+     */
+    void releaseFixtures() override;
+
+    /**
+     * Updates the object's physics state (NOT GAME LOGIC).
+     *
+     * We use this method to reset cooldowns.
+     *
+     * @param delta Number of seconds since last animation frame
+     */
+    virtual void update(float dt) override;
+
     
 #pragma mark Destructors
     /**
