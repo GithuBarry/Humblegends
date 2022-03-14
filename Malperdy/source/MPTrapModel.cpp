@@ -8,6 +8,12 @@
 
 #include "MPTrapModel.hpp"
 
+using namespace cugl;
+
+#pragma mark -
+#pragma mark Constructors
+
+
 /**
  * Creates the physics Body(s) for this object, adding them to the world.
  *

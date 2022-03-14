@@ -21,7 +21,6 @@
 #pragma mark -
 #pragma mark Size Constants
 
-using namespace std;
 using namespace cugl;
 
 
