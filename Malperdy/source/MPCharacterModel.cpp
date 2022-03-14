@@ -26,17 +26,15 @@
 /** Amount of time (in seconds) for wall slide duration */
 #define WALL_SLIDE_DURATION 1.5f
 /** The amount to shrink the body fixture (vertically) relative to the image */
-#define DUDE_VSHRINK  0.95f
+#define DUDE_VSHRINK  0.45f
 /** The amount to shrink the body fixture (horizontally) relative to the image */
-#define DUDE_HSHRINK  0.7f
+#define DUDE_HSHRINK  0.4f
 /** The amount to shrink the sensor fixture (horizontally) relative to the image */
-#define DUDE_SSHRINK  0.6f
+#define DUDE_SSHRINK  0.3f
 /** Height of the sensor attached to the player's feet */
 #define SENSOR_HEIGHT   0.1f
 /** The density of the character */
 #define DUDE_DENSITY    1.0f
-/** The impulse for the character jump */
-#define DUDE_JUMP       500.0f
 /** The impulse for the character dash */
 #define DUDE_DASH       10.0f
 /** Debug color for the sensor */
@@ -68,6 +66,7 @@ bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Tex
     // Create sprite for this character from texture and store
     setSceneNode(scene2::SpriteNode::alloc(image, 1, 1));
     _node->setAnchor(0.5, 0.5);
+    _node->setScale(0.5);
     
     Size nsize = image->getSize() / drawScale;
     nsize.width  *= DUDE_HSHRINK;

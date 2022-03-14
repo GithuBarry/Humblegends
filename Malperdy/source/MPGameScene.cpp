@@ -38,7 +38,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -9.8f
+#define DEFAULT_GRAVITY -22.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -269,15 +269,15 @@ void GameScene::populate() {
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
-    pos = Vec2(15, 3);
-    // Create a controller for an enemy based on its image texture
-    _enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit")));
-    // Add enemies to physics world
-    vector<std::shared_ptr<EnemyController>>::iterator itr;
-    for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
-        (*itr)->setReynard(_reynardController);
-        addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
-    }
+    //pos = Vec2(15, 3);
+    //// Create a controller for an enemy based on its image texture
+    //_enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit")));
+    //// Add enemies to physics world
+    //vector<std::shared_ptr<EnemyController>>::iterator itr;
+    //for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+    //    (*itr)->setReynard(_reynardController);
+    //    addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
+    //}
 }
 
 
