@@ -15,6 +15,27 @@ using namespace cugl;
 
 
 /**
+ * Initializes a trap with the given characteristics in a given location in Room Space.
+ *
+ * The geometry corresponding to the room type given by the room ID is
+ * taken from the JSON file of rooms.
+ *
+ * Rooms are automatically initialized to have the bounds given by
+ * the default room width/height.
+ *
+ * @param x         The x-coordinate of the trap in room space
+ * @param y         The y-coordinate of the room in room space
+ *
+ * @return     Returns True if the space is initialized properly.
+ */
+bool TrapModel::init(float x, float y) {
+    _boxObstacle.Obstacle::setPosition(x, y);
+    createFixtures();
+    return true;
+}
+
+
+/**
  * Creates the physics Body(s) for this object, adding them to the world.
  *
  * This method overrides the base method to keep your ship from spinning.
@@ -24,7 +45,7 @@ using namespace cugl;
  * @return true if object allocation succeeded
  */
 void TrapModel::createFixtures() {
-    BoxObstacle::createFixtures();
+    _boxObstacle.createFixtures();
 }
 
 /**
@@ -33,6 +54,6 @@ void TrapModel::createFixtures() {
  * This is the primary method to override for custom physics objects.
  */
 void TrapModel::releaseFixtures() {
-    BoxObstacle::releaseFixtures();
+    _boxObstacle.releaseFixtures();
 }
 

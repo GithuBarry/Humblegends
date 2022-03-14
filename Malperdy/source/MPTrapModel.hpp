@@ -15,8 +15,6 @@
 
 #include <stdio.h>
 #include <cugl/cugl.h>
-#include <cugl/physics2/CUBoxObstacle.h>
-#include <cugl/scene2/graph/CUWireNode.h>
 
 #pragma mark -
 #pragma mark Size Constants
@@ -24,7 +22,7 @@
 using namespace cugl;
 
 
-class TrapModel : public cugl::physics2::BoxObstacle {
+class TrapModel : public cugl::scene2::SceneNode {
 
 
 public:
@@ -42,7 +40,7 @@ protected:
 #pragma mark Constants
 
     /** The texture for the character avatar */
-    const string CHARACTER_TEXTURE;
+    const string TRAP_TEXTURE;
 
     
 #pragma mark Attributes
@@ -54,6 +52,8 @@ protected:
     
     /** The current movement state of the character. */
     TrapState _trapState;
+    
+    cugl::physics2::BoxObstacle _boxObstacle;
 
     /**
     * Redraws the outline of the physics fixtures to the debug node
@@ -62,7 +62,7 @@ protected:
     * This is very useful when the fixtures have a very different shape than
     * the texture (e.g. a circular shape attached to a square texture).
     */
-    virtual void resetDebug() override;
+    virtual void resetDebug();
 
 public:
 #pragma mark -
@@ -74,40 +74,25 @@ public:
      * The constructor will not initialize any of the character values beyond
      * the defaults. To create a TrapModel, you must call init().
      */
-    TrapModel () : BoxObstacle(){}
+    TrapModel () : SceneNode(){}
+    
     
     /**
+     * Initializes a trap with the given characteristics in a given location in Room Space.
      *
-     * Initialize a general character model.
+     * The geometry corresponding to the room type given by the room ID is
+     * taken from the JSON file of rooms.
      *
-     * @param pos       Initial position in world coordinates as a Vec2
-     * @param drawScale The drawing scale (world to screen)
-     * @param image     The image for the trap's appearance
+     * Rooms are automatically initialized to have the bounds given by
+     * the default room width/height.
      *
-     * @return  This function will return true if initialized properly.
+     * @param x         The x-coordinate of the trap in room space
+     * @param y         The y-coordinate of the room in room space
+     *
+     * @return     Returns True if the space is initialized properly.
      */
-    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image);
-    
-    
-#pragma mark -
-#pragma mark Static Constructors
-    
-    /**
-     * Create a given trap in a given position.
-     *
-     * The trap has a given size, scaled so that 1 pixel = 1 Box2d unit
-     *
-     * The scene graph is completely decoupled from the physics system.
-     *
-     * @param pos                   Initial position in World Coords
-     * @param drawScale     The draw scale (world to screen)
-     * @param image               The image for the trap's appearance
-     */
-    static std::shared_ptr<TrapModel> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
-        std::shared_ptr<TrapModel> result = std::make_shared<TrapModel>();
-        return (result->init(pos, drawScale, image) ? result : nullptr);
-    }
-    
+    virtual bool init(float x, float y);
+
     
     
     
@@ -151,14 +136,14 @@ public:
      *
      * @return true if object allocation succeeded
      */
-    virtual void createFixtures() override;
+    virtual void createFixtures();
 
     /**
      * Release the fixtures for this body, reseting the shape
      *
      * This is the primary method to override for custom physics objects.
      */
-    virtual void releaseFixtures() override;
+    virtual void releaseFixtures();
 
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
@@ -167,7 +152,7 @@ public:
      *
      * @param delta Number of seconds since last animation frame
      */
-    virtual void update(float dt) override;
+    virtual void update(float dt);
 
     
 #pragma mark Destructors
