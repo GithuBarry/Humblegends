@@ -20,7 +20,7 @@
 class GameStateController {
 private:
     bool _zoomed_in = true;
-    int SLOW_MO_SCALAR = 5;
+    int SLOW_MO_SCALAR = 3;
 public:
     /**
      * Change parameter as you need

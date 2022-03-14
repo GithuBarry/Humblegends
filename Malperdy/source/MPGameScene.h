@@ -20,6 +20,7 @@
 #include "MPReynardModel.h"
 #include "MPReynardController.h"
 #include "MPCharacterModel.h"
+#include "MPEnemyController.h"
 #include "MPInput.h"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
@@ -64,8 +65,6 @@ protected:
     /** Reference to the rocket/player avatar */
     //std::shared_ptr<RocketModel> _rocket;
 
-    /** Reference to the Reynard avatar */
-    std::shared_ptr<ReynardModel> _reynard;
     /** Reference to the Reynard controller */
     std::shared_ptr<ReynardController> _reynardController;
     std::shared_ptr<GridModel> _grid;
@@ -73,7 +72,8 @@ protected:
     /** Mark set to handle more sophisticated collision callbacks */
     std::unordered_set<b2Fixture*> _sensorFixtures;
 
-
+    /** References to all the enemy controllers */
+    std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
     /** Whether we have completed this "game" */
     bool _complete;
@@ -307,6 +307,15 @@ public:
      * @param  contact  The collision manifold before contact
      */
     void beforeSolve(b2Contact* contact, const b2Manifold* oldManifold);
+            
+    void endContact(b2Contact* contact);
+
+    bool isReynardCollision(b2Contact* contact);
+        
+    void isTurnEvent(b2Contact* contact);
+        
+    b2Fixture* getReynardFixture(b2Contact *contact);
+        
 };
 
 #endif /* __MP_GAME_MODE_H__ */
