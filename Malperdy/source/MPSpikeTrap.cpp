@@ -22,6 +22,17 @@ using namespace cugl;
 #pragma mark -
 #pragma mark Constructors
 
+/**
+ * Initializes a new SpikeTrap at the given position.
+ *
+ * The SpikeTrap is sized according to the given drawing scale.
+ *
+ * @param pos       Initial position in world coordinates
+ * @param drawScale The drawing scale (world to screen)
+ * @param image     The image for the character's appearance
+ *
+ * @return  true if the character is correctly initialized, false otherwise.
+ */
 bool SpikeTrap::init(const Vec2 &pos, float drawScale, shared_ptr<Texture> image){
     if(!TrapModel::init(pos, drawScale, image)){
         return false;
