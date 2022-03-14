@@ -144,8 +144,18 @@ public:
     }
 
 #pragma mark -
-#pragma mark Actions
+#pragma mark Player Input Actions
+    /**
+     * The character jumps upwards at a set velocity.
+     *
+     * @return  Whether the character jumped successfully
+     */
+    bool jump() {
+        return _character->setMoveState(CharacterModel::MovementState::JUMPING);
+    }
 
+#pragma mark Character Actions
+    protected:
     /**
      * Turns the character around to face the opposite direction.
      *
@@ -157,16 +167,6 @@ public:
 
         _character->flipDirection();
         return true;
-
-    }
-
-    /**
-     * The character jumps upwards at a set velocity.
-     *
-     * @return  Whether the character jumped successfully
-     */
-    bool jump() {
-        return _character->setMoveState(CharacterModel::MovementState::JUMPING);
     }
 
     /**
@@ -222,6 +222,44 @@ public:
      */
     bool land() {
         return _character->setMoveState(CharacterModel::MovementState::RUNNING);
+    }
+
+    public:
+
+#pragma mark Collision
+    /**
+     * Called when the character's feet sensor begins contact with the
+     * ground.
+     *
+     * Sets the character to have landed on the ground.
+     */
+    void hitGround() {
+        // Land the character
+        land();
+    }
+
+    /**
+     * Called when the character's feet sensor ends contact with the
+     * ground.
+     * 
+     * If the character did not actively jump, they will be set to falling.
+     */
+    void offGround() {
+        // If the character didn't choose to jump, then they must be falling
+        if (!(_character->isJumping())) fall();
+    }
+
+    /**
+     * Called when the character's face sensor begins contact with a wall.
+     *
+     * The character will always turn, but if they're in the air, then
+     * they will also stick to the wall and begin sliding.
+     */
+    void hitWall() {
+        // Always turn
+        turn();
+        // If character was in the air, set them to stick to the wall
+        if (!(_character->isGrounded())) stickToWall();
     }
 
 #pragma mark -

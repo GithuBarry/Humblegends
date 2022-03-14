@@ -227,6 +227,15 @@ public:
     }
 
     /**
+     * Returns true if the character is on the wall.
+     *
+     * @return true if the character is on the wall.
+     */
+    bool isOnWall() const {
+        return (_moveState == MovementState::ONWALL);
+    }
+
+    /**
      * Returns the name of the ground sensor
      *
      * This is used by ContactListener
