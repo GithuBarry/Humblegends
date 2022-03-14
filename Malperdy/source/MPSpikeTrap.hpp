@@ -13,24 +13,27 @@
 #include <cugl/physics2/CUBoxObstacle.h>
 #include <cugl/physics2/CUCapsuleObstacle.h>
 #include <cugl/scene2/graph/CUWireNode.h>
+
 #include "MPTrapModel.h"
 
 
 #include <stdio.h>
+using namespace cugl;
+
+#pragma mark -
+#pragma mark SpikeTrap
+
 
 class SpikeTrap : public TrapModel{
     
-    
 public:
     
+#pragma mark Constructor
+    
+    
+    
+    bool init(const Vec2 &pos, float drawScale, shared_ptr<Texture> image);
 
-    
-    
-    
-    
-    
-    
-    
     
 }
 
