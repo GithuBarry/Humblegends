@@ -76,3 +76,15 @@ bool ReynardModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Textu
 
     return true;
 }
+
+/**
+ * Updates the object's physics state (NOT GAME LOGIC).
+ *
+ * We use this method to reset cooldowns.
+ *
+ * @param delta Number of seconds since last animation frame
+ */
+void ReynardModel::update(float dt) {
+    // Call parent update function
+    CharacterModel::update(dt);
+}

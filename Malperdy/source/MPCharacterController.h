@@ -107,6 +107,14 @@ public:
      */
     bool isMyBody(b2Body *body) { return body == _character->getBody(); }
 
+    /**
+     * Returns this character's trail, so its past locations for the past
+     * TRAIL_LENGTH frames.
+     *
+     * @return  Vector of past position data along the character's trail
+     */
+    shared_ptr<deque<Vec2>> getTrail() { return _character->_trail; }
+
 #pragma mark -
 #pragma mark Animation
 

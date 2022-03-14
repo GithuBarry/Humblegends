@@ -64,6 +64,15 @@ public:
      */
     bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> image);
 
+    /**
+     * Updates the object's physics state (NOT GAME LOGIC).
+     *
+     * We use this method to reset cooldowns.
+     *
+     * @param delta Number of seconds since last animation frame
+     */
+    virtual void update(float dt) override;
+
 };
 
 #endif //__MP_REYNARD_MODEL_H__

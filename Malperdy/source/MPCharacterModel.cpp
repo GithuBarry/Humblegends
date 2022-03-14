@@ -255,6 +255,11 @@ void CharacterModel::update(float dt) {
     //}
     //else _wallSlideDuration = 0;
 
+    // Get the character's position and add it to their trail
+    _trail->push_front(getPosition());
+    // Trim trail back down to size if necessary
+    if (_trail->size() > TRAIL_LENGTH) _trail->pop_back();
+
     // Handle any necessary behavior for the current move state
     switch (_moveState) {
     case MovementState::STOPPED:

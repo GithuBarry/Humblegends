@@ -17,12 +17,19 @@
 #include "MPEnemyModel.h"
 #include "MPReynardController.h"
 
+/** How many seconds Reynard must be within an enemy's detection radius before the enemy realizes that he is there */
+#define DETECTION_TIME 1.0f
+
 class EnemyController : public CharacterController<EnemyModel, EnemyController> {
 
 private:
 
-    /** Pointer to Reynard's controller just for convenience */
-    shared_ptr<ReynardController> _reynard;
+    /** The target that this enemy is currently pursuing, or null if there is none */
+    shared_ptr<CharacterController> _target = nullptr;
+
+    // COOLDOWNS
+    /** How long Reynard has been in the enemy's detection radius so far */
+    float _detectTime = 0.0f;
 
 public:
     /**
@@ -32,7 +39,37 @@ public:
      */
     void update(float delta);
 
-    void setReynard(shared_ptr<ReynardController> reynard) { _reynard = reynard; }
+#pragma mark -
+#pragma mark Behavior Methods
+
+    /**
+     * Called when a target has entered this enemy's detection radius, so in beginContact
+     * when the target begins contact with this enemy's detection sensor. Takes in a pointer
+     * to the controller for the target.
+     * 
+     * Because characters other than Reynard can be pursued, this is generalized to just
+     * take in a character controller.
+     * 
+     * TODO: handle issues with multiple possible targets
+     * 
+     * @param target    Controller for the target, who's just entered the enemy's detection radius
+     */
+    void detectTarget(shared_ptr<CharacterController> target);
+
+    /**
+     * Called when a target has left this enemy's detection radius, so in endContact when the
+     * target ends contact with this enemy's detection sensor. Takes in a pointer to the
+     * controller for the target that was lost.
+     *
+     * Because characters other than Reynard can be pursued, this is generalized to just
+     * take in a character controller.
+     * 
+     * TODO: handle issues with multiple possible targets
+     *
+     * @param target    Controller for the target, who's just exited the enemy's detection radius
+     */
+    void loseTarget(shared_ptr<CharacterController> target);
+
 };
 
 

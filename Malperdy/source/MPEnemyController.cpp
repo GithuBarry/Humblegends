@@ -25,10 +25,25 @@ void EnemyController::update(float delta) {
 	case (EnemyModel::BehaviorState::PATROLLING):
 		break;
 	case (EnemyModel::BehaviorState::REALIZING):
-		// When enemy has realized Reynard's there, do a little jump
-		jump();
+		// If enough time has passed that enemy realizes Reynard's there
+		if (_detectTime > DETECTION_TIME) {
+			// Do a little jump
+			jump();
+			// Reset detection time
+			_detectTime = 0;
+			// Start chasing
+			_character->setBehaveState(EnemyModel::BehaviorState::CHASING);
+		}
+		// If not, tick detection time
+		else {
+			_detectTime += delta;
+		}
 		break;
 	case (EnemyModel::BehaviorState::CHASING):
+		// If Reynard is within attack range, attack
+		// Otherwise, raycast to the point on Reynard's trail closest to Reynard that the enemy can see
+		// If no such point, move enemy to Searching state
+		// Otherwise, set enemy to be moving in Reynard's direction
 		break;
 	case (EnemyModel::BehaviorState::SEARCHING):
 		break;
@@ -39,3 +54,40 @@ void EnemyController::update(float delta) {
 	// Call parent method at the end
 	CharacterController::update(delta);
 }
+
+#pragma mark -
+#pragma mark Behavior Methods
+
+/**
+ * Called when a target has entered this enemy's detection radius, so in beginContact
+ * when the target begins contact with this enemy's detection sensor. Takes in a pointer
+ * to the controller for the target.
+ *
+ * Because characters other than Reynard can be pursued, this is generalized to just
+ * take in a character controller.
+ *
+ * @param target    Controller for the target, who's just entered the enemy's detection radius
+ */
+void EnemyController::detectTarget(shared_ptr<CharacterController> target) {
+	_target = target;
+	// Start realizing
+	_character->setBehaveState(EnemyModel::BehaviorState::REALIZING);
+}
+
+/**
+ * Called when a target has left this enemy's detection radius, so in endContact when the
+ * target ends contact with this enemy's detection sensor. Takes in a pointer to the
+ * controller for the target that was lost.
+ *
+ * Because characters other than Reynard can be pursued, this is generalized to just
+ * take in a character controller.
+ *
+ * @param target    Controller for the target, who's just exited the enemy's detection radius
+ */
+void EnemyController::loseTarget(shared_ptr<CharacterController> target) {
+	_target = nullptr;
+	// Stop realizing
+	_character->setBehaveState(EnemyModel::BehaviorState::PATROLLING);
+	// Reset detect time
+	_detectTime = 0;
+};

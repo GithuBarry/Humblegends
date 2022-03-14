@@ -105,10 +105,6 @@ void EnemyModel::update(float dt) {
 		setMoveState(MovementState::STOPPED);
 		break;
 	case (EnemyModel::BehaviorState::CHASING):
-		// If Reynard is within attack range, attack
-		// Otherwise, raycast to the point on Reynard's trail closest to Reynard that the enemy can see
-		// If no such point, move enemy to Searching state
-		// Otherwise, set enemy to be moving in Reynard's direction
 		break;
 	case (EnemyModel::BehaviorState::SEARCHING):
 		break;

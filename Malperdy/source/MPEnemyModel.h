@@ -98,6 +98,13 @@ public:
      */
     BehaviorState getBehaveState() { return _behaveState; }
 
+    /**
+     * Sets this enemy's current behavior state to the given state.
+     *
+     * @param state The behavior state to set this enemy to
+     */
+    void setBehaveState(BehaviorState state) { _behaveState = state; }
+
 #pragma mark Update
     /**
      * Updates the enemy's physics state (NOT GAME LOGIC).

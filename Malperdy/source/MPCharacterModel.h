@@ -36,6 +36,11 @@ using namespace cugl;
 /** The speed at which this character jumps */
 #define JUMP_SPEED 10.0f
 
+#pragma Gameplay Constants
+/** How many frames' worth of "scent trail" locations this character should store. The longer
+this is, the further away pursuers have to be before the character loses them */
+#define TRAIL_LENGTH 60
+
 class CharacterModel : public cugl::physics2::CapsuleObstacle{
 public:
     /** Enum representing the current state of movement that the character is in */
@@ -50,20 +55,21 @@ public:
     /** SceneNode representing the sprite for the character */
     shared_ptr<scene2::SceneNode> _node;
 
+#pragma mark Gameplay Attributes
+    /** The character's current number of hearts */
+    float _hearts;
+    /** The character's location in world space over the last TRAIL_LENGTH frames (queue) */
+    shared_ptr<deque<Vec2>> _trail = make_shared<deque<Vec2>>();
+
 protected:
+    /** The current maximum number of hearts that this character can have */
+    float _maxHearts = 2;
 
 #pragma mark -
 #pragma mark Constants
 
     /** The texture for the character avatar */
     const string CHARACTER_TEXTURE;
-
-#pragma mark Gameplay Attributes
-
-    /** The current maximum number of hearts that this character can have */
-    float _maxHearts = 2;
-    /** The character's current number of hearts */
-    float _hearts;
 
 #pragma mark Attributes
 
@@ -206,6 +212,15 @@ public:
      */
     bool isRunning() const {
         return (_moveState == MovementState::RUNNING);
+    }
+
+    /**
+     * Returns true if the character is currently jumping.
+     *
+     * @return true if the character is currently jumping.
+     */
+    bool isJumping() const {
+        return (_moveState == MovementState::JUMPING);
     }
 
     /**

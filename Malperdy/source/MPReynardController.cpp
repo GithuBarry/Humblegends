@@ -20,11 +20,6 @@
  * @param delta The amount of time that has passed since the last frame
  */
 void ReynardController::update(float delta) {
-	// Get Reynard's position and add it to his trail
-	_trail->push_front(_character->getPosition());
-	// Trim trail back down to size if necessary
-	if (_trail->size() > TRAIL_LENGTH) _trail->pop_back();
-
 	// Call parent method at the end
 	CharacterController::update(delta);
 }

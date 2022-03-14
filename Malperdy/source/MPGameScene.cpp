@@ -272,7 +272,6 @@ void GameScene::populate() {
     // Add enemies to physics world
     vector<std::shared_ptr<EnemyController>>::iterator itr;
     for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
-        (*itr)->setReynard(_reynardController);
         addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
     }
 }
