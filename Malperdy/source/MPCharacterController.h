@@ -81,6 +81,15 @@ public:
     /**This allows someone to grab the instantiated CharacterModel from this controller**/
     shared_ptr<ModelType> getCharacter() { return _character; }
 
+    /**
+     * Returns the position of the character's center.
+     * 
+     * @return  Position of character's center
+     */
+    Vec2 getPosition() {
+        return _character->getPosition();
+    }
+
 #pragma mark -
 #pragma mark Animation
 

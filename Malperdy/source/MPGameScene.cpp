@@ -38,7 +38,7 @@ using namespace std;
 /** Height of the game world in Box2d units */
 #define DEFAULT_HEIGHT  18.0f
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -10000.0f
+#define DEFAULT_GRAVITY -9.8f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -164,12 +164,12 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
     Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f);
 
+    //CULog("Size: %f %f", getSize().width, getSize().height);
     // Create the scene graph
-    _worldnode = scene2::SceneNode::alloc();
-    _worldnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
+    _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _worldnode->setPosition(offset);
 
-    _debugnode = scene2::SceneNode::alloc();
+    _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset);
@@ -255,15 +255,26 @@ void GameScene::populate() {
         _world->addObstacle(*itr);
         (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
+        //CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
 
 #pragma mark Reynard
-    Vec2 reyPos = Vec2(4, 3);
+    Vec2 pos = Vec2(4, 3);
     // Create a controller for Reynard based on his image texture
-    _reynardController = ReynardController::alloc(reyPos, _scale, _assets->get<Texture>("reynard"));
+    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
     // Add Reynard to physics world
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
+#pragma mark Enemies
+    pos = Vec2(15, 3);
+    // Create a controller for an enemy based on its image texture
+    _enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit")));
+    // Add enemies to physics world
+    vector<std::shared_ptr<EnemyController>>::iterator itr;
+    for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+        (*itr)->setReynard(_reynardController);
+        addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
+    }
 }
 
 
@@ -330,8 +341,8 @@ void GameScene::update(float dt) {
         Application::get()->quit();
     }
 
-    if (_input.didPress()) {
-        //TODO: check if reynard is in the room before selecting or swapping
+    if (_input.didPress() && !_gamestate.zoomed_in()) {
+        //TODO: check if reynard is in the room before selecting or swapping (NOT HERE)
         //TODO: debug the code below
         Vec2 pos = _input.getPosition();
 
@@ -345,26 +356,34 @@ void GameScene::update(float dt) {
 
     if (_input.didJump()) {
         _reynardController->jump();
-        cout << "Press Jump Button" << endl;
+        //cout << "Press Jump Button" << endl;
     }
 
-//    if (_input.didDashLeft()) {
-//
-//    }
-//    if (_input.didDashRight()) {
-//
-//    }
-//    if (_input.didZoomIn()) {
-//
-//    }
-//    if (_input.didZoomOut()) {
-//
-//    }
+    if (_input.didZoomIn()) {
+        _gamestate.zoom_switch();
+    }
+
+    float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
+    _reynardController->update(scaled_dt);
+    _world->update(scaled_dt);
+
+    // Camera following reynard, with some non-linear smoothing
+    _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition()), _scale, getSize(), _reynardController->getCharacter()->isFacingRight()));
+    _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
+
+    // Copy World's zoom and transform
+    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
+    _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
+    _debugnode->applyZoom(1 / _debugnode->getZoom());
+    _debugnode->applyZoom(_worldnode->getZoom());
 
 
-    _reynardController->update(dt);
-    _world->update(_stateController->getScaledDtForPhysics(dt));
 
+    // Update all enemies
+    vector<std::shared_ptr<EnemyController>>::iterator itr;
+    for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+        (*itr)->update(dt);
+    }
 }
 
 /**
@@ -396,7 +415,7 @@ void GameScene::beginContact(b2Contact *contact) {
 
         // To catch weird edge cases
         if (abs(temp.x) > _reynardController->getCharacter()->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynardController->getCharacter()->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynardController->getCharacter()->isFacingRight()))) {
-            CULog("He is doing it again! Blocked switching %f", temp.x);
+            //CULog("He is doing it again! Blocked switching %f", temp.x);
         }
             // If he's hit a horizontal wall
         else if (abs(temp.x) <= _reynardController->getCharacter()->getWidth() && ((contact->GetManifold()->localNormal.x < -0.5 && _reynardController->getCharacter()->isFacingRight()) || (contact->GetManifold()->localNormal.x > 0.5 && !_reynardController->getCharacter()->isFacingRight()))) {

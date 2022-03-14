@@ -20,6 +20,7 @@
 #include "MPReynardModel.h"
 #include "MPReynardController.h"
 #include "MPCharacterModel.h"
+#include "MPEnemyController.h"
 #include "MPInput.h"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
@@ -48,7 +49,7 @@ protected:
 
     // VIEW
     /** Reference to the physics root of the scene graph */
-    std::shared_ptr<cugl::scene2::SceneNode> _worldnode;
+    std::shared_ptr<cugl::scene2::ScrollPane> _worldnode;
 
     //    /** Reference to the exit message label */
     //    std::shared_ptr<cugl::scene2::Label> _exitnode;
@@ -68,11 +69,11 @@ protected:
     std::shared_ptr<ReynardController> _reynardController;
     std::shared_ptr<GridModel> _grid;
     std::shared_ptr<EnvController> _envController;
-    std::shared_ptr<GameStateController> _stateController = make_shared<GameStateController>();
     /** Mark set to handle more sophisticated collision callbacks */
     std::unordered_set<b2Fixture*> _sensorFixtures;
 
-
+    /** References to all the enemy controllers */
+    std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
     /** Whether we have completed this "game" */
     bool _complete;
@@ -113,7 +114,7 @@ public:
 #pragma mark -
 #pragma mark Constructors
     /** Reference to the debug root of the scene graph */
-    std::shared_ptr<cugl::scene2::SceneNode> _debugnode;
+    std::shared_ptr<cugl::scene2::ScrollPane> _debugnode;
 
     /**
      * Creates a new game world with the default values.
