@@ -23,12 +23,10 @@ class SpikeTrap : public TrapModel{
     
 public:
     
-//    Ok so step 1 Create a constructor
-//    Step 2 assign all variables you think you will need. 
+
     
     
     
-private:
     
     
     

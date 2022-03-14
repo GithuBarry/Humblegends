@@ -17,6 +17,7 @@
 #pragma mark -
 #pragma mark Size Constants
 
+using namespace std;
 using namespace cugl;
 
 
@@ -61,6 +62,51 @@ protected:
     virtual void resetDebug() override;
 
 public:
+#pragma mark -
+#pragma mark Hidden Constructors
+    
+    /**
+     * Creates a general Trap object.
+     *
+     * The constructor will not initialize any of the character values beyond
+     * the defaults. To create a TrapModel, you must call init().
+     */
+    TrapModel () : BoxObstacle(){}
+    
+    /**
+     *
+     * Initialize a general character model.
+     *
+     * @param pos       Initial position in world coordinates as a Vec2
+     * @param drawScale The drawing scale (world to screen)
+     * @param image     The image for the trap's appearance
+     *
+     * @return  This function will return true if initialized properly.
+     */
+    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image);
+    
+    
+#pragma mark -
+#pragma mark Static Constructors
+    
+    /**
+     * Create a given trap in a given position.
+     *
+     * The trap has a given size, scaled so that 1 pixel = 1 Box2d unit
+     *
+     * The scene graph is completely decoupled from the physics system.
+     *
+     * @param pos                   Initial position in World Coords
+     * @param drawScale     The draw scale (world to screen)
+     * @param image               The image for the trap's appearance
+     */
+    static std::shared_ptr<TrapModel> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
+        std::shared_ptr<TrapModel> result = std::make_shared<TrapModel>();
+        return (result->init(pos, drawScale, image) ? result : nullptr);
+    }
+    
+    
+    
     
 #pragma mark -
 #pragma mark Attribute Properties
@@ -81,6 +127,8 @@ public:
      * @return      Whether the change happened successfully
      */
     bool setTrapState(TrapState newState);
+    
+    
 
     //TODO: figure out what would be needed by creating a setPosition function
     //TODO: And the difference between a cugl vector type and a box2d vector type.
