@@ -27,51 +27,51 @@ using namespace cugl;
 #pragma mark SpikeTrap
 
 
-class SpikeTrap : public TrapModel{
-    
-public:
-    
-#pragma mark Constructor
-
-    /**
-     * Initializes a new character at the given position.
-     *
-     * The character is sized according to the given drawing scale.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param pos       Initial position in world coordinates
-     * @param drawScale The drawing scale (world to screen)
-     * @param image     The image for the character's appearance
-     *
-     * @return  true if the character is initialized properly, false otherwise.
-     */
-    bool init(const Vec2 &pos, float drawScale, shared_ptr<Texture> image);
-
-    /**
-    * Redraws the outline of the physics fixtures to the debug node
-    *
-    * The debug node is use to outline the fixtures attached to this object.
-    * This is very useful when the fixtures have a very different shape than
-    * the texture (e.g. a circular shape attached to a square texture).
-    */
-    void resetDebug() override{
-        
-    }
-    
-    void createFixtures() override{
-        
-    }
-    
-    void releaseFixtures() override{
-        
-    }
-
-    
-};
+//class SpikeTrap : public TrapModel{
+//
+//public:
+//
+//#pragma mark Constructor
+//
+//    /**
+//     * Initializes a new character at the given position.
+//     *
+//     * The character is sized according to the given drawing scale.
+//     *
+//     * The scene graph is completely decoupled from the physics system.
+//     * The node does not have to be the same size as the physics body. We
+//     * only guarantee that the scene graph node is positioned correctly
+//     * according to the drawing scale.
+//     *
+//     * @param pos       Initial position in world coordinates
+//     * @param drawScale The drawing scale (world to screen)
+//     * @param image     The image for the character's appearance
+//     *
+//     * @return  true if the character is initialized properly, false otherwise.
+//     */
+//    bool init(const Vec2 &pos, float drawScale, shared_ptr<Texture> image);
+//
+//    /**
+//    * Redraws the outline of the physics fixtures to the debug node
+//    *
+//    * The debug node is use to outline the fixtures attached to this object.
+//    * This is very useful when the fixtures have a very different shape than
+//    * the texture (e.g. a circular shape attached to a square texture).
+//    */
+//    void resetDebug() override{
+//
+//    }
+//
+//    void createFixtures() override{
+//
+//    }
+//
+//    void releaseFixtures() override{
+//
+//    }
+//
+//
+//};
 
 
 #endif /* MPSpikeTrap_hpp */

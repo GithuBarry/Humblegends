@@ -33,13 +33,13 @@ using namespace cugl;
  *
  * @return  true if the character is correctly initialized, false otherwise.
  */
-bool SpikeTrap::init(const Vec2 &pos, float drawScale, shared_ptr<Texture> image){
-    if(!TrapModel::init(pos, drawScale, image)){
-        return false;
-    }
-    // Spike Traps are initially set to being deactivated
-    _trapState = TrapState::DEACTIVATED;
-    return true;
-}
+//bool SpikeTrap::init(const Vec2 &pos, float drawScale, shared_ptr<Texture> image){
+//    if(!TrapModel::init(pos, drawScale, image)){
+//        return false;
+//    }
+//    // Spike Traps are initially set to being deactivated
+//    _trapState = TrapState::DEACTIVATED;
+//    return true;
+//}
 
 
