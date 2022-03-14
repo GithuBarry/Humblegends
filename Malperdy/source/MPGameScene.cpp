@@ -400,14 +400,23 @@ void GameScene::update(float dt) {
 void GameScene::beginContact(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    b2Body *wall;
+    int ida = contact->GetFixtureA()->GetUserData().pointer;
+    int idb = contact->GetFixtureB()->GetUserData().pointer;
+    CULog("A: %i", ida);
+    CULog("B: %i", idb);
+    b2Body *notReynard;
 
-    if (body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody()) {
-        if (body1 == _reynardController->getCharacter()->getBody()) {
-            wall = body2;
-        } else {
-            wall = body1;
+    // If either option is Reynard
+    if (_reynardController->isMyBody(body1) || _reynardController->isMyBody(body2)) {
+        // Get the other thing based on which body was Reynard
+        notReynard = _reynardController->isMyBody(body1) ? body2 : body1;
+
+        // If notReynard is the enemy
+        if (_enemies->at(0)->isMyBody(notReynard)) {
+            //CULog("MINE");
         }
+
+        // Weird math for Reynard-wall collision
         b2Vec2 first_collision = contact->GetManifold()->points[0].localPoint;
         int last_idx = contact->GetManifold()->pointCount - 1;
         b2Vec2 last_collision = contact->GetManifold()->points[last_idx].localPoint;
@@ -422,20 +431,20 @@ void GameScene::beginContact(b2Contact *contact) {
 
             // If he's in the air and has hit a wall
             if (fabs(_reynardController->getCharacter()->getLinearVelocity().y) > 5) {
-                CULog("WALL JUMP");
+                //CULog("WALL JUMP");
                 _reynardController->stickToWall();
                 _reynardController->turn();
             }
                 // Otherwise, if he's just running and hit a wall
             else {
-                CULog("Wall hit detected %f %f", temp.x, temp.y);
+                //CULog("Wall hit detected %f %f", temp.x, temp.y);
                 _reynardController->turn();
             }
 
         }
             // Otherwise, if he's hit floor
         else {
-            CULog("LANDED");
+            //CULog("LANDED");
             _reynardController->land();
         }
 

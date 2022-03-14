@@ -75,13 +75,13 @@ bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture
     _behaveState = BehaviorState::PATROLLING;
 
 	// DEBUG: Create a detection radius around the enemy
-	PolyFactory pf;
+	/*PolyFactory pf;
 	Poly2 circle = pf.makeCircle(getPosition() * _drawScale, _detectionRadius * _drawScale);
 	shared_ptr<scene2::PolygonNode> pn = scene2::PolygonNode::allocWithPoly(circle);
 	Color4 color = Color4::CORNFLOWER;
 	pn->setColor(color.scale(1.0f, 1.0f, 1.0f, 0.3f));
 	_node->addChild(pn);
-	pn->setAnchor(0.5f, 0.5f);
+	pn->setAnchor(0.5f, 0.5f);*/
 	//pn->setPosition(getWidth() * _drawScale / 2.0f, getHeight() * _drawScale / 2.0f);
 	//pn->setPosition(0, 0);
 
@@ -124,4 +124,54 @@ void EnemyModel::update(float dt) {
 
     // Call parent method at end
     CharacterModel::update(dt);
+}
+
+#pragma mark -
+#pragma mark Physics Methods
+/**
+ * Create new fixtures for this body, defining the shape
+ *
+ * This is the primary method to override for custom physics objects
+ * 
+ * In addition to calling the parent method, enemies also have a
+ * fixture to act as their detection radius, which is also added here.
+ */
+void EnemyModel::createFixtures() {
+	// Check if there is a body
+	if (_body == nullptr) {
+		return;
+	}
+
+	// Call parent method to get feet/face fixtures
+	CharacterModel::createFixtures();
+
+	// Now add a fixture/sensor around the enemy to act as a detection radius
+	b2CircleShape circle = b2CircleShape();
+	circle.m_p = b2Vec2(getWidth() / 2.0f, getHeight() / 2.0f);
+	circle.m_radius = _detectionRadius;
+
+	b2FixtureDef sensorDef;
+	sensorDef.isSensor = true;
+	sensorDef.shape = &circle;
+	sensorDef.density = 1.0f;
+	sensorDef.userData.pointer = DETECTION_SENSOR_NAME;
+	_detectFixture = _body->CreateFixture(&sensorDef);
+}
+
+/**
+ * Release the fixtures for this body, reseting the shape
+ *
+ * This is the primary method to override for custom physics objects.
+ */
+void EnemyModel::releaseFixtures() {
+	if (_body != nullptr) {
+		return;
+	}
+
+	CharacterModel::releaseFixtures();
+
+	if (_detectFixture != nullptr) {
+		_body->DestroyFixture(_detectFixture);
+		_detectFixture = nullptr;
+	}
 }
