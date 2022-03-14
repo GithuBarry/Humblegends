@@ -15,7 +15,7 @@
 
 #include <stdio.h>
 #include <cugl/cugl.h>
-#include <cugl/physics2/CUCapsuleObstacle.h>
+#include <cugl/physics2/CUBoxObstacle.h>
 #include <cugl/scene2/graph/CUWireNode.h>
 
 #pragma mark -
