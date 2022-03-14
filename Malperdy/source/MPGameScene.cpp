@@ -433,23 +433,22 @@ bool isCharacterRightFixture(b2Fixture *fixture) {
     return (fixture->GetUserData().pointer == 5);
 }
 
+
+
 void GameScene::beginContact(b2Contact *contact) {
-    CULog("Is this a Reynard collision? %d", isReynardCollision(contact));
     if (isReynardCollision(contact)) {
-        bool ReynardIsRight = _reynardController->getCharacter()->isFacingRight();
-        bool ReynardIsGrounded = _reynardController->getCharacter()->isGrounded();
-        CULog("Is Reyanrd facing right? %d", ReynardIsRight);
-        CULog("Is Reyanrd grounded? %d", ReynardIsGrounded);
+        // CULog("Is this a Reynard collision? %d", isReynardCollision(contact));
+        // CULog("Is Reyanrd facing right? %d", ReynardIsRight);
+        // CULog("Is Reyanrd grounded? %d", ReynardIsGrounded);
+        // CULog("Is this right fixture? %d", isCharacterRightFixture(reynardFixture));
+        // CULog("Is this left fixture? %d", isCharacterRightFixture(reynardFixture));
+        // CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
+        bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
         b2Fixture* reynardFixture = getReynardFixture(contact);
-        CULog("Is this right fixture? %d", isCharacterRightFixture(reynardFixture));
-        CULog("Is this left fixture? %d", isCharacterRightFixture(reynardFixture));
-        CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
-        if (ReynardIsRight && isCharacterRightFixture(reynardFixture)) {
-            CULog("Switching A");
+        if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
             _reynardController->hitWall();
         }
-        else if (!ReynardIsRight && isCharacterLeftFixture(reynardFixture)) {
-            CULog("Switching B");
+        else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
             _reynardController->hitWall();
         }
         else if (isCharacterGroundFixture(reynardFixture)) {
@@ -463,11 +462,11 @@ void GameScene::beginContact(b2Contact *contact) {
 }
 
 void GameScene::endContact(b2Contact *contact) {
-    CULog("Is this a Reynard collision END? %d", isReynardCollision(contact));
+    // CULog("Is this a Reynard collision END? %d", isReynardCollision(contact));
+    // CULog("rey is off da ground");
     if (isReynardCollision(contact)) {
         b2Fixture* reynardFixture = getReynardFixture(contact);
         if (isCharacterGroundFixture(reynardFixture)) {
-            CULog("rey is off da ground");
             _reynardController->offGround();
         }
     }
