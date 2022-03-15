@@ -17,6 +17,9 @@
     "reynard": {
       "file": "textures/reynard.png"
     },
+    "reynard_run": {
+      "file": "textures/reynard_run.png"
+    },
     "rabbit": {
       "file": "textures/rabbit.png"
     },
