@@ -26,12 +26,17 @@ private:
 
     /** The target that this enemy is currently pursuing, or null if there is none */
     shared_ptr<CharacterModel> _target = nullptr;
+    /** Queue of locations that the enemy will try to go to next */
+    shared_ptr<deque<Vec2>> _futureMoveLocations = make_shared<deque<Vec2>>();
 
     // COOLDOWNS
     /** How long Reynard has been in the enemy's detection radius so far */
     float _detectTime = 0.0f;
 
 public:
+    /** Reference to the obstacle world for raycasting */
+    shared_ptr<physics2::ObstacleWorld> _obstacleWorld;
+
     /**
      * This method handles anything about the character that needs to change over time.
      *

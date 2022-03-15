@@ -36,6 +36,8 @@ void EnemyController::update(float delta) {
 			jump();
 			// Reset detection time
 			_detectTime = 0;
+			// Add target's current location to the enemy's next location queue
+			_futureMoveLocations->push_back(_target->getPosition());
 			// Start chasing
 			_character->setBehaveState(EnemyModel::BehaviorState::CHASING);
 		}
@@ -57,41 +59,48 @@ void EnemyController::update(float delta) {
 		// Otherwise, start chasing target by following their trail
 		shared_ptr<deque<Vec2>> currTrail = _target->getTrail();
 		// Initialize values for input and output of raycast
-		b2RayCastInput input;
+		/*b2RayCastInput input;
 		input.p1 = b2Vec2(_character->getX() * _character->_drawScale, _character->getY() * _character->_drawScale);
 		input.maxFraction = 1;
-		b2RayCastOutput *output = new b2RayCastOutput();
+		b2RayCastOutput *output = new b2RayCastOutput();*/
 		// Boolean for whether a raycast succeeded
 		bool onTheTrail = false;
 		// For each point on the target's trail, starting with the closest point to the target
 		for (deque<Vec2>::iterator itr = currTrail->begin(); itr != currTrail->end(); ++itr) {
 			// Raycast from self to the point on target's trail closest to the target
-			input.p2 = b2Vec2((*itr).x * _character->_drawScale, (*itr).y * _character->_drawScale);
-			onTheTrail = _target->getBody()->GetFixtureList()->RayCast(output, input, 1);
+			_obstacleWorld->rayCast( // Lambda expression for what happens on a hit
+				[this](b2Fixture* fixture, const Vec2 point, const Vec2 normal, float fraction)->float{
+					// If there is line of sight to the hit location, add that to future movement queue
+					if (fraction >= 1.0f) _futureMoveLocations->push_back(point);
+				},
+				_character->getPosition(), *itr);
 
-			CULog("Fraction: %f", output->fraction);
+			//input.p2 = b2Vec2((*itr).x * _character->_drawScale, (*itr).y * _character->_drawScale);
+			//onTheTrail = _target->getBody()->GetFixtureList()->RayCast(output, input, 1);
 
-			// draw raycast line (for some reason, always seems to go into the ground?)
-			Path2 line;
-			vector<Vec2> points;
-			points.push_back(_character->getPosition());
-			points.push_back(*itr);
-			line.set(points);
-			SimpleExtruder se = SimpleExtruder(line);
-			se.calculate(5.0f);
-			shared_ptr<scene2::PolygonNode> linePoly = scene2::PolygonNode::alloc();
-			linePoly->setPolygon(se.getPolygon());
-			linePoly->setColor(Color4::GREEN);
-			linePoly->setAbsolute(true);
-			_character->_node->addChild(linePoly);
-			linePoly->setAbsolute(true);
+			//CULog("Fraction: %f", output->fraction);
 
-			// If raycast made it to its destination
-			if (onTheTrail && output->fraction == 1.0f) {
-				// Start running towards target and break
-				_character->setMoveState(CharacterModel::MovementState::RUNNING);
-				break;
-			}
+			//// draw raycast line (for some reason, always seems to go into the ground?)
+			//Path2 line;
+			//vector<Vec2> points;
+			//points.push_back(_character->getPosition());
+			//points.push_back(*itr);
+			//line.set(points);
+			//SimpleExtruder se = SimpleExtruder(line);
+			//se.calculate(5.0f);
+			//shared_ptr<scene2::PolygonNode> linePoly = scene2::PolygonNode::alloc();
+			//linePoly->setPolygon(se.getPolygon());
+			//linePoly->setColor(Color4::GREEN);
+			//linePoly->setAbsolute(true);
+			//_character->_node->addChild(linePoly);
+			//linePoly->setAbsolute(true);
+
+			//// If raycast made it to its destination
+			//if (onTheTrail && output->fraction == 1.0f) {
+			//	// Start running towards target and break
+			//	_character->setMoveState(CharacterModel::MovementState::RUNNING);
+			//	break;
+			//}
 		}
 
 		// If no such point, so enemy lost the target, move enemy to Searching state
