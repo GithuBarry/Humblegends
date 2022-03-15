@@ -66,12 +66,29 @@ public:
 protected:
     /** The current maximum number of hearts that this character can have */
     float _maxHearts = 2;
+    
+    /** The amount of time since last frame update */
+    float _elapsed = 0;
+    
+    /** represents the actual frame of animation, invariant to texture flips */
+    int _currFrame = 0;
 
 #pragma mark -
 #pragma mark Constants
 
     /** The texture for the character avatar */
     const string CHARACTER_TEXTURE;
+    
+    /** The amount of time in between each frame update */
+    const float FRAME_TIME = 0.03;
+
+#pragma mark Attributes
+    
+    /** The sheet for the running animation */
+    shared_ptr<Texture> _runAnimation;
+    
+    /** Default texture */
+    shared_ptr<Texture> _defaultTexture;
 
 #pragma mark Trails
 
@@ -148,7 +165,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image);
+    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation);
 
 
 #pragma mark -
@@ -170,9 +187,10 @@ public:
      *
      * @return  A newly allocated CharacterModel at the given position with the given scale
      */
-    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
+    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
         std::shared_ptr<CharacterModel> result = std::make_shared<CharacterModel>();
-        return (result->init(pos, drawScale, image) ? result : nullptr);
+        
+        return (result->init(pos, drawScale, defaultTexture, runAnimation) ? result : nullptr);
     }
 
 #pragma mark -
@@ -193,7 +211,7 @@ public:
      *
      * @param node  The scene graph node representing this CharacterModel, which has been added to the world node already.
      */
-    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode>& node) {
+    void setSceneNode(const std::shared_ptr<cugl::scene2::SpriteNode>& node) {
         _node = node;
         _node->setPosition(getPosition() * _drawScale);
     }
@@ -297,6 +315,8 @@ public:
         SimpleObstacle::setPosition(value);
         _node->setPosition(value * _drawScale);
     }
+    
+    bool uploadTexture(string tex);
 
     /**
      * Gets the queue representing the trail this character is leaving behind.

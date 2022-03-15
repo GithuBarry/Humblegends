@@ -62,13 +62,14 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
-    // Create sprite for this character from texture and store
-    setSceneNode(scene2::SpriteNode::alloc(image, 1, 1));
-    _node->setAnchor(Vec2::ANCHOR_CENTER);
-    _node->setScale(0.5);
+bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
     
-    Size nsize = image->getSize() / drawScale;
+    _defaultTexture = defaultTexture;
+    _runAnimation = runAnimation;
+    
+    uploadTexture("run");
+    
+    Size nsize = defaultTexture->getSize() / drawScale;
     nsize.width  *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
     _drawScale = drawScale;
@@ -90,6 +91,33 @@ bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Tex
 
 #pragma mark -
 #pragma mark Attribute Properties
+
+bool CharacterModel::uploadTexture(string tex){
+    if (tex == "default"){
+        // Create sprite for this character from texture and store
+        setSceneNode(scene2::SpriteNode::alloc(_defaultTexture, 1, 1));
+        _node->setAnchor(0.5, 0.5);
+        _node->setScale(0.5);
+    }
+    else if (tex == "run"){
+        // Create sprite for this character from texture and store
+        setSceneNode(scene2::SpriteNode::alloc(_runAnimation, 5, 5));
+        _node->setAnchor(0.5, 0.5);
+        _node->setScale(0.2);
+        
+        // initial flip of the image
+        scene2::TexturedNode* im = dynamic_cast<scene2::TexturedNode*>(_node.get());
+
+        if (im != nullptr) {
+            im->flipHorizontal(!im->isFlipHorizontal());
+        }
+    }
+    else{
+        return false;
+    }
+    return true;
+
+}
 
 /**
  * Sets the character's movement state, changing physical attributes
@@ -119,6 +147,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
         break;
     }
 
+    //uploadTexture("default");
     // Do what needs to be done when switching into the new state
     switch (newState) {
     case MovementState::STOPPED:
@@ -126,12 +155,13 @@ bool CharacterModel::setMoveState(MovementState newState) {
     case MovementState::RUNNING:
         // Set character moving in the given direction at the right speed
         setVX((_faceRight ? 1 : -1) * _speed);
+        //uploadTexture("run");
         break;
     case MovementState::JUMPING:
         // Jump up
         setVY(JUMP_SPEED);
         // If character is on a wall, then also give a horizontal velocity away
-        if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * _speed);
+        if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * RUN_SPEED);
         break;
     case MovementState::FALLING:
         break;
@@ -324,6 +354,28 @@ void CharacterModel::update(float dt) {
         _node->setPosition(getPosition()*_drawScale);
         _node->setAngle(getAngle());
     }
+    
+    if(_moveState == MovementState::RUNNING){
+        _elapsed += dt;
+
+        if (_elapsed > FRAME_TIME){
+            _currFrame = _currFrame+1;
+            if (_currFrame >= _node->getSize())  _currFrame = 0;
+
+            if(!_faceRight){
+                _node->setFrame(_currFrame);
+            }
+            else{
+                int row = _currFrame / 5;
+                int col = _currFrame % 5;
+                col = 4 - col;
+                int frame = row*5 + col;
+                _node->setFrame(frame);
+            }
+            _elapsed = 0;
+        }
+    }
+    
 }
 
 
