@@ -101,6 +101,10 @@ private:
     // MULTITOUCH SUPPORT
     /* The key for multitouch listeners */
     Uint32 _multiKey;
+    /* Whether a pinch gesture was detected */
+    bool _isPinching;
+    /* Whether a zoom gesture was detected */
+    bool _isZooming;
     
 public:
 #pragma mark -

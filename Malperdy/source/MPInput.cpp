@@ -24,8 +24,8 @@ using namespace cugl;
 #define EVENT_SWIPE_LENGTH  100
 /** How fast we must swipe left or right for a gesture */
 #define EVENT_SWIPE_TIME   1000
-/** How far we must turn the tablet for the accelerometer to register */
-#define EVENT_ACCEL_THRESH  M_PI/10.0f
+/** How far we must pinch or zoom for a gesture */
+#define EVENT_SPREAD_LENGTH  100
 /** The key for the event handlers */
 #define LISTENER_KEY        1
 
@@ -70,13 +70,18 @@ _keyExit(false),
 //General Touch Support
 _currDown(false),
 _prevDown(false),
-//Mouse-Specific Touch Support
+
+//Mouse-Specific Support
 _mouseDown(false),
 _mouseKey(0),
-//Touchscreen-Specific Touch Support
+
+//Touchscreen-Specific Support
 _touchKey(0),
 _touchDown(false),
+_currentTouch(0),
 _multiKey(0),
+_isPinching(false),
+_isZooming(false),
 
 //Reynard Direct Presses
 _spaceDown(false),
@@ -229,6 +234,9 @@ void InputController::update(float dt) {
     _currDown = _touchDown;
     _currPos = _touchPos;
 
+    _zoomOutPressed = _isPinching;
+    _zoomInPressed = _isZooming;
+
 #endif
 
     // USE INTERNAL PRIVATE VARIABLES TO CHANGE THE EXTERNAL FLAGS
@@ -358,6 +366,18 @@ void InputController::multiBeginCB(const cugl::CoreGestureEvent& event, bool foc
 */
 void InputController::multiChangeCB(const cugl::CoreGestureEvent& event, bool focus) {
     //TODO: implement
+    if (event.type == CoreGestureType::PINCH) {
+        CULog("Pinch gesture type");
+        float spreadDiff = event.currSpread - event.origSpread;
+        _isPinching = spreadDiff < -EVENT_SPREAD_LENGTH;
+        _isZooming = spreadDiff > EVENT_SPREAD_LENGTH;
+        if (_isPinching)CULog("Pinch detected");
+        if (_isZooming)CULog("Zoom detected");
+    }
+    else {
+        _isPinching = false;
+        _isZooming = false;
+    }
 }
 
 /*
@@ -368,5 +388,6 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent& event, bool fo
 * @param focus  Whether the listener currently has focus (UNUSED)
 */
 void InputController::multiEndCB(const cugl::CoreGestureEvent& event, bool focus) {
-    //TODO: implement
+    _isPinching = false;
+    _isZooming = false;
 }
