@@ -1,32 +1,35 @@
 {
-	"textures": {
-		"earth": {
-			"file":     "textures/earthtile.png",
-            "wrapS":    "repeat",
-            "wrapT":    "repeat"
-		},
-		"goal": {
-			"file":     "textures/goaldoor.png"
-		},
-        "crate01": {
-            "file":     "textures/crate01.png"
-        },
-        "crate02": {
-            "file":     "textures/crate02.png"
-        },
-        "reynard": {
-            "file":     "textures/reynard.png"
-        },
-        "flames": {
-            "file":     "textures/flames.png"
-        },
-        "flames-right": {
-            "file":     "textures/flames-right.png"
-        },
-        "flames-left": {
-            "file":     "textures/flames-left.png"
-        }
-	},
+  "textures": {
+    "earth": {
+      "file": "textures/earthtile.png",
+      "wrapS": "repeat",
+      "wrapT": "repeat"
+    },
+    "goal": {
+      "file": "textures/goaldoor.png"
+    },
+    "crate01": {
+      "file": "textures/crate01.png"
+    },
+    "crate02": {
+      "file": "textures/crate02.png"
+    },
+    "reynard": {
+      "file": "textures/reynard.png"
+    },
+    "rabbit": {
+      "file": "textures/rabbit.png"
+    },
+    "flames": {
+      "file": "textures/flames.png"
+    },
+    "flames-right": {
+      "file": "textures/flames-right.png"
+    },
+    "flames-left": {
+      "file": "textures/flames-left.png"
+    }
+  },
     "sounds": {
         "bump": {
             "type":     "sample",
