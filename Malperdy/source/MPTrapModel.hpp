@@ -31,12 +31,14 @@ public:
         DEACTIVATED
     };
     
-    /** The current movement state of the character. */
+    /** The current movement state of the trap. */
     TrapState _trapState;
     
     
     /** SceneNode representing the sprite for the trap */
     shared_ptr<scene2::SceneNode> _node;
+    
+    /** SceneNode representing the sprite for the trap */
     cugl::physics2::BoxObstacle _boxObstacle;
 
 protected:
@@ -69,15 +71,6 @@ public:
 #pragma mark Hidden Constructors
     
     /**
-     * Creates a general Trap object.
-     *
-     * The constructor will not initialize any of the character values beyond
-     * the defaults. To create a TrapModel, you must call init().
-     */
-    bool init(float x, float y);
-    
-    
-    /**
      * Initializes a trap with the given characteristics in a given location in Room Space.
      *
      * The geometry corresponding to the room type given by the room ID is
@@ -91,7 +84,9 @@ public:
      *
      * @return     Returns True if the space is initialized properly.
      */
-    //bool init(float x, float y);
+    bool init(float x, float y);
+    //TODO: This needs to be verified to be in the room space coords and not world space coords
+    
 
     
     
@@ -99,6 +94,34 @@ public:
 #pragma mark -
 #pragma mark Attribute Properties
 
+    /**
+     * Sets the traps's state, changing physical attributes of the trap.
+     *
+     * @return      Whether the change happened successfully
+     */
+    cugl::physics2::BoxObstacle getPhysicalBody(){
+        return _boxObstacle;
+    }
+    
+    /**
+     * Sets the traps's state, changing physical attributes of the trap.
+     *
+     * @param x           Float representing x Position
+     * @param y           Float representing y Position
+     */
+    void setPhysicalBodyPos(float x, float y){
+        _boxObstacle.setPosition(x, y);
+    }
+    
+    /**
+     * Sets the traps's state, changing physical attributes of the trap.
+     *
+     * @param pos           Vec2 with pos.x representing x location and pos.y representing y
+     */
+    void setPhysicalBodyPos(Vec2 pos){
+        _boxObstacle.setPosition(pos);
+    }
+    
     /**
      * Returns true if the trap is currently activated.
      *
@@ -116,17 +139,12 @@ public:
      */
     bool setTrapState(TrapState newState);
     
-    
-
-    //TODO: figure out what would be needed by creating a setPosition function
-    //TODO: And the difference between a cugl vector type and a box2d vector type.
-    
+        
     
 #pragma mark -
 #pragma mark Physics Methods
 
-//    TODO: are funcitons like this really needed in my code
-//    TODO: Think on this a bit more spencer
+    
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      *
