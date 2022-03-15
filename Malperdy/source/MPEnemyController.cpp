@@ -20,11 +20,15 @@
  * @param delta The amount of time that has passed since the last frame
  */
 void EnemyController::update(float delta) {
+	// Initialize vector for direction of enemy
+	Vec2 dir;
+
 	// Handle what the enemy does depending on their current behavior state
 	switch (_character->getBehaveState()) {
 	case (EnemyModel::BehaviorState::PATROLLING):
 		break;
 	case (EnemyModel::BehaviorState::REALIZING):
+		CULog("Detection time: %f", _detectTime);
 		// If enough time has passed that enemy realizes Reynard's there
 		if (_detectTime > DETECTION_TIME) {
 			// Do a little jump
@@ -40,7 +44,11 @@ void EnemyController::update(float delta) {
 		}
 		break;
 	case (EnemyModel::BehaviorState::CHASING):
-		// If Reynard is within attack range, attack
+		// Turn to face the direction of the target
+		dir = _target->getPosition() - _character->getPosition();
+		if ((dir.x < 0 && _character->isFacingRight()) ||
+			(dir.x > 0 && !_character->isFacingRight())) _character->flipDirection();
+		// TODO: if target is within attack range, attack
 		// Otherwise, raycast to the point on Reynard's trail closest to Reynard that the enemy can see
 		// If no such point, move enemy to Searching state
 		// Otherwise, set enemy to be moving in Reynard's direction
@@ -61,29 +69,18 @@ void EnemyController::update(float delta) {
 /**
  * Called when a target has entered this enemy's detection radius, so in beginContact
  * when the target begins contact with this enemy's detection sensor. Takes in a pointer
- * to the controller for the target.
+ * to the model for the target.
  *
  * Because characters other than Reynard can be pursued, this is generalized to just
- * take in a character controller.
+ * take in a character model.
+ * 
+ * TODO: handle issues with multiple possible targets
  *
- * @param target    Controller for the target, who's just entered the enemy's detection radius
+ * @param target    The target who's just entered the enemy's detection radius
  */
-//void EnemyController::detectTarget(shared_ptr<CharacterController> target) {
-//	_target = target;
-//	// Start realizing
-//	_character->setBehaveState(EnemyModel::BehaviorState::REALIZING);
-//}
-
-/**
- * Called when Reynard has entered this enemy's detection radius, so in beginContact
- * when Reynard begins contact with this enemy's detection sensor. Takes in a pointer
- * to the controller for Reynard.
- *
- * This overloads the general version of this function for Reynard specifically.
- *
- * @param target    Controller for Reynard, who's just entered the enemy's detection radius
- */
-void EnemyController::detectTarget(shared_ptr<CharacterController> target) {
+void EnemyController::detectTarget(shared_ptr<CharacterModel> target) {
+	// Only continue if the enemy isn't already chasing someone
+	if (_character->getBehaveState() == EnemyModel::BehaviorState::CHASING) return;
 	_target = target;
 	// Start realizing
 	_character->setBehaveState(EnemyModel::BehaviorState::REALIZING);
@@ -92,17 +89,19 @@ void EnemyController::detectTarget(shared_ptr<CharacterController> target) {
 /**
  * Called when a target has left this enemy's detection radius, so in endContact when the
  * target ends contact with this enemy's detection sensor. Takes in a pointer to the
- * controller for the target that was lost.
+ * model for the target that was lost.
  *
  * Because characters other than Reynard can be pursued, this is generalized to just
- * take in a character controller.
+ * take in a character model.
+ * 
+ * TODO: handle issues with multiple possible targets
  *
- * @param target    Controller for the target, who's just exited the enemy's detection radius
+ * @param target	The target who's just exited the enemy's detection radius
  */
-//void EnemyController::loseTarget(shared_ptr<CharacterController> target) {
-//	_target = nullptr;
-//	// Stop realizing
-//	_character->setBehaveState(EnemyModel::BehaviorState::PATROLLING);
-//	// Reset detect time
-//	_detectTime = 0;
-//};
+void EnemyController::loseTarget(shared_ptr<CharacterModel> target) {
+	_target = nullptr;
+	// Stop realizing
+	_character->setBehaveState(EnemyModel::BehaviorState::PATROLLING);
+	// Reset detect time
+	_detectTime = 0;
+};

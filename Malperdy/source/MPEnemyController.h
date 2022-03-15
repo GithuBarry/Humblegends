@@ -25,7 +25,7 @@ class EnemyController : public CharacterController<EnemyModel, EnemyController> 
 private:
 
     /** The target that this enemy is currently pursuing, or null if there is none */
-    shared_ptr<CharacterController> _target = nullptr;
+    shared_ptr<CharacterModel> _target = nullptr;
 
     // COOLDOWNS
     /** How long Reynard has been in the enemy's detection radius so far */
@@ -52,34 +52,23 @@ public:
      * 
      * TODO: handle issues with multiple possible targets
      * 
-     * @param target    Controller for the target, who's just entered the enemy's detection radius
+     * @param target    The target who's just entered the enemy's detection radius
      */
-    //void detectTarget(shared_ptr<CharacterController> target);
-
-    /**
-     * Called when Reynard has entered this enemy's detection radius, so in beginContact
-     * when Reynard begins contact with this enemy's detection sensor. Takes in a pointer
-     * to the controller for Reynard.
-     *
-     * This overloads the general version of this function for Reynard specifically.
-     *
-     * @param target    Controller for Reynard, who's just entered the enemy's detection radius
-     */
-    void detectTarget(shared_ptr<CharacterController> target);
+    void detectTarget(shared_ptr<CharacterModel> target);
 
     /**
      * Called when a target has left this enemy's detection radius, so in endContact when the
      * target ends contact with this enemy's detection sensor. Takes in a pointer to the
-     * controller for the target that was lost.
+     * model for the target that was lost.
      *
      * Because characters other than Reynard can be pursued, this is generalized to just
-     * take in a character controller.
+     * take in a character model.
      * 
      * TODO: handle issues with multiple possible targets
      *
-     * @param target    Controller for the target, who's just exited the enemy's detection radius
+     * @param target    The target who's just exited the enemy's detection radius
      */
-    //void loseTarget(shared_ptr<CharacterController> target);
+    void loseTarget(shared_ptr<CharacterModel> target);
 
 };
 

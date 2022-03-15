@@ -463,18 +463,21 @@ void GameScene::beginContact(b2Contact *contact) {
         // First, if Reynard has hit an enemy detection radius
         if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
             CULog("Reynard spotted");
+            _enemies->at(0)->detectTarget(_reynardController->getCharacter());
         }
+        // Reynard hitting right or left wall
         else if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
             _reynardController->hitWall();
         }
         else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
             _reynardController->hitWall();
         }
+        // Reynard hitting ground
         else if (isCharacterGroundFixture(reynardFixture)) {
             _reynardController->hitGround();
         }
         else {
-            CULog("Switching C");
+            //CULog("Switching C");
             // _reynardController->hitGround();
         }
     }
