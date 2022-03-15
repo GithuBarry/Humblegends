@@ -56,7 +56,7 @@ public:
     };
 
     /** SceneNode representing the sprite for the character */
-    shared_ptr<scene2::SceneNode> _node;
+    shared_ptr<scene2::SpriteNode> _node;
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
     float _drawScale;
 
