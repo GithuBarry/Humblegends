@@ -9,6 +9,7 @@
 #include "MPTrapModel.hpp"
 
 using namespace cugl;
+using namespace cugl::physics2;
 
 #pragma mark -
 #pragma mark Constructors
@@ -28,8 +29,8 @@ using namespace cugl;
  *
  * @return     Returns True if the space is initialized properly.
  */
-TrapModel(float x, float y) {
-    _boxObstacle = new BoxObstacle();
+bool TrapModel::init(float x, float y) {
+    _boxObstacle.init();
     _boxObstacle.Obstacle::setPosition(x, y);
     createFixtures();
     return true;

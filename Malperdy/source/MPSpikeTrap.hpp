@@ -49,7 +49,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    SpikeTrap(float x, float y, shared_ptr<Texture> image);
+    bool init(float x, float y, shared_ptr<Texture> image);
     
 
     

@@ -37,6 +37,7 @@ public:
     
     /** SceneNode representing the sprite for the trap */
     shared_ptr<scene2::SceneNode> _node;
+    cugl::physics2::BoxObstacle _boxObstacle;
 
 protected:
 #pragma mark -
@@ -53,8 +54,6 @@ protected:
     /** Vec2 representing position of the trap within the room */
     cugl::Vec2 _position;
     
-    
-    cugl::physics2::BoxObstacle _boxObstacle;
 
     /**
     * Redraws the outline of the physics fixtures to the debug node
@@ -75,7 +74,7 @@ public:
      * The constructor will not initialize any of the character values beyond
      * the defaults. To create a TrapModel, you must call init().
      */
-    TrapModel(float x, float y) : SceneNode(){}
+    bool init(float x, float y);
     
     
     /**
