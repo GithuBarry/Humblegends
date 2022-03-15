@@ -39,7 +39,7 @@ bool SpikeTrap::init(float x, float y, shared_ptr<Texture> image){
 //    if(!(new TrapModel(x,y))){
 //        return false;
 //    }
-    // Spike Traps are initially set to being deactivated
+//     Spike Traps are initially set to being deactivated
     _trapState = TrapModel::TrapState::DEACTIVATED;
     return true;
 }
