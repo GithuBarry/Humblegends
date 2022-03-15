@@ -38,9 +38,11 @@ using namespace cugl;
 #define JUMP_SPEED 9.0f
 
 #pragma Gameplay Constants
-/** How many frames' worth of "scent trail" locations this character should store. The longer
-this is, the further away pursuers have to be before the character loses them */
-#define TRAIL_LENGTH 60
+/** How many "scent trail" locations this character should store. The greater this is,
+the further away pursuers have to be before the character loses them */
+#define TRAIL_LENGTH 10
+/** How long in seconds should pass between scent trail locations being marked */
+#define TRAIL_INCREMENT 0.7f
 
 class CharacterModel : public cugl::physics2::CapsuleObstacle{
 public:
@@ -55,12 +57,11 @@ public:
 
     /** SceneNode representing the sprite for the character */
     shared_ptr<scene2::SceneNode> _node;
+    /** The scale between the physics world and the screen (MUST BE UNIFORM) */
+    float _drawScale;
 
-#pragma mark Gameplay Attributes
     /** The character's current number of hearts */
     float _hearts;
-    /** The character's location in world space over the last TRAIL_LENGTH frames (queue) */
-    shared_ptr<deque<Vec2>> _trail = make_shared<deque<Vec2>>();
 
 protected:
     /** The current maximum number of hearts that this character can have */
@@ -72,10 +73,14 @@ protected:
     /** The texture for the character avatar */
     const string CHARACTER_TEXTURE;
 
-#pragma mark Attributes
+#pragma mark Trails
 
-    /** The scale between the physics world and the screen (MUST BE UNIFORM) */
-    float _drawScale;
+    /** The character's location in world space over the last TRAIL_LENGTH frames (queue) */
+    shared_ptr<deque<Vec2>> _trail = make_shared<deque<Vec2>>();
+    /** Accumulator for time passed between trail locations being tracked */
+    float _trailAcc = 0.0f;
+
+#pragma mark Attributes
 
     /** The character's current run speed */
     float _speed = RUN_SPEED;
@@ -291,6 +296,24 @@ public:
     virtual void setPosition(const Vec2 value) override {
         SimpleObstacle::setPosition(value);
         _node->setPosition(value * _drawScale);
+    }
+
+    /**
+     * Gets the queue representing the trail this character is leaving behind.
+     * This is used by chasing enemies to determine whether they can still see
+     * the character.
+     * 
+     * @return  The queue representing the character's trail
+     */
+    shared_ptr<deque<Vec2>> getTrail() { return _trail; }
+
+    /**
+     * Returns the fixture currently associated with this character's face.
+     * 
+     * @return  The fixture currently on the character's face
+     */
+    b2Fixture* getFaceFixture() {
+        return (isFacingRight() ? _faceFixtureRight : _faceFixtureLeft);
     }
 
 #pragma mark -

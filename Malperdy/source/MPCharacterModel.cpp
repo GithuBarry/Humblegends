@@ -286,10 +286,18 @@ void CharacterModel::update(float dt) {
     //}
     //else _wallSlideDuration = 0;
 
-    // Get the character's position and add it to their trail
-    _trail->push_front(getPosition());
-    // Trim trail back down to size if necessary
-    if (_trail->size() > TRAIL_LENGTH) _trail->pop_back();
+    // If enough time has passed since the last trail marking, add a trail marking
+    if (_trailAcc >= TRAIL_INCREMENT) {
+        _trailAcc = 0;
+        // Get the character's position and add it to their trail
+        _trail->push_front(getPosition());
+        // Trim trail back down to size if necessary
+        if (_trail->size() > TRAIL_LENGTH) _trail->pop_back();
+    }
+    // Otherwise increment the trail time accumulator
+    else {
+        _trailAcc += dt;
+    }
 
     // Handle any necessary behavior for the current move state
     switch (_moveState) {
