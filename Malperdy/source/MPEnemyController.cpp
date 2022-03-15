@@ -68,6 +68,21 @@ void EnemyController::update(float delta) {
  *
  * @param target    Controller for the target, who's just entered the enemy's detection radius
  */
+//void EnemyController::detectTarget(shared_ptr<CharacterController> target) {
+//	_target = target;
+//	// Start realizing
+//	_character->setBehaveState(EnemyModel::BehaviorState::REALIZING);
+//}
+
+/**
+ * Called when Reynard has entered this enemy's detection radius, so in beginContact
+ * when Reynard begins contact with this enemy's detection sensor. Takes in a pointer
+ * to the controller for Reynard.
+ *
+ * This overloads the general version of this function for Reynard specifically.
+ *
+ * @param target    Controller for Reynard, who's just entered the enemy's detection radius
+ */
 void EnemyController::detectTarget(shared_ptr<CharacterController> target) {
 	_target = target;
 	// Start realizing
@@ -84,10 +99,10 @@ void EnemyController::detectTarget(shared_ptr<CharacterController> target) {
  *
  * @param target    Controller for the target, who's just exited the enemy's detection radius
  */
-void EnemyController::loseTarget(shared_ptr<CharacterController> target) {
-	_target = nullptr;
-	// Stop realizing
-	_character->setBehaveState(EnemyModel::BehaviorState::PATROLLING);
-	// Reset detect time
-	_detectTime = 0;
-};
+//void EnemyController::loseTarget(shared_ptr<CharacterController> target) {
+//	_target = nullptr;
+//	// Stop realizing
+//	_character->setBehaveState(EnemyModel::BehaviorState::PATROLLING);
+//	// Reset detect time
+//	_detectTime = 0;
+//};

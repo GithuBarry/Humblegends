@@ -269,15 +269,14 @@ void GameScene::populate() {
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
-    //pos = Vec2(15, 3);
-    //// Create a controller for an enemy based on its image texture
-    //_enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit")));
-    //// Add enemies to physics world
-    //vector<std::shared_ptr<EnemyController>>::iterator itr;
-    //for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
-    //    (*itr)->setReynard(_reynardController);
-    //    addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
-    //}
+    pos = Vec2(15, 3);
+    // Create a controller for an enemy based on its image texture
+    _enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit")));
+    // Add enemies to physics world
+    vector<std::shared_ptr<EnemyController>>::iterator itr;
+    for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+        addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
+    }
 }
 
 
@@ -421,6 +420,18 @@ b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
     }
 }
 
+// TODO: there's gotta be a better way to do this
+b2Fixture* GameScene::getNotReynardFixture(b2Contact* contact) {
+    b2Body* body1 = contact->GetFixtureA()->GetBody();
+    b2Body* body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        return contact->GetFixtureB();
+    }
+    else {
+        return contact->GetFixtureA();
+    }
+}
+
 bool isCharacterGroundFixture(b2Fixture *fixture) {
     return (fixture->GetUserData().pointer == 4);
 }
@@ -433,9 +444,13 @@ bool isCharacterRightFixture(b2Fixture *fixture) {
     return (fixture->GetUserData().pointer == 5);
 }
 
-
+// Whether the fixture is an enemy detection radius
+bool isEnemyDetectFixture(b2Fixture* fixture) {
+    return (fixture->GetUserData().pointer == 10);
+}
 
 void GameScene::beginContact(b2Contact *contact) {
+    // If Reynard is one of the collidees
     if (isReynardCollision(contact)) {
         // CULog("Is this a Reynard collision? %d", isReynardCollision(contact));
         // CULog("Is Reyanrd facing right? %d", ReynardIsRight);
@@ -445,7 +460,11 @@ void GameScene::beginContact(b2Contact *contact) {
         // CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
         b2Fixture* reynardFixture = getReynardFixture(contact);
-        if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
+        // First, if Reynard has hit an enemy detection radius
+        if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
+            CULog("Reynard spotted");
+        }
+        else if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
             _reynardController->hitWall();
         }
         else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {

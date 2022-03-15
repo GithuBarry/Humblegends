@@ -65,7 +65,7 @@ using namespace cugl;
 bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
     // Create sprite for this character from texture and store
     setSceneNode(scene2::SpriteNode::alloc(image, 1, 1));
-    _node->setAnchor(0.5, 0.5);
+    _node->setAnchor(Vec2::ANCHOR_CENTER);
     _node->setScale(0.5);
     
     Size nsize = image->getSize() / drawScale;

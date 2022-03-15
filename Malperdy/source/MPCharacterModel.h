@@ -28,6 +28,7 @@ using namespace cugl;
 
 #pragma mark Physics Constants
 /** The amount to reduce gravity by when the character is sliding down a wall */
+// TODO: fix this to use friction instead of gravity
 #define WALL_SLIDE_GRAV_SCALE 0.3f
 
 #pragma Movement Constants
@@ -268,14 +269,6 @@ public:
      */
     bool isFacingRight() const {
         return _faceRight;
-    }
-
-    void setGrounded() {
-        _moveState = MovementState::RUNNING;
-    }
-    
-    void setNotGrounded() {
-        _moveState = MovementState::FALLING;
     }
     
     /**

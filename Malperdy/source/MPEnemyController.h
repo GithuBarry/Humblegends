@@ -54,6 +54,17 @@ public:
      * 
      * @param target    Controller for the target, who's just entered the enemy's detection radius
      */
+    //void detectTarget(shared_ptr<CharacterController> target);
+
+    /**
+     * Called when Reynard has entered this enemy's detection radius, so in beginContact
+     * when Reynard begins contact with this enemy's detection sensor. Takes in a pointer
+     * to the controller for Reynard.
+     *
+     * This overloads the general version of this function for Reynard specifically.
+     *
+     * @param target    Controller for Reynard, who's just entered the enemy's detection radius
+     */
     void detectTarget(shared_ptr<CharacterController> target);
 
     /**
@@ -68,7 +79,7 @@ public:
      *
      * @param target    Controller for the target, who's just exited the enemy's detection radius
      */
-    void loseTarget(shared_ptr<CharacterController> target);
+    //void loseTarget(shared_ptr<CharacterController> target);
 
 };
 
