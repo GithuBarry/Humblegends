@@ -26,12 +26,14 @@ class TrapModel : public cugl::scene2::SceneNode {
 
 
 public:
+    
+    /** The potential activation states of the trap. */
     enum class TrapState : int{
         ACTIVATED,
         DEACTIVATED
     };
     
-    /** The current movement state of the trap. */
+    /** The current activation state of the trap. */
     TrapState _trapState;
     
     
@@ -45,7 +47,7 @@ protected:
 #pragma mark -
 #pragma mark Constants
 
-    /** The texture for the character avatar */
+    /** The texture for the TRAP   */
     const string TRAP_TEXTURE;
 
     
