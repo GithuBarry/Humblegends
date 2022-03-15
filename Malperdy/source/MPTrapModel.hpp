@@ -33,15 +33,6 @@ public:
         DEACTIVATED
     };
     
-    /** The current activation state of the trap. */
-    TrapState _trapState;
-    
-    
-    /** SceneNode representing the sprite for the trap */
-    shared_ptr<scene2::SceneNode> _node;
-    
-    /** SceneNode representing the sprite for the trap */
-    cugl::physics2::BoxObstacle _boxObstacle;
 
 protected:
 #pragma mark -
@@ -55,8 +46,19 @@ protected:
 
     /** A uniform value represneting scale between the physics world and the screen */
     float _drawScale;
+    
     /** Vec2 representing position of the trap within the room */
     cugl::Vec2 _position;
+    
+    /** The current activation state of the trap. */
+    TrapState _trapState;
+        
+    /** The obstacle representing the physical entity for the trap */
+    cugl::physics2::BoxObstacle _boxObstacle;
+    
+    /** The polynode (alternative for) representing the physical entity for the trap */
+    cugl::scene2::PolygonNode _polyNode;
+
     
 
     /**
@@ -96,6 +98,7 @@ public:
 #pragma mark -
 #pragma mark Attribute Properties
 
+    // BoxObstacle Section:
     /**
      * Sets the traps's state, changing physical attributes of the trap.
      *
@@ -124,6 +127,19 @@ public:
         _boxObstacle.setPosition(pos);
     }
     
+    // Polygon Node Section:
+    /**
+     * Sets the traps's state, changing physical attributes of the trap.
+     *
+     * @return      Whether the change happened successfully
+     */
+    Poly2 getImageBody(){
+        return _polyNode.getPolygon();
+        
+    }
+
+    
+    // Trap State Section
     /**
      * Returns true if the trap is currently activated.
      *

@@ -30,8 +30,11 @@ using namespace cugl::physics2;
  * @return     Returns True if the space is initialized properly.
  */
 bool TrapModel::init(float x, float y) {
+    
     _boxObstacle.init();
     _boxObstacle.Obstacle::setPosition(x, y);
+    _polyNode.init();
+    _polyNode.setPosition(x, y);
     createFixtures();
     return true;
 }
