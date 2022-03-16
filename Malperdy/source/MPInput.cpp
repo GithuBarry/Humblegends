@@ -43,9 +43,9 @@ using namespace cugl;
 /** The key to dash left */
 #define DASH_LEFT_KEY  KeyCode::A
 /** The key to zoom in */
-#define ZOOM_IN_KEY  KeyCode::Q
+#define ZOOM_IN_KEY  KeyCode::E
 /** The key to zoom out */
-#define ZOOM_OUT_KEY  KeyCode::E
+#define ZOOM_OUT_KEY  KeyCode::Q
 /** The key to jump */
 #define JUMP_KEY  KeyCode::W
 
@@ -220,8 +220,8 @@ void InputController::update(float dt) {
     // Reynard Specific Code:
     _dDown = keys->keyPressed(DASH_RIGHT_KEY);
     _aDown = keys->keyPressed(DASH_LEFT_KEY);
-    _qDown = keys->keyPressed(ZOOM_IN_KEY);
-    _eDown = keys->keyPressed(ZOOM_OUT_KEY);
+    _eDown = keys->keyPressed(ZOOM_IN_KEY);
+    _qDown = keys->keyPressed(ZOOM_OUT_KEY);
 
     _spaceDown = keys->keyPressed(JUMP_KEY);
 
@@ -238,8 +238,8 @@ void InputController::update(float dt) {
     _jumpPressed = _spaceDown;
     _dashRightPressed = _dDown;
     _dashLeftPressed = _aDown;
-    _zoomInPressed = _qDown;
-    _zoomOutPressed = _eDown;
+    _zoomInPressed = _eDown;
+    _zoomOutPressed = _qDown;
     
 #else
     _currDown = _touchDown;

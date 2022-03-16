@@ -186,7 +186,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     //_debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
     _debugnode->setPosition(offset/_scale);
-    setDebug(true);
+    setDebug(false);
 
     addChild(_worldnode);
     addChild(_debugnode);
@@ -357,17 +357,20 @@ void GameScene::update(float dt) {
         Application::get()->quit();
     }
 
+    // Room swap initiated
     if (_input.didPress() && !_gamestate.zoomed_in()) {
-        Vec2 pos = _input.getPosition();
+        // Scale tap/click location by camera pan
+        Vec2 pos = _input.getPosition() + _worldnode->getPaneTransform().getTranslation();
 
         bool hasSwapped = false;
         if (_envController->hasSelected()) {
-            bool check = _envController->swapWithSelected(pos+_worldnode->getPaneTransform().getTranslation(), _reynardController);
+            bool check = _envController->swapWithSelected(pos, _reynardController);
         } else {
-            hasSwapped = _envController->selectRoom(pos+_worldnode->getPaneTransform().getTranslation(), _reynardController);
+            hasSwapped = _envController->selectRoom(pos, _reynardController);
         }
     }
 
+    // Only allow jumping while zoomed in
     if (_input.didJump()&& _gamestate.zoomed_in()) {
         _reynardController->jump();
         //cout << "Press Jump Button" << endl;
@@ -375,7 +378,11 @@ void GameScene::update(float dt) {
 
     if (_input.didZoomIn()) {
         _gamestate.zoom_in();
+        // Deselect any selected rooms
+        _envController->deselectRoom();
     }
+
+    // When zooming out
     if(_input.didZoomOut()){
         _gamestate.zoom_out();
     }

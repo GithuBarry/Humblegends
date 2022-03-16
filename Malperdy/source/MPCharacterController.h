@@ -82,21 +82,24 @@ public:
     shared_ptr<ModelType> getCharacter() { return _character; }
 
     /**
-     * Returns the position of the character's center.
+     * Returns the position of the character's center in world space.
      * 
-     * @return  Position of character's center
+     * @return  Position of character's center in world space
      */
     Vec2 getPosition() {
-        return _character->getPosition();
+        return _character->getPosition().scale(_character->_drawScale);
     }
 
     /**
-     * Returns the position of the character's center.
+     * Returns the size of the character in world space.
      *
-     * @return  Position of character's center
+     * @return  Size of the character in world space
      */
     Size getSize() {
-        return _character->getDimension();
+        // Get size in screen space
+        //Size screenSize = ((_character->_node->getBoundingRect()).size;
+        Vec2 size = (_character->_node->nodeToParentCoords(Vec2(_character->_node->getWidth(), _character->_node->getHeight())));
+        return Size(size);
     }
 
     /**
