@@ -163,7 +163,9 @@ public:
      * @param state The new state the trap should be in
      * @return      Whether the change happened successfully
      */
-    bool setTrapState(TrapState newState);
+    virtual void setTrapState(TrapState newState){
+        _trapState = newState;
+    }
     
         
     
