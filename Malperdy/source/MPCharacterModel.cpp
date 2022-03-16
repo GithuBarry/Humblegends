@@ -158,6 +158,8 @@ bool CharacterModel::setMoveState(MovementState newState) {
         //uploadTexture("run");
         break;
     case MovementState::JUMPING:
+        // Disable double jump (jumping/falling to jumping)
+        if (_moveState == MovementState::JUMPING || _moveState == MovementState::FALLING) return false;
         // Jump up
         setVY(JUMP_SPEED);
         // If character is on a wall, then also give a horizontal velocity away
