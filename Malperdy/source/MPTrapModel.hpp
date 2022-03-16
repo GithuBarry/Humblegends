@@ -15,8 +15,6 @@
 
 #include <stdio.h>
 #include <cugl/cugl.h>
-#include <cugl/physics2/CUBoxObstacle.h>
-#include <cugl/scene2/graph/CUWireNode.h>
 
 #pragma mark -
 #pragma mark Size Constants
@@ -24,96 +22,124 @@
 using namespace cugl;
 
 
-class TrapModel : public cugl::physics2::BoxObstacle {
+class TrapModel : public cugl::scene2::SceneNode {
 
 
 public:
+    
+    /** The potential activation states of the trap. */
     enum class TrapState : int{
         ACTIVATED,
         DEACTIVATED
     };
     
-    
-    /** SceneNode representing the sprite for the trap */
-    shared_ptr<scene2::SceneNode> _node;
 
 protected:
 #pragma mark -
 #pragma mark Constants
 
-    /** The texture for the character avatar */
-    const string CHARACTER_TEXTURE;
+    /** The texture for the TRAP   */
+    const string TRAP_TEXTURE;
 
     
 #pragma mark Attributes
 
     /** A uniform value represneting scale between the physics world and the screen */
     float _drawScale;
+    
     /** Vec2 representing position of the trap within the room */
     cugl::Vec2 _position;
     
-    /** The current movement state of the character. */
+    /** The current activation state of the trap. */
     TrapState _trapState;
+        
+    /** The obstacle representing the physical entity for the trap */
+    shared_ptr<cugl::physics2::BoxObstacle> _boxObstacle;
+    
+    /** The polynode (alternative for) representing the physical entity for the trap */
+    shared_ptr<cugl::scene2::PolygonNode> _polyNode;
 
-    /**
-    * Redraws the outline of the physics fixtures to the debug node
-    *
-    * The debug node is use to outline the fixtures attached to this object.
-    * This is very useful when the fixtures have a very different shape than
-    * the texture (e.g. a circular shape attached to a square texture).
-    */
-    virtual void resetDebug() override;
+    
+
+//    /**
+//    * Redraws the outline of the physics fixtures to the debug node
+//    *
+//    * The debug node is use to outline the fixtures attached to this object.
+//    * This is very useful when the fixtures have a very different shape than
+//    * the texture (e.g. a circular shape attached to a square texture).
+//    */
+//    virtual void resetDebug();
 
 public:
 #pragma mark -
 #pragma mark Hidden Constructors
     
     /**
-     * Creates a general Trap object.
+     * Initializes a trap with the given characteristics in a given location in Room Space.
      *
-     * The constructor will not initialize any of the character values beyond
-     * the defaults. To create a TrapModel, you must call init().
+     * The geometry corresponding to the room type given by the room ID is
+     * taken from the JSON file of rooms.
+     *
+     * Rooms are automatically initialized to have the bounds given by
+     * the default room width/height.
+     *
+     * @param x         The x-coordinate of the trap in room space
+     * @param y         The y-coordinate of the room in room space
+     *
+     * @return     Returns True if the space is initialized properly.
      */
-    TrapModel () : BoxObstacle(){}
+    bool init(Poly2 poly);
+    //TODO: This needs to be verified to be in the room space coords and not world space coords
     
-    /**
-     *
-     * Initialize a general character model.
-     *
-     * @param pos       Initial position in world coordinates as a Vec2
-     * @param drawScale The drawing scale (world to screen)
-     * @param image     The image for the trap's appearance
-     *
-     * @return  This function will return true if initialized properly.
-     */
-    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image);
-    
-    
-#pragma mark -
-#pragma mark Static Constructors
-    
-    /**
-     * Create a given trap in a given position.
-     *
-     * The trap has a given size, scaled so that 1 pixel = 1 Box2d unit
-     *
-     * The scene graph is completely decoupled from the physics system.
-     *
-     * @param pos                   Initial position in World Coords
-     * @param drawScale     The draw scale (world to screen)
-     * @param image               The image for the trap's appearance
-     */
-    static std::shared_ptr<TrapModel> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
-        std::shared_ptr<TrapModel> result = std::make_shared<TrapModel>();
-        return (result->init(pos, drawScale, image) ? result : nullptr);
-    }
-    
+
     
     
     
 #pragma mark -
 #pragma mark Attribute Properties
 
+    // BoxObstacle Section:
+    /**
+     * Sets the traps's state, changing physical attributes of the trap.
+     *
+     * @return      Whether the change happened successfully
+     */
+    shared_ptr<cugl::physics2::BoxObstacle> getPhysicalBody(){
+        return _boxObstacle;
+    }
+    
+    /**
+     * Sets the traps's state, changing physical attributes of the trap.
+     *
+     * @param x           Float representing x Position
+     * @param y           Float representing y Position
+     */
+    void setPhysicalBodyPos(float x, float y){
+        _boxObstacle->setPosition(x, y);
+    }
+    
+    /**
+     * Sets the traps's state, changing physical attributes of the trap.
+     *
+     * @param pos           Vec2 with pos.x representing x location and pos.y representing y
+     */
+    void setPhysicalBodyPos(Vec2 pos){
+        _boxObstacle->setPosition(pos);
+    }
+    
+    // Polygon Node Section:
+    /**
+     * Sets the traps's state, changing physical attributes of the trap.
+     *
+     * @return      Whether the change happened successfully
+     */
+    Poly2 getImageBody(){
+        return _polyNode->getPolygon();
+        
+    }
+
+    
+    // Trap State Section
     /**
      * Returns true if the trap is currently activated.
      *
@@ -131,17 +157,12 @@ public:
      */
     bool setTrapState(TrapState newState);
     
-    
-
-    //TODO: figure out what would be needed by creating a setPosition function
-    //TODO: And the difference between a cugl vector type and a box2d vector type.
-    
+        
     
 #pragma mark -
 #pragma mark Physics Methods
 
-//    TODO: are funcitons like this really needed in my code
-//    TODO: Think on this a bit more spencer
+    
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      *
@@ -151,23 +172,23 @@ public:
      *
      * @return true if object allocation succeeded
      */
-    virtual void createFixtures() override;
+    virtual void createFixtures();
 
     /**
      * Release the fixtures for this body, reseting the shape
      *
      * This is the primary method to override for custom physics objects.
      */
-    virtual void releaseFixtures() override;
+    virtual void releaseFixtures();
 
-    /**
-     * Updates the object's physics state (NOT GAME LOGIC).
-     *
-     * We use this method to reset cooldowns.
-     *
-     * @param delta Number of seconds since last animation frame
-     */
-    virtual void update(float dt) override;
+//    /**
+//     * Updates the object's physics state (NOT GAME LOGIC).
+//     *
+//     * We use this method to reset cooldowns.
+//     *
+//     * @param delta Number of seconds since last animation frame
+//     */
+//    virtual void update(float dt);
 
     
 #pragma mark Destructors
@@ -182,7 +203,10 @@ public:
      * Any assets owned by this object will be immediately released.  Once
      * disposed, a room may not be used until it is initialized again.
      */
-    void dispose();
+    void dispose(){
+        removeAllChildren();
+        _boxObstacle = nullptr;
+    };
 
 
 };

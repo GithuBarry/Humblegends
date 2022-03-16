@@ -15,6 +15,7 @@
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUBoxObstacle.h>
 
+#include "MPTrapModel.hpp"
 #include "MPSpikeTrap.hpp"
 
 using namespace cugl;
@@ -33,13 +34,10 @@ using namespace cugl;
  *
  * @return  true if the character is correctly initialized, false otherwise.
  */
-//bool SpikeTrap::init(const Vec2 &pos, float drawScale, shared_ptr<Texture> image){
-//    if(!TrapModel::init(pos, drawScale, image)){
-//        return false;
-//    }
-//    // Spike Traps are initially set to being deactivated
-//    _trapState = TrapState::DEACTIVATED;
+//bool SpikeTrap::init(float x, float y, shared_ptr<Texture> image){
+//
+//    if(!(TrapModel::init(x,y))) return false;
+////     Spike Traps are initially set to being deactivated
+//    _trapState = TrapModel::TrapState::DEACTIVATED;
 //    return true;
 //}
-
-

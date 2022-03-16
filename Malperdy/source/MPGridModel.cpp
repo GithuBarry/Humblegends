@@ -81,6 +81,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
 
     // create organized back of physics geometry
     //calculatePhysicsGeometry();
+    _grid->at(1)->at(1)->initTrap("spike");
     
     return this->scene2::SceneNode::init();
 };
