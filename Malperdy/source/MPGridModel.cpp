@@ -281,8 +281,10 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     }
 
     // MAKE BOUNDS OF LEVEL
-    Vec2 roomscale = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
-    float LEFTWALL[] = { 0, 0,
+    Vec2 scale = getScale();
+    Vec2 roomscale = _grid->at(0)->at(0)->getSize() * scale;
+    //Vec2 roomscale = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+    /*float LEFTWALL[] = { 0, 0,
         0, _size.y * roomscale.y
     };
     float RIGHTWALL[] = { _size.x * roomscale.x, 0,
@@ -293,10 +295,34 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     };
     float TOPFLOOR[] = { 0, _size.y * roomscale.y,
         _size.x * roomscale.x, _size.y * roomscale.y
-    };
+    };*/
+
+    float LEVEL_WALLS[] = { 0,                     0,
+                           _size.x * roomscale.x,                     0,
+                           _size.x * roomscale.x, _size.y * roomscale.y,
+                                               0, _size.y * roomscale.y,
+                                               0,                     0 };
+
+    Path2 path = Path2(reinterpret_cast<Vec2*>(LEVEL_WALLS), sizeof(LEVEL_WALLS) / 2);
+    path.closed = true;
+
+    SimpleExtruder se = SimpleExtruder();
+    se.clear();
+    se.set(path);
+    se.calculate(0.5f);
+    shared_ptr<physics2::PolygonObstacle> ob = physics2::PolygonObstacle::alloc(se.getPolygon() / _physics_scale, Vec2::ZERO);
+    ob->setBodyType(b2_staticBody);
+    obstacles->push_back(ob);
+
+    //float wallWidth = 0.1f;
+
+    // Create level bounds
+    /*shared_ptr<physics2::BoxObstacle> ob = physics2::BoxObstacle::alloc(Vec2::ZERO, Size(wallWidth, _size.y * roomscale.y));
+    ob->setBodyType(b2_staticBody);
+    obstacles->push_back(ob);*/
     
     // add the outer bounds obstacles
-    obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(LEFTWALL), sizeof(LEFTWALL)/2)));
+    //obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(LEFTWALL), sizeof(LEFTWALL)/2)));
 
     //obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(RIGHTWALL), sizeof(RIGHTWALL)/2)));
     
@@ -381,7 +407,7 @@ void GridModel::calculatePhysicsGeometry(){
 
 shared_ptr<physics2::PolygonObstacle> GridModel::makeStaticFromPath(Path2 path){
     
-    path.closed =  true;
+    //path.closed =  true;
     SimpleExtruder se = SimpleExtruder();
     se.clear();
     se.set(path);
