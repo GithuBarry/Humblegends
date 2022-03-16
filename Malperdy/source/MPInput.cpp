@@ -232,6 +232,7 @@ void InputController::update(float dt) {
     
 #else
     _currDown = _touchDown;
+    _jumpPressed = _touchDown;
     _currPos = _touchPos;
 
     _zoomOutPressed = _isPinching;
