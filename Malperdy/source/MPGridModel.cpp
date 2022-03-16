@@ -86,10 +86,10 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
     // TODO: WHY DOES THIS CODE HAVE NO IMPACT ON ANYTHING
     // create organized back of physics geometry
     //calculatePhysicsGeometry();
-    _grid->at(1)->at(1)->initTrap("spike");
-    cout<<"HERE YOU ARE 1"<<endl;
-    cout<<_grid->at(0)->at(0)->initTrap("spike")<<endl;
-    cout<<"HERE YOU ARE 2"<<endl;
+//    _grid->at(1)->at(1)->initTrap("spike");
+//    cout<<"HERE YOU ARE 1"<<endl;
+//    cout<<_grid->at(0)->at(1)->initTrap("spike")<<endl;
+//    cout<<"HERE YOU ARE 2"<<endl;
 
     return this->scene2::SceneNode::init();
 };
@@ -364,6 +364,8 @@ void GridModel::calculatePhysicsGeometry(){
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
             }
             
+            // TODO: Inspect code for bug
+            // TODO: Why does this have no impact on instantiation
             // if the room has a trap
             if (_grid->at(row)->at(col)->getTrap()){
                 shared_ptr<scene2::PolygonNode> pn = _grid->at(row)->at(col)->getTrap()->getPolyNode();
