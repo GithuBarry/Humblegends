@@ -130,7 +130,7 @@ bool RoomModel::init(float x, float y, string roomID) {
 	buildGeometry(roomID);
 
 	// Create path node for room boundary
-	Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), size(BOUND) / 2);
+	Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), sizeof(BOUND) / 2);
 	boundPath.closed = true;
 	shared_ptr<scene2::PathNode> boundNode = scene2::PathNode::allocWithPath(boundPath, BOUND_WIDTH);
 	boundNode->setColor(Color4::GRAY);
