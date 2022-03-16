@@ -81,7 +81,10 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
 
     // create organized back of physics geometry
     //calculatePhysicsGeometry();
-    _grid->at(1)->at(1)->initTrap("spike");
+    if (false){
+        _grid->at(1)->at(1)->initTrap("spike");
+    }
+
     
     return this->scene2::SceneNode::init();
 };
@@ -293,7 +296,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     };
     
     // add the outer bounds obstacles
-    //obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(LEFTWALL), sizeof(LEFTWALL)/2)));
+    obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(LEFTWALL), sizeof(LEFTWALL)/2)));
 
     //obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(RIGHTWALL), sizeof(RIGHTWALL)/2)));
     
@@ -357,7 +360,7 @@ void GridModel::calculatePhysicsGeometry(){
             }
             
             // if the room has a trap
-            if (_grid->at(row)->at(col)->getTrap()){
+            if (false && _grid->at(row)->at(col)->getTrap()){
                 shared_ptr<scene2::PolygonNode> pn = _grid->at(row)->at(col)->getTrap()->getPolyNode();
                 Poly2 p = pn->getPolygon();
                 p *= pn->getNodeToWorldTransform();

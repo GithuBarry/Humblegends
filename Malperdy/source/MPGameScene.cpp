@@ -494,7 +494,7 @@ void GameScene::beginContact(b2Contact *contact) {
         // if statement check to see if contact contains a trap
             // Call Helper resolveTrapCollision 
             //
-        if(isTrapCollision(contact)){
+        if(false && isTrapCollision(contact)){
             resolveTrapCollision();
         }
         
