@@ -63,6 +63,9 @@ public:
     /** The character's current number of hearts */
     float _hearts;
 
+    /** The number of times the character has hit the ground, as they're only off when this is <= 0 */
+    int _groundedCounter = 0;
+
 protected:
     /** The current maximum number of hearts that this character can have */
     float _maxHearts = 2;

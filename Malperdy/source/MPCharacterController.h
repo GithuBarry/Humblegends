@@ -242,6 +242,8 @@ public:
      * Sets the character to have landed on the ground.
      */
     void hitGround() {
+        _character->_groundedCounter++;
+        CULog("Up to %d", _character->_groundedCounter);
         // Land the character
         land();
     }
@@ -250,9 +252,17 @@ public:
      * Called when the character's feet sensor ends contact with the
      * ground.
      * 
+     * This method does nothing if the character has begun more contacts
+     * than it has ended.
+     * 
      * If the character did not actively jump, they will be set to falling.
      */
     void offGround() {
+        _character->_groundedCounter--;
+        CULog("Down to %d", _character->_groundedCounter);
+        // Do nothing if there are more begin contacts than ended, meaning
+        // character is still on ground
+        if (_character->_groundedCounter > 0) return;
         // If the character didn't choose to jump, then they must be falling
         if (!(_character->isJumping())) fall();
     }

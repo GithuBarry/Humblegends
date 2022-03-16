@@ -502,7 +502,7 @@ void GameScene::endContact(b2Contact *contact) {
     // CULog("rey is off da ground");
     if (isReynardCollision(contact)) {
         b2Fixture* reynardFixture = getReynardFixture(contact);
-        if (isCharacterGroundFixture(reynardFixture)) {
+        if (isCharacterGroundFixture(reynardFixture) && !_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
             _reynardController->offGround();
         }
     }
