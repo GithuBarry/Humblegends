@@ -311,6 +311,20 @@ public:
     void endContact(b2Contact* contact);
 
     bool isReynardCollision(b2Contact* contact);
+    
+    /**
+     * Helper function for detecting a collision between two objects
+     *
+     * The primary purpose of this function is to detect if one of the physical bodies
+     * that have come into contact with one another are a trap.
+     *
+     * The function will return true if it is the case and false otherwise.
+     *
+     * @param  contact  The two bodies that collided
+     */
+    bool isTrapCollision(b2Contact* contact);
+    
+    void resolveTrapCollision();
         
     void isTurnEvent(b2Contact* contact);
         
