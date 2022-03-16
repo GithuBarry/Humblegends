@@ -67,13 +67,7 @@ bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Tex
     _defaultTexture = defaultTexture;
     _runAnimation = runAnimation;
     
-    if(runAnimation){
-        uploadTexture("run");
-    }
-    else{
-        uploadTexture("default");
-    }
-    
+    uploadTexture("run");
     
     Size nsize = defaultTexture->getSize() / drawScale;
     nsize.width  *= DUDE_HSHRINK;
@@ -361,7 +355,7 @@ void CharacterModel::update(float dt) {
         _node->setAngle(getAngle());
     }
     
-    if(_moveState == MovementState::RUNNING && _runAnimation){
+    if(_moveState == MovementState::RUNNING){
         _elapsed += dt;
 
         if (_elapsed > FRAME_TIME){

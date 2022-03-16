@@ -266,7 +266,7 @@ void GameScene::populate() {
 #pragma mark Reynard
     Vec2 pos = Vec2(4, 3);
     // Create a controller for Reynard based on his image texture
-  //  _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
+//    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
     
     _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"), _assets->get<Texture>("reynard_run"));
     // Add Reynard to physics world
