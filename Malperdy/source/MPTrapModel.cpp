@@ -35,6 +35,8 @@ bool TrapModel::init(Poly2 poly) {
     _polyNode->init();
     _polyNode->setPolygon(poly);
     _polyNode->setColor(Color4::MAGENTA);
+    _polyNode->setAbsolute(true);
+    
     addChild(_polyNode);
     
     _trapState = TrapState::DEACTIVATED;
@@ -53,7 +55,7 @@ bool TrapModel::init(Poly2 poly) {
  * @return true if object allocation succeeded
  */
 void TrapModel::createFixtures() {
-    _boxObstacle->createFixtures();
+    _obstacle->createFixtures();
 }
 
 /**
@@ -62,6 +64,6 @@ void TrapModel::createFixtures() {
  * This is the primary method to override for custom physics objects.
  */
 void TrapModel::releaseFixtures() {
-    _boxObstacle->releaseFixtures();
+    _obstacle->releaseFixtures();
 }
 

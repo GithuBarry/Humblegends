@@ -335,6 +335,10 @@ public:
      * @return  Whether this room is locked, meaning it can't be swapped
      */
     bool isLocked() { return locked; }
+    
+    shared_ptr<TrapModel> getTrap(){
+        return _trap;
+    }
 
 #pragma mark Setters
     /**

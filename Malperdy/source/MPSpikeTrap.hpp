@@ -52,7 +52,7 @@ public:
      */
     bool init(){
         // make the polygon for the spike trap
-        float bounds[] = { 0, 0, 1, 0};
+        float bounds[] = { 0,0,1,0};
         Path2 p = Path2(reinterpret_cast<Vec2*>(bounds), size(bounds)/2);
         p.closed =  true;
         SimpleExtruder se = SimpleExtruder();
@@ -60,6 +60,8 @@ public:
         se.set(p);
         se.calculate(0.1);
         Poly2 poly = se.getPolygon();
+        
+        // TODO: replace this with actual room size!
         poly.operator*=(Vec2(720,480));
 
         // Ensure that all points are integers
