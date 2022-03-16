@@ -41,7 +41,7 @@ public:
      *
      * @return  true if the trap is initialized properly, false otherwise.
      */
-    bool SpikeTrap::init();
+    bool init();
 
 
 };
