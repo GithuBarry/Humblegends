@@ -34,12 +34,12 @@ using namespace cugl;
  *
  * @return  true if the character is correctly initialized, false otherwise.
  */
-bool SpikeTrap::init(float x, float y, shared_ptr<Texture> image){
-    
-    if(!(TrapModel::init(x,y))) return false;
-//     Spike Traps are initially set to being deactivated
-    _trapState = TrapModel::TrapState::DEACTIVATED;
-    return true;
-}
+//bool SpikeTrap::init(float x, float y, shared_ptr<Texture> image){
+//    
+//    if(!(TrapModel::init(x,y))) return false;
+////     Spike Traps are initially set to being deactivated
+//    _trapState = TrapModel::TrapState::DEACTIVATED;
+//    return true;
+//}
 
 

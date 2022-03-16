@@ -19,6 +19,7 @@
 #include <cugl/scene2/graph/CUWireNode.h>
 
 #include "MPTrapModel.hpp"
+#include "MPRoomModel.h"
 
 #include <stdio.h>
 using namespace cugl;
@@ -49,7 +50,27 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    bool init(float x, float y, shared_ptr<Texture> image);
+    bool init(){
+        // make the polygon for the spike trap
+        float bounds[] = { 0, 0, 1, 0};
+        Path2 p = Path2(reinterpret_cast<Vec2*>(bounds), size(bounds)/2);
+        p.closed =  true;
+        SimpleExtruder se = SimpleExtruder();
+        se.clear();
+        se.set(p);
+        se.calculate(0.1);
+        Poly2 poly = se.getPolygon();
+        poly.operator*=(Vec2(720,480));
+        
+        // Ensure that all points are integers
+        vector<Vec2> verts = poly.getVertices();
+        for (vector<Vec2>::iterator itr = verts.begin(); itr != verts.end(); ++itr) {
+            (*itr).x = floor((*itr).x);
+            (*itr).y = floor((*itr).y);
+        }
+        
+        return this->TrapModel::init(poly);
+    };
     
 
     

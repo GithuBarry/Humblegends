@@ -54,21 +54,21 @@ protected:
     TrapState _trapState;
         
     /** The obstacle representing the physical entity for the trap */
-    cugl::physics2::BoxObstacle _boxObstacle;
+    shared_ptr<cugl::physics2::BoxObstacle> _boxObstacle;
     
     /** The polynode (alternative for) representing the physical entity for the trap */
-    cugl::scene2::PolygonNode _polyNode;
+    shared_ptr<cugl::scene2::PolygonNode> _polyNode;
 
     
 
-    /**
-    * Redraws the outline of the physics fixtures to the debug node
-    *
-    * The debug node is use to outline the fixtures attached to this object.
-    * This is very useful when the fixtures have a very different shape than
-    * the texture (e.g. a circular shape attached to a square texture).
-    */
-    virtual void resetDebug();
+//    /**
+//    * Redraws the outline of the physics fixtures to the debug node
+//    *
+//    * The debug node is use to outline the fixtures attached to this object.
+//    * This is very useful when the fixtures have a very different shape than
+//    * the texture (e.g. a circular shape attached to a square texture).
+//    */
+//    virtual void resetDebug();
 
 public:
 #pragma mark -
@@ -88,7 +88,7 @@ public:
      *
      * @return     Returns True if the space is initialized properly.
      */
-    bool init(float x, float y);
+    bool init(Poly2 poly);
     //TODO: This needs to be verified to be in the room space coords and not world space coords
     
 
@@ -104,7 +104,7 @@ public:
      *
      * @return      Whether the change happened successfully
      */
-    cugl::physics2::BoxObstacle getPhysicalBody(){
+    shared_ptr<cugl::physics2::BoxObstacle> getPhysicalBody(){
         return _boxObstacle;
     }
     
@@ -115,7 +115,7 @@ public:
      * @param y           Float representing y Position
      */
     void setPhysicalBodyPos(float x, float y){
-        _boxObstacle.setPosition(x, y);
+        _boxObstacle->setPosition(x, y);
     }
     
     /**
@@ -124,7 +124,7 @@ public:
      * @param pos           Vec2 with pos.x representing x location and pos.y representing y
      */
     void setPhysicalBodyPos(Vec2 pos){
-        _boxObstacle.setPosition(pos);
+        _boxObstacle->setPosition(pos);
     }
     
     // Polygon Node Section:
@@ -134,7 +134,7 @@ public:
      * @return      Whether the change happened successfully
      */
     Poly2 getImageBody(){
-        return _polyNode.getPolygon();
+        return _polyNode->getPolygon();
         
     }
 
@@ -181,14 +181,14 @@ public:
      */
     virtual void releaseFixtures();
 
-    /**
-     * Updates the object's physics state (NOT GAME LOGIC).
-     *
-     * We use this method to reset cooldowns.
-     *
-     * @param delta Number of seconds since last animation frame
-     */
-    virtual void update(float dt);
+//    /**
+//     * Updates the object's physics state (NOT GAME LOGIC).
+//     *
+//     * We use this method to reset cooldowns.
+//     *
+//     * @param delta Number of seconds since last animation frame
+//     */
+//    virtual void update(float dt);
 
     
 #pragma mark Destructors
@@ -203,7 +203,10 @@ public:
      * Any assets owned by this object will be immediately released.  Once
      * disposed, a room may not be used until it is initialized again.
      */
-    void dispose();
+    void dispose(){
+        removeAllChildren();
+        _boxObstacle = nullptr;
+    };
 
 
 };

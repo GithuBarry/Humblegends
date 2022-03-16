@@ -29,14 +29,17 @@ using namespace cugl::physics2;
  *
  * @return     Returns True if the space is initialized properly.
  */
-bool TrapModel::init(float x, float y) {
+bool TrapModel::init(Poly2 poly) {
     
-    _boxObstacle.init();
-    _boxObstacle.Obstacle::setPosition(x, y);
-    _polyNode.init();
-    _polyNode.setPosition(x, y);
-    createFixtures();
-    return true;
+    _polyNode = make_shared<scene2::PolygonNode>();
+    _polyNode->init();
+    _polyNode->setPolygon(poly);
+    _polyNode->setColor(Color4::MAGENTA);
+    addChild(_polyNode);
+    
+    _trapState = TrapState::DEACTIVATED;
+    
+    return this->scene2::SceneNode::init();
 }
 
 
@@ -50,7 +53,7 @@ bool TrapModel::init(float x, float y) {
  * @return true if object allocation succeeded
  */
 void TrapModel::createFixtures() {
-    _boxObstacle.createFixtures();
+    _boxObstacle->createFixtures();
 }
 
 /**
@@ -59,6 +62,6 @@ void TrapModel::createFixtures() {
  * This is the primary method to override for custom physics objects.
  */
 void TrapModel::releaseFixtures() {
-    _boxObstacle.releaseFixtures();
+    _boxObstacle->releaseFixtures();
 }
 

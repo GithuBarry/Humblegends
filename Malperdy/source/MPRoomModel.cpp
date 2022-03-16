@@ -141,6 +141,21 @@ bool RoomModel::init(float x, float y, string roomID) {
 	return this->initWithBounds(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
 }
 
+bool RoomModel::initTrap(string type){
+    if (type == "spike"){
+        shared_ptr<SpikeTrap> trap = make_shared<SpikeTrap>();
+        trap->init();
+        
+        _trap = trap;
+        
+        addChild(_trap);
+    }
+    else{
+        return false;
+    }
+    return true;
+}
+
 #pragma mark Destructors
 /**
  * Disposes all resources and assets of this room.
