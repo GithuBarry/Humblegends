@@ -192,14 +192,16 @@ public:
      *
      * @return true if the button to zoom in was pressed.
      */
-    bool didZoomIn() const { return _zoomInPressed || _isZooming; }
+    bool didZoomIn() const { return _zoomInPressed; }
+    //TODO: figure out why _zoomInPressed isn't updating & remove _isZooming
 
     /**
      * Returns true if the button to zoom out was pressed.
      *
      * @return true if the button to zoom out was pressed.
      */
-    bool didZoomOut() const { return _zoomOutPressed || _isPinching; }
+    bool didZoomOut() const { return _zoomOutPressed; }
+    //TODO: figure out why _zoomOutPressed isn't updating & remove _isPinching
     
     /**
      * Returns true if the exit button was pressed.

@@ -229,6 +229,17 @@ void InputController::update(float dt) {
     _currPos = _mousePos;
 
     keys->keyDown(KeyCode::ARROW_DOWN);
+
+    // USE INTERNAL PRIVATE VARIABLES TO CHANGE THE EXTERNAL FLAGS
+    _resetPressed = _keyReset;
+    _debugPressed = _keyDebug;
+    _exitPressed = _keyExit;
+
+    _jumpPressed = _spaceDown;
+    _dashRightPressed = _dDown;
+    _dashLeftPressed = _aDown;
+    _zoomInPressed = _qDown;
+    _zoomOutPressed = _eDown;
     
 #else
     _currDown = _touchDown;
@@ -239,17 +250,6 @@ void InputController::update(float dt) {
     _zoomInPressed = _isZooming;
 
 #endif
-
-    // USE INTERNAL PRIVATE VARIABLES TO CHANGE THE EXTERNAL FLAGS
-    _resetPressed = _keyReset;
-    _debugPressed = _keyDebug;
-    _exitPressed  = _keyExit;
-    
-    _jumpPressed = _spaceDown;
-    _dashRightPressed = _dDown;
-    _dashLeftPressed = _aDown;
-    _zoomInPressed = _qDown;
-    _zoomOutPressed = _eDown;
 
 // If it does not support keyboard, we must reset "virtual" keyboard
 //    TODO: ADD TO THIS WHEN DOING SPRINT 2 (Might cause bugs without it)
