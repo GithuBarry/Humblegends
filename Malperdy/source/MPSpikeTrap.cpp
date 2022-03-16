@@ -34,10 +34,26 @@ using namespace cugl;
  *
  * @return  true if the character is correctly initialized, false otherwise.
  */
-//bool SpikeTrap::init(float x, float y, shared_ptr<Texture> image){
-//
-//    if(!(TrapModel::init(x,y))) return false;
-////     Spike Traps are initially set to being deactivated
-//    _trapState = TrapModel::TrapState::DEACTIVATED;
-//    return true;
-//}
+bool init(){
+    // make the polygon for the spike trap
+    float bounds[] = { 0,0,1,0};
+    Path2 p = Path2(reinterpret_cast<Vec2*>(bounds), size(bounds)/2);
+    p.closed =  true;
+    SimpleExtruder se = SimpleExtruder();
+    se.clear();
+    se.set(p);
+    se.calculate(0.1);
+    Poly2 poly = se.getPolygon();
+    
+    // TODO: replace this with actual room size!
+    poly.operator*=(Vec2(720,480));
+
+    // Ensure that all points are integers
+    vector<Vec2> verts = poly.getVertices();
+    for (vector<Vec2>::iterator itr = verts.begin(); itr != verts.end(); ++itr) {
+        (*itr).x = floor((*itr).x);
+        (*itr).y = floor((*itr).y);
+    }
+
+    return this->TrapModel::init(poly);
+};
