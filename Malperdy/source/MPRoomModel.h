@@ -41,6 +41,8 @@
 #include <math.h>
 
 #include "MPRoomLoader.h"
+#include "MPTrapModel.hpp"
+#include "MPSpikeTrap.hpp"
 
 using namespace cugl;
 
@@ -68,6 +70,8 @@ private:
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> _physicsGeometry;
     /** Vector constant representing by how much the room geometry needs to be scaled */
     static const Vec2 ROOM_SCALE;
+    
+    shared_ptr<TrapModel> _trap  = nullptr;
 
     /**
      * Creates all the polygons for any geometry for the room type with the given ID.
@@ -177,6 +181,9 @@ public:
      * @return          true if the room is initialized properly, false otherwise.
      */
     bool init(float x, float y, string roomID);
+    
+    /** */
+    bool initTrap(string type);
 
 #pragma mark Static Constructors
     /**
@@ -328,6 +335,10 @@ public:
      * @return  Whether this room is locked, meaning it can't be swapped
      */
     bool isLocked() { return locked; }
+    
+    shared_ptr<TrapModel> getTrap(){
+        return _trap;
+    }
 
 #pragma mark Setters
     /**

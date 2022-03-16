@@ -1,11 +1,11 @@
 //
 //  MPCharacterModel.h
 //  Malperdy
-// 
+//
 //  This is a superclass for the model that will hold data for a character,
 //  which includes enemies and Reynard. The model will simply hold data
 //  about the character, and all changes will be done using the controller.
-// 
+//
 //  This class should only be instantiated by a controller.
 //
 //  Created by Kristina Gu on 3/8/22.
@@ -194,6 +194,22 @@ public:
 
 #pragma mark -
 #pragma mark Attribute Properties
+    
+    /**
+     * Sets the character's direction to be facing in the opposite direction that
+     * it is currently facing in.
+     */
+    float getHearts(){
+        return _hearts;
+    }
+    
+    /**
+     * Sets the character's direction to be facing in the opposite direction that
+     * it is currently facing in.
+     */
+    void setHearts(float v){
+        _hearts = v;
+    }
 
     /**
      * Sets the character's direction to be facing in the opposite direction that
@@ -229,11 +245,11 @@ public:
      * Returns true if the character is on the ground.
      *
      * @return true if the character is on the ground.
-     */    
+     */
     bool isGrounded() const {
         return (_moveState == MovementState::STOPPED || _moveState == MovementState::RUNNING);
     }
-    
+
     /**
      * Returns true if the character is falling.
      *
@@ -273,11 +289,11 @@ public:
     void setGrounded() {
         _moveState = MovementState::RUNNING;
     }
-    
+
     void setNotGrounded() {
         _moveState = MovementState::FALLING;
     }
-    
+
     /**
      * Sets the character's movement state, changing physical attributes
      * accordingly as necessary.

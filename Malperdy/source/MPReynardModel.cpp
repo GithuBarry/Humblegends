@@ -1,14 +1,14 @@
 //
 //  MPReynardModel.cpp
 //  Malperdy
-//  
+//
 //  This file is based on the CS 4152 PlatformDemo by Walker White, 2021
 //  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //
 //  Owner:  TBD
 //  Contributors: TBD
 //  Version: 2/21/2022
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #include "MPReynardModel.h"
