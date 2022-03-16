@@ -185,6 +185,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _active = true;
     _complete = false;
 
+    // Give all enemies a reference to the ObstacleWorld for raycasting
+    //EnemyController::setObstacleWorld(_world);
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::WHITE);
@@ -464,8 +466,18 @@ void GameScene::beginContact(b2Contact *contact) {
         b2Fixture* reynardFixture = getReynardFixture(contact);
         // First, if Reynard has hit an enemy detection radius
         if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
-            CULog("Reynard spotted");
+            //CULog("Reynard spotted");
             _enemies->at(0)->detectTarget(_reynardController->getCharacter());
+        }
+        // Otherwise if Reynard has hit the enemy's body
+        else if (_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
+            CULog("Body contact");
+            // Knock back enemy
+            b2Vec2 normal = contact->GetManifold()->localNormal;
+            normal *= -1;
+            _enemies->at(0)->knockback(normal);
+            // Knock back Reynard
+            _reynardController->knockback(contact->GetManifold()->localNormal);
         }
         // Reynard hitting right or left wall
         else if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {

@@ -14,6 +14,8 @@
 
 #include "MPEnemyController.h"
 
+shared_ptr<physics2::ObstacleWorld> EnemyController::_obstacleWorld = make_shared<physics2::ObstacleWorld>();
+
 /**
  * This method handles anything about the character that needs to change over time.
  *
@@ -37,7 +39,7 @@ void EnemyController::update(float delta) {
 			// Reset detection time
 			_detectTime = 0;
 			// Add target's current location to the enemy's next location queue
-			_futureMoveLocations->push_back(_target->getPosition());
+			_character->_futureMoveLocations->push_back(_target->getPosition());
 			// Start chasing
 			_character->setBehaveState(EnemyModel::BehaviorState::CHASING);
 		}
@@ -49,31 +51,37 @@ void EnemyController::update(float delta) {
 		break;
 	case (EnemyModel::BehaviorState::CHASING):
 	{
-		CULog("CHASING");
+		// CULog("CHASING");
 		// Turn to face the direction of the target
 		Vec2 dir = _target->getPosition() - _character->getPosition();
 		if ((dir.x < 0 && _character->isFacingRight()) ||
 			(dir.x > 0 && !_character->isFacingRight())) _character->flipDirection();
 		// TODO: if target is within attack range, attack
 
+		// For now, if target is too close, stop
+		if (abs(dir.x) <= 2.0f) _character->setMoveState(CharacterModel::MovementState::STOPPED);
+		// Otherwise, chase them
+		else _character->setMoveState(CharacterModel::MovementState::RUNNING);
+
+
 		// Otherwise, start chasing target by following their trail
-		shared_ptr<deque<Vec2>> currTrail = _target->getTrail();
+		//shared_ptr<deque<Vec2>> currTrail = _target->getTrail();
 		// Initialize values for input and output of raycast
 		/*b2RayCastInput input;
 		input.p1 = b2Vec2(_character->getX() * _character->_drawScale, _character->getY() * _character->_drawScale);
 		input.maxFraction = 1;
 		b2RayCastOutput *output = new b2RayCastOutput();*/
 		// Boolean for whether a raycast succeeded
-		bool onTheTrail = false;
+		//bool onTheTrail = false;
 		// For each point on the target's trail, starting with the closest point to the target
-		for (deque<Vec2>::iterator itr = currTrail->begin(); itr != currTrail->end(); ++itr) {
+		//for (deque<Vec2>::iterator itr = currTrail->begin(); itr != currTrail->end(); ++itr) {
 			// Raycast from self to the point on target's trail closest to the target
-			_obstacleWorld->rayCast( // Lambda expression for what happens on a hit
-				[this](b2Fixture* fixture, const Vec2 point, const Vec2 normal, float fraction)->float{
-					// If there is line of sight to the hit location, add that to future movement queue
-					if (fraction >= 1.0f) _futureMoveLocations->push_back(point);
-				},
-				_character->getPosition(), *itr);
+			//_obstacleWorld->rayCast( // Lambda expression for what happens on a hit
+			//	[this](b2Fixture* fixture, const Vec2 point, const Vec2 normal, float fraction)->float{
+			//		// If there is line of sight to the hit location, add that to future movement queue
+			//		if (fraction >= 1.0f) _character->_futureMoveLocations->push_back(point);
+			//	},
+			//	_character->getPosition(), *itr);
 
 			//input.p2 = b2Vec2((*itr).x * _character->_drawScale, (*itr).y * _character->_drawScale);
 			//onTheTrail = _target->getBody()->GetFixtureList()->RayCast(output, input, 1);
@@ -101,10 +109,10 @@ void EnemyController::update(float delta) {
 			//	_character->setMoveState(CharacterModel::MovementState::RUNNING);
 			//	break;
 			//}
-		}
+		//}
 
 		// If no such point, so enemy lost the target, move enemy to Searching state
-		if (!onTheTrail) _character->setBehaveState(EnemyModel::BehaviorState::SEARCHING);
+		//if (!onTheTrail) _character->setBehaveState(EnemyModel::BehaviorState::SEARCHING);
 	}
 		break;
 	case (EnemyModel::BehaviorState::SEARCHING):

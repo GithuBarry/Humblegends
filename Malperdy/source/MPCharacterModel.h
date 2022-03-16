@@ -33,7 +33,7 @@ using namespace cugl;
 
 #pragma Movement Constants
 /** The default speed at which this character runs */
-#define RUN_SPEED 4.0f
+#define RUN_SPEED 3.7f
 /** The speed at which this character jumps */
 #define JUMP_SPEED 9.0f
 
@@ -92,7 +92,7 @@ protected:
 
 #pragma mark Trails
 
-    /** The character's location in world space over the last TRAIL_LENGTH frames (queue) */
+    /** The character's past few locations in world space, from oldest to most recent */
     shared_ptr<deque<Vec2>> _trail = make_shared<deque<Vec2>>();
     /** Accumulator for time passed between trail locations being tracked */
     float _trailAcc = 0.0f;
@@ -327,15 +327,6 @@ public:
      */
     shared_ptr<deque<Vec2>> getTrail() { return _trail; }
 
-    /**
-     * Returns the fixture currently associated with this character's face.
-     * 
-     * @return  The fixture currently on the character's face
-     */
-    b2Fixture* getFaceFixture() {
-        return (isFacingRight() ? _faceFixtureRight : _faceFixtureLeft);
-    }
-
 #pragma mark -
 #pragma mark Physics Methods
 
@@ -365,6 +356,17 @@ public:
      * @param delta Number of seconds since last animation frame
      */
     virtual void update(float dt) override;
+
+    /**
+     * Returns the fixture currently associated with this character's face.
+     *
+     * @return  The fixture currently on the character's face
+     */
+    b2Fixture* getFaceFixture() {
+        return (isFacingRight() ? _faceFixtureRight : _faceFixtureLeft);
+    }
+
+    b2Body* getBody() { return _body; }
 };
 
 #endif /* MPCharacterModel_h */

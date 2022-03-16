@@ -320,7 +320,7 @@ void CharacterModel::update(float dt) {
     if (_trailAcc >= TRAIL_INCREMENT) {
         _trailAcc = 0;
         // Get the character's position and add it to their trail
-        _trail->push_front(getPosition());
+        _trail->push_back(getPosition());
         // Trim trail back down to size if necessary
         if (_trail->size() > TRAIL_LENGTH) _trail->pop_back();
     }

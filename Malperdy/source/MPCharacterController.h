@@ -270,6 +270,20 @@ public:
         if (!(_character->isGrounded())) stickToWall();
     }
 
+    /**
+     * Applies a knockback force to the character in the direction of the
+     * given vector.
+     *
+     * @param dir   Direction to apply knockback force in
+     */
+    virtual void knockback(b2Vec2 dir) {
+        CULog("Knockback");
+        // Normalize and scale so it applies a constant force
+        dir.Normalize();
+        dir.operator*=(2.0f);
+        _character->getBody()->ApplyForceToCenter(dir, true);
+    }
+
 #pragma mark -
 #pragma mark Update
 

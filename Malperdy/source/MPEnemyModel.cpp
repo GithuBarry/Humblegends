@@ -105,6 +105,10 @@ void EnemyModel::update(float dt) {
 		setMoveState(MovementState::STOPPED);
 		break;
 	case (EnemyModel::BehaviorState::CHASING):
+		// Start moving to next future move location if not yet there
+		/*if (abs(getPosition().distanceSquared(_futureMoveLocations->at(0))) > FUTURE_MOVE_ERROR_SQUARED) {
+
+		}*/
 		break;
 	case (EnemyModel::BehaviorState::SEARCHING):
 		break;
