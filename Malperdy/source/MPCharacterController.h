@@ -91,6 +91,15 @@ public:
     }
 
     /**
+     * Returns the position of the character's center.
+     *
+     * @return  Position of character's center
+     */
+    Size getSize() {
+        return _character->getDimension();
+    }
+
+    /**
      * Returns whether this character is currently on the ground.
      * 
      * @return  Whether this character is on the ground

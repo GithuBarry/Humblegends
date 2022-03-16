@@ -24,8 +24,8 @@ using namespace cugl;
 #define EVENT_SWIPE_LENGTH  100
 /** How fast we must swipe left or right for a gesture */
 #define EVENT_SWIPE_TIME   1000
-/** How far we must turn the tablet for the accelerometer to register */
-#define EVENT_ACCEL_THRESH  M_PI/10.0f
+/** How far we must pinch or zoom for a gesture */
+#define EVENT_SPREAD_LENGTH  100
 /** The key for the event handlers */
 #define LISTENER_KEY        1
 
@@ -67,11 +67,21 @@ _keyReset(false),
 _keyDebug(false),
 _keyExit(false),
 
-//Touch Support
+//General Touch Support
 _currDown(false),
 _prevDown(false),
+
+//Mouse-Specific Support
 _mouseDown(false),
 _mouseKey(0),
+
+//Touchscreen-Specific Support
+_touchKey(0),
+_touchDown(false),
+_currentTouch(0),
+_multiKey(0),
+_isPinching(false),
+_isZooming(false),
 
 //Reynard Direct Presses
 _spaceDown(false),
@@ -106,10 +116,10 @@ bool InputController::init() {
     //TODO: return false on a second attempt to initialize the controller
     _timestamp.mark();
     bool success = true;
-
-    // Only process keyboard and mouse on desktop
+    
 #ifndef CU_TOUCH_SCREEN
-    success = Input::activate<Keyboard>();
+    // Only process keyboard and mouse on desktop
+    success = Input::activate<Keyboard>() && Input::activate<Mouse>();;
     Mouse* mouse = Input::get<Mouse>();
     Keyboard* keyboard = Input::get<Keyboard>();
     if (mouse && keyboard) {
@@ -126,14 +136,33 @@ bool InputController::init() {
     else success = false;
 
 #else
-    success = Input::activate<Accelerometer>();
-    Touchscreen* touch = Input::get<Touchscreen>();
-    touch->addBeginListener(LISTENER_KEY, [=](const cugl::TouchEvent& event, bool focus) {
-        this->touchBeganCB(event, focus);
+    // Otherwise process touchscreen & multitouch gestures
+    success = Input::activate<Touchscreen>() && Input::activate<CoreGesture>();
+    Touchscreen* screen = Input::get<Touchscreen>();
+    CoreGesture* multitouch = Input::get<CoreGesture>();
+
+    _touchKey = screen->acquireKey();
+    screen->addBeginListener(_touchKey, [=](const cugl::TouchEvent& event, bool focus) {
+        this->touchBeginCB(event, focus);
         });
-    touch->addEndListener(LISTENER_KEY, [=](const cugl::TouchEvent& event, bool focus) {
-        this->touchEndedCB(event, focus);
+    screen->addMotionListener(_touchKey, [=](const cugl::TouchEvent& event, const Vec2 previous, bool focus) {
+        this->touchMotionCB(event, previous, focus);
         });
+    screen->addEndListener(_touchKey, [=](const cugl::TouchEvent& event, bool focus) {
+        this->touchEndCB(event, focus);
+        });
+
+    _multiKey = multitouch->acquireKey();
+    multitouch->addBeginListener(_multiKey, [=](const cugl::CoreGestureEvent& event, bool focus) {
+        this->multiBeginCB(event, focus);
+        });
+    multitouch->addChangeListener(_multiKey, [=](const cugl::CoreGestureEvent& event, bool focus) {
+        this->multiChangeCB(event, focus);
+        });
+    multitouch->addEndListener(_multiKey, [=](const cugl::CoreGestureEvent& event, bool focus) {
+        this->multiEndCB(event, focus);
+        });
+
 #endif
     _active = success;
     return success;
@@ -148,16 +177,19 @@ bool InputController::init() {
 void InputController::dispose() {
     if (_active) {
 #ifndef CU_TOUCH_SCREEN
-        Input::deactivate<Keyboard>();
         Mouse* mouse = Input::get<Mouse>();
         mouse->removePressListener(_mouseKey);
         mouse->removeReleaseListener(_mouseKey); 
         mouse->setPointerAwareness(Mouse::PointerAwareness::BUTTON);
+        Input::deactivate<Keyboard>();
+        Input::deactivate<Mouse>();
 #else
-        Input::deactivate<Accelerometer>();
-        Touchscreen* touch = Input::get<Touchscreen>();
-        touch->removeBeginListener(LISTENER_KEY);
-        touch->removeEndListener(LISTENER_KEY);
+        Input::deactivate<Touchscreen>();
+        Input::deactivate<CoreGesture>();
+        Touchscreen* screen = Input::get<Touchscreen>();
+        screen->removeBeginListener(_touchKey);
+        screen->removeEndListener(_touchKey);
+        screen->removeMotionListener(_touchKey);
 #endif
         _active = false;
     }
@@ -197,22 +229,27 @@ void InputController::update(float dt) {
     _currPos = _mousePos;
 
     keys->keyDown(KeyCode::ARROW_DOWN);
-    
-#else
-    // TODO: MOBILE CONTROLS
-
-#endif
 
     // USE INTERNAL PRIVATE VARIABLES TO CHANGE THE EXTERNAL FLAGS
     _resetPressed = _keyReset;
     _debugPressed = _keyDebug;
-    _exitPressed  = _keyExit;
-    
+    _exitPressed = _keyExit;
+
     _jumpPressed = _spaceDown;
     _dashRightPressed = _dDown;
     _dashLeftPressed = _aDown;
     _zoomInPressed = _qDown;
     _zoomOutPressed = _eDown;
+    
+#else
+    _currDown = _touchDown;
+    _jumpPressed = _touchDown;
+    _currPos = _touchPos;
+
+    _zoomOutPressed = _isPinching;
+    _zoomInPressed = _isZooming;
+
+#endif
 
 // If it does not support keyboard, we must reset "virtual" keyboard
 //    TODO: ADD TO THIS WHEN DOING SPRINT 2 (Might cause bugs without it)
@@ -275,35 +312,83 @@ void InputController::mouseUpCB(const cugl::MouseEvent& event, Uint8 clicks, boo
 #pragma mark Touch Callbacks
 
 /**
- * Callback for the beginning of a touch event
+ * Callback to execute when a new touch begins.
  *
- * @param t     The touch information
- * @param event The associated event
+ * @param event     The event with the touch information
  */
-void InputController::touchBeganCB(const cugl::TouchEvent& event, bool focus) {
-    //TODO: implement
-    // All touches correspond to key up
-    _keyUp = true;
+void InputController::touchBeginCB(const cugl::TouchEvent& event, bool focus) {
+    CULog("Touch Begin");
+    if (!_touchDown) {
+        _touchDown = true;
+        _currentTouch = event.touch;
+        _touchPos = event.position;
+    }
+}
 
-    // Update the touch location for later gestures
-    _timestamp = event.timestamp;
-    _dtouch = event.position;
+/*
+* Callback to execute when a touch shifts location.
+*
+* @param event     The event with the touch information
+*/
+void InputController::touchMotionCB(const cugl::TouchEvent& event, const cugl::Vec2 previous, bool focus) {
+    CULog("Touch Move");
+    if (_touchDown && event.touch == _currentTouch) {
+        _touchPos = event.position;
+    }
 }
  
 /**
- * Callback for the end of a touch event
+ * Callback to execute when a touch ends.
  *
- * @param t     The touch information
- * @param event The associated event
+ * @param event     The event with the touch information
  */
-void InputController::touchEndedCB(const cugl::TouchEvent& event, bool focus) {
-    //TODO: implement
-    // Gesture has ended.  Give it meaning.
-    cugl::Vec2 diff = event.position-_dtouch;
-    bool fast = (event.timestamp.ellapsedMillis(_timestamp) < EVENT_SWIPE_TIME);
-    _keyReset = fast && diff.x < -EVENT_SWIPE_LENGTH;
-    _keyExit  = fast && diff.x > EVENT_SWIPE_LENGTH;
-    _keyDebug = fast && diff.y > EVENT_SWIPE_LENGTH;
-    _keyUp = false;
+void InputController::touchEndCB(const cugl::TouchEvent& event, bool focus) {
+    CULog("Touch End");
+    if (_touchDown && event.touch == _currentTouch) {
+        _touchDown = false;
+    }
 }
 
+/*
+* Callback to execute when two fingers are detected on the device.
+*
+* @param event  The touch event for this gesture
+* @param focus  Whether the listener currently has focus (UNUSED)
+*/
+void InputController::multiBeginCB(const cugl::CoreGestureEvent& event, bool focus) {
+    //TODO: implement
+}
+
+/*
+* Callback to execute when the gesture is updated.
+*
+* @param event  The touch event for this gesture
+* @param focus  Whether the listener currently has focus (UNUSED)
+*/
+void InputController::multiChangeCB(const cugl::CoreGestureEvent& event, bool focus) {
+    //TODO: implement
+    if (event.type == CoreGestureType::PINCH) {
+        CULog("Pinch gesture type");
+        float spreadDiff = event.currSpread - event.origSpread;
+        _isPinching = spreadDiff < -EVENT_SPREAD_LENGTH;
+        _isZooming = spreadDiff > EVENT_SPREAD_LENGTH;
+        if (_isPinching)CULog("Pinch detected");
+        if (_isZooming)CULog("Zoom detected");
+    }
+    else {
+        _isPinching = false;
+        _isZooming = false;
+    }
+}
+
+/*
+* Callback to execute when there are no longer two fingers on the device.
+* This could mean that either that fingers were removed or fingers were added.
+*
+* @param event  The touch event for this gesture
+* @param focus  Whether the listener currently has focus (UNUSED)
+*/
+void InputController::multiEndCB(const cugl::CoreGestureEvent& event, bool focus) {
+    _isPinching = false;
+    _isZooming = false;
+}

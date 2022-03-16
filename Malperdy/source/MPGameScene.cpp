@@ -6,8 +6,8 @@
 //  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //
 //  Owner: Barry Wang
-//  Contributors: Barry Wang
-//  Version: 3/01/22
+//  Contributors: Barry Wang, Jordan Selin
+//  Version: 3/13/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -344,15 +344,13 @@ void GameScene::update(float dt) {
     }
 
     if (_input.didPress() && !_gamestate.zoomed_in()) {
-        //TODO: check if reynard is in the room before selecting or swapping (NOT HERE)
-        //TODO: debug the code below
         Vec2 pos = _input.getPosition();
 
         bool hasSwapped = false;
-        if (_envController->hasSelected()) { //Where the bug is happening currently
-            bool check = _envController->swapWithSelected(pos);
+        if (_envController->hasSelected()) {
+            bool check = _envController->swapWithSelected(pos, _reynardController);
         } else {
-            hasSwapped = _envController->selectRoom(pos);
+            hasSwapped = _envController->selectRoom(pos, _reynardController);
         }
     }
 
@@ -362,7 +360,10 @@ void GameScene::update(float dt) {
     }
 
     if (_input.didZoomIn()) {
-        _gamestate.zoom_switch();
+        _gamestate.zoom_in();
+    }
+    if(_input.didZoomOut()){
+        _gamestate.zoom_out();
     }
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);

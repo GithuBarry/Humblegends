@@ -81,12 +81,30 @@ private:
     bool  _dDown;
 
     // MOUSE SUPPORT
-    /** Whether the left mouse button is down */
-    bool _mouseDown;
-    /** The mouse position (for mice-based interfaces) */
-    cugl::Vec2 _mousePos;
-    /** The key for the mouse listeners */
+    /* The key for the mouse listeners */
     Uint32 _mouseKey;
+    /* Whether the left mouse button is down */
+    bool _mouseDown;
+    /* The mouse position (for mice-based interfaces) */
+    cugl::Vec2 _mousePos;
+
+    // TOUCHSCREEN SUPPORT
+    /* The key for touchscreen listeners */
+    Uint32 _touchKey;
+    /* Whether the left mouse button is down */
+    bool _touchDown;
+    /* The ID of the current touch, if _touchDown is true */
+    cugl::TouchID _currentTouch;
+    /* The position of the current touch (for touch-based interfaces) */
+    cugl::Vec2 _touchPos;
+
+    // MULTITOUCH SUPPORT
+    /* The key for multitouch listeners */
+    Uint32 _multiKey;
+    /* Whether a pinch gesture was detected */
+    bool _isPinching;
+    /* Whether a zoom gesture was detected */
+    bool _isZooming;
     
 public:
 #pragma mark -
@@ -175,6 +193,7 @@ public:
      * @return true if the button to zoom in was pressed.
      */
     bool didZoomIn() const { return _zoomInPressed; }
+    //TODO: figure out why _zoomInPressed isn't updating & remove _isZooming
 
     /**
      * Returns true if the button to zoom out was pressed.
@@ -182,6 +201,7 @@ public:
      * @return true if the button to zoom out was pressed.
      */
     bool didZoomOut() const { return _zoomOutPressed; }
+    //TODO: figure out why _zoomOutPressed isn't updating & remove _isPinching
     
     /**
      * Returns true if the exit button was pressed.
@@ -237,7 +257,7 @@ public:
 #pragma mark Mouse Callbacks
 private:
     /**
-     * Call back to execute when a mouse button is first pressed.
+     * Callback to execute when a mouse button is first pressed.
      *
      * This function will record a press only if the left button is pressed.
      *
@@ -248,7 +268,7 @@ private:
     void mouseDownCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus);
 
     /**
-     * Call back to execute when a mouse button is first released.
+     * Callback to execute when a mouse button is first released.
      *
      * This function will record a release for the left mouse button.
      *
@@ -259,26 +279,55 @@ private:
     void mouseUpCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus);
 
 #pragma mark Touch Callbacks
-    //TODO: fix below headers to match the parameters
     /**
-     * Callback for the beginning of a touch event
-     * TODO: implement
-     *
-     * @param t     The touch information
-     * @param event The associated event
+     * Callback to execute when a new touch begins.
+     * 
+     * @param event     The touch event for this press
+     * @param focus     Whether the listener currently has focus (UNUSED)
      */
-    void touchBeganCB(const cugl::TouchEvent& event, bool focus);
+    void touchBeginCB(const cugl::TouchEvent& event, bool focus);
+
+    /*
+     * Callback to execute when a touch shifts location.
+     *
+     * @param event     The touch event for this movement
+     * @param previous  The previous position of the touch
+     * @param focus     Whether the listener currently has focus (UNUSED)
+     */
+    void touchMotionCB(const cugl::TouchEvent& event, const cugl::Vec2 previous, bool focus);
     
     /**
-     * Callback for the end of a touch event
-     * TODO: implement
+     * Callback to execute when a touch ends.
      *
-     * @param t     The touch information
-     * @param event The associated event
+     * @param event     The touch event for this release
+     * @param focus     Whether the listener currently has focus (UNUSED)
      */
-    void touchEndedCB(const cugl::TouchEvent& event, bool focus);
+    void touchEndCB(const cugl::TouchEvent& event, bool focus);
 
+    /*
+    * Callback to execute when two fingers are detected on the device.
+    * 
+    * @param event  The touch event for this gesture
+    * @param focus  Whether the listener currently has focus (UNUSED)
+    */
+    void multiBeginCB(const cugl::CoreGestureEvent& event, bool focus);
 
+    /*
+    * Callback to execute when the gesture is updated.
+    *
+    * @param event  The touch event for this gesture
+    * @param focus  Whether the listener currently has focus (UNUSED)
+    */
+    void multiChangeCB(const cugl::CoreGestureEvent& event, bool focus);
+
+    /*
+    * Callback to execute when there are no longer two fingers on the device.
+    * This could mean that either that fingers were removed or fingers were added.
+    *
+    * @param event  The touch event for this gesture
+    * @param focus  Whether the listener currently has focus (UNUSED)
+    */
+    void multiEndCB(const cugl::CoreGestureEvent& event, bool focus);
 };
 
 #endif /* __MP_INPUT_H__ */
