@@ -1,11 +1,11 @@
 //
 //  MPCharacterModel.cpp
 //  Malperdy
-// 
+//
 //  This is a superclass for the model that will hold data for a character,
 //  which includes enemies and Reynard. The model will simply hold data
 //  about the character, and all changes will be done using the controller.
-// 
+//
 //  This class should only be instantiated by a controller.
 //
 //  Created by Kristina Gu on 3/8/22.
@@ -67,7 +67,7 @@ bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Tex
     setSceneNode(scene2::SpriteNode::alloc(image, 1, 1));
     _node->setAnchor(0.5, 0.5);
     _node->setScale(0.5);
-    
+
     Size nsize = image->getSize() / drawScale;
     nsize.width  *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
@@ -78,7 +78,7 @@ bool CharacterModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Tex
         setDensity(DUDE_DENSITY);
         setFriction(0.0f);      // Ensure there is no friction between Reynard and walls
         setFixedRotation(true); // Prevent character from rotating
-        
+
         /*_jumpCooldown  = 0;
         _dashCooldown  = 0;
         _wallSlideDuration = 0;*/
@@ -183,11 +183,11 @@ void CharacterModel::createFixtures() {
     feetFixture.shape = &feetFixtureShape;
     feetFixture.userData.pointer = 4;
     _feetFixture = _body->CreateFixture(&feetFixture);
-    
+
     // Vars needed for positioning on either side of characters
     float halfWidth = getWidth()/2.0f;
     float quarterWidth = halfWidth/2.0f;
-    
+
     // Left fixture
     b2FixtureDef faceFixture;
     b2PolygonShape faceFixtureShape;
@@ -197,7 +197,7 @@ void CharacterModel::createFixtures() {
     faceFixture.shape = &faceFixtureShape;
     faceFixture.userData.pointer = 5;
     _faceFixtureLeft = _body->CreateFixture(&faceFixture);
-    
+
     // Right fixture
     b2FixtureDef faceFixtureR;
     b2PolygonShape faceFixtureShapeR;
@@ -207,7 +207,7 @@ void CharacterModel::createFixtures() {
     faceFixtureR.shape = &faceFixtureShapeR;
     faceFixtureR.userData.pointer = 6;
     _faceFixtureRight = _body->CreateFixture(&faceFixtureR);
-    
+
 }
 
 /**
@@ -260,7 +260,7 @@ void CharacterModel::update(float dt) {
     //} else {
     //    // Only cooldown while grounded
     //    _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
-    //    
+    //
     //}
 
     //if (isDashing()) {
