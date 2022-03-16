@@ -53,7 +53,7 @@ public:
     bool init(){
         // make the polygon for the spike trap
         float bounds[] = { 0,0,1,0};
-        Path2 p = Path2(reinterpret_cast<Vec2*>(bounds), size(bounds)/2);
+        Path2 p = Path2(reinterpret_cast<Vec2*>(bounds), sizeof(bounds)/2);
         p.closed =  true;
         SimpleExtruder se = SimpleExtruder();
         se.clear();

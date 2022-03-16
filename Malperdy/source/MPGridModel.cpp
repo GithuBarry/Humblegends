@@ -293,13 +293,13 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     };
     
     // add the outer bounds obstacles
-    obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(LEFTWALL), size(LEFTWALL)/2)));
+    //obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(LEFTWALL), sizeof(LEFTWALL)/2)));
 
-    obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(RIGHTWALL), size(RIGHTWALL)/2)));
+    //obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(RIGHTWALL), sizeof(RIGHTWALL)/2)));
     
-    obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(BOTTOMFLOOR), size(BOTTOMFLOOR)/2)));
+    //obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(BOTTOMFLOOR), sizeof(BOTTOMFLOOR)/2)));
     
-    obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(TOPFLOOR), size(TOPFLOOR)/2)));
+    //obstacles->push_back(makeStaticFromPath(Path2( reinterpret_cast<Vec2*>(TOPFLOOR), sizeof(TOPFLOOR)/2)));
 
     /// END MAKING BOUNDS OF LEVEL
 
