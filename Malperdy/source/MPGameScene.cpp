@@ -350,7 +350,10 @@ void GameScene::update(float dt) {
     }
 
     if (_input.didZoomIn()) {
-        _gamestate.zoom_switch();
+        _gamestate.zoom_in();
+    }
+    if(_input.didZoomOut()){
+        _gamestate.zoom_out();
     }
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
