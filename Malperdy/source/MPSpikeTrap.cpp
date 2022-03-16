@@ -24,17 +24,13 @@ using namespace cugl;
 #pragma mark Constructors
 
 /**
- * Initializes a new SpikeTrap at the given position.
+ * Initializes a new trap at the given position
  *
- * The SpikeTrap is sized according to the given drawing scale.
+ * Currently hard coded spawn in across bottom of the room.
  *
- * @param pos       Initial position in world coordinates
- * @param drawScale The drawing scale (world to screen)
- * @param image     The image for the character's appearance
- *
- * @return  true if the character is correctly initialized, false otherwise.
+ * @return  true if the trap is initialized properly, false otherwise.
  */
-bool init(){
+bool SpikeTrap::init(){
     // make the polygon for the spike trap
     float bounds[] = { 0,0,1,0};
     Path2 p = Path2(reinterpret_cast<Vec2*>(bounds), size(bounds)/2);
@@ -56,4 +52,5 @@ bool init(){
     }
 
     return this->TrapModel::init(poly);
-};
+
+}
