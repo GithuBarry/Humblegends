@@ -35,8 +35,10 @@ using namespace std;
 
 /** Width of the game world in Box2d units */
 #define DEFAULT_WIDTH   32.0f
+
 /** Height of the game world in Box2d units */
-#define DEFAULT_HEIGHT  18.0f
+float DEFAULT_HEIGHT = DEFAULT_WIDTH/SCENE_WIDTH*SCENE_HEIGHT;
+
 /** The default value of gravity (going down) */
 #define DEFAULT_GRAVITY -22.0f
 
@@ -62,6 +64,9 @@ using namespace std;
 
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
+
+
+
 
 float REYNARD_POS[] = {30, 10};
 
@@ -168,7 +173,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // IMPORTANT: SCALING MUST BE UNIFORM
     // This means that we cannot change the aspect ratio of the physics world. Shift to center if a bad fit
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
-    Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f);
+    //Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
+    Vec2 offset;
+
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
     // Create the scene graph
@@ -177,8 +184,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
-    _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
-    _debugnode->setPosition(offset);
+    //_debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
+    _debugnode->setPosition(offset/_scale);
     setDebug(true);
 
     addChild(_worldnode);
@@ -560,13 +567,14 @@ void GameScene::beforeSolve(b2Contact *contact, const b2Manifold *oldManifold) {
  */
 Size GameScene::computeActiveSize() const {
     Size dimen = Application::get()->getDisplaySize();
-    float ratio1 = dimen.width / dimen.height;
-    float ratio2 = ((float) SCENE_WIDTH) / ((float) SCENE_HEIGHT);
-    if (ratio1 < ratio2) {
-        dimen *= SCENE_WIDTH / dimen.width;
-    } else {
-        dimen *= SCENE_HEIGHT / dimen.height;
-    }
+//    float ratio1 = dimen.width / dimen.height;
+//    float ratio2 = ((float) SCENE_WIDTH) / ((float) SCENE_HEIGHT);
+//    if (ratio1 < ratio2) {
+//        dimen *= SCENE_WIDTH / dimen.width;
+//    } else {
+//        dimen *= SCENE_HEIGHT / dimen.height;
+//    }
+    dimen *= SCENE_HEIGHT / dimen.height;
     return dimen;
 }
 
