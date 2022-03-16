@@ -35,6 +35,7 @@ void ReynardController::knockback(b2Vec2 dir) {
     CharacterController::knockback(dir);
 
     // Turn Reynard in the direction of the knockback force
-    if ((dir.x < 0 && _character->isFacingRight()) ||
-        (dir.x > 0 && !_character->isFacingRight())) turn();
+    //if ((dir.x < 0 && _character->isFacingRight()) ||
+    //    (dir.x > 0 && !_character->isFacingRight())) turn();
+    turn();
 }

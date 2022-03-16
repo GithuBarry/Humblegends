@@ -280,7 +280,7 @@ public:
         CULog("Knockback");
         // Normalize and scale so it applies a constant force
         dir.Normalize();
-        dir.operator*=(2.0f);
+        dir.operator*=(4.0f);
         _character->getBody()->ApplyForceToCenter(dir, true);
     }
 
