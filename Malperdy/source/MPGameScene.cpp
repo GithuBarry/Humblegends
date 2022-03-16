@@ -40,6 +40,9 @@ using namespace std;
 /** The default value of gravity (going down) */
 #define DEFAULT_GRAVITY -22.0f
 
+/** The default value of Spike damage */
+#define SPIKE_DAMAGE    100.0f
+
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
 
@@ -450,7 +453,7 @@ bool GameScene::isTrapCollision(b2Contact *contact) {
  */
 
 void GameScene::resolveTrapCollision(){
-    _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
+    _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
     CULog("Reynard's Current Health: %d", (int) _reynardController->getCharacter()->getHearts());
     //TODO: Determine how else we want the game to deal with Reynard hitting a trap
     //(do we want the trap to be turned off)?
