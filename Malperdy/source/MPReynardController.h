@@ -27,6 +27,14 @@ public:
      * @param delta The amount of time that has passed since the last frame
      */
     void update(float delta);
+
+    /**
+     * Applies a knockback force to the character in the direction of the
+     * given vector.
+     *
+     * @param dir   Direction to apply knockback force in
+     */
+    void knockback(b2Vec2 dir);
 };
 
 

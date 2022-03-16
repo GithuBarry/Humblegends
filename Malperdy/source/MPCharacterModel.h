@@ -28,18 +28,21 @@ using namespace cugl;
 
 #pragma mark Physics Constants
 /** The amount to reduce gravity by when the character is sliding down a wall */
+// TODO: fix this to use friction instead of gravity
 #define WALL_SLIDE_GRAV_SCALE 0.3f
 
 #pragma Movement Constants
 /** The default speed at which this character runs */
-#define RUN_SPEED 4.0f
+#define RUN_SPEED 3.7f
 /** The speed at which this character jumps */
-#define JUMP_SPEED 9.0f
+#define JUMP_SPEED 9.2f
 
 #pragma Gameplay Constants
-/** How many frames' worth of "scent trail" locations this character should store. The longer
-this is, the further away pursuers have to be before the character loses them */
-#define TRAIL_LENGTH 60
+/** How many "scent trail" locations this character should store. The greater this is,
+the further away pursuers have to be before the character loses them */
+#define TRAIL_LENGTH 10
+/** How long in seconds should pass between scent trail locations being marked */
+#define TRAIL_INCREMENT 0.7f
 
 class CharacterModel : public cugl::physics2::CapsuleObstacle{
 public:
@@ -53,28 +56,51 @@ public:
     };
 
     /** SceneNode representing the sprite for the character */
-    shared_ptr<scene2::SceneNode> _node;
+    shared_ptr<scene2::SpriteNode> _node;
+    /** The scale between the physics world and the screen (MUST BE UNIFORM) */
+    float _drawScale;
 
-#pragma mark Gameplay Attributes
     /** The character's current number of hearts */
     float _hearts;
-    /** The character's location in world space over the last TRAIL_LENGTH frames (queue) */
-    shared_ptr<deque<Vec2>> _trail = make_shared<deque<Vec2>>();
+
+    /** The number of times the character has hit the ground, as they're only off when this is <= 0 */
+    int _groundedCounter = 0;
 
 protected:
     /** The current maximum number of hearts that this character can have */
     float _maxHearts = 2;
+    
+    /** The amount of time since last frame update */
+    float _elapsed = 0;
+    
+    /** represents the actual frame of animation, invariant to texture flips */
+    int _currFrame = 0;
 
 #pragma mark -
 #pragma mark Constants
 
     /** The texture for the character avatar */
     const string CHARACTER_TEXTURE;
+    
+    /** The amount of time in between each frame update */
+    const float FRAME_TIME = 0.03;
 
 #pragma mark Attributes
+    
+    /** The sheet for the running animation */
+    shared_ptr<Texture> _runAnimation;
+    
+    /** Default texture */
+    shared_ptr<Texture> _defaultTexture;
 
-    /** The scale between the physics world and the screen (MUST BE UNIFORM) */
-    float _drawScale;
+#pragma mark Trails
+
+    /** The character's past few locations in world space, from oldest to most recent */
+    shared_ptr<deque<Vec2>> _trail = make_shared<deque<Vec2>>();
+    /** Accumulator for time passed between trail locations being tracked */
+    float _trailAcc = 0.0f;
+
+#pragma mark Attributes
 
     /** The character's current run speed */
     float _speed = RUN_SPEED;
@@ -142,7 +168,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image);
+    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation);
 
 
 #pragma mark -
@@ -164,9 +190,10 @@ public:
      *
      * @return  A newly allocated CharacterModel at the given position with the given scale
      */
-    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
+    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
         std::shared_ptr<CharacterModel> result = std::make_shared<CharacterModel>();
-        return (result->init(pos, drawScale, image) ? result : nullptr);
+        
+        return (result->init(pos, drawScale, defaultTexture, runAnimation) ? result : nullptr);
     }
 
 #pragma mark -
@@ -187,7 +214,7 @@ public:
      *
      * @param node  The scene graph node representing this CharacterModel, which has been added to the world node already.
      */
-    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode>& node) {
+    void setSceneNode(const std::shared_ptr<cugl::scene2::SpriteNode>& node) {
         _node = node;
         _node->setPosition(getPosition() * _drawScale);
     }
@@ -285,15 +312,7 @@ public:
     bool isFacingRight() const {
         return _faceRight;
     }
-
-    void setGrounded() {
-        _moveState = MovementState::RUNNING;
-    }
-
-    void setNotGrounded() {
-        _moveState = MovementState::FALLING;
-    }
-
+    
     /**
      * Sets the character's movement state, changing physical attributes
      * accordingly as necessary.
@@ -315,6 +334,17 @@ public:
         SimpleObstacle::setPosition(value);
         _node->setPosition(value * _drawScale);
     }
+    
+    bool uploadTexture(string tex);
+
+    /**
+     * Gets the queue representing the trail this character is leaving behind.
+     * This is used by chasing enemies to determine whether they can still see
+     * the character.
+     * 
+     * @return  The queue representing the character's trail
+     */
+    shared_ptr<deque<Vec2>> getTrail() { return _trail; }
 
 #pragma mark -
 #pragma mark Physics Methods
@@ -345,6 +375,17 @@ public:
      * @param delta Number of seconds since last animation frame
      */
     virtual void update(float dt) override;
+
+    /**
+     * Returns the fixture currently associated with this character's face.
+     *
+     * @return  The fixture currently on the character's face
+     */
+    b2Fixture* getFaceFixture() {
+        return (isFacingRight() ? _faceFixtureRight : _faceFixtureLeft);
+    }
+
+    b2Body* getBody() { return _body; }
 };
 
 #endif /* MPCharacterModel_h */

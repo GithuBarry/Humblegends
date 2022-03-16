@@ -65,9 +65,9 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
+bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
     // If initialization of parent class failed, return immediately
-    if (!(CharacterModel::init(pos, drawScale, image))) return false;
+    if (!(CharacterModel::init(pos, drawScale, defaultTexture, runAnimation))) return false;
 
     // Have enemies be stopped by default
     _moveState = MovementState::STOPPED;
@@ -105,6 +105,10 @@ void EnemyModel::update(float dt) {
 		setMoveState(MovementState::STOPPED);
 		break;
 	case (EnemyModel::BehaviorState::CHASING):
+		// Start moving to next future move location if not yet there
+		/*if (abs(getPosition().distanceSquared(_futureMoveLocations->at(0))) > FUTURE_MOVE_ERROR_SQUARED) {
+
+		}*/
 		break;
 	case (EnemyModel::BehaviorState::SEARCHING):
 		break;

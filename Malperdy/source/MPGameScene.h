@@ -329,6 +329,8 @@ public:
     void isTurnEvent(b2Contact* contact);
         
     b2Fixture* getReynardFixture(b2Contact *contact);
+
+    b2Fixture* getNotReynardFixture(b2Contact* contact);
         
 };
 

@@ -195,6 +195,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _active = true;
     _complete = false;
 
+    // Give all enemies a reference to the ObstacleWorld for raycasting
+    //EnemyController::setObstacleWorld(_world);
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::WHITE);
@@ -274,9 +276,21 @@ void GameScene::populate() {
 #pragma mark Reynard
     Vec2 pos = Vec2(4, 3);
     // Create a controller for Reynard based on his image texture
-    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
+//    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
+    
+    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"), _assets->get<Texture>("reynard_run"));
     // Add Reynard to physics world
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
+
+#pragma mark Enemies
+    //pos = Vec2(15, 3);
+    //// Create a controller for an enemy based on its image texture
+    //_enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit"), _assets->get<Texture>("rabbit")));
+    //// Add enemies to physics world
+    //vector<std::shared_ptr<EnemyController>>::iterator itr;
+    //for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+    //    addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
+    //}
 }
 
 
@@ -424,6 +438,18 @@ b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
     }
 }
 
+// TODO: there's gotta be a better way to do this
+b2Fixture* GameScene::getNotReynardFixture(b2Contact* contact) {
+    b2Body* body1 = contact->GetFixtureA()->GetBody();
+    b2Body* body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        return contact->GetFixtureB();
+    }
+    else {
+        return contact->GetFixtureA();
+    }
+}
+
 /**
  * Helper function for detecting a collision between two objects
  *
@@ -480,9 +506,13 @@ bool isCharacterRightFixture(b2Fixture *fixture) {
     return (fixture->GetUserData().pointer == 5);
 }
 
-
+// Whether the fixture is an enemy detection radius
+bool isEnemyDetectFixture(b2Fixture* fixture) {
+    return (fixture->GetUserData().pointer == 10);
+}
 
 void GameScene::beginContact(b2Contact *contact) {
+    // If Reynard is one of the collidees
     if (isReynardCollision(contact)) {
         // CULog("Is this a Reynard collision? %d", isReynardCollision(contact));
         // CULog("Is Reyanrd facing right? %d", ReynardIsRight);
@@ -500,17 +530,34 @@ void GameScene::beginContact(b2Contact *contact) {
         
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
         b2Fixture* reynardFixture = getReynardFixture(contact);
-        if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
+        // First, if Reynard has hit an enemy detection radius
+        if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
+            //CULog("Reynard spotted");
+            //_enemies->at(0)->detectTarget(_reynardController->getCharacter());
+        }
+        // Otherwise if Reynard has hit the enemy's body
+        //else if (_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
+        //    CULog("Body contact");
+        //    // Knock back enemy
+        //    b2Vec2 normal = contact->GetManifold()->localNormal;
+        //    normal *= -1;
+        //    _enemies->at(0)->knockback(normal);
+        //    // Knock back Reynard
+        //    _reynardController->knockback(contact->GetManifold()->localNormal);
+        //}
+        // Reynard hitting right or left wall
+        else if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
             _reynardController->hitWall();
         }
         else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
             _reynardController->hitWall();
         }
+        // Reynard hitting ground
         else if (isCharacterGroundFixture(reynardFixture)) {
             _reynardController->hitGround();
         }
         else {
-            CULog("Switching C");
+            //CULog("Switching C");
             // _reynardController->hitGround();
         }
     }
@@ -522,9 +569,17 @@ void GameScene::endContact(b2Contact *contact) {
     // CULog("rey is off da ground");
     if (isReynardCollision(contact)) {
         b2Fixture* reynardFixture = getReynardFixture(contact);
+        // If Reynard leaves the ground
         if (isCharacterGroundFixture(reynardFixture)) {
-            _reynardController->offGround();
-        }
+                _reynardController->offGround();
+            }
+        //if (isCharacterGroundFixture(reynardFixture) && !_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
+        //    _reynardController->offGround();
+        //}
+        //// Otherwise if Reynard is leaving the enemy sensor
+        //else if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
+        //    _enemies->at(0)->loseTarget(_reynardController->getCharacter());
+        //}
     }
 }
 
