@@ -31,6 +31,7 @@ EnvController::EnvController(){
 * @return true if room was successfully selected, and false otherwise
 */
 bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController>& reynard){
+	CULog("Mouse coords: (%f, %f)", coords.x, coords.y);
 	Vec2 room1 = _grid->worldSpaceToRoom(coords);
 	bool isValidRoom = room1.x != -1 && room1.y != -1;
 	bool isOccupied = containsReynard(room1, reynard);
@@ -102,16 +103,22 @@ void EnvController::deselectRoom(){
 * @return true if Reynard is inside the given room
 */
 bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardController>& reynard) {
-	//TODO: uncomment once ReynardModel getters & setters have been merged
-	/*Vec2 pos; //= reynard->getPosition();
-	int width; //= reynard->getSize().width;
-	int height; //= reynard->getSize().height;
-	for (int x = 0; x <= 1; x++) {
-		for (int y = 0; y <= 1; y++) {
+	/*CULog("room: (%f, %f)", room.x, room.y);
+	Vec2 pos = reynard->getPosition(); //reynard's center
+	CULog("position: (%f, %f)", pos.x, pos.y);
+	/*int width = reynard->getSize().width;
+	int height = reynard->getSize().height;
+	for (float x = -0.5; x <= 0.5; x++) {
+		for (float y = -0.5; y <= 0.5; y++) {
 			Vec2 corner = pos + Vec2(width * x, height * y);
 			Vec2 cRoom = _grid->worldSpaceToRoom(corner);
+			CULog("corner: (%f, %f)", corner.x, corner.y);
+			CULog("in room: (%f, %f)", cRoom.x, cRoom.y);
 			if (room.equals(cRoom)) return true;
 		}
 	}*/
+	/*Vec2 cRoom = _grid->worldSpaceToRoom(pos);
+	CULog("in room: (%f, %f)", cRoom.x, cRoom.y);
+	if (room.equals(cRoom)) return true;*/
 	return false;
 }

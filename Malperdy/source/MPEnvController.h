@@ -92,7 +92,6 @@ private:
     * @return true if Reynard is inside the given room
     */
     bool containsReynard(Vec2 room, const shared_ptr<ReynardController>& reynard);
-    //TODO: write actual implementation, containsReynard() is not yet implemented
 };
 
 #endif /* MPEnvController_h */
