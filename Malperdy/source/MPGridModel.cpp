@@ -36,6 +36,7 @@ shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testleve
  */
 bool GridModel::init(float scale, bool json, float hgap, float vgap)
 {
+    cout<<"HERE YOU ARE 3"<<endl;
     _horizontal_gap = hgap;
     _vertical_gap = vgap;
     _physics_scale =  scale;
@@ -54,6 +55,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
             addChild(_grid->at(i)->at(j));
           }
         }
+        cout<<"HERE YOU ARE 5"<<endl;
     }
     else{
         // Get level dimensions
@@ -77,12 +79,18 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
             // Add row of rooms to the full grid
             _grid->push_back(roomRow);
         }
+        cout<<"HERE YOU ARE 6"<<endl;
     }
 
+    // TODO: REPLACE THIS CODE LATER TO THE JSON
+    // TODO: WHY DOES THIS CODE HAVE NO IMPACT ON ANYTHING
     // create organized back of physics geometry
     //calculatePhysicsGeometry();
     _grid->at(1)->at(1)->initTrap("spike");
-    
+    cout<<"HERE YOU ARE 1"<<endl;
+    cout<<_grid->at(0)->at(0)->initTrap("spike")<<endl;
+    cout<<"HERE YOU ARE 2"<<endl;
+
     return this->scene2::SceneNode::init();
 };
 
