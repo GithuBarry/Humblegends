@@ -60,6 +60,8 @@ public:
         se.set(p);
         se.calculate(0.1);
         Poly2 poly = se.getPolygon();
+        
+        // TODO: replace this with actual room size!
         poly.operator*=(Vec2(720,480));
         
         // Ensure that all points are integers
