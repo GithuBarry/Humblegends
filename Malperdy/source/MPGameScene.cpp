@@ -362,13 +362,13 @@ void GameScene::update(float dt) {
 
         bool hasSwapped = false;
         if (_envController->hasSelected()) {
-            bool check = _envController->swapWithSelected(pos, _reynardController);
+            bool check = _envController->swapWithSelected(pos+_worldnode->getPaneTransform().getTranslation(), _reynardController);
         } else {
-            hasSwapped = _envController->selectRoom(pos, _reynardController);
+            hasSwapped = _envController->selectRoom(pos+_worldnode->getPaneTransform().getTranslation(), _reynardController);
         }
     }
 
-    if (_input.didJump()) {
+    if (_input.didJump()&& _gamestate.zoomed_in()) {
         _reynardController->jump();
         //cout << "Press Jump Button" << endl;
     }

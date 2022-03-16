@@ -289,7 +289,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
         _size.x * roomscale.x, _size.y * roomscale.y
     };
     float BOTTOMFLOOR[] = { 0, 0,
-        _size.x * roomscale.x, 0
+        _size.x * roomscale.x, 0, 0, 0
     };
     float TOPFLOOR[] = { 0, _size.y * roomscale.y,
         _size.x * roomscale.x, _size.y * roomscale.y
