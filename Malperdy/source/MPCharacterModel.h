@@ -194,6 +194,22 @@ public:
 
 #pragma mark -
 #pragma mark Attribute Properties
+    
+    /**
+     * Sets the character's direction to be facing in the opposite direction that
+     * it is currently facing in.
+     */
+    float getHearts(){
+        return _hearts;
+    }
+    
+    /**
+     * Sets the character's direction to be facing in the opposite direction that
+     * it is currently facing in.
+     */
+    void setHearts(float v){
+        _hearts = v;
+    }
 
     /**
      * Sets the character's direction to be facing in the opposite direction that

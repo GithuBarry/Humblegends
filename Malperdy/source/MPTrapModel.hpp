@@ -93,7 +93,7 @@ public:
     
     bool initObstacle(shared_ptr<physics2::PolygonObstacle> bo){
         _obstacle = bo;
-        _obstacle.createFixture();
+        _obstacle->createFixtures();
         return true;
     }
     
@@ -108,7 +108,7 @@ public:
      *
      * @return      Whether the change happened successfully
      */
-    shared_ptr<cugl::physics2::PolygonObstacle> getPhysicalBody(){
+    shared_ptr<cugl::physics2::PolygonObstacle> getObstacle(){
         return _obstacle;
     }
     

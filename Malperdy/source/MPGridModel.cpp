@@ -62,7 +62,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
         _grid = make_shared<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>>();
         // Initialize pointer to temporarily point to RoomModels
         shared_ptr<RoomModel> room;
-
+        
         // For each room in the level
         for (int y = 0; y < _size.y; y++) {
             // Initialize vector for a row of rooms

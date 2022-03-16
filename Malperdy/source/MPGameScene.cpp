@@ -400,16 +400,6 @@ bool GameScene::isReynardCollision(b2Contact *contact) {
 }
 
 
-bool GameScene::isTrapCollision(b2Contact *contact) {
-    b2Body *body1 = contact->GetFixtureA()->GetBody();
-    b2Body *body2 = contact->GetFixtureB()->GetBody();
-//    Check to see if it is a trap:
-//    Check the TYPE YA FOOL
-//    if (body1 == ->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody()) {
-//        return true;
-//    }
-    return false;
-}
 
 
 b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
@@ -422,6 +412,50 @@ b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
         return contact->GetFixtureB();
     }
 }
+
+/**
+ * Helper function for detecting a collision between two objects
+ *
+ * The primary purpose of this function is to detect if one of the physical bodies
+ * that have come into contact with one another are a trap.
+ *
+ * The function will return true if it is the case and false otherwise.
+ *
+ * @param  contact  The two bodies that collided
+ */
+
+bool GameScene::isTrapCollision(b2Contact *contact) {
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    
+    for(int row = 0; row <_grid->getWidth(); row++){
+        for(int col = 0; col<_grid->getHeight(); col++){
+            if(_grid->getRoom(row, col)->getTrap() != nullptr){
+                if(_grid->getRoom(row, col)->getTrap()->getObstacle()->getBody() == body1
+                   || _grid->getRoom(row, col)->getTrap()->getObstacle()->getBody() == body2){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+/**
+ * The primary purpose of this function obfuscate the code
+ * behind what happens during the interaction between Reynard
+ * and a trap upon collision
+ *
+ * The current Implementation only sees Reynard's health decremented by 1.
+ */
+
+void GameScene::resolveTrapCollision(){
+    _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
+    CULog("Reynard's Current Health: %d", (int) _reynardController->getCharacter()->getHearts());
+    //TODO: Determine how else we want the game to deal with Reynard hitting a trap
+    //(do we want the trap to be turned off)?
+}
+
 
 bool isCharacterGroundFixture(b2Fixture *fixture) {
     return (fixture->GetUserData().pointer == 4);
@@ -449,6 +483,9 @@ void GameScene::beginContact(b2Contact *contact) {
         // if statement check to see if contact contains a trap
             // Call Helper resolveTrapCollision 
             //
+        if(isTrapCollision(contact)){
+            resolveTrapCollision();
+        }
         
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
         b2Fixture* reynardFixture = getReynardFixture(contact);
