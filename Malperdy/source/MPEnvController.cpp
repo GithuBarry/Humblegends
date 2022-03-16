@@ -68,7 +68,9 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
 	bool isValidRoom = room2.x != -1 && room2.y != -1;
 	bool isOccupied = containsReynard(room2, reynard) || containsReynard(_toSwap, reynard);
 
-	if (!isValidRoom || isOccupied) {
+	if (!isValidRoom) return false;
+	if (isOccupied) {
+		deselectRoom();
 		return false;
 	}
 	if (room2.x == _toSwap.x && room2.y == _toSwap.y) {
