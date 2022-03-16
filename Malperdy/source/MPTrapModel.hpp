@@ -47,14 +47,14 @@ protected:
     /** A uniform value represneting scale between the physics world and the screen */
     float _drawScale;
     
-    /** Vec2 representing position of the trap within the room */
-    cugl::Vec2 _position;
+//    /** Vec2 representing position of the trap within the room */
+//    cugl::Vec2 _position;
     
     /** The current activation state of the trap. */
     TrapState _trapState;
         
     /** The obstacle representing the physical entity for the trap */
-    shared_ptr<cugl::physics2::BoxObstacle> _boxObstacle;
+    shared_ptr<cugl::physics2::PolygonObstacle> _obstacle;
     
     /** The polynode (alternative for) representing the physical entity for the trap */
     shared_ptr<cugl::scene2::PolygonNode> _polyNode;
@@ -91,21 +91,24 @@ public:
     bool init(Poly2 poly);
     //TODO: This needs to be verified to be in the room space coords and not world space coords
     
-
+    bool initObstacle(shared_ptr<physics2::PolygonObstacle> bo){
+        _obstacle = bo;
+        return true;
+    }
     
     
     
 #pragma mark -
 #pragma mark Attribute Properties
 
-    // BoxObstacle Section:
+    // PolygonObstacle Section:
     /**
      * Sets the traps's state, changing physical attributes of the trap.
      *
      * @return      Whether the change happened successfully
      */
-    shared_ptr<cugl::physics2::BoxObstacle> getPhysicalBody(){
-        return _boxObstacle;
+    shared_ptr<cugl::physics2::PolygonObstacle> getPhysicalBody(){
+        return _obstacle;
     }
     
     /**
@@ -115,7 +118,7 @@ public:
      * @param y           Float representing y Position
      */
     void setPhysicalBodyPos(float x, float y){
-        _boxObstacle->setPosition(x, y);
+        _obstacle->setPosition(x, y);
     }
     
     /**
@@ -124,7 +127,7 @@ public:
      * @param pos           Vec2 with pos.x representing x location and pos.y representing y
      */
     void setPhysicalBodyPos(Vec2 pos){
-        _boxObstacle->setPosition(pos);
+        _obstacle->setPosition(pos);
     }
     
     // Polygon Node Section:
@@ -136,6 +139,10 @@ public:
     Poly2 getImageBody(){
         return _polyNode->getPolygon();
         
+    }
+    
+    shared_ptr<scene2::PolygonNode> getPolyNode(){
+        return _polyNode;
     }
 
     
@@ -205,7 +212,7 @@ public:
      */
     void dispose(){
         removeAllChildren();
-        _boxObstacle = nullptr;
+        _obstacle = nullptr;
     };
 
 

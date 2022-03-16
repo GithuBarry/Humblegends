@@ -355,6 +355,22 @@ void GridModel::calculatePhysicsGeometry(){
                 
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
             }
+            
+            // if the room has a trap
+            if (_grid->at(row)->at(col)->getTrap()){
+                shared_ptr<scene2::PolygonNode> pn = _grid->at(row)->at(col)->getTrap()->getPolyNode();
+                Poly2 p = pn->getPolygon();
+                p *= pn->getNodeToWorldTransform();
+                p /= _physics_scale;
+                
+                // Create physics obstacle
+                shared_ptr<physics2::PolygonObstacle> obstacle = physics2::PolygonObstacle::alloc(p, Vec2::ZERO);
+                obstacle->setBodyType(b2_staticBody);
+                
+                _physicsGeometry.at(row).at(col).push_back(obstacle);
+                _grid->at(row)->at(col)->getTrap()->initObstacle(obstacle);
+                
+            }
         }
     }
     
