@@ -93,6 +93,7 @@ public:
     
     bool initObstacle(shared_ptr<physics2::PolygonObstacle> bo){
         _obstacle = bo;
+        _obstacle.createFixture();
         return true;
     }
     
