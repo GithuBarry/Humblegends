@@ -9,9 +9,6 @@
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
-#define VELOCITY    .5f
-#define DUDE_JUMP   0.55f
-
 #include "MPReynardController.h"
 
 /**
@@ -38,4 +35,7 @@ void ReynardController::knockback(b2Vec2 dir) {
     //if ((dir.x < 0 && _character->isFacingRight()) ||
     //    (dir.x > 0 && !_character->isFacingRight())) turn();
     turn();
+
+    // Take damage (TODO: make this not a constant)
+    _character->_hearts--;
 }

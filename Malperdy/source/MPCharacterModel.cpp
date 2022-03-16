@@ -223,7 +223,7 @@ void CharacterModel::createFixtures() {
     b2PolygonShape faceFixtureShape;
     faceFixture.isSensor = true;
     faceFixture.density = 1;
-    faceFixtureShape.SetAsBox(quarterWidth/20.0f, .00001, b2Vec2(halfWidth + quarterWidth, .25), 0);
+    faceFixtureShape.SetAsBox(quarterWidth/20.0f, .00001, b2Vec2(halfWidth, .25), 0);
     faceFixture.shape = &faceFixtureShape;
     faceFixture.userData.pointer = 5;
     _faceFixtureLeft = _body->CreateFixture(&faceFixture);

@@ -35,7 +35,7 @@ using namespace cugl;
 /** The default speed at which this character runs */
 #define RUN_SPEED 3.7f
 /** The speed at which this character jumps */
-#define JUMP_SPEED 9.0f
+#define JUMP_SPEED 9.2f
 
 #pragma Gameplay Constants
 /** How many "scent trail" locations this character should store. The greater this is,

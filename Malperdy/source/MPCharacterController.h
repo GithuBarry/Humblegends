@@ -243,7 +243,6 @@ public:
      */
     void hitGround() {
         _character->_groundedCounter++;
-        CULog("Up to %d", _character->_groundedCounter);
         // Land the character
         land();
     }
@@ -259,7 +258,6 @@ public:
      */
     void offGround() {
         _character->_groundedCounter--;
-        CULog("Down to %d", _character->_groundedCounter);
         // Do nothing if there are more begin contacts than ended, meaning
         // character is still on ground
         if (_character->_groundedCounter > 0) return;
@@ -287,7 +285,6 @@ public:
      * @param dir   Direction to apply knockback force in
      */
     virtual void knockback(b2Vec2 dir) {
-        CULog("Knockback");
         // Normalize and scale so it applies a constant force
         dir.Normalize();
         dir.operator*=(4.0f);
