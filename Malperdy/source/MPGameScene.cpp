@@ -399,6 +399,19 @@ bool GameScene::isReynardCollision(b2Contact *contact) {
     return false;
 }
 
+
+bool GameScene::isTrapCollision(b2Contact *contact) {
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+//    Check to see if it is a trap:
+//    Check the TYPE YA FOOL
+//    if (body1 == ->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody()) {
+//        return true;
+//    }
+    return false;
+}
+
+
 b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
@@ -432,6 +445,11 @@ void GameScene::beginContact(b2Contact *contact) {
         // CULog("Is this right fixture? %d", isCharacterRightFixture(reynardFixture));
         // CULog("Is this left fixture? %d", isCharacterRightFixture(reynardFixture));
         // CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
+        
+        // if statement check to see if contact contains a trap
+            // Call Helper resolveTrapCollision 
+            //
+        
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
         b2Fixture* reynardFixture = getReynardFixture(contact);
         if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
@@ -448,6 +466,7 @@ void GameScene::beginContact(b2Contact *contact) {
             // _reynardController->hitGround();
         }
     }
+    
 }
 
 void GameScene::endContact(b2Contact *contact) {
