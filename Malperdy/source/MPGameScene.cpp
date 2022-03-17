@@ -502,7 +502,7 @@ void GameScene::beginContact(b2Contact *contact) {
             _reynardController->hitGround();
         }
         else {
-            CULog("Switching C");
+            //CULog("Switching C");
             // _reynardController->hitGround();
         }
     }

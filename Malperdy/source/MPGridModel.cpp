@@ -86,7 +86,8 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
     // TODO: WHY DOES THIS CODE HAVE NO IMPACT ON ANYTHING
     // create organized back of physics geometry
     //calculatePhysicsGeometry();
-//    _grid->at(1)->at(1)->initTrap("spike");
+    _grid->at(1)->at(1)->initTrap("spike");
+    _grid->at(1)->at(3)->initTrap("spike");
 //    cout<<"HERE YOU ARE 1"<<endl;
 //    cout<<_grid->at(0)->at(1)->initTrap("spike")<<endl;
 //    cout<<"HERE YOU ARE 2"<<endl;
