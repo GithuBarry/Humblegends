@@ -389,12 +389,14 @@ void GameScene::update(float dt) {
     
     // When dashing right
     if(_input.didDashRight()){
-        _reynardController->dashRight();
+        //TODO: make dash less buggy and uncomment
+        //_reynardController->dashRight();
     }
     
     // When dashing left
     if(_input.didDashLeft()){
-        _reynardController->dashLeft();
+        //TODO: make dash less buggy and uncomment
+        //_reynardController->dashLeft();
     }
 
 
