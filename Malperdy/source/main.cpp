@@ -46,8 +46,8 @@ int main(int argc, char * argv[]) {
     Malperdy app;
     
     // Set the properties of your application
-    app.setName("Rocket Demo");
-    app.setOrganization("GDIAC");
+    app.setName("Malperdy");
+    app.setOrganization("Humblegends");
     app.setHighDPI(true);
 
     //app.setFullscreen(true);
