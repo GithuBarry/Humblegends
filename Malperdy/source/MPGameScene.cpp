@@ -360,7 +360,7 @@ void GameScene::update(float dt) {
     // Room swap initiated
     if (_input.didPress() && !_gamestate.zoomed_in()) {
         // Scale tap/click location by camera pan
-        Vec2 pos = _input.getPosition() + _worldnode->getPaneTransform().getTranslation();
+        Vec2 pos = _input.getPosition() - _worldnode->getPaneTransform().getTranslation();
 
         bool hasSwapped = false;
         if (_envController->hasSelected()) {
