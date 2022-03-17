@@ -277,7 +277,7 @@ void GameScene::populate() {
     Vec2 pos = Vec2(4, 3);
     // Create a controller for Reynard based on his image texture
 //    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
-    
+
     _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"), _assets->get<Texture>("reynard_run"));
     // Add Reynard to physics world
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
@@ -345,7 +345,7 @@ void GameScene::update(float dt) {
     // Process the toggled key commands
     if (_input.didDebug()) {
         setDebug(!isDebug());
-        _worldnode->setVisible(!_worldnode->isVisible());
+        //_worldnode->setVisible(!_worldnode->isVisible());
     }
 
 
@@ -392,7 +392,12 @@ void GameScene::update(float dt) {
     _world->update(scaled_dt);
 
     // Camera following reynard, with some non-linear smoothing
-    _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition()), _scale, getSize(), _reynardController->getCharacter()->isFacingRight()));
+    Vec2 currentTranslation = _worldnode->getPaneTransform().getTranslation();
+    Vec2 reynardScreenPosition = _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition());
+
+    bool faceRight =  _reynardController->getCharacter()->isFacingRight();
+
+    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(),faceRight));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
@@ -425,10 +430,7 @@ void GameScene::update(float dt) {
 bool GameScene::isReynardCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    if (body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody()) {
-        return true;
-    }
-    return false;
+    return body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody();
 }
 
 
@@ -471,7 +473,7 @@ b2Fixture* GameScene::getNotReynardFixture(b2Contact* contact) {
 bool GameScene::isTrapCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    
+
     for(int row = 0; row <_grid->getWidth(); row++){
         for(int col = 0; col<_grid->getHeight(); col++){
             if(_grid->getRoom(row, col)->getTrap() != nullptr){
@@ -527,14 +529,14 @@ void GameScene::beginContact(b2Contact *contact) {
         // CULog("Is this right fixture? %d", isCharacterRightFixture(reynardFixture));
         // CULog("Is this left fixture? %d", isCharacterRightFixture(reynardFixture));
         // CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
-        
+
         // if statement check to see if contact contains a trap
-            // Call Helper resolveTrapCollision 
+            // Call Helper resolveTrapCollision
             //
         if(false && isTrapCollision(contact)){
             resolveTrapCollision();
         }
-        
+
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
         b2Fixture* reynardFixture = getReynardFixture(contact);
         // First, if Reynard has hit an enemy detection radius
@@ -568,7 +570,7 @@ void GameScene::beginContact(b2Contact *contact) {
             // _reynardController->hitGround();
         }
     }
-    
+
 }
 
 void GameScene::endContact(b2Contact *contact) {
