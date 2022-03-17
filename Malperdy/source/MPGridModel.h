@@ -61,7 +61,7 @@ public:
      * @return an empty grid model
      */
     GridModel(){
-        CULog("child Offset: %i", this->_childOffset);
+        //CULog("child Offset: %i", this->_childOffset);
     };
 
     /**
@@ -78,7 +78,7 @@ public:
      * @param json - whether to use json loader or not
      * @return a grid with 3x3 rooms, each room the default
      */
-    bool init(float scale=1, bool json=false, float hgap = 0, float vgap = 0);
+    bool init(float scale=1, bool json=false, float hgap = 0, float vgap = 0, shared_ptr<Texture> bg = nullptr);
 
 #pragma mark Destructors
     /**
@@ -147,14 +147,23 @@ public:
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsObjects();
 
     Vec2 gridSpaceToRoom(Vec2 coord){
-        int x = static_cast<int>(coord.x / DEFAULT_ROOM_WIDTH);
-        int y = static_cast<int>(coord.y/ DEFAULT_ROOM_HEIGHT);
+        int x = static_cast<int>(coord.x) / DEFAULT_ROOM_WIDTH;
+        int y = static_cast<int>(coord.y) / DEFAULT_ROOM_HEIGHT;
+        // y-coordinate is in the wrong direction, so flip to be from bottom instead of top
+        //y = getHeight() - y - 1;
         return Vec2(x,y);
     }
 
     Vec2 worldSpaceToRoom(Vec2 coord){
+        //Vec2 gridcoords = this->screenToNodeCoords(coord);
+        Vec2 gridcoords = this->worldToNodeCoords(coord);
+        //CULog("Grid Model: (%f, %f)", gridcoords.x, gridcoords.y);
+        return gridSpaceToRoom(gridcoords);
+    }
+
+    Vec2 screenSpaceToRoom(Vec2 coord) {
         Vec2 gridcoords = this->screenToNodeCoords(coord);
-        CULog("Grid Model: (%f, %f)", gridcoords.x, gridcoords.y);
+        //CULog("Grid Model: (%f, %f)", gridcoords.x, gridcoords.y);
         return gridSpaceToRoom(gridcoords);
     }
 

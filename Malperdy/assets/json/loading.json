@@ -2,9 +2,10 @@
 	"textures": {
 		"logo": {
 			"file":      "textures/cugl-logo.png",
+            "mipmaps": true,
             "wrapS":     "clamp",
             "wrapT":     "clamp",
-            "minfilter": "linear",
+            "minfilter": "nearest-nearest",
             "magfilter": "linear"
 		},
         "name": {
@@ -42,7 +43,7 @@
                 "type" : "Anchored"
             },
             "data" : {
-                "color": [239,61,49,255]
+                "color": [46,61,90,255]
             },
             "children"  : {
                 "logo"  : {
@@ -53,13 +54,13 @@
                     "data"   : {
                         "texture"  : "logo",
                         "anchor"   : [0.5,0.5],
-                        "scale"    : 0.75
+                        "scale"    : 0.6
                     },
                     "layout" : {
                         "x_anchor" : "center",
                         "y_anchor" : "middle",
-                        "y_offset" : 115,
-                        "absolute" : true
+                        "y_offset" : 0,
+                        "absolute" : false
                     }
                 },
                 "name"  : {
@@ -100,7 +101,8 @@
                     "layout" : {
                         "x_anchor" : "center",
                         "y_anchor" : "middle",
-                        "y_offset" : -115,
+                        "x_offset" : 275,
+                        "y_offset" : -35,
                         "absolute" : true
                     }
                 },

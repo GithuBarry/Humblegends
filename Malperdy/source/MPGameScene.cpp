@@ -35,8 +35,10 @@ using namespace std;
 
 /** Width of the game world in Box2d units */
 #define DEFAULT_WIDTH   32.0f
+
 /** Height of the game world in Box2d units */
-#define DEFAULT_HEIGHT  18.0f
+float DEFAULT_HEIGHT = DEFAULT_WIDTH/SCENE_WIDTH*SCENE_HEIGHT;
+
 /** The default value of gravity (going down) */
 #define DEFAULT_GRAVITY -22.0f
 
@@ -62,6 +64,9 @@ using namespace std;
 
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
+
+
+
 
 float REYNARD_POS[] = {30, 10};
 
@@ -168,7 +173,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // IMPORTANT: SCALING MUST BE UNIFORM
     // This means that we cannot change the aspect ratio of the physics world. Shift to center if a bad fit
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
-    Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f);
+    //Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
+    Vec2 offset;
+
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
     // Create the scene graph
@@ -177,9 +184,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
-    _debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
-    _debugnode->setPosition(offset);
-    setDebug(true);
+    //_debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
+    _debugnode->setPosition(offset/_scale);
+    setDebug(false);
 
     addChild(_worldnode);
     addChild(_debugnode);
@@ -188,6 +195,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _active = true;
     _complete = false;
 
+    // Give all enemies a reference to the ObstacleWorld for raycasting
+    //EnemyController::setObstacleWorld(_world);
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::WHITE);
@@ -247,7 +256,7 @@ void GameScene::populate() {
     // DEBUG: add room to scene graph
     /////////////////////////////////////
     _grid = make_shared<GridModel>();
-    _grid->init(_scale, true, 10, 10);
+    _grid->init(_scale, true, 10, 10, _assets->get<Texture>("overgrowth1"));
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.4);
@@ -267,9 +276,21 @@ void GameScene::populate() {
 #pragma mark Reynard
     Vec2 pos = Vec2(4, 3);
     // Create a controller for Reynard based on his image texture
-    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
+//    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
+
+    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"), _assets->get<Texture>("reynard_run"));
     // Add Reynard to physics world
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
+
+#pragma mark Enemies
+    //pos = Vec2(15, 3);
+    //// Create a controller for an enemy based on its image texture
+    //_enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit"), _assets->get<Texture>("rabbit")));
+    //// Add enemies to physics world
+    //vector<std::shared_ptr<EnemyController>>::iterator itr;
+    //for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+    //    addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
+    //}
 }
 
 
@@ -324,7 +345,7 @@ void GameScene::update(float dt) {
     // Process the toggled key commands
     if (_input.didDebug()) {
         setDebug(!isDebug());
-        _worldnode->setVisible(!_worldnode->isVisible());
+        //_worldnode->setVisible(!_worldnode->isVisible());
     }
 
 
@@ -336,8 +357,10 @@ void GameScene::update(float dt) {
         Application::get()->quit();
     }
 
+    // Room swap initiated
     if (_input.didRelease() && !_gamestate.zoomed_in()) {
-        Vec2 pos = _input.getPosition();
+        // Scale tap/click location by camera pan
+        Vec2 pos = _input.getPosition() - _worldnode->getPaneTransform().getTranslation();
 
         bool hasSwapped = false;
         if (_envController->hasSelected()) {
@@ -347,14 +370,19 @@ void GameScene::update(float dt) {
         }
     }
 
-    if (_input.didJump()) {
+    // Only allow jumping while zoomed in
+    if (_input.didJump()&& _gamestate.zoomed_in()) {
         _reynardController->jump();
         //cout << "Press Jump Button" << endl;
     }
 
     if (_input.didZoomIn()) {
         _gamestate.zoom_in();
+        // Deselect any selected rooms
+        _envController->deselectRoom();
     }
+
+    // When zooming out
     if(_input.didZoomOut()){
         _gamestate.zoom_out();
     }
@@ -364,7 +392,12 @@ void GameScene::update(float dt) {
     _world->update(scaled_dt);
 
     // Camera following reynard, with some non-linear smoothing
-    _worldnode->applyPan(_gamestate.getPan(_worldnode->getPaneTransform().getTranslation(), _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition()), _scale, getSize(), _reynardController->getCharacter()->isFacingRight()));
+    Vec2 currentTranslation = _worldnode->getPaneTransform().getTranslation();
+    Vec2 reynardScreenPosition = _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition());
+
+    bool faceRight =  _reynardController->getCharacter()->isFacingRight();
+
+    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(),faceRight));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
@@ -397,10 +430,7 @@ void GameScene::update(float dt) {
 bool GameScene::isReynardCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    if (body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody()) {
-        return true;
-    }
-    return false;
+    return body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody();
 }
 
 
@@ -414,6 +444,18 @@ b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
     }
     else {
         return contact->GetFixtureB();
+    }
+}
+
+// TODO: there's gotta be a better way to do this
+b2Fixture* GameScene::getNotReynardFixture(b2Contact* contact) {
+    b2Body* body1 = contact->GetFixtureA()->GetBody();
+    b2Body* body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        return contact->GetFixtureB();
+    }
+    else {
+        return contact->GetFixtureA();
     }
 }
 
@@ -431,7 +473,7 @@ b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
 bool GameScene::isTrapCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    
+
     for(int row = 0; row <_grid->getWidth(); row++){
         for(int col = 0; col<_grid->getHeight(); col++){
             if(_grid->getRoom(row, col)->getTrap() != nullptr){
@@ -454,8 +496,10 @@ bool GameScene::isTrapCollision(b2Contact *contact) {
  */
 
 void GameScene::resolveTrapCollision(){
-    _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
-    CULog("Reynard's Current Health: %d", (int) _reynardController->getCharacter()->getHearts());
+    if(_reynardController->canBeHit()){
+        _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
+        CULog("Reynard's Current Health: %d", (int) _reynardController->getCharacter()->getHearts());
+    }
     //TODO: Determine how else we want the game to deal with Reynard hitting a trap
     //(do we want the trap to be turned off)?
 }
@@ -473,9 +517,13 @@ bool isCharacterRightFixture(b2Fixture *fixture) {
     return (fixture->GetUserData().pointer == 5);
 }
 
-
+// Whether the fixture is an enemy detection radius
+bool isEnemyDetectFixture(b2Fixture* fixture) {
+    return (fixture->GetUserData().pointer == 10);
+}
 
 void GameScene::beginContact(b2Contact *contact) {
+    // If Reynard is one of the collidees
     if (isReynardCollision(contact)) {
         // CULog("Is this a Reynard collision? %d", isReynardCollision(contact));
         // CULog("Is Reyanrd facing right? %d", ReynardIsRight);
@@ -483,31 +531,48 @@ void GameScene::beginContact(b2Contact *contact) {
         // CULog("Is this right fixture? %d", isCharacterRightFixture(reynardFixture));
         // CULog("Is this left fixture? %d", isCharacterRightFixture(reynardFixture));
         // CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
-        
+
         // if statement check to see if contact contains a trap
-            // Call Helper resolveTrapCollision 
+            // Call Helper resolveTrapCollision
             //
-        if(isTrapCollision(contact)){
+        if(true && isTrapCollision(contact)){
             resolveTrapCollision();
         }
-        
+
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
         b2Fixture* reynardFixture = getReynardFixture(contact);
-        if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
+        // First, if Reynard has hit an enemy detection radius
+        if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
+            //CULog("Reynard spotted");
+            //_enemies->at(0)->detectTarget(_reynardController->getCharacter());
+        }
+        // Otherwise if Reynard has hit the enemy's body
+        //else if (_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
+        //    CULog("Body contact");
+        //    // Knock back enemy
+        //    b2Vec2 normal = contact->GetManifold()->localNormal;
+        //    normal *= -1;
+        //    _enemies->at(0)->knockback(normal);
+        //    // Knock back Reynard
+        //    _reynardController->knockback(contact->GetManifold()->localNormal);
+        //}
+        // Reynard hitting right or left wall
+        else if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
             _reynardController->hitWall();
         }
         else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
             _reynardController->hitWall();
         }
+        // Reynard hitting ground
         else if (isCharacterGroundFixture(reynardFixture)) {
             _reynardController->hitGround();
         }
         else {
-            CULog("Switching C");
+            //CULog("Switching C");
             // _reynardController->hitGround();
         }
     }
-    
+
 }
 
 void GameScene::endContact(b2Contact *contact) {
@@ -515,9 +580,17 @@ void GameScene::endContact(b2Contact *contact) {
     // CULog("rey is off da ground");
     if (isReynardCollision(contact)) {
         b2Fixture* reynardFixture = getReynardFixture(contact);
+        // If Reynard leaves the ground
         if (isCharacterGroundFixture(reynardFixture)) {
-            _reynardController->offGround();
-        }
+                _reynardController->offGround();
+            }
+        //if (isCharacterGroundFixture(reynardFixture) && !_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
+        //    _reynardController->offGround();
+        //}
+        //// Otherwise if Reynard is leaving the enemy sensor
+        //else if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
+        //    _enemies->at(0)->loseTarget(_reynardController->getCharacter());
+        //}
     }
 }
 
@@ -561,13 +634,14 @@ void GameScene::beforeSolve(b2Contact *contact, const b2Manifold *oldManifold) {
  */
 Size GameScene::computeActiveSize() const {
     Size dimen = Application::get()->getDisplaySize();
-    float ratio1 = dimen.width / dimen.height;
-    float ratio2 = ((float) SCENE_WIDTH) / ((float) SCENE_HEIGHT);
-    if (ratio1 < ratio2) {
-        dimen *= SCENE_WIDTH / dimen.width;
-    } else {
-        dimen *= SCENE_HEIGHT / dimen.height;
-    }
+//    float ratio1 = dimen.width / dimen.height;
+//    float ratio2 = ((float) SCENE_WIDTH) / ((float) SCENE_HEIGHT);
+//    if (ratio1 < ratio2) {
+//        dimen *= SCENE_WIDTH / dimen.width;
+//    } else {
+//        dimen *= SCENE_HEIGHT / dimen.height;
+//    }
+    dimen *= SCENE_HEIGHT / dimen.height;
     return dimen;
 }
 

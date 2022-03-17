@@ -78,6 +78,9 @@ void RoomModel::buildGeometry(string roomID) {
 	shared_ptr<Poly2> poly;
 	vector<Vec2> verts;
 
+	// Create color for geometry
+	Color4 geometryColor = Color4(66,50,82,200);
+
 	// For each set of polygon coordinates in the room's geometry
 	for (int k = 0; k < roomData->size(); k++) {
 		// Get polygon
@@ -94,7 +97,7 @@ void RoomModel::buildGeometry(string roomID) {
 		// Convert polygon into a scene graph node and add as a child to the room node
 		shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
 		polyNode->setPolygon(*poly);
-		polyNode->setColor(Color4::GRAY);
+		polyNode->setColor(geometryColor);
 		// Ensure that polygons are drawn to their absolute coordinates
 		polyNode->setAbsolute(true);
 		// Set position of polygon node accordingly
@@ -123,17 +126,25 @@ void RoomModel::buildGeometry(string roomID) {
  * @param x         The x-coordinate of the room in parent space
  * @param y         The y-coordinate of the room in parent space
  * @param roomID    ID of room type with the desired geometry
+ * @param bg		Background texture to apply to the room
  * @return          true if the room is initialized properly, false otherwise.
  */
-bool RoomModel::init(float x, float y, string roomID) {
+bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
+	// Add node for background texture if there is one
+	if (bg != nullptr) {
+		shared_ptr<scene2::PolygonNode> bgNode = scene2::PolygonNode::allocWithTexture(bg);
+		bgNode->setPolygon(Rect(0, 0, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT));
+		addChild(bgNode);
+	}
+
 	// Build geometry for the room type with the given ID
 	buildGeometry(roomID);
 
 	// Create path node for room boundary
-	Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), size(BOUND) / 2);
+	Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), sizeof(BOUND) / 2);
 	boundPath.closed = true;
 	shared_ptr<scene2::PathNode> boundNode = scene2::PathNode::allocWithPath(boundPath, BOUND_WIDTH);
-	boundNode->setColor(Color4::GRAY);
+	boundNode->setColor(Color4(Vec4(0.65, 0.65, 0.65, 0.5)));
 	boundNode->setClosed(true);
 	addChild(boundNode);
 

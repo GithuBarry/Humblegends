@@ -45,10 +45,10 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
+    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
         // Get model cast to subclass type
         _character = make_shared<ModelType>();
-        _character->init(pos, drawScale, image);
+        _character->init(pos, drawScale, defaultTexture, runAnimation);
         return (_character != nullptr);
     }
 
@@ -71,9 +71,9 @@ public:
      * 
      * @return  A newly allocated CharacterController for the character at the given position with the given scale
      */
-    static shared_ptr<ControllerType> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> image) {
+    static shared_ptr<ControllerType> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
         std::shared_ptr<ControllerType> result = std::make_shared<ControllerType>();
-        return (result->init(pos, drawScale, image) ? result : nullptr);
+        return (result->init(pos, drawScale, defaultTexture, runAnimation) ? result : nullptr);
     }
 
 #pragma mark -
@@ -82,21 +82,24 @@ public:
     shared_ptr<ModelType> getCharacter() { return _character; }
 
     /**
-     * Returns the position of the character's center.
+     * Returns the position of the character's center in world space.
      * 
-     * @return  Position of character's center
+     * @return  Position of character's center in world space
      */
     Vec2 getPosition() {
-        return _character->getPosition();
+        return _character->getPosition().scale(_character->_drawScale);
     }
 
     /**
-     * Returns the position of the character's center.
+     * Returns the size of the character in world space.
      *
-     * @return  Position of character's center
+     * @return  Size of the character in world space
      */
     Size getSize() {
-        return _character->getDimension();
+        // Get size in screen space
+        //Size screenSize = ((_character->_node->getBoundingRect()).size;
+        Vec2 size = (_character->_node->nodeToParentCoords(Vec2(_character->_node->getWidth(), _character->_node->getHeight())));
+        return Size(size);
     }
 
     /**
@@ -251,6 +254,7 @@ public:
      * Sets the character to have landed on the ground.
      */
     void hitGround() {
+        _character->_groundedCounter++;
         // Land the character
         land();
     }
@@ -259,9 +263,16 @@ public:
      * Called when the character's feet sensor ends contact with the
      * ground.
      * 
+     * This method does nothing if the character has begun more contacts
+     * than it has ended.
+     * 
      * If the character did not actively jump, they will be set to falling.
      */
     void offGround() {
+        _character->_groundedCounter--;
+        // Do nothing if there are more begin contacts than ended, meaning
+        // character is still on ground
+        if (_character->_groundedCounter > 0) return;
         // If the character didn't choose to jump, then they must be falling
         if (!(_character->isJumping())) fall();
     }
@@ -277,6 +288,19 @@ public:
         turn();
         // If character was in the air, set them to stick to the wall
         if (!(_character->isGrounded())) stickToWall();
+    }
+
+    /**
+     * Applies a knockback force to the character in the direction of the
+     * given vector.
+     *
+     * @param dir   Direction to apply knockback force in
+     */
+    virtual void knockback(b2Vec2 dir) {
+        // Normalize and scale so it applies a constant force
+        dir.Normalize();
+        dir.operator*=(4.0f);
+        _character->getBody()->ApplyForceToCenter(dir, true);
     }
 
 #pragma mark -
