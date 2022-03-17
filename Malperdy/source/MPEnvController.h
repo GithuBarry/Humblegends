@@ -6,7 +6,7 @@
 //
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
-//  Version: 3/10/22
+//  Version: 3/13/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -16,7 +16,7 @@
 
 #include <cugl/cugl.h>
 #include "MPGridModel.h"
-#include "MPRoomModel.h"
+#include "MPReynardController.h"
 using namespace cugl;
 
 class EnvController {
@@ -46,10 +46,11 @@ public:
     * Will not select a room if it contains Reynard
     * 
     * @param coords     the coordinates of the selection in worldspace
+    * @param reynard    the controller for reynard
     * 
     * @return true if room was successfully selected, and false otherwise
     */
-    bool selectRoom(Vec2 coords);
+    bool selectRoom(Vec2 coords, const shared_ptr<ReynardController>& reynard);
 
     /* 
     * Returns whether there is currently a room selected 
@@ -69,12 +70,13 @@ public:
     * or on an attempt to swap a room with itself
     * 
     * @param coords     the coordinates of the selection in worldspace
+    * @param reynard    the controller for reynard
     * 
-    * @return true if rooms were successfully swapped
-    * @return false if room was the same as selected room
-    * @return false if no swap occurred
+    * @return   true if rooms were successfully swapped
+    *           false if room was the same as selected room
+    *           false if no swap occurred
     */
-    bool swapWithSelected(Vec2 coords);
+    bool swapWithSelected(Vec2 coords, const shared_ptr<ReynardController>& reynard);
 
     /* Deselects the currently selected room, if one is selected */
     void deselectRoom();
@@ -83,15 +85,13 @@ private:
 #pragma mark Helper Functions
     /*
     * Checks whether Reynard is inside the indicated room
-    *
-    * @param pos    the position Reynard is currently at
-    * @param size   Reynard's size
-    * @param room   the row and column of the room to check
+    * 
+    * @param room       the row and column of the room to check
+    * @param reynard    the controller for reynard
     * 
     * @return true if Reynard is inside the given room
     */
-    bool containsReynard(Vec2 room);
-    //TODO: write actual implementation, containsReynard() is not yet implemented
+    bool containsReynard(Vec2 room, const shared_ptr<ReynardController>& reynard);
 };
 
 #endif /* MPEnvController_h */

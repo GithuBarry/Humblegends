@@ -7,10 +7,11 @@
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
 //  Copyright (c) 2022 Humblegends. All rights reserved.
-//  Version: 3/10/22
+//  Version: 3/13/22
 //
 
 #include "MPEnvController.h"
+#include "MPReynardModel.h"
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController(){
@@ -24,14 +25,16 @@ EnvController::EnvController(){
 * Selection is for the purpose of being swapped with another room in swapWithSelected
 * Does not currently check if the room is swappable
 *
-* @param coords     the coordinates of the selection in worldspace
+* @param coords     the coordinates of the selection in screen space
+* @param reynard    the controller for reynard
 *
 * @return true if room was successfully selected, and false otherwise
 */
-bool EnvController::selectRoom(Vec2 coords){
-	Vec2 room1 = _grid->worldSpaceToRoom(coords);
+bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController>& reynard){
+	//CULog("Mouse coords: (%f, %f)", coords.x, coords.y);
+	Vec2 room1 = _grid->screenSpaceToRoom(coords);
 	bool isValidRoom = room1.x != -1 && room1.y != -1;
-	bool isOccupied = containsReynard(room1);
+	bool isOccupied = containsReynard(room1, reynard);
 
 	if (!isValidRoom || isOccupied) {
 		deselectRoom();
@@ -49,22 +52,25 @@ bool EnvController::selectRoom(Vec2 coords){
 * If room at given location is the selected room, deselects the room
 * Does not currently check if the room is swappable
 *
-* @param coords     the coordinates of the selection in worldspace
+* @param coords     the coordinates of the selection in screen space
+* @param reynard    the controller for reynard
 *
-* @return true if rooms were successfully swapped
-* @return false if room was the same as selected room & is now deselected
-* @return false if no swap occurred
+* @return	true if rooms were successfully swapped
+*			false if room was the same as selected room & is now deselected
+*			false if no swap occurred
 */
-bool EnvController::swapWithSelected(Vec2 coords){
+bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardController>& reynard){
 	if (!hasSelected()) {
 		return false;
 	}
 
-	Vec2 room2 = _grid->worldSpaceToRoom(coords);
+	Vec2 room2 = _grid->screenSpaceToRoom(coords);
 	bool isValidRoom = room2.x != -1 && room2.y != -1;
-	bool isOccupied = containsReynard(room2) || containsReynard(_toSwap);
+	bool isOccupied = containsReynard(room2, reynard) || containsReynard(_toSwap, reynard);
 
-	if (!isValidRoom || isOccupied) {
+	if (!isValidRoom) return false;
+	if (isOccupied) {
+		deselectRoom();
 		return false;
 	}
 	if (room2.x == _toSwap.x && room2.y == _toSwap.y) {
@@ -93,18 +99,34 @@ void EnvController::deselectRoom(){
 /*
 * Checks whether Reynard is inside the indicated room
 *
-* @param pos    the position Reynard is currently at
-* @param size   Reynard's size
-* @param room   the row and column of the room to check
+* @param room		the row and column of the room to check
+* @param reynard    the controller for reynard
 * 
 * @return true if Reynard is inside the given room
 */
-bool EnvController::containsReynard(Vec2 room) {
-	//TODO: write actual implementation
-	//calculate Reynard's corners by his position & size
-	//for each corner
-		//call GridModel to see the room that corner is in
-		//if that room is the room we're checking
-			//return true
+bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardController>& reynard) {
+	//CULog("room: (%f, %f)", room.x, room.y);
+	Vec2 pos = reynard->getPosition(); //reynard's center
+	//CULog("position: (%f, %f)", pos.x, pos.y);
+
+
+	// TODO: character->getSize() returns the wrong size, so fix that later
+	//float width = reynard->getSize().width;
+	//float height = reynard->getSize().height;
+	float width = 0;
+	float height = 0;
+
+	for (float x = -0.5f; x <= 0.5f; x++) {
+		for (float y = -0.5f; y <= 0.5f; y++) {
+			Vec2 corner = pos + Vec2(width * x, height * y);
+			Vec2 cRoom = _grid->worldSpaceToRoom(corner);
+			//CULog("corner: (%f, %f)", corner.x, corner.y);
+			//CULog("in room: (%f, %f)", cRoom.x, cRoom.y);
+			if (room.equals(cRoom)) return true;
+		}
+	}
+	Vec2 cRoom = _grid->worldSpaceToRoom(pos);
+	//CULog("in room: (%f, %f)", cRoom.x, cRoom.y);
+	if (room.equals(cRoom)) return true;
 	return false;
 }

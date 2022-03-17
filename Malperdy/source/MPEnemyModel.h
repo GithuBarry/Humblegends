@@ -26,6 +26,8 @@ using namespace cugl;
 
 /** Name of the detection sensor for an enemy */
 #define DETECTION_SENSOR_NAME 10
+/** How close to a future move location an enemy has to be to be considered arrived */
+#define FUTURE_MOVE_ERROR_SQUARED 0.04f
 /** Default max number of hearts an enemy will have */
 #define DEFAULT_ENEMY_MAX_HEARTS 1
 
@@ -50,6 +52,9 @@ public:
         SEARCHING,  // Enemy has lost Reynard and is looking for him
         RETURNING   // Enemy has given up on Reynard and is going home
     };
+
+    /** Queue of locations that the enemy will try to go to next */
+    shared_ptr<deque<Vec2>> _futureMoveLocations = make_shared<deque<Vec2>>();
 
 protected:
     // DETECTION
@@ -87,7 +92,7 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> image);
+    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation);
 
 #pragma mark -
 #pragma mark Attribute Methods

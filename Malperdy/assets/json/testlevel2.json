@@ -3,13 +3,13 @@
   "cols": 4,
   "rooms": [
     [
-      "leftright",
+      "leftrightupdown",
       "leftrightdown",
       "leftdown",
       "rightupdown"
     ],
     [
-      "leftrightupdown",
+      "leftright",
       "leftupdown",
       "rightupdown",
       "leftrightupdown"
