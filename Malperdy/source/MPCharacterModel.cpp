@@ -145,6 +145,11 @@ bool CharacterModel::setMoveState(MovementState newState) {
         // Reset gravity to normal
         setGravityScale(1.0f);
         break;
+    case MovementState::DASHING:
+        // Reset gravity to normal
+        setVX((_faceRight ? 1 : -1) * RUN_SPEED);
+        setGravityScale(1.0f);
+        break;
     }
 
     //uploadTexture("default");
@@ -173,6 +178,12 @@ bool CharacterModel::setMoveState(MovementState newState) {
         // Stop moving temporarily as character sticks
         setVX(0);
         setVY(0);
+        break;
+    case MovementState::DASHING:
+        setGravityScale(0);
+        setVX((_faceRight ? 1 : -1) * RUN_SPEED * 3.0);
+        setVY(0);
+        _dashStart = Timestamp();
         break;
     }
 
@@ -347,6 +358,11 @@ void CharacterModel::update(float dt) {
         break;
     case MovementState::ONWALL:
         break;
+    case MovementState::DASHING:
+        if (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION){
+            setMoveState(MovementState::FALLING);
+        }
+            
     }
 
     // Update physics obstacle
