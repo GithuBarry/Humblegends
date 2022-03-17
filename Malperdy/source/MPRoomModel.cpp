@@ -79,7 +79,7 @@ void RoomModel::buildGeometry(string roomID) {
 	vector<Vec2> verts;
 
 	// Create color for geometry
-	Color4 geometryColor = Color4(Vec4(0, 0.01, 0.07, 1));
+	Color4 geometryColor = Color4(66,50,82,200);
 
 	// For each set of polygon coordinates in the room's geometry
 	for (int k = 0; k < roomData->size(); k++) {
