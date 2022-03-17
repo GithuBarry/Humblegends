@@ -61,7 +61,7 @@ public:
      * @return an empty grid model
      */
     GridModel(){
-        CULog("child Offset: %i", this->_childOffset);
+        //CULog("child Offset: %i", this->_childOffset);
     };
 
     /**

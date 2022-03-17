@@ -496,8 +496,10 @@ bool GameScene::isTrapCollision(b2Contact *contact) {
  */
 
 void GameScene::resolveTrapCollision(){
-    _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
-    CULog("Reynard's Current Health: %d", (int) _reynardController->getCharacter()->getHearts());
+    if(_reynardController->canBeHit()){
+        _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
+        CULog("Reynard's Current Health: %d", (int) _reynardController->getCharacter()->getHearts());
+    }
     //TODO: Determine how else we want the game to deal with Reynard hitting a trap
     //(do we want the trap to be turned off)?
 }
@@ -533,7 +535,7 @@ void GameScene::beginContact(b2Contact *contact) {
         // if statement check to see if contact contains a trap
             // Call Helper resolveTrapCollision
             //
-        if(false && isTrapCollision(contact)){
+        if(true && isTrapCollision(contact)){
             resolveTrapCollision();
         }
 
