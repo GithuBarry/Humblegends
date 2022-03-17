@@ -77,6 +77,9 @@ protected:
     /** represents the actual frame of animation, invariant to texture flips */
     int _currFrame = 0;
     
+    /** if the character has dashed since last touching the ground */
+    bool _hasDashed = false;
+    
     /** the time that the last dash started */
     Timestamp _dashStart = Timestamp();
 
@@ -231,7 +234,7 @@ public:
     
     /** whether or not the character can dash */
     bool canDash(){
-        return (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION);
+        return (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION) && !_hasDashed;
     }
     
     /**

@@ -160,6 +160,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
     case MovementState::RUNNING:
         // Set character moving in the given direction at the right speed
         setVX((_faceRight ? 1 : -1) * _speed);
+        _hasDashed = false;
         //uploadTexture("run");
         break;
     case MovementState::JUMPING:
@@ -180,6 +181,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
         setVY(0);
         break;
     case MovementState::DASHING:
+        _hasDashed = true;
         setGravityScale(0);
         setVX((_faceRight ? 1 : -1) * RUN_SPEED * 3.0);
         setVY(0);
@@ -360,7 +362,12 @@ void CharacterModel::update(float dt) {
         break;
     case MovementState::DASHING:
         if (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION){
-            setMoveState(MovementState::FALLING);
+            if (_groundedCounter <= 0){
+                setMoveState(MovementState::FALLING);
+            }
+            else{
+                setMoveState(MovementState::RUNNING);
+            }
         }
             
     }
