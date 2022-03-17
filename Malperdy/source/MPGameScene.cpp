@@ -256,7 +256,7 @@ void GameScene::populate() {
     // DEBUG: add room to scene graph
     /////////////////////////////////////
     _grid = make_shared<GridModel>();
-    _grid->init(_scale, true, 10, 10);
+    _grid->init(_scale, true, 10, 10, _assets->get<Texture>("overgrowth1"));
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.4);

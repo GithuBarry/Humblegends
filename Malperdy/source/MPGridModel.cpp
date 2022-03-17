@@ -32,9 +32,10 @@ shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testleve
  * @param json: true if GridModel should use the JSON
  * @param hgap: the horizontal gap between rooms (unimplemented)
  * @param vgap: the vertical gap between rooms (unimplemented)
+ * @param bg    A default background to place in the back of rooms
  * @return a grid with 3x3 rooms, each room the default
  */
-bool GridModel::init(float scale, bool json, float hgap, float vgap)
+bool GridModel::init(float scale, bool json, float hgap, float vgap, shared_ptr<Texture> bg)
 {
     _horizontal_gap = hgap;
     _vertical_gap = vgap;
@@ -69,7 +70,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
             shared_ptr<vector<shared_ptr<RoomModel>>> roomRow = make_shared<vector<shared_ptr<RoomModel>>>();
             // Construct and store the RoomModel corresponding to the ID of the room at this location
             for (int x = 0; x < _size.x; x++) {
-                room = RoomModel::alloc(x, y, _gridLoader->getRoomAt(x, y));
+                room = RoomModel::alloc(x, y, _gridLoader->getRoomAt(x, y), bg);
                 roomRow->push_back(room);
                 // Add room to scene graph
                 addChild(room);
@@ -231,7 +232,6 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
     return true;
 };
 
-// TODO: update this
 /**
  *
  * Returns whether the two given rooms can be swapped
@@ -242,7 +242,7 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
  */
 bool GridModel::canSwap(Vec2 room1, Vec2 room2)
 {
-    // If the bounds are out of bounds
+    // If the room bounds are out of bounds
   if (room1.x >= _size.x || room1.y >= _size.y)
   {
     return false;
