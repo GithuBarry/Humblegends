@@ -134,11 +134,13 @@ vector<shared_ptr<RoomModel>> GridModel::getRooms()
 shared_ptr<RoomModel> GridModel::getRoom(int x, int y)
 {
     // Return null pointer if out of bounds
-    if (x >= _size.x || y >= _size.y)
+    if (x >= _size.x || x < 0 || y < 0 || y >= _size.y)
     {
         return nullptr;
     }
-  return _grid->at(y)->at(x);
+    return _grid->at(y)->at(x);
+
+
 };
 
 #pragma mark Setters
