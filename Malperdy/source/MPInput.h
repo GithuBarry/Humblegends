@@ -244,6 +244,18 @@ public:
     }
 
     /**
+     * Return true if the user released a press this frame.
+     *
+     * A release means that the user is not pressing (mouse/finger) 
+     * this animation frame, but was pressing during the last frame.
+     *
+     * @return true if the user initiated a press this frame.
+     */
+    bool didRelease() const {
+        return _prevDown && !_currDown;
+    }
+
+    /**
      * Returns the current mouse/touch position
      *
      * @return the current mouse/touch position

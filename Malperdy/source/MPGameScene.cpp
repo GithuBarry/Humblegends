@@ -336,7 +336,7 @@ void GameScene::update(float dt) {
         Application::get()->quit();
     }
 
-    if (_input.didPress() && !_gamestate.zoomed_in()) {
+    if (_input.didRelease() && !_gamestate.zoomed_in()) {
         Vec2 pos = _input.getPosition();
 
         bool hasSwapped = false;
