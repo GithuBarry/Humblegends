@@ -31,6 +31,9 @@
     },
     "flames-left": {
       "file": "textures/flames-left.png"
+    },
+    "overgrowth1": {
+      "file": "textures/environment/b_overgrowth1_1.png"
     }
   },
     "sounds": {

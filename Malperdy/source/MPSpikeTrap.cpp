@@ -24,20 +24,12 @@ using namespace cugl;
 #pragma mark Constructors
 
 /**
- * Initializes a new SpikeTrap at the given position.
+ * Initializes a new trap at the given position
  *
- * The SpikeTrap is sized according to the given drawing scale.
+ * Currently hard coded spawn in across bottom of the room.
  *
- * @param pos       Initial position in world coordinates
- * @param drawScale The drawing scale (world to screen)
- * @param image     The image for the character's appearance
- *
- * @return  true if the character is correctly initialized, false otherwise.
+ * @return  true if the trap is initialized properly, false otherwise.
  */
-//bool SpikeTrap::init(float x, float y, shared_ptr<Texture> image){
-//
-//    if(!(TrapModel::init(x,y))) return false;
-////     Spike Traps are initially set to being deactivated
-//    _trapState = TrapModel::TrapState::DEACTIVATED;
-//    return true;
-//}
+bool SpikeTrap::init(){
+   return this->TrapModel::init(PolyFactory().makeRect(0, 0, 720, 20));
+}

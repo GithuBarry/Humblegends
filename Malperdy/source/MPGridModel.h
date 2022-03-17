@@ -61,7 +61,7 @@ public:
      * @return an empty grid model
      */
     GridModel(){
-        CULog("child Offset: %i", this->_childOffset);
+        //CULog("child Offset: %i", this->_childOffset);
     };
 
     /**
@@ -78,7 +78,7 @@ public:
      * @param json - whether to use json loader or not
      * @return a grid with 3x3 rooms, each room the default
      */
-    bool init(float scale=1, bool json=false, float hgap = 0, float vgap = 0);
+    bool init(float scale=1, bool json=false, float hgap = 0, float vgap = 0, shared_ptr<Texture> bg = nullptr);
 
 #pragma mark Destructors
     /**

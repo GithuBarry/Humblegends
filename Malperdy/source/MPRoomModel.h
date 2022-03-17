@@ -178,9 +178,10 @@ public:
      * @param x         The column of the room in grid space
      * @param y         The row of the room in parent space
      * @param roomID    ID of room type with the desired geometry
+     * @param bg		Background texture to apply to the room
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(float x, float y, string roomID);
+    bool init(float x, float y, string roomID, shared_ptr<Texture> bg = nullptr);
     
     /** */
     bool initTrap(string type);
@@ -289,11 +290,12 @@ public:
      * @param x         The column of the room in grid space
      * @param y         The row of the room in grid space
      * @param roomID    ID of room type with the desired geometry
+     * @param bg		Background texture to apply to the room
      * @return          A newly-allocated RoomModel
      */
-    static std::shared_ptr<RoomModel> alloc(float x, float y, string roomID) {
+    static std::shared_ptr<RoomModel> alloc(float x, float y, string roomID, shared_ptr<Texture> bg) {
         std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init(x, y, roomID) ? result : nullptr);
+        return (result->init(x, y, roomID, bg) ? result : nullptr);
     }
 
 #pragma mark Destructors

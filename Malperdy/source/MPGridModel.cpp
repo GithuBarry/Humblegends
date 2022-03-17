@@ -32,10 +32,12 @@ shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testleve
  * @param json: true if GridModel should use the JSON
  * @param hgap: the horizontal gap between rooms (unimplemented)
  * @param vgap: the vertical gap between rooms (unimplemented)
+ * @param bg    A default background to place in the back of rooms
  * @return a grid with 3x3 rooms, each room the default
  */
-bool GridModel::init(float scale, bool json, float hgap, float vgap)
+bool GridModel::init(float scale, bool json, float hgap, float vgap, shared_ptr<Texture> bg)
 {
+    //cout<<"HERE YOU ARE 3"<<endl;
     _horizontal_gap = hgap;
     _vertical_gap = vgap;
     _physics_scale =  scale;
@@ -54,6 +56,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
             addChild(_grid->at(i)->at(j));
           }
         }
+        //cout<<"HERE YOU ARE 5"<<endl;
     }
     else{
         // Get level dimensions
@@ -69,7 +72,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
             shared_ptr<vector<shared_ptr<RoomModel>>> roomRow = make_shared<vector<shared_ptr<RoomModel>>>();
             // Construct and store the RoomModel corresponding to the ID of the room at this location
             for (int x = 0; x < _size.x; x++) {
-                room = RoomModel::alloc(x, y, _gridLoader->getRoomAt(x, y));
+                room = RoomModel::alloc(x, y, _gridLoader->getRoomAt(x, y), bg);
                 roomRow->push_back(room);
                 // Add room to scene graph
                 addChild(room);
@@ -77,15 +80,19 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap)
             // Add row of rooms to the full grid
             _grid->push_back(roomRow);
         }
+        //cout<<"HERE YOU ARE 6"<<endl;
     }
 
+    // TODO: REPLACE THIS CODE LATER TO THE JSON
+    // TODO: WHY DOES THIS CODE HAVE NO IMPACT ON ANYTHING
     // create organized back of physics geometry
     //calculatePhysicsGeometry();
-    if (false){
-        _grid->at(1)->at(1)->initTrap("spike");
-    }
+    _grid->at(1)->at(1)->initTrap("spike");
+    _grid->at(1)->at(3)->initTrap("spike");
+//    cout<<"HERE YOU ARE 1"<<endl;
+//    cout<<_grid->at(0)->at(1)->initTrap("spike")<<endl;
+//    cout<<"HERE YOU ARE 2"<<endl;
 
-    
     return this->scene2::SceneNode::init();
 };
 
@@ -231,7 +238,6 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
     return true;
 };
 
-// TODO: update this
 /**
  *
  * Returns whether the two given rooms can be swapped
@@ -242,7 +248,7 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
  */
 bool GridModel::canSwap(Vec2 room1, Vec2 room2)
 {
-    // If the bounds are out of bounds
+    // If the room bounds are out of bounds
   if (room1.x >= _size.x || room1.y >= _size.y)
   {
     return false;
@@ -352,8 +358,10 @@ void GridModel::calculatePhysicsGeometry(){
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
             }
             
+            // TODO: Inspect code for bug
+            // TODO: Why does this have no impact on instantiation
             // if the room has a trap
-            if (false && _grid->at(row)->at(col)->getTrap()){
+            if (true && _grid->at(row)->at(col)->getTrap()){
                 shared_ptr<scene2::PolygonNode> pn = _grid->at(row)->at(col)->getTrap()->getPolyNode();
                 Poly2 p = pn->getPolygon();
                 p *= pn->getNodeToWorldTransform();
