@@ -199,7 +199,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     //EnemyController::setObstacleWorld(_world);
 
     // XNA nostalgia
-    Application::get()->setClearColor(Color4f::WHITE);
+    Application::get()->setClearColor(Color4f::BLACK);
     return true;
 }
 

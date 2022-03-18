@@ -29,13 +29,8 @@ using namespace cugl::physics2;
  *
  * @return     Returns True if the space is initialized properly.
  */
-bool TrapModel::init(Poly2 poly) {
-
-    _polyNode = make_shared<scene2::PolygonNode>();
-    _polyNode->init();
-    _polyNode->setPolygon(poly);
-    _polyNode->setColor(Color4::RED);
-    _polyNode->setAbsolute(true);
+bool TrapModel::init()
+{
 
     addChild(_polyNode);
 
@@ -43,7 +38,6 @@ bool TrapModel::init(Poly2 poly) {
 
     return this->scene2::SceneNode::init();
 }
-
 
 /**
  * Creates the physics Body(s) for this object, adding them to the world.
