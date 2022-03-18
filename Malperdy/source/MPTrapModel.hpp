@@ -88,7 +88,7 @@ public:
      *
      * @return     Returns True if the space is initialized properly.
      */
-    bool init(Poly2 poly);
+    bool init();
     //TODO: This needs to be verified to be in the room space coords and not world space coords
     
     bool initObstacle(shared_ptr<physics2::PolygonObstacle> bo){

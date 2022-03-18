@@ -31,5 +31,18 @@ using namespace cugl;
  * @return  true if the trap is initialized properly, false otherwise.
  */
 bool SpikeTrap::init(){
-   return this->TrapModel::init(PolyFactory().makeRect(0, 0, 720, 20));
+    _polyNode = make_shared<scene2::PolygonNode>();
+    _polyNode->initWithFile("textures/spikes.png");
+    
+    _polyNode->setAnchor(Vec2::ZERO);
+    _polyNode->setScale(720.0 / _polyNode->getPolygon().getBounds().getMaxX());
+    _polyNode->setAbsolute(true);
+//    CULog("min X: %f", _polyNode->getPolygon().getBounds().getMinX());
+//    CULog("min Y: %f", _polyNode->getPolygon().getBounds().getMinY());
+//    CULog("max X: %f", _polyNode->getPolygon().getBounds().getMaxX());
+//    CULog("max Y: %f", _polyNode->getPolygon().getBounds().getMaxY());
+    CULog("scale: %f", 720.0 / _polyNode->getPolygon().getBounds().getMaxX());
+//    _polyNode->setPolygon(poly);
+//    _polyNode->setColor(Color4::CYAN);
+   return this->TrapModel::init();
 }
