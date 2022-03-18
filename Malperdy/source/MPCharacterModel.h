@@ -52,7 +52,8 @@ public:
         RUNNING,
         JUMPING,
         FALLING,
-        ONWALL
+        ONWALL,
+        DASHING
     };
 
     /** SceneNode representing the sprite for the character */
@@ -75,6 +76,12 @@ protected:
     
     /** represents the actual frame of animation, invariant to texture flips */
     int _currFrame = 0;
+    
+    /** if the character has dashed since last touching the ground */
+    bool _hasDashed = false;
+    
+    /** the time that the last dash started */
+    Timestamp _dashStart = Timestamp();
 
 #pragma mark -
 #pragma mark Constants
@@ -84,6 +91,9 @@ protected:
     
     /** The amount of time in between each frame update */
     const float FRAME_TIME = 0.03;
+    
+    /** The duration in milliseconds of a dash */
+    const Uint64 DASH_DURATION = 200;
 
 #pragma mark Attributes
     
@@ -222,6 +232,11 @@ public:
 #pragma mark -
 #pragma mark Attribute Properties
     
+    /** whether or not the character can dash */
+    bool canDash(){
+        return (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION) && !_hasDashed;
+    }
+    
     /**
      * Sets the character's direction to be facing in the opposite direction that
      * it is currently facing in.
@@ -293,6 +308,15 @@ public:
      */
     bool isOnWall() const {
         return (_moveState == MovementState::ONWALL);
+    }
+    
+    /**
+     * Returns true if the character is dashing.
+     *
+     * @return true if the character is on the dashing.
+     */
+    bool isDashing() const {
+        return (_moveState == MovementState::DASHING);
     }
 
     /**
