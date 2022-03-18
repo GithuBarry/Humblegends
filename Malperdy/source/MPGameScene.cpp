@@ -386,6 +386,19 @@ void GameScene::update(float dt) {
     if(_input.didZoomOut()){
         _gamestate.zoom_out();
     }
+    
+    // When dashing right
+    if(_input.didDashRight()){
+        //TODO: make dash less buggy and uncomment
+        //_reynardController->dashRight();
+    }
+    
+    // When dashing left
+    if(_input.didDashLeft()){
+        //TODO: make dash less buggy and uncomment
+        //_reynardController->dashLeft();
+    }
+
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
     _reynardController->update(scaled_dt);

@@ -30,17 +30,17 @@ using namespace cugl::physics2;
  * @return     Returns True if the space is initialized properly.
  */
 bool TrapModel::init(Poly2 poly) {
-    
+
     _polyNode = make_shared<scene2::PolygonNode>();
     _polyNode->init();
     _polyNode->setPolygon(poly);
     _polyNode->setColor(Color4::RED);
     _polyNode->setAbsolute(true);
-    
+
     addChild(_polyNode);
-    
+
     _trapState = TrapState::DEACTIVATED;
-    
+
     return this->scene2::SceneNode::init();
 }
 
@@ -66,4 +66,3 @@ void TrapModel::createFixtures() {
 void TrapModel::releaseFixtures() {
     _obstacle->releaseFixtures();
 }
-

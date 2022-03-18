@@ -173,6 +173,36 @@ public:
     bool jump() {
         return _character->setMoveState(CharacterModel::MovementState::JUMPING);
     }
+    
+    /**
+     * The character dashes right at a set velocity.
+     *
+     * @return  Whether the character dashed successfully
+     */
+    bool dashRight(){
+        if (_character->canDash()){
+            if (!_character->isFacingRight()){
+                _character->flipDirection();
+            }
+            return _character->setMoveState(CharacterModel::MovementState::DASHING);
+        }
+        return false;
+    }
+    
+    /**
+     * The character dashes left at a set velocity.
+     *
+     * @return  Whether the character dashed successfully
+     */
+    bool dashLeft(){
+        if (_character->canDash()){
+            if (_character->isFacingRight()){
+                _character->flipDirection();
+            }
+            return _character->setMoveState(CharacterModel::MovementState::DASHING);
+        }
+        return false;
+    }
 
 #pragma mark Character Actions
     protected:
