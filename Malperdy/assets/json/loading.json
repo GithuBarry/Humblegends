@@ -2,7 +2,6 @@
 	"textures": {
 		"logo": {
 			"file":      "textures/cugl-logo.png",
-            "mipmaps": true,
             "wrapS":     "clamp",
             "wrapT":     "clamp",
             "minfilter": "nearest-nearest",

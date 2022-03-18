@@ -34,7 +34,7 @@ bool TrapModel::init(Poly2 poly) {
     _polyNode = make_shared<scene2::PolygonNode>();
     _polyNode->init();
     _polyNode->setPolygon(poly);
-    _polyNode->setColor(Color4::CYAN);
+    _polyNode->setColor(Color4::RED);
     _polyNode->setAbsolute(true);
     
     addChild(_polyNode);
