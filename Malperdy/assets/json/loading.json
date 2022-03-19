@@ -2,7 +2,6 @@
 	"textures": {
 		"logo": {
 			"file":      "textures/cugl-logo.png",
-            "mipmaps": true,
             "wrapS":     "clamp",
             "wrapT":     "clamp",
             "minfilter": "nearest-nearest",
@@ -54,7 +53,7 @@
                     "data"   : {
                         "texture"  : "logo",
                         "anchor"   : [0.5,0.5],
-                        "scale"    : 0.6
+                        "scale"    : 0.75
                     },
                     "layout" : {
                         "x_anchor" : "center",
@@ -101,8 +100,7 @@
                     "layout" : {
                         "x_anchor" : "center",
                         "y_anchor" : "middle",
-                        "x_offset" : 275,
-                        "y_offset" : -35,
+                        "y_offset" : -115,
                         "absolute" : true
                     }
                 },

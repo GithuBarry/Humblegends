@@ -47,6 +47,10 @@ const Vec2 RoomModel::ROOM_SCALE = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT)
 /** How big the boundary extrusion should be */
 #define BOUND_WIDTH 10
 
+
+// Create color for geometry
+Color4 geometryColor = Color4(60,60,60,255);
+
 #pragma mark Room Layout
 /** The vertices for the boundary of a room */
 // TODO: this is a dumb workaround to path not closing, fix it later
@@ -78,8 +82,6 @@ void RoomModel::buildGeometry(string roomID) {
 	shared_ptr<Poly2> poly;
 	vector<Vec2> verts;
 
-	// Create color for geometry
-	Color4 geometryColor = Color4(66,50,82,200);
 
 	// For each set of polygon coordinates in the room's geometry
 	for (int k = 0; k < roomData->size(); k++) {
