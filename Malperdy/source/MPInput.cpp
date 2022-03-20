@@ -317,7 +317,7 @@ void InputController::mouseUpCB(const cugl::MouseEvent& event, Uint8 clicks, boo
  * @param event     The event with the touch information
  */
 void InputController::touchBeginCB(const cugl::TouchEvent& event, bool focus) {
-    CULog("Touch Begin");
+    //CULog("Touch Begin");
     if (!_touchDown) {
         _touchDown = true;
         _currentTouch = event.touch;
@@ -331,7 +331,7 @@ void InputController::touchBeginCB(const cugl::TouchEvent& event, bool focus) {
 * @param event     The event with the touch information
 */
 void InputController::touchMotionCB(const cugl::TouchEvent& event, const cugl::Vec2 previous, bool focus) {
-    CULog("Touch Move");
+    //CULog("Touch Move");
     if (_touchDown && event.touch == _currentTouch) {
         _touchPos = event.position;
     }
@@ -343,7 +343,7 @@ void InputController::touchMotionCB(const cugl::TouchEvent& event, const cugl::V
  * @param event     The event with the touch information
  */
 void InputController::touchEndCB(const cugl::TouchEvent& event, bool focus) {
-    CULog("Touch End");
+    //CULog("Touch End");
     if (_touchDown && event.touch == _currentTouch) {
         _touchDown = false;
     }
@@ -368,12 +368,12 @@ void InputController::multiBeginCB(const cugl::CoreGestureEvent& event, bool foc
 void InputController::multiChangeCB(const cugl::CoreGestureEvent& event, bool focus) {
     //TODO: implement
     if (event.type == CoreGestureType::PINCH) {
-        CULog("Pinch gesture type");
+        //CULog("Pinch gesture type");
         float spreadDiff = event.currSpread - event.origSpread;
         _isPinching = spreadDiff < -EVENT_SPREAD_LENGTH;
         _isZooming = spreadDiff > EVENT_SPREAD_LENGTH;
-        if (_isPinching)CULog("Pinch detected");
-        if (_isZooming)CULog("Zoom detected");
+        //if (_isPinching)//CULog("Pinch detected");
+        //if (_isZooming)//CULog("Zoom detected");
     }
     else {
         _isPinching = false;

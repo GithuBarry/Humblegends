@@ -409,7 +409,7 @@ public:
         return (isFacingRight() ? _faceFixtureRight : _faceFixtureLeft);
     }
 
-    b2Body* getBody() { return _body; }
+    b2Body* getBody() override { return _body; }
 };
 
 #endif /* MPCharacterModel_h */

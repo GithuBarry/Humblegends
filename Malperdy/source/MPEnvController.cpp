@@ -36,7 +36,7 @@ bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController>&
 	bool isValidRoom = room1.x != -1 && room1.y != -1;
 	bool isOccupied = containsReynard(room1, reynard);
 
-	if (!isValidRoom || isOccupied) {
+	if (!isValidRoom || isOccupied || _grid->getRoom(room1) == nullptr) {
 		deselectRoom();
 		return false;
 	}

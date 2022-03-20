@@ -360,8 +360,8 @@ void GameScene::update(float dt) {
     // Room swap initiated
     if (_input.didPress() && !_gamestate.zoomed_in()) {
         // Scale tap/click location by camera pan
-        Vec2 pos = _input.getPosition() - _worldnode->getPaneTransform().getTranslation();
-
+        Vec2 pos = _input.getPosition() - Application::get()->getDisplaySize().height/SCENE_HEIGHT* _worldnode->getPaneTransform().getTranslation();
+        //CULog("Touch_x: %f Scene_pos_x: %f",_input.getPosition().x ,pos.x);
         bool hasSwapped = false;
         if (_envController->hasSelected()) {
             bool check = _envController->swapWithSelected(pos, _reynardController);
