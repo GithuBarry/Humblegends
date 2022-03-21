@@ -18,6 +18,7 @@
 //
 #ifndef __MP_APP_H__
 #define __MP_APP_H__
+
 #include <cugl/cugl.h>
 #include "MPGameScene.h"
 #include "MPLoadingScene.h"
@@ -31,18 +32,19 @@ protected:
     std::shared_ptr<cugl::SpriteBatch> _batch;
     /** The global asset manager */
     std::shared_ptr<cugl::AssetManager> _assets;
-    
+
     // Player modes
     /** The primary controller for the game world */
     GameScene _gameplay;
     /** The controller for the loading screen */
     LoadingScene _loading;
-    
+
     /** Whether or not we have finished loading all assets */
     bool _loaded;
-    
+
 public:
 #pragma mark Constructors
+
     /**
      * Creates, but does not initialized a new application.
      *
@@ -52,8 +54,9 @@ public:
      * of initialization from the constructor allows main.cpp to perform
      * advanced configuration of the application before it starts.
      */
-    Malperdy() : cugl::Application(), _loaded(false) {}
-    
+    Malperdy() : cugl::Application(), _loaded(false) {
+    }
+
     /**
      * Disposes of this application, releasing all resources.
      *
@@ -61,9 +64,10 @@ public:
      * It simply calls the dispose() method in Application.  There is nothing
      * special to do here.
      */
-    ~Malperdy() { }
-    
-    
+    ~Malperdy() {
+    }
+
+
 #pragma mark Application State
 
     /**
@@ -77,7 +81,7 @@ public:
      * causing the application to run.
      */
     virtual void onStartup() override;
-    
+
     /**
      * The method called when the application is ready to quit.
      *
@@ -90,7 +94,7 @@ public:
      * causing the application to be deleted.
      */
     virtual void onShutdown() override;
-    
+
     /**
      * The method called when the application is suspended and put in the background.
      *
@@ -103,7 +107,7 @@ public:
      * the background.
      */
     virtual void onSuspend() override;
-    
+
     /**
      * The method called when the application resumes and put in the foreground.
      *
@@ -114,10 +118,11 @@ public:
      * If you are using audio, you should use this method to resume any audio
      * paused before app suspension.
      */
-    virtual void onResume()  override;
-    
-    
+    virtual void onResume() override;
+
+
 #pragma mark Application Loop
+
     /**
      * The method called to update the application data.
      *
@@ -130,7 +135,7 @@ public:
      * @param timestep  The amount of time (in seconds) since the last frame
      */
     virtual void update(float timestep) override;
-    
+
     /**
      * The method called to draw the application to the screen.
      *
@@ -142,4 +147,5 @@ public:
      */
     virtual void draw() override;
 };
+
 #endif /* __MP_APP_H__ */

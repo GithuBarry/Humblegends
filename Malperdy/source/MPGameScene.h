@@ -54,7 +54,7 @@ protected:
     //    /** Reference to the exit message label */
     //    std::shared_ptr<cugl::scene2::Label> _exitnode;
 
-        /** The Box2D world */
+    /** The Box2D world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
     float _scale;
@@ -70,7 +70,7 @@ protected:
     std::shared_ptr<GridModel> _grid;
     std::shared_ptr<EnvController> _envController;
     /** Mark set to handle more sophisticated collision callbacks */
-    std::unordered_set<b2Fixture*> _sensorFixtures;
+    std::unordered_set<b2Fixture *> _sensorFixtures;
 
     /** References to all the enemy controllers */
     std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
@@ -99,8 +99,8 @@ protected:
      * param obj    The physics object to add
      * param node   The scene graph node to attach it to
      */
-    void addObstacle(const std::shared_ptr<cugl::physics2::Obstacle>& obj,
-        const std::shared_ptr<cugl::scene2::SceneNode>& node);
+    void addObstacle(const std::shared_ptr<cugl::physics2::Obstacle> &obj,
+            const std::shared_ptr<cugl::scene2::SceneNode> &node);
 
     /**
      * Returns the active screen size of this scene.
@@ -153,7 +153,7 @@ public:
      *
      * @return true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager>& assets);
+    bool init(const std::shared_ptr<cugl::AssetManager> &assets);
 
     /**
      * Initializes the controller contents, and starts the game
@@ -171,7 +171,7 @@ public:
      *
      * @return  true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager>& assets, const cugl::Rect rect);
+    bool init(const std::shared_ptr<cugl::AssetManager> &assets, const cugl::Rect rect);
 
     /**
      * Initializes the controller contents, and starts the game
@@ -190,7 +190,7 @@ public:
      *
      * @return  true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager>& assets, const cugl::Rect rect, const cugl::Vec2 gravity);
+    bool init(const std::shared_ptr<cugl::AssetManager> &assets, const cugl::Rect rect, const cugl::Vec2 gravity);
 
 
 #pragma mark -
@@ -272,7 +272,7 @@ public:
      * That means that parents are always draw before (and behind children). To override this draw order, you should place an scene2::OrderedNode in the scene graph to specify an alternative order.
      * @param batch The SpriteBatch to draw with.
      */
-    void render(const std::shared_ptr<SpriteBatch>& batch);
+    void render(const std::shared_ptr<SpriteBatch> &batch);
 
 
     /**
@@ -293,7 +293,7 @@ public:
     *
     * @param  contact  The two bodies that collided
     */
-    void beginContact(b2Contact* contact);
+    void beginContact(b2Contact *contact);
 
     /**
      * Handles any modifications necessary before collision re
@@ -306,12 +306,12 @@ public:
      * @param  contact  The two bodies that collided
      * @param  contact  The collision manifold before contact
      */
-    void beforeSolve(b2Contact* contact, const b2Manifold* oldManifold);
-            
-    void endContact(b2Contact* contact);
+    void beforeSolve(b2Contact *contact, const b2Manifold *oldManifold);
 
-    bool isReynardCollision(b2Contact* contact);
-    
+    void endContact(b2Contact *contact);
+
+    bool isReynardCollision(b2Contact *contact);
+
     /**
      * Helper function for detecting a collision between two objects
      *
@@ -322,16 +322,16 @@ public:
      *
      * @param  contact  The two bodies that collided
      */
-    bool isTrapCollision(b2Contact* contact);
-    
-    void resolveTrapCollision();
-        
-    void isTurnEvent(b2Contact* contact);
-        
-    b2Fixture* getReynardFixture(b2Contact *contact);
+    bool isTrapCollision(b2Contact *contact);
 
-    b2Fixture* getNotReynardFixture(b2Contact* contact);
-        
+    void resolveTrapCollision();
+
+    void isTurnEvent(b2Contact *contact);
+
+    b2Fixture *getReynardFixture(b2Contact *contact);
+
+    b2Fixture *getNotReynardFixture(b2Contact *contact);
+
 };
 
 #endif /* __MP_GAME_MODE_H__ */

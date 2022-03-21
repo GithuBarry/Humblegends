@@ -44,7 +44,7 @@ the further away pursuers have to be before the character loses them */
 /** How long in seconds should pass between scent trail locations being marked */
 #define TRAIL_INCREMENT 0.7f
 
-class CharacterModel : public cugl::physics2::CapsuleObstacle{
+class CharacterModel : public cugl::physics2::CapsuleObstacle {
 public:
     /** Enum representing the current state of movement that the character is in */
     enum class MovementState : int {
@@ -70,16 +70,16 @@ public:
 protected:
     /** The current maximum number of hearts that this character can have */
     float _maxHearts = 2;
-    
+
     /** The amount of time since last frame update */
     float _elapsed = 0;
-    
+
     /** represents the actual frame of animation, invariant to texture flips */
     int _currFrame = 0;
-    
+
     /** if the character has dashed since last touching the ground */
     bool _hasDashed = false;
-    
+
     /** the time that the last dash started */
     Timestamp _dashStart = Timestamp();
 
@@ -88,18 +88,18 @@ protected:
 
     /** The texture for the character avatar */
     const string CHARACTER_TEXTURE;
-    
+
     /** The amount of time in between each frame update */
     const float FRAME_TIME = 0.03;
-    
+
     /** The duration in milliseconds of a dash */
     const Uint64 DASH_DURATION = 200;
 
 #pragma mark Attributes
-    
+
     /** The sheet for the running animation */
     shared_ptr<Texture> _runAnimation;
-    
+
     /** Default texture */
     shared_ptr<Texture> _defaultTexture;
 
@@ -119,9 +119,9 @@ protected:
     /** The current movement state of the character. */
     MovementState _moveState;
     /** Ground sensor to represent our feet */
-    b2Fixture* _feetFixture;
-    b2Fixture* _faceFixtureLeft;
-    b2Fixture* _faceFixtureRight;
+    b2Fixture *_feetFixture;
+    b2Fixture *_faceFixtureLeft;
+    b2Fixture *_faceFixtureRight;
     /** Reference to the sensor name (since a constant cannot have a pointer) */
     std::string _sensorName;
     /** The node for debugging the sensor */
@@ -146,12 +146,15 @@ public:
      * This constructor does not initialize any of the character values beyond
      * the defaults. To use a CharacterModel, you must call init().
      */
-    CharacterModel() : CapsuleObstacle(), _sensorName(SENSOR_NAME) { }
+    CharacterModel() : CapsuleObstacle(), _sensorName(SENSOR_NAME) {
+    }
 
     /**
      * Destroys this CharacterModel, releasing all resources.
      */
-    virtual ~CharacterModel(void) { dispose(); }
+    virtual ~CharacterModel(void) {
+        dispose();
+    }
 
     /**
      * Disposes all resources and assets of this CharacterModel
@@ -178,7 +181,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation);
+    virtual bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation);
 
 
 #pragma mark -
@@ -200,9 +203,9 @@ public:
      *
      * @return  A newly allocated CharacterModel at the given position with the given scale
      */
-    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
+    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
         std::shared_ptr<CharacterModel> result = std::make_shared<CharacterModel>();
-        
+
         return (result->init(pos, drawScale, defaultTexture, runAnimation) ? result : nullptr);
     }
 
@@ -224,32 +227,32 @@ public:
      *
      * @param node  The scene graph node representing this CharacterModel, which has been added to the world node already.
      */
-    void setSceneNode(const std::shared_ptr<cugl::scene2::SpriteNode>& node) {
+    void setSceneNode(const std::shared_ptr<cugl::scene2::SpriteNode> &node) {
         _node = node;
         _node->setPosition(getPosition() * _drawScale);
     }
 
 #pragma mark -
 #pragma mark Attribute Properties
-    
+
     /** whether or not the character can dash */
-    bool canDash(){
+    bool canDash() {
         return (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION) && !_hasDashed;
     }
-    
+
     /**
      * Sets the character's direction to be facing in the opposite direction that
      * it is currently facing in.
      */
-    float getHearts(){
+    float getHearts() {
         return _hearts;
     }
-    
+
     /**
      * Sets the character's direction to be facing in the opposite direction that
      * it is currently facing in.
      */
-    void setHearts(float v){
+    void setHearts(float v) {
         _hearts = v;
     }
 
@@ -259,7 +262,7 @@ public:
      */
     void flipDirection() {
         _faceRight = !_faceRight;
-        scene2::TexturedNode* image = dynamic_cast<scene2::TexturedNode*>(_node.get());
+        scene2::TexturedNode *image = dynamic_cast<scene2::TexturedNode *>(_node.get());
         if (image != nullptr) {
             image->flipHorizontal(!image->isFlipHorizontal());
         }
@@ -309,7 +312,7 @@ public:
     bool isOnWall() const {
         return (_moveState == MovementState::ONWALL);
     }
-    
+
     /**
      * Returns true if the character is dashing.
      *
@@ -326,7 +329,9 @@ public:
      *
      * @return the name of the ground sensor
      */
-    std::string* getSensorName() { return &_sensorName; }
+    std::string *getSensorName() {
+        return &_sensorName;
+    }
 
     /**
      * Returns true if this character is facing right
@@ -336,7 +341,7 @@ public:
     bool isFacingRight() const {
         return _faceRight;
     }
-    
+
     /**
      * Sets the character's movement state, changing physical attributes
      * accordingly as necessary.
@@ -358,7 +363,7 @@ public:
         SimpleObstacle::setPosition(value);
         _node->setPosition(value * _drawScale);
     }
-    
+
     bool uploadTexture(string tex);
 
     /**
@@ -368,7 +373,9 @@ public:
      * 
      * @return  The queue representing the character's trail
      */
-    shared_ptr<deque<Vec2>> getTrail() { return _trail; }
+    shared_ptr<deque<Vec2>> getTrail() {
+        return _trail;
+    }
 
 #pragma mark -
 #pragma mark Physics Methods
@@ -405,11 +412,13 @@ public:
      *
      * @return  The fixture currently on the character's face
      */
-    b2Fixture* getFaceFixture() {
+    b2Fixture *getFaceFixture() {
         return (isFacingRight() ? _faceFixtureRight : _faceFixtureLeft);
     }
 
-    b2Body* getBody() override { return _body; }
+    b2Body *getBody() override {
+        return _body;
+    }
 };
 
 #endif /* MPCharacterModel_h */

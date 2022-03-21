@@ -35,37 +35,33 @@ shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testleve
  * @param bg    A default background to place in the back of rooms
  * @return a grid with 3x3 rooms, each room the default
  */
-bool GridModel::init(float scale, bool json, float hgap, float vgap, shared_ptr<Texture> bg)
-{
+bool GridModel::init(float scale, bool json, float hgap, float vgap, shared_ptr<Texture> bg) {
     //cout<<"HERE YOU ARE 3"<<endl;
     _horizontal_gap = hgap;
     _vertical_gap = vgap;
-    _physics_scale =  scale;
+    _physics_scale = scale;
 
     // Case where we don't load from JSON
-    if(!json){
+    if (!json) {
         // Create a new grid
         _grid = shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>>();
         // Make a new room for each cell in the grid
-        for (int i = 0; i < _size.y; i++)
-        {
-          _grid->push_back(make_shared<vector<shared_ptr<RoomModel>>>());
-          for (int j = 0; j < _size.x; j++)
-          {
-            _grid->at(i)->push_back(make_shared<RoomModel>());
-            addChild(_grid->at(i)->at(j));
-          }
+        for (int i = 0; i < _size.y; i++) {
+            _grid->push_back(make_shared<vector<shared_ptr<RoomModel>>>());
+            for (int j = 0; j < _size.x; j++) {
+                _grid->at(i)->push_back(make_shared<RoomModel>());
+                addChild(_grid->at(i)->at(j));
+            }
         }
         //cout<<"HERE YOU ARE 5"<<endl;
-    }
-    else{
+    } else {
         // Get level dimensions
         _size = _gridLoader->getDims();
         // Initialize grid to store RoomModels in level
         _grid = make_shared<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>>();
         // Initialize pointer to temporarily point to RoomModels
         shared_ptr<RoomModel> room;
-        
+
         // For each room in the level
         for (int y = 0; y < _size.y; y++) {
             // Initialize vector for a row of rooms
@@ -97,34 +93,31 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap, shared_ptr<
 };
 
 #pragma mark Destructors
+
 /**
  * Disposes all resources and assets of this grid.
  *
  * Any assets owned by this object will be immediately released.  Once
  * disposed, a room may not be used until it is initialized again.
  */
-void GridModel::dispose()
-{
-  removeAllChildren();
+void GridModel::dispose() {
+    removeAllChildren();
 };
 
 #pragma mark Accessors
 
 /** Returns a 1-D vector of all the rooms */
-vector<shared_ptr<RoomModel>> GridModel::getRooms()
-{
+vector<shared_ptr<RoomModel>> GridModel::getRooms() {
     // The value to return
-  vector<shared_ptr<RoomModel>> rooms = vector<shared_ptr<RoomModel>>();
+    vector<shared_ptr<RoomModel>> rooms = vector<shared_ptr<RoomModel>>();
     // For each room in the 2D grid
-  for (vector<shared_ptr<vector<shared_ptr<RoomModel>>>>::iterator rowItr = _grid->begin(); rowItr != _grid->end(); ++rowItr)
-  {
-      for (vector<shared_ptr<RoomModel>>::iterator colItr = (*rowItr)->begin(); colItr != (*rowItr)->end(); ++colItr)
-      {
-          // Add the room to the 1D vector
-          rooms.push_back(*colItr);
-      }
-  }
-  return rooms;
+    for (vector<shared_ptr<vector<shared_ptr<RoomModel>>>>::iterator rowItr = _grid->begin(); rowItr != _grid->end(); ++rowItr) {
+        for (vector<shared_ptr<RoomModel>>::iterator colItr = (*rowItr)->begin(); colItr != (*rowItr)->end(); ++colItr) {
+            // Add the room to the 1D vector
+            rooms.push_back(*colItr);
+        }
+    }
+    return rooms;
 };
 
 /**
@@ -138,11 +131,9 @@ vector<shared_ptr<RoomModel>> GridModel::getRooms()
  * @param coord The coordinates of the desired room in (column, row) form
  * @return      The room located at the given coordinates
  */
-shared_ptr<RoomModel> GridModel::getRoom(int x, int y)
-{
+shared_ptr<RoomModel> GridModel::getRoom(int x, int y) {
     // Return null pointer if out of bounds
-    if (x >= _size.x || x < 0 || y < 0 || y >= _size.y)
-    {
+    if (x >= _size.x || x < 0 || y < 0 || y >= _size.y) {
         return nullptr;
     }
     return _grid->at(y)->at(x);
@@ -163,11 +154,9 @@ shared_ptr<RoomModel> GridModel::getRoom(int x, int y)
  * @param room  The room to be placed at the given coordinates
  * @return      Whether the room was set successfully
  */
-bool GridModel::setRoom(int x, int y, shared_ptr<RoomModel> room)
-{
+bool GridModel::setRoom(int x, int y, shared_ptr<RoomModel> room) {
     // Return false if coordinate is out of bounds
-    if (x >= _size.x || y >= _size.y)
-    {
+    if (x >= _size.x || y >= _size.y) {
         return false;
     }
     // Otherwise, set room at coordinate to be given room and return true
@@ -185,8 +174,7 @@ bool GridModel::setRoom(int x, int y, shared_ptr<RoomModel> room)
  * @param room2 The coordinates of the second room to swap in (column, row) form
  * @return      Whether the swap was performed successfully
  */
-bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
-{
+bool GridModel::swapRooms(Vec2 room1, Vec2 room2) {
     // Don't swap if not allowed
     if (!canSwap(room1, room2)) return false;
 
@@ -199,36 +187,36 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
     setRoom(room2, temp);
     // Update Room1's location accordingly
     temp->setPosition(room2);
-    
+
     // For each obstacle in room1
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = _physicsGeometry.at(room1.y).at(room1.x).begin(); itr != _physicsGeometry.at(room1.y).at(room1.x).end(); ++itr) {
-        
+
         // convert the position from physics to grid space
-        Vec2 newPos = (*itr)->getPosition()*_physics_scale;
+        Vec2 newPos = (*itr)->getPosition() * _physics_scale;
         newPos = this->worldToNodeCoords(newPos);
         // offset the obstacles in grid space
-        newPos.x -= (room1.x-room2.x)*DEFAULT_ROOM_WIDTH;
-        newPos.y -= (room1.y-room2.y)*DEFAULT_ROOM_HEIGHT;
+        newPos.x -= (room1.x - room2.x) * DEFAULT_ROOM_WIDTH;
+        newPos.y -= (room1.y - room2.y) * DEFAULT_ROOM_HEIGHT;
         // convert back to physics space
-        newPos = this->nodeToWorldCoords(newPos)/_physics_scale;
-       (*itr)->setPosition(newPos);
-        
+        newPos = this->nodeToWorldCoords(newPos) / _physics_scale;
+        (*itr)->setPosition(newPos);
+
     }
-    
+
     // For each obstacle in room2
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = _physicsGeometry.at(room2.y).at(room2.x).begin(); itr != _physicsGeometry.at(room2.y).at(room2.x).end(); ++itr) {
-        
+
         // convert the position from physics to grid space
-        Vec2 newPos = (*itr)->getPosition()*_physics_scale;
+        Vec2 newPos = (*itr)->getPosition() * _physics_scale;
         newPos = this->worldToNodeCoords(newPos);
         // offset the obstacles in grid space
-        newPos.x += (room1.x-room2.x)*DEFAULT_ROOM_WIDTH;
-        newPos.y += (room1.y-room2.y)*DEFAULT_ROOM_HEIGHT;
+        newPos.x += (room1.x - room2.x) * DEFAULT_ROOM_WIDTH;
+        newPos.y += (room1.y - room2.y) * DEFAULT_ROOM_HEIGHT;
         // convert back to physics space
-        newPos = this->nodeToWorldCoords(newPos)/_physics_scale;
-       (*itr)->setPosition(newPos);
+        newPos = this->nodeToWorldCoords(newPos) / _physics_scale;
+        (*itr)->setPosition(newPos);
     }
-    
+
     // swap the vectors of obstacles in _physicsGeometry
     // create a temp holder
     vector<shared_ptr<physics2::PolygonObstacle>> tempPhysics = _physicsGeometry.at(room1.y).at(room1.x);
@@ -246,20 +234,17 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2)
  * @param room2 The coordinates of the second room to swap in (column, row) form
  * @return      Whether the rooms can be swappedd
  */
-bool GridModel::canSwap(Vec2 room1, Vec2 room2)
-{
+bool GridModel::canSwap(Vec2 room1, Vec2 room2) {
     // If the room bounds are out of bounds
-  if (room1.x >= _size.x || room1.y >= _size.y)
-  {
-    return false;
-  }
-  if (room2.x < 0 || room2.y < 0)
-  {
-    return false;
-  }
+    if (room1.x >= _size.x || room1.y >= _size.y) {
+        return false;
+    }
+    if (room2.x < 0 || room2.y < 0) {
+        return false;
+    }
     // If the bounds are correct, then return if both rooms are unlocked
-  return !(_grid->at(room1.y)->at(room1.x)->isLocked() ||
-           _grid->at(room2.y)->at(room2.x)->isLocked());
+    return !(_grid->at(room1.y)->at(room1.x)->isLocked() ||
+            _grid->at(room2.y)->at(room2.x)->isLocked());
 };
 
 /**
@@ -268,13 +253,12 @@ bool GridModel::canSwap(Vec2 room1, Vec2 room2)
  *
  * @return a flat version of _physicsGeometry, with the level bounds included
  */
-shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsObjects()
-{
+shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsObjects() {
     // flat vector to store all room obstacles
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> obstacles = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
-    
+
     calculatePhysicsGeometry();
-    
+
     // For each room in the grid
     for (int col = 0; col < _size.x; col++) {
         for (int row = 0; row < _size.y; row++) {
@@ -289,7 +273,7 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
     }
 
     // MAKE BOUNDS OF LEVEL
-    
+
     // Get room dimensions scaled by grid scale
     Vec2 roomscale = Vec2(DEFAULT_ROOM_WIDTH * getScaleX(), DEFAULT_ROOM_HEIGHT * getScaleY());
     // Create path for level bounds
@@ -322,22 +306,21 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
 //    return coord;
 //};
 
-Poly2 GridModel::convertToScreen(Poly2 poly){
+Poly2 GridModel::convertToScreen(Poly2 poly) {
     vector<Vec2> verts;
-    for(Vec2 v  : poly.getVertices()){
+    for (Vec2 v: poly.getVertices()) {
         verts.push_back(this->scene2::SceneNode::nodeToWorldCoords(v));
     }
     return Poly2(verts);
 };
 
-void GridModel::calculatePhysicsGeometry(){
+void GridModel::calculatePhysicsGeometry() {
     _physicsGeometry = vector<vector<vector<shared_ptr<physics2::PolygonObstacle>>>>();
-    
+
     // For each room in _grid...
-    for(int row = 0;  row < _size.y; row++){
+    for (int row = 0; row < _size.y; row++) {
         _physicsGeometry.push_back(vector<vector<shared_ptr<physics2::PolygonObstacle>>>());
-        for(int col = 0; col < _size.x;  col++)
-        {
+        for (int col = 0; col < _size.x; col++) {
             _physicsGeometry.at(row).push_back(vector<shared_ptr<physics2::PolygonObstacle>>());
             // Get pointers to PolygonNodes with the room's geometry
             shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> geometry = getRoom(col, row)->getGeometry();
@@ -354,28 +337,28 @@ void GridModel::calculatePhysicsGeometry(){
                 // Create physics obstacle
                 shared_ptr<physics2::PolygonObstacle> obstacle = physics2::PolygonObstacle::alloc(poly, Vec2::ZERO);
                 obstacle->setBodyType(b2_staticBody);
-                
+
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
             }
-            
+
             // TODO: Inspect code for bug
             // TODO: Why does this have no impact on instantiation
             // if the room has a trap
-            if (true && _grid->at(row)->at(col)->getTrap()){
+            if (true && _grid->at(row)->at(col)->getTrap()) {
                 shared_ptr<scene2::PolygonNode> pn = _grid->at(row)->at(col)->getTrap()->getPolyNode();
                 Poly2 p = pn->getPolygon();
                 p *= pn->getNodeToWorldTransform();
                 p /= _physics_scale;
-                
+
                 // Create physics obstacle
                 shared_ptr<physics2::PolygonObstacle> obstacle = physics2::PolygonObstacle::alloc(p, Vec2::ZERO);
                 obstacle->setBodyType(b2_staticBody);
-                
+
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
                 _grid->at(row)->at(col)->getTrap()->initObstacle(obstacle);
-                
+
             }
         }
     }
-    
+
 }

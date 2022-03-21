@@ -25,9 +25,10 @@ private:
     shared_ptr<vector<shared_ptr<vector<string>>>> _level;
     /** Dimensions of the level */
     Vec2 _dims;
-    
+
 public:
 #pragma mark Constructors
+
     /**
      * Initializes a loader that will be used to read in grid formats from
      * a JSON and can be queried to get room types for each coord.
@@ -36,7 +37,7 @@ public:
      * @return      Whether the loader initialization was successful
      */
     bool init(const string path);
-    
+
     /**
      * Returns a newly-allocated loader that will be used to read in grid formats from
      * a JSON and can be queried to get room types for each coord.
@@ -56,7 +57,9 @@ public:
      * @param row   The row of the location to get the room ID from
      * @return      ID of the room at the given location
      */
-    string getRoomAt(int col, int row) { return _level->at(_dims.y - row - 1)->at(col); }
+    string getRoomAt(int col, int row) {
+        return _level->at(_dims.y - row - 1)->at(col);
+    }
 
     /**
      * Returns the dimensions of the level as a vector, where the x-value is
@@ -64,8 +67,10 @@ public:
      * 
      * @return  Dimensions of the level
      */
-    Vec2 getDims() { return _dims; }
-    
+    Vec2 getDims() {
+        return _dims;
+    }
+
 };
 
 

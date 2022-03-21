@@ -83,7 +83,7 @@ public:
         } else if ((!_zoomed_in) && currentZoom > minZoom) {
             result = 0.975;
         } else {
-            result =  1;
+            result = 1;
         }
         return result;
 
@@ -106,7 +106,7 @@ public:
         } else {
             result = Vec2(screenSize.width / 2 - reynardScreenPosition.x, 0);
             result.add(Vec2(0, -currentTranslation.y));
-            if (currentTranslation.x+result.x>0){
+            if (currentTranslation.x + result.x > 0) {
                 result = Vec2(-currentTranslation.x, result.y);
             }
         }

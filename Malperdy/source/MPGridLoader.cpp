@@ -29,7 +29,7 @@ bool GridLoader::init(const string path) {
 
     // Read dimensions of level from JSON
     _dims = Vec2(json->getInt("cols"), json->getInt("rows"));
-    
+
     // Get all rooms in the level
     shared_ptr<JsonValue> rooms = json->get("rooms");
 

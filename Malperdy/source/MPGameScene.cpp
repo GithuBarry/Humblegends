@@ -37,7 +37,7 @@ using namespace std;
 #define DEFAULT_WIDTH   32.0f
 
 /** Height of the game world in Box2d units */
-float DEFAULT_HEIGHT = DEFAULT_WIDTH/SCENE_WIDTH*SCENE_HEIGHT;
+float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 
 /** The default value of gravity (going down) */
 #define DEFAULT_GRAVITY -22.0f
@@ -64,8 +64,6 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH/SCENE_WIDTH*SCENE_HEIGHT;
 
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
-
-
 
 
 float REYNARD_POS[] = {30, 10};
@@ -185,7 +183,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
     //_debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
-    _debugnode->setPosition(offset/_scale);
+    _debugnode->setPosition(offset / _scale);
     setDebug(false);
 
     addChild(_worldnode);
@@ -360,7 +358,7 @@ void GameScene::update(float dt) {
     // Room swap initiated
     if (_input.didPress() && !_gamestate.zoomed_in()) {
         // Scale tap/click location by camera pan
-        Vec2 pos = _input.getPosition() - Application::get()->getDisplaySize().height/SCENE_HEIGHT* _worldnode->getPaneTransform().getTranslation();
+        Vec2 pos = _input.getPosition() - Application::get()->getDisplaySize().height / SCENE_HEIGHT * _worldnode->getPaneTransform().getTranslation();
         //CULog("Touch_x: %f Scene_pos_x: %f",_input.getPosition().x ,pos.x);
         bool hasSwapped = false;
         if (_envController->hasSelected()) {
@@ -371,7 +369,7 @@ void GameScene::update(float dt) {
     }
 
     // Only allow jumping while zoomed in
-    if (_input.didJump()&& _gamestate.zoomed_in()) {
+    if (_input.didJump() && _gamestate.zoomed_in()) {
         _reynardController->jump();
         //cout << "Press Jump Button" << endl;
     }
@@ -383,18 +381,18 @@ void GameScene::update(float dt) {
     }
 
     // When zooming out
-    if(_input.didZoomOut()){
+    if (_input.didZoomOut()) {
         _gamestate.zoom_out();
     }
-    
+
     // When dashing right
-    if(_input.didDashRight()){
+    if (_input.didDashRight()) {
         //TODO: make dash less buggy and uncomment
         //_reynardController->dashRight();
     }
-    
+
     // When dashing left
-    if(_input.didDashLeft()){
+    if (_input.didDashLeft()) {
         //TODO: make dash less buggy and uncomment
         //_reynardController->dashLeft();
     }
@@ -408,9 +406,9 @@ void GameScene::update(float dt) {
     Vec2 currentTranslation = _worldnode->getPaneTransform().getTranslation();
     Vec2 reynardScreenPosition = _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition());
 
-    bool faceRight =  _reynardController->getCharacter()->isFacingRight();
+    bool faceRight = _reynardController->getCharacter()->isFacingRight();
 
-    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(),faceRight));
+    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(), faceRight));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
@@ -447,27 +445,23 @@ bool GameScene::isReynardCollision(b2Contact *contact) {
 }
 
 
-
-
-b2Fixture* GameScene::getReynardFixture(b2Contact *contact) {
+b2Fixture *GameScene::getReynardFixture(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
     if (body1 == _reynardController->getCharacter()->getBody()) {
         return contact->GetFixtureA();
-    }
-    else {
+    } else {
         return contact->GetFixtureB();
     }
 }
 
 // TODO: there's gotta be a better way to do this
-b2Fixture* GameScene::getNotReynardFixture(b2Contact* contact) {
-    b2Body* body1 = contact->GetFixtureA()->GetBody();
-    b2Body* body2 = contact->GetFixtureB()->GetBody();
+b2Fixture *GameScene::getNotReynardFixture(b2Contact *contact) {
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
     if (body1 == _reynardController->getCharacter()->getBody()) {
         return contact->GetFixtureB();
-    }
-    else {
+    } else {
         return contact->GetFixtureA();
     }
 }
@@ -487,11 +481,11 @@ bool GameScene::isTrapCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
 
-    for(int row = 0; row <_grid->getWidth(); row++){
-        for(int col = 0; col<_grid->getHeight(); col++){
-            if(_grid->getRoom(row, col)->getTrap() != nullptr){
-                if(_grid->getRoom(row, col)->getTrap()->getObstacle()->getBody() == body1
-                   || _grid->getRoom(row, col)->getTrap()->getObstacle()->getBody() == body2){
+    for (int row = 0; row < _grid->getWidth(); row++) {
+        for (int col = 0; col < _grid->getHeight(); col++) {
+            if (_grid->getRoom(row, col)->getTrap() != nullptr) {
+                if (_grid->getRoom(row, col)->getTrap()->getObstacle()->getBody() == body1
+                        || _grid->getRoom(row, col)->getTrap()->getObstacle()->getBody() == body2) {
                     return true;
                 }
             }
@@ -508,8 +502,8 @@ bool GameScene::isTrapCollision(b2Contact *contact) {
  * The current Implementation only sees Reynard's health decremented by 1.
  */
 
-void GameScene::resolveTrapCollision(){
-    if(_reynardController->canBeHit()){
+void GameScene::resolveTrapCollision() {
+    if (_reynardController->canBeHit()) {
         _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
         CULog("Reynard's Current Health: %d", (int) _reynardController->getCharacter()->getHearts());
     }
@@ -531,7 +525,7 @@ bool isCharacterRightFixture(b2Fixture *fixture) {
 }
 
 // Whether the fixture is an enemy detection radius
-bool isEnemyDetectFixture(b2Fixture* fixture) {
+bool isEnemyDetectFixture(b2Fixture *fixture) {
     return (fixture->GetUserData().pointer == 10);
 }
 
@@ -546,41 +540,39 @@ void GameScene::beginContact(b2Contact *contact) {
         // CULog("Fixture ID %i", reynardFixture->GetUserData().pointer);
 
         // if statement check to see if contact contains a trap
-            // Call Helper resolveTrapCollision
-            //
-        if(true && isTrapCollision(contact)){
+        // Call Helper resolveTrapCollision
+        //
+        if (true && isTrapCollision(contact)) {
             resolveTrapCollision();
         }
 
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
-        b2Fixture* reynardFixture = getReynardFixture(contact);
+        b2Fixture *reynardFixture = getReynardFixture(contact);
         // First, if Reynard has hit an enemy detection radius
         if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
             //CULog("Reynard spotted");
             //_enemies->at(0)->detectTarget(_reynardController->getCharacter());
         }
-        // Otherwise if Reynard has hit the enemy's body
-        //else if (_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
-        //    CULog("Body contact");
-        //    // Knock back enemy
-        //    b2Vec2 normal = contact->GetManifold()->localNormal;
-        //    normal *= -1;
-        //    _enemies->at(0)->knockback(normal);
-        //    // Knock back Reynard
-        //    _reynardController->knockback(contact->GetManifold()->localNormal);
-        //}
-        // Reynard hitting right or left wall
+            // Otherwise if Reynard has hit the enemy's body
+            //else if (_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
+            //    CULog("Body contact");
+            //    // Knock back enemy
+            //    b2Vec2 normal = contact->GetManifold()->localNormal;
+            //    normal *= -1;
+            //    _enemies->at(0)->knockback(normal);
+            //    // Knock back Reynard
+            //    _reynardController->knockback(contact->GetManifold()->localNormal);
+            //}
+            // Reynard hitting right or left wall
         else if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
             _reynardController->hitWall();
-        }
-        else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
+        } else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
             _reynardController->hitWall();
         }
-        // Reynard hitting ground
+            // Reynard hitting ground
         else if (isCharacterGroundFixture(reynardFixture)) {
             _reynardController->hitGround();
-        }
-        else {
+        } else {
             //CULog("Switching C");
             // _reynardController->hitGround();
         }
@@ -592,11 +584,11 @@ void GameScene::endContact(b2Contact *contact) {
     // CULog("Is this a Reynard collision END? %d", isReynardCollision(contact));
     // CULog("rey is off da ground");
     if (isReynardCollision(contact)) {
-        b2Fixture* reynardFixture = getReynardFixture(contact);
+        b2Fixture *reynardFixture = getReynardFixture(contact);
         // If Reynard leaves the ground
         if (isCharacterGroundFixture(reynardFixture)) {
-                _reynardController->offGround();
-            }
+            _reynardController->offGround();
+        }
         //if (isCharacterGroundFixture(reynardFixture) && !_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
         //    _reynardController->offGround();
         //}
