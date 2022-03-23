@@ -322,7 +322,7 @@ public:
      *
      * @param  contact  The two bodies that collided
      */
-    bool isTrapCollision(b2Contact *contact);
+    bool isSpikeTrapCollision(b2Contact *contact);
 
     void resolveTrapCollision();
 

@@ -33,6 +33,7 @@ using namespace cugl;
 bool SpikeTrap::init(){
     _polyNode = make_shared<scene2::PolygonNode>();
     _polyNode->initWithFile("textures/spikes.png");
+    _type = "spike";
     
     _polyNode->setAnchor(Vec2::ZERO);
     _polyNode->setScale(720.0 / _polyNode->getPolygon().getBounds().getMaxX());

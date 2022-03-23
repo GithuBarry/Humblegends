@@ -477,15 +477,16 @@ b2Fixture *GameScene::getNotReynardFixture(b2Contact *contact) {
  * @param  contact  The two bodies that collided
  */
 
-bool GameScene::isTrapCollision(b2Contact *contact) {
+bool GameScene::isSpikeTrapCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
 
     for (int row = 0; row < _grid->getWidth(); row++) {
         for (int col = 0; col < _grid->getHeight(); col++) {
             if (_grid->getRoom(row, col)->getTrap() != nullptr) {
-                if (_grid->getRoom(row, col)->getTrap()->getObstacle()->getBody() == body1
-                        || _grid->getRoom(row, col)->getTrap()->getObstacle()->getBody() == body2) {
+                shared_ptr<TrapModel> _trap = _grid->getRoom(row, col)->getTrap();
+                if ((_trap->getType() == "spike" && _trap->getObstacle()->getBody() == body1)
+                        || (_trap->getType() == "spike" && _trap->getObstacle()->getBody() == body2)) {
                     return true;
                 }
             }
@@ -542,7 +543,7 @@ void GameScene::beginContact(b2Contact *contact) {
         // if statement check to see if contact contains a trap
         // Call Helper resolveTrapCollision
         //
-        if (true && isTrapCollision(contact)) {
+        if (true && isSpikeTrapCollision(contact)) {
             resolveTrapCollision();
         }
 
