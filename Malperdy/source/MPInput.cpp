@@ -81,6 +81,7 @@ InputController::InputController() :
         _touchDown(false),
         _currentTouch(0),
         _multiKey(0),
+        _inMulti(false),
         _isPinching(false),
         _isZooming(false),
 
