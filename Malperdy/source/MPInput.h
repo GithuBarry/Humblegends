@@ -36,6 +36,13 @@ protected:
     bool _zoomInPressed;
     /** Whether the zoom out toggle was chosen. */
     bool _zoomOutPressed;
+    /* Whether the user is scrolling */
+    bool _isScrolling;
+    /* 
+     * The difference between the scroll start and end positions, if currently scrolling
+     * Otherwise (0,0) if there is no current scroll
+     */
+    cugl::Vec2 _scrollOffset;
 
     /** The initial touch location for the current gesture */
     cugl::Vec2 _dtouch;
@@ -108,9 +115,13 @@ private:
      */
     bool _inMulti;
     /* Whether a pinch gesture was detected */
-    bool _isPinching;
+    bool _pinchGesture;
     /* Whether a zoom gesture was detected */
-    bool _isZooming;
+    bool _zoomGesture;
+    /* Whether a scroll gesture was detected */
+    bool _panGesture;
+    /* The offset from the start of the pan */
+    cugl::Vec2 _panOffsetMobile;
 
 public:
 #pragma mark -
@@ -219,6 +230,26 @@ public:
      */
     bool didZoomOut() const {
         return _zoomOutPressed;
+    }
+
+    /**
+     * Returns true if user is currently scrolling.
+     *
+     * @return true if user is currently scrolling.
+     */
+    bool isScrolling() const {
+        return _isScrolling;
+    }
+
+    /**
+     * Returns the offset of the current scroll, if there is a current scroll.
+     * Otherwise returns zero if there is no current scroll.
+     *
+     * @return the offset of the current scroll, if there is one
+     *         zero if there is no current scroll
+     */
+    cugl::Vec2 scrollOffset() const {
+        return _scrollOffset;
     }
 
     /**

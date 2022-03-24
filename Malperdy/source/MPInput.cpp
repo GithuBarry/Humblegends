@@ -71,6 +71,8 @@ InputController::InputController() :
 //General Touch Support
         _currDown(false),
         _prevDown(false),
+        _isScrolling(false),
+        _scrollOffset(cugl::Vec2::ZERO),
 
 //Mouse-Specific Support
         _mouseDown(false),
@@ -82,8 +84,10 @@ InputController::InputController() :
         _currentTouch(0),
         _multiKey(0),
         _inMulti(false),
-        _isPinching(false),
-        _isZooming(false),
+        _pinchGesture(false),
+        _zoomGesture(false),
+        _panGesture(false),
+        _panOffsetMobile(cugl::Vec2::ZERO),
 
 //Reynard Direct Presses
         _spaceDown(false),
@@ -246,8 +250,10 @@ void InputController::update(float dt) {
     _jumpPressed = _touchDown;
     _currPos = _touchPos;
 
-    _zoomOutPressed = _isPinching;
-    _zoomInPressed = _isZooming;
+    _zoomOutPressed = _pinchGesture;
+    _zoomInPressed = _zoomGesture;
+    _isScrolling = _panGesture;
+    _scrollOffset = _panOffsetMobile;
 
 #endif
 
@@ -367,17 +373,26 @@ void InputController::multiBeginCB(const cugl::CoreGestureEvent &event, bool foc
 * @param focus  Whether the listener currently has focus (UNUSED)
 */
 void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool focus) {
-    //TODO: implement
     if (event.type == CoreGestureType::PINCH) {
-        //CULog("Pinch gesture type");
+        _panGesture = false;
+        _panOffsetMobile = Vec2::ZERO;
         float spreadDiff = event.currSpread - event.origSpread;
-        _isPinching = spreadDiff < -EVENT_SPREAD_LENGTH;
-        _isZooming = spreadDiff > EVENT_SPREAD_LENGTH;
-        //if (_isPinching)//CULog("Pinch detected");
-        //if (_isZooming)//CULog("Zoom detected");
+        _pinchGesture = spreadDiff < -EVENT_SPREAD_LENGTH;
+        _zoomGesture = spreadDiff > EVENT_SPREAD_LENGTH;
+    }
+    else if (event.type == CoreGestureType::PAN) {
+        CULog("Pan detected");
+        Vec2 scrollVec = event.currPosition - event.origPosition;
+        _panGesture = scrollVec.length() > EVENT_SWIPE_LENGTH;
+        if (_panGesture) {
+            _panOffsetMobile = scrollVec;
+            CULog("Scroll offset (%f, %f)", scrollVec.x, scrollVec.y);
+        }
     } else {
-        _isPinching = false;
-        _isZooming = false;
+        _panGesture = false;
+        _panOffsetMobile = Vec2::ZERO;
+        _pinchGesture = false;
+        _zoomGesture = false;
     }
 }
 
@@ -389,7 +404,9 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool fo
 * @param focus  Whether the listener currently has focus (UNUSED)
 */
 void InputController::multiEndCB(const cugl::CoreGestureEvent &event, bool focus) {
-    _isPinching = false;
-    _isZooming = false;
+    _pinchGesture = false;
+    _zoomGesture = false;
+    _panGesture = false;
+    _panOffsetMobile = Vec2::ZERO;
     _inMulti = false;
 }
