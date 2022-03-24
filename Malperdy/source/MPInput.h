@@ -24,7 +24,7 @@ protected:
     /** Whether or not this input is active */
     bool _active;
 
-    // PRESS AND GESTURE SUPPORT
+    // PRESS SUPPORT
     /** Whether there is an active button/touch press */
     bool _currDown;
     /** Whether there was an active button/touch press last frame */
@@ -32,12 +32,16 @@ protected:
     /** The current touch/mouse position */
     cugl::Vec2 _currPos;
 
+    /** Whether the zoom in toggle was chosen. */
+    bool _zoomInPressed;
+    /** Whether the zoom out toggle was chosen. */
+    bool _zoomOutPressed;
+
     /** The initial touch location for the current gesture */
     cugl::Vec2 _dtouch;
     /** The timestamp for the beginning of the current gesture */
     cugl::Timestamp _timestamp;
 
-    // INPUT RESULTS
     /** Whether the reset action was chosen. */
     bool _resetPressed;
     /** Whether the debug toggle was chosen. */
@@ -52,17 +56,13 @@ protected:
     /** The key for exit listeners */
     bool _keyExit;
 
-    // INPUT RESULTS SPECIFICALLY FOR REYNARD
+    //REYNARD CONTROLS
     /** Whether the jump action was chosen. */
     bool _jumpPressed;
     /** Whether the dash right action was chosen. */
     bool _dashRightPressed;
     /** Whether the dash left action was chosen. */
     bool _dashLeftPressed;
-    /** Whether the zoom in toggle was chosen. */
-    bool _zoomInPressed;
-    /** Whether the zoom out toggle was chosen. */
-    bool _zoomOutPressed;
 
 // Device-specific fields are kept private
 private:
@@ -102,6 +102,11 @@ private:
     // MULTITOUCH SUPPORT
     /* The key for multitouch listeners */
     Uint32 _multiKey;
+    /* 
+     * Whether a multitouch gesture is being detected 
+     * Used to turn off single-touch detection
+     */
+    bool _inMulti;
     /* Whether a pinch gesture was detected */
     bool _isPinching;
     /* Whether a zoom gesture was detected */
@@ -206,7 +211,6 @@ public:
     bool didZoomIn() const {
         return _zoomInPressed;
     }
-    //TODO: figure out why _zoomInPressed isn't updating & remove _isZooming
 
     /**
      * Returns true if the button to zoom out was pressed.
@@ -216,7 +220,6 @@ public:
     bool didZoomOut() const {
         return _zoomOutPressed;
     }
-    //TODO: figure out why _zoomOutPressed isn't updating & remove _isPinching
 
     /**
      * Returns true if the exit button was pressed.

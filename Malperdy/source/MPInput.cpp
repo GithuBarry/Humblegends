@@ -206,7 +206,6 @@ void InputController::dispose() {
  * frame, so we need to accumulate all of the data together.
  */
 void InputController::update(float dt) {
-
     _prevDown = _currDown;
 
 #ifndef CU_TOUCH_SCREEN
@@ -242,7 +241,7 @@ void InputController::update(float dt) {
     _zoomOutPressed = _qDown;
 
 #else
-    _currDown = _touchDown;
+    _currDown = _touchDown && !_inMulti;
     _jumpPressed = _touchDown;
     _currPos = _touchPos;
 
@@ -357,7 +356,7 @@ void InputController::touchEndCB(const cugl::TouchEvent &event, bool focus) {
 * @param focus  Whether the listener currently has focus (UNUSED)
 */
 void InputController::multiBeginCB(const cugl::CoreGestureEvent &event, bool focus) {
-    //TODO: implement
+    _inMulti = true;
 }
 
 /*
@@ -391,4 +390,5 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool fo
 void InputController::multiEndCB(const cugl::CoreGestureEvent &event, bool focus) {
     _isPinching = false;
     _isZooming = false;
+    _inMulti = false;
 }
