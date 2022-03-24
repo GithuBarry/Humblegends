@@ -41,10 +41,10 @@ using namespace cugl;
  *
  * @return the exit status of the application
  */
-int main(int argc, char * argv[]) {
+int main(int argc, char *argv[]) {
     // Change this to your application class
     Malperdy app;
-    
+
     // Set the properties of your application
     app.setName("Malperdy");
     app.setOrganization("Humblegends");
@@ -56,12 +56,12 @@ int main(int argc, char * argv[]) {
 #if CU_PLATFORM == CU_PLATFORM_MACOS || CU_PLATFORM == CU_PLATFORM_WINDOWS
     app.setMultiSampled(true);
 #endif
-    
+
     /// DO NOT MODIFY ANYTHING BELOW THIS LINE
     if (!app.init()) {
         return 1;
     }
-    
+
     app.onStartup();
     while (app.step());
     app.onShutdown();

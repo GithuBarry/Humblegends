@@ -36,15 +36,15 @@ using namespace cugl;
  */
 void Malperdy::onStartup() {
     _assets = AssetManager::alloc();
-    _batch  = SpriteBatch::alloc();
-    
+    _batch = SpriteBatch::alloc();
+
     // Start-up basic input
 #ifdef CU_TOUCH_SCREEN
     Input::activate<Touchscreen>();
 #else
     Input::activate<Mouse>();
 #endif
-    
+
     _assets->attach<Font>(FontLoader::alloc()->getHook());
     _assets->attach<Texture>(TextureLoader::alloc()->getHook());
     _assets->attach<Sound>(SoundLoader::alloc()->getHook());
@@ -53,11 +53,11 @@ void Malperdy::onStartup() {
     // Create a "loading" screen
     _loaded = false;
     _loading.init(_assets);
-    
+
     // Que up the other assets
     AudioEngine::start(24);
-    _assets->loadDirectoryAsync("json/assets.json",nullptr);
-    
+    _assets->loadDirectoryAsync("json/assets.json", nullptr);
+
     Application::onStartup(); // YOU MUST END with call to parent
 }
 
@@ -77,16 +77,16 @@ void Malperdy::onShutdown() {
     _gameplay.dispose();
     _assets = nullptr;
     _batch = nullptr;
-    
+
     // Shutdown input
 #ifdef CU_TOUCH_SCREEN
     Input::deactivate<Touchscreen>();
 #else
     Input::deactivate<Mouse>();
 #endif
-    
-	AudioEngine::stop();
-	Application::onShutdown();  // YOU MUST END with call to parent
+
+    AudioEngine::stop();
+    Application::onShutdown();  // YOU MUST END with call to parent
 }
 
 /**

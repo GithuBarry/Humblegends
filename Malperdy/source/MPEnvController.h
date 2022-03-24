@@ -17,6 +17,7 @@
 #include <cugl/cugl.h>
 #include "MPGridModel.h"
 #include "MPReynardController.h"
+
 using namespace cugl;
 
 class EnvController {
@@ -50,7 +51,7 @@ public:
     * 
     * @return true if room was successfully selected, and false otherwise
     */
-    bool selectRoom(Vec2 coords, const shared_ptr<ReynardController>& reynard);
+    bool selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard);
 
     /* 
     * Returns whether there is currently a room selected 
@@ -76,13 +77,14 @@ public:
     *           false if room was the same as selected room
     *           false if no swap occurred
     */
-    bool swapWithSelected(Vec2 coords, const shared_ptr<ReynardController>& reynard);
+    bool swapWithSelected(Vec2 coords, const shared_ptr<ReynardController> &reynard);
 
     /* Deselects the currently selected room, if one is selected */
     void deselectRoom();
 
 private:
 #pragma mark Helper Functions
+
     /*
     * Checks whether Reynard is inside the indicated room
     * 
@@ -91,7 +93,7 @@ private:
     * 
     * @return true if Reynard is inside the given room
     */
-    bool containsReynard(Vec2 room, const shared_ptr<ReynardController>& reynard);
+    bool containsReynard(Vec2 room, const shared_ptr<ReynardController> &reynard);
 };
 
 #endif /* MPEnvController_h */

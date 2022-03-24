@@ -51,6 +51,7 @@ using namespace cugl;
 
 #pragma mark -
 #pragma mark Input Controller
+
 /**
  * Creates a new input controller.
  *
@@ -58,44 +59,43 @@ using namespace cugl;
  * object. This makes it safe to use this class without a pointer.
  */
 InputController::InputController() :
-_active(false),
-_resetPressed(false),
-_debugPressed(false),
-_exitPressed(false),
-_keyUp(false),
-_keyReset(false),
-_keyDebug(false),
-_keyExit(false),
+        _active(false),
+        _resetPressed(false),
+        _debugPressed(false),
+        _exitPressed(false),
+        _keyUp(false),
+        _keyReset(false),
+        _keyDebug(false),
+        _keyExit(false),
 
 //General Touch Support
-_currDown(false),
-_prevDown(false),
+        _currDown(false),
+        _prevDown(false),
 
 //Mouse-Specific Support
-_mouseDown(false),
-_mouseKey(0),
+        _mouseDown(false),
+        _mouseKey(0),
 
 //Touchscreen-Specific Support
-_touchKey(0),
-_touchDown(false),
-_currentTouch(0),
-_multiKey(0),
-_isPinching(false),
-_isZooming(false),
+        _touchKey(0),
+        _touchDown(false),
+        _currentTouch(0),
+        _multiKey(0),
+        _isPinching(false),
+        _isZooming(false),
 
 //Reynard Direct Presses
-_spaceDown(false),
-_qDown(false),
-_eDown(false),
-_aDown(false),
-_dDown(false),
+        _spaceDown(false),
+        _qDown(false),
+        _eDown(false),
+        _aDown(false),
+        _dDown(false),
 //Reynard Results/Outputs instantiated
-_jumpPressed(false),
-_dashRightPressed(false),
-_dashLeftPressed(false),
-_zoomInPressed(false),
-_zoomOutPressed(false)
-{
+        _jumpPressed(false),
+        _dashRightPressed(false),
+        _dashLeftPressed(false),
+        _zoomInPressed(false),
+        _zoomOutPressed(false) {
 }
 
 /**
@@ -116,7 +116,7 @@ bool InputController::init() {
     //TODO: return false on a second attempt to initialize the controller
     _timestamp.mark();
     bool success = true;
-    
+
 #ifndef CU_TOUCH_SCREEN
     // Only process keyboard and mouse on desktop
     success = Input::activate<Keyboard>() && Input::activate<Mouse>();;
@@ -138,30 +138,30 @@ bool InputController::init() {
 #else
     // Otherwise process touchscreen & multitouch gestures
     success = Input::activate<Touchscreen>() && Input::activate<CoreGesture>();
-    Touchscreen* screen = Input::get<Touchscreen>();
-    CoreGesture* multitouch = Input::get<CoreGesture>();
+    Touchscreen *screen = Input::get<Touchscreen>();
+    CoreGesture *multitouch = Input::get<CoreGesture>();
 
     _touchKey = screen->acquireKey();
-    screen->addBeginListener(_touchKey, [=](const cugl::TouchEvent& event, bool focus) {
+    screen->addBeginListener(_touchKey, [=](const cugl::TouchEvent &event, bool focus) {
         this->touchBeginCB(event, focus);
-        });
-    screen->addMotionListener(_touchKey, [=](const cugl::TouchEvent& event, const Vec2 previous, bool focus) {
+    });
+    screen->addMotionListener(_touchKey, [=](const cugl::TouchEvent &event, const Vec2 previous, bool focus) {
         this->touchMotionCB(event, previous, focus);
-        });
-    screen->addEndListener(_touchKey, [=](const cugl::TouchEvent& event, bool focus) {
+    });
+    screen->addEndListener(_touchKey, [=](const cugl::TouchEvent &event, bool focus) {
         this->touchEndCB(event, focus);
-        });
+    });
 
     _multiKey = multitouch->acquireKey();
-    multitouch->addBeginListener(_multiKey, [=](const cugl::CoreGestureEvent& event, bool focus) {
+    multitouch->addBeginListener(_multiKey, [=](const cugl::CoreGestureEvent &event, bool focus) {
         this->multiBeginCB(event, focus);
-        });
-    multitouch->addChangeListener(_multiKey, [=](const cugl::CoreGestureEvent& event, bool focus) {
+    });
+    multitouch->addChangeListener(_multiKey, [=](const cugl::CoreGestureEvent &event, bool focus) {
         this->multiChangeCB(event, focus);
-        });
-    multitouch->addEndListener(_multiKey, [=](const cugl::CoreGestureEvent& event, bool focus) {
+    });
+    multitouch->addEndListener(_multiKey, [=](const cugl::CoreGestureEvent &event, bool focus) {
         this->multiEndCB(event, focus);
-        });
+    });
 
 #endif
     _active = success;
@@ -186,7 +186,7 @@ void InputController::dispose() {
 #else
         Input::deactivate<Touchscreen>();
         Input::deactivate<CoreGesture>();
-        Touchscreen* screen = Input::get<Touchscreen>();
+        Touchscreen *screen = Input::get<Touchscreen>();
         screen->removeBeginListener(_touchKey);
         screen->removeEndListener(_touchKey);
         screen->removeMotionListener(_touchKey);
@@ -240,7 +240,7 @@ void InputController::update(float dt) {
     _dashLeftPressed = _aDown;
     _zoomInPressed = _eDown;
     _zoomOutPressed = _qDown;
-    
+
 #else
     _currDown = _touchDown;
     _jumpPressed = _touchDown;
@@ -264,20 +264,21 @@ void InputController::update(float dt) {
 void InputController::clear() {
     _resetPressed = false;
     _debugPressed = false;
-    _exitPressed  = false;
-    
+    _exitPressed = false;
+
     _jumpPressed = false;
     _dashRightPressed = false;
     _dashLeftPressed = false;
     _zoomInPressed = false;
     _zoomOutPressed = false;
-    
+
     _dtouch = Vec2::ZERO;
     _timestamp.mark();
 }
 
 #pragma mark -
 #pragma mark Mouse Callbacks
+
 /**
  * Call back to execute when a mouse button is first pressed.
  *
@@ -287,7 +288,7 @@ void InputController::clear() {
  * @param clicks    The number of clicks (for double clicking) (UNUSED)
  * @param focus     Whether this device has focus (UNUSED)
  */
-void InputController::mouseDownCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
+void InputController::mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, bool focus) {
     if (!_mouseDown && event.buttons.hasLeft()) {
         _mouseDown = true;
         _mousePos = event.position;
@@ -303,7 +304,7 @@ void InputController::mouseDownCB(const cugl::MouseEvent& event, Uint8 clicks, b
  * @param clicks    The number of clicks (for double clicking) (UNUSED)
  * @param focus     Whether this device has focus (UNUSED)
  */
-void InputController::mouseUpCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
+void InputController::mouseUpCB(const cugl::MouseEvent &event, Uint8 clicks, bool focus) {
     if (_mouseDown && event.buttons.hasLeft()) {
         _mouseDown = false;
     }
@@ -316,8 +317,8 @@ void InputController::mouseUpCB(const cugl::MouseEvent& event, Uint8 clicks, boo
  *
  * @param event     The event with the touch information
  */
-void InputController::touchBeginCB(const cugl::TouchEvent& event, bool focus) {
-    CULog("Touch Begin");
+void InputController::touchBeginCB(const cugl::TouchEvent &event, bool focus) {
+    //CULog("Touch Begin");
     if (!_touchDown) {
         _touchDown = true;
         _currentTouch = event.touch;
@@ -330,20 +331,20 @@ void InputController::touchBeginCB(const cugl::TouchEvent& event, bool focus) {
 *
 * @param event     The event with the touch information
 */
-void InputController::touchMotionCB(const cugl::TouchEvent& event, const cugl::Vec2 previous, bool focus) {
-    CULog("Touch Move");
+void InputController::touchMotionCB(const cugl::TouchEvent &event, const cugl::Vec2 previous, bool focus) {
+    //CULog("Touch Move");
     if (_touchDown && event.touch == _currentTouch) {
         _touchPos = event.position;
     }
 }
- 
+
 /**
  * Callback to execute when a touch ends.
  *
  * @param event     The event with the touch information
  */
-void InputController::touchEndCB(const cugl::TouchEvent& event, bool focus) {
-    CULog("Touch End");
+void InputController::touchEndCB(const cugl::TouchEvent &event, bool focus) {
+    //CULog("Touch End");
     if (_touchDown && event.touch == _currentTouch) {
         _touchDown = false;
     }
@@ -355,7 +356,7 @@ void InputController::touchEndCB(const cugl::TouchEvent& event, bool focus) {
 * @param event  The touch event for this gesture
 * @param focus  Whether the listener currently has focus (UNUSED)
 */
-void InputController::multiBeginCB(const cugl::CoreGestureEvent& event, bool focus) {
+void InputController::multiBeginCB(const cugl::CoreGestureEvent &event, bool focus) {
     //TODO: implement
 }
 
@@ -365,17 +366,16 @@ void InputController::multiBeginCB(const cugl::CoreGestureEvent& event, bool foc
 * @param event  The touch event for this gesture
 * @param focus  Whether the listener currently has focus (UNUSED)
 */
-void InputController::multiChangeCB(const cugl::CoreGestureEvent& event, bool focus) {
+void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool focus) {
     //TODO: implement
     if (event.type == CoreGestureType::PINCH) {
-        CULog("Pinch gesture type");
+        //CULog("Pinch gesture type");
         float spreadDiff = event.currSpread - event.origSpread;
         _isPinching = spreadDiff < -EVENT_SPREAD_LENGTH;
         _isZooming = spreadDiff > EVENT_SPREAD_LENGTH;
-        if (_isPinching)CULog("Pinch detected");
-        if (_isZooming)CULog("Zoom detected");
-    }
-    else {
+        //if (_isPinching)//CULog("Pinch detected");
+        //if (_isZooming)//CULog("Zoom detected");
+    } else {
         _isPinching = false;
         _isZooming = false;
     }
@@ -388,7 +388,7 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent& event, bool fo
 * @param event  The touch event for this gesture
 * @param focus  Whether the listener currently has focus (UNUSED)
 */
-void InputController::multiEndCB(const cugl::CoreGestureEvent& event, bool focus) {
+void InputController::multiEndCB(const cugl::CoreGestureEvent &event, bool focus) {
     _isPinching = false;
     _isZooming = false;
 }

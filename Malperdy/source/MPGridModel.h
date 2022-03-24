@@ -21,8 +21,7 @@
 
 using namespace cugl;
 
-class GridModel : public cugl::scene2::SceneNode
-{
+class GridModel : public cugl::scene2::SceneNode {
 
 private:
     // GRID LOADING
@@ -47,7 +46,7 @@ private:
      * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
      */
     shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> _grid;
-    
+
     /*
      * Holds all the physics objects of the grid
      */
@@ -60,15 +59,14 @@ public:
      * Creates an empty grid model.
      * @return an empty grid model
      */
-    GridModel(){
+    GridModel() {
         //CULog("child Offset: %i", this->_childOffset);
     };
 
     /**
      * @return shared pointer to an empty grid model
      */
-    static std::shared_ptr<GridModel> alloc()
-    {
+    static std::shared_ptr<GridModel> alloc() {
         std::shared_ptr<GridModel> result = std::make_shared<GridModel>();
         return (result->init() ? result : nullptr);
     }
@@ -78,7 +76,7 @@ public:
      * @param json - whether to use json loader or not
      * @return a grid with 3x3 rooms, each room the default
      */
-    bool init(float scale=1, bool json=false, float hgap = 0, float vgap = 0, shared_ptr<Texture> bg = nullptr);
+    bool init(float scale = 1, bool json = false, float hgap = 0, float vgap = 0, shared_ptr<Texture> bg = nullptr);
 
 #pragma mark Destructors
     /**
@@ -98,14 +96,12 @@ public:
 #pragma mark Accessors
 
     /** Getter for grid width */
-    int getWidth() const
-    {
+    int getWidth() const {
         return _size.x;
     }
 
     /** Getter for grid height */
-    int getHeight() const
-    {
+    int getHeight() const {
         return _size.y;
     }
 
@@ -123,7 +119,9 @@ public:
      * @param coord The coordinates of the desired room in (column, row) form
      * @return      The room located at the given coordinates
      */
-    shared_ptr<RoomModel> getRoom(Vec2 coord) { return getRoom(coord.x, coord.y); };
+    shared_ptr<RoomModel> getRoom(Vec2 coord) {
+        return getRoom(coord.x, coord.y);
+    };
 
     /**
      * Returns the pointer to the room located in the xth column
@@ -146,15 +144,15 @@ public:
      */
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsObjects();
 
-    Vec2 gridSpaceToRoom(Vec2 coord){
+    Vec2 gridSpaceToRoom(Vec2 coord) {
         int x = static_cast<int>(coord.x) / DEFAULT_ROOM_WIDTH;
         int y = static_cast<int>(coord.y) / DEFAULT_ROOM_HEIGHT;
         // y-coordinate is in the wrong direction, so flip to be from bottom instead of top
         //y = getHeight() - y - 1;
-        return Vec2(x,y);
+        return Vec2(x, y);
     }
 
-    Vec2 worldSpaceToRoom(Vec2 coord){
+    Vec2 worldSpaceToRoom(Vec2 coord) {
         //Vec2 gridcoords = this->screenToNodeCoords(coord);
         Vec2 gridcoords = this->worldToNodeCoords(coord);
         //CULog("Grid Model: (%f, %f)", gridcoords.x, gridcoords.y);
@@ -184,7 +182,9 @@ public:
      * @param room  The room to be placed at the given coordinates
      * @return      Whether the room was set successfully
      */
-    bool setRoom(Vec2 coord, shared_ptr<RoomModel> room) { return setRoom(coord.x, coord.y, room); }
+    bool setRoom(Vec2 coord, shared_ptr<RoomModel> room) {
+        return setRoom(coord.x, coord.y, room);
+    }
 
     /**
      * Sets the given room to be located in the xth column from the
@@ -210,12 +210,11 @@ public:
 #pragma mark Helpers
 
     Poly2 convertToScreen(Poly2 poly);
-    
+
     void calculatePhysicsGeometry();
-    
+
     shared_ptr<physics2::PolygonObstacle> makeStaticFromPath(Path2 path);
 };
-
 
 
 #endif /* MPGridModel_h */

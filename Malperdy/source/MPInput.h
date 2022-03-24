@@ -14,6 +14,7 @@
 //
 #ifndef __MP_INPUT_H__
 #define __MP_INPUT_H__
+
 #include <cugl/cugl.h>
 
 /* This class represents player input in Malperdy. */
@@ -45,12 +46,12 @@ protected:
     bool _exitPressed;
     //TODO: delete duplication
     /** Whether the reset action was chosen. */
-    bool  _keyReset;
+    bool _keyReset;
     /** The key for debug listeners */
-    bool  _keyDebug;
+    bool _keyDebug;
     /** The key for exit listeners */
-    bool  _keyExit;
-    
+    bool _keyExit;
+
     // INPUT RESULTS SPECIFICALLY FOR REYNARD
     /** Whether the jump action was chosen. */
     bool _jumpPressed;
@@ -68,17 +69,17 @@ private:
 
     // KEYBOAD EMULATION FOR REYNARD:
     /** Whether the up arrow key is pressed */
-    bool  _keyUp;
+    bool _keyUp;
     /** Whether the Spacebar is pressed */
-    bool  _spaceDown;
+    bool _spaceDown;
     /** Whether the q key is pressed */
-    bool  _qDown;
+    bool _qDown;
     /** Whether the e key is pressed */
-    bool  _eDown;
+    bool _eDown;
     /** Whether the a key is pressed */
-    bool  _aDown;
+    bool _aDown;
     /** Whether the c key is pressed */
-    bool  _dDown;
+    bool _dDown;
 
     // MOUSE SUPPORT
     /* The key for the mouse listeners */
@@ -105,10 +106,11 @@ private:
     bool _isPinching;
     /* Whether a zoom gesture was detected */
     bool _isZooming;
-    
+
 public:
 #pragma mark -
 #pragma mark Constructors
+
     /**
      * Creates a new input controller.
      *
@@ -116,7 +118,7 @@ public:
      * object. This makes it safe to use this class without a pointer.
      */
     InputController(); // Don't initialize.  Allow stack based
-    
+
     /**
      * Initializes the control to support mouse and keyboard.
      * Later, will also support touch and gesture on a mobile device.
@@ -132,12 +134,14 @@ public:
      * @return true if the initialization was successful
      */
     bool init();
-    
+
     /**
      * Disposes of this input controller, releasing all listeners.
      */
-    ~InputController() { dispose(); }
-    
+    ~InputController() {
+        dispose();
+    }
+
     /**
      * Deactivates this input controller, releasing all listeners.
      *
@@ -145,15 +149,18 @@ public:
      * once it is reinitialized.
      */
     void dispose();
-    
+
 #pragma mark -
 #pragma mark Input Detection
+
     /**
      * Returns true if the input handler is currently active
      *
      * @return true if the input handler is currently active
      */
-    bool isActive() const { return _active; }
+    bool isActive() const {
+        return _active;
+    }
 
     /**
      * Processes the currently cached inputs.
@@ -165,34 +172,40 @@ public:
      * the OS, we may see multiple updates of the same touch in a single animation
      * frame, so we need to accumulate all of the data together.
      */
-    void  update(float dt);
+    void update(float dt);
 
     /* Clears any buffered inputs so that we may start fresh. */
     void clear();
-    
+
 #pragma mark -
 #pragma mark Input Results
-    
+
     /**
      * Returns true if the reset button was pressed.
      *
      * @return true if the reset button was pressed.
      */
-    bool didReset() const { return _resetPressed; }
-    
+    bool didReset() const {
+        return _resetPressed;
+    }
+
     /**
      * Returns true if the button to toggle debug mode was pressed.
      *
      * @return true if the button to toggle debug mode was pressed.
      */
-    bool didDebug() const { return _debugPressed; }
-    
+    bool didDebug() const {
+        return _debugPressed;
+    }
+
     /**
      * Returns true if the button to zoom in was pressed.
      *
      * @return true if the button to zoom in was pressed.
      */
-    bool didZoomIn() const { return _zoomInPressed; }
+    bool didZoomIn() const {
+        return _zoomInPressed;
+    }
     //TODO: figure out why _zoomInPressed isn't updating & remove _isZooming
 
     /**
@@ -200,36 +213,46 @@ public:
      *
      * @return true if the button to zoom out was pressed.
      */
-    bool didZoomOut() const { return _zoomOutPressed; }
+    bool didZoomOut() const {
+        return _zoomOutPressed;
+    }
     //TODO: figure out why _zoomOutPressed isn't updating & remove _isPinching
-    
+
     /**
      * Returns true if the exit button was pressed.
      *
      * @return true if the exit button was pressed.
      */
-    bool didExit() const { return _exitPressed; }
-    
+    bool didExit() const {
+        return _exitPressed;
+    }
+
     /**
      * Returns true if the dash right button was pressed.
      *
      * @return true if the dash right button was pressed.
      */
-    bool didDashRight() const { return _dashRightPressed; }
-    
+    bool didDashRight() const {
+        return _dashRightPressed;
+    }
+
     /**
      * Returns true if the dash left button was pressed.
      *
      * @return true if the dash left button was pressed.
      */
-    bool didDashLeft() const { return _dashLeftPressed; }
-    
+    bool didDashLeft() const {
+        return _dashLeftPressed;
+    }
+
     /**
      * Returns true if the jump button was pressed.
      *
      * @return true if the jump button was pressed.
      */
-    bool didJump() const { return _jumpPressed; }
+    bool didJump() const {
+        return _jumpPressed;
+    }
 
     /**
      * Return true if the user initiated a press this frame.
@@ -260,11 +283,11 @@ public:
      *
      * @return the current mouse/touch position
      */
-    const cugl::Vec2& getPosition() const {
+    const cugl::Vec2 &getPosition() const {
         return _currPos;
     }
-    
-    
+
+
 #pragma mark -
 #pragma mark Mouse Callbacks
 private:
@@ -277,7 +300,7 @@ private:
      * @param clicks    The number of clicks (for double clicking) (UNUSED)
      * @param focus     Whether this device has focus (UNUSED)
      */
-    void mouseDownCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus);
+    void mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, bool focus);
 
     /**
      * Callback to execute when a mouse button is first released.
@@ -288,16 +311,17 @@ private:
      * @param clicks    The number of clicks (for double clicking) (UNUSED)
      * @param focus     Whether this device has focus (UNUSED)
      */
-    void mouseUpCB(const cugl::MouseEvent& event, Uint8 clicks, bool focus);
+    void mouseUpCB(const cugl::MouseEvent &event, Uint8 clicks, bool focus);
 
 #pragma mark Touch Callbacks
+
     /**
      * Callback to execute when a new touch begins.
      * 
      * @param event     The touch event for this press
      * @param focus     Whether the listener currently has focus (UNUSED)
      */
-    void touchBeginCB(const cugl::TouchEvent& event, bool focus);
+    void touchBeginCB(const cugl::TouchEvent &event, bool focus);
 
     /*
      * Callback to execute when a touch shifts location.
@@ -306,15 +330,15 @@ private:
      * @param previous  The previous position of the touch
      * @param focus     Whether the listener currently has focus (UNUSED)
      */
-    void touchMotionCB(const cugl::TouchEvent& event, const cugl::Vec2 previous, bool focus);
-    
+    void touchMotionCB(const cugl::TouchEvent &event, const cugl::Vec2 previous, bool focus);
+
     /**
      * Callback to execute when a touch ends.
      *
      * @param event     The touch event for this release
      * @param focus     Whether the listener currently has focus (UNUSED)
      */
-    void touchEndCB(const cugl::TouchEvent& event, bool focus);
+    void touchEndCB(const cugl::TouchEvent &event, bool focus);
 
     /*
     * Callback to execute when two fingers are detected on the device.
@@ -322,7 +346,7 @@ private:
     * @param event  The touch event for this gesture
     * @param focus  Whether the listener currently has focus (UNUSED)
     */
-    void multiBeginCB(const cugl::CoreGestureEvent& event, bool focus);
+    void multiBeginCB(const cugl::CoreGestureEvent &event, bool focus);
 
     /*
     * Callback to execute when the gesture is updated.
@@ -330,7 +354,7 @@ private:
     * @param event  The touch event for this gesture
     * @param focus  Whether the listener currently has focus (UNUSED)
     */
-    void multiChangeCB(const cugl::CoreGestureEvent& event, bool focus);
+    void multiChangeCB(const cugl::CoreGestureEvent &event, bool focus);
 
     /*
     * Callback to execute when there are no longer two fingers on the device.
@@ -339,7 +363,7 @@ private:
     * @param event  The touch event for this gesture
     * @param focus  Whether the listener currently has focus (UNUSED)
     */
-    void multiEndCB(const cugl::CoreGestureEvent& event, bool focus);
+    void multiEndCB(const cugl::CoreGestureEvent &event, bool focus);
 };
 
 #endif /* __MP_INPUT_H__ */

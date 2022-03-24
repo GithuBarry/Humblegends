@@ -92,7 +92,7 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation);
+    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) override;
 
 #pragma mark -
 #pragma mark Attribute Methods
