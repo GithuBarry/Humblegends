@@ -32,10 +32,20 @@ protected:
     /** The current touch/mouse position */
     cugl::Vec2 _currPos;
 
+    /* Whether a drag is currently happening */
+    bool _isDragging;
+    /* Whether a drag just ended */
+    bool _didDragEnd;
+    /* The start position of the current drag, or the last drag */
+    cugl::Vec2 _dragStart;
+    /* The end position of the last drag */
+    cugl::Vec2 _dragEnd;
+
     /** Whether the zoom in toggle was chosen. */
     bool _zoomInPressed;
     /** Whether the zoom out toggle was chosen. */
     bool _zoomOutPressed;
+
     /* Whether the user is scrolling */
     bool _isScrolling;
     /* 
@@ -321,6 +331,43 @@ public:
         return _currPos;
     }
 
+    /*
+    * Returns true if the user is currently executing a drag
+    * 
+    * @return true if the user is currently executing a drag
+    */
+    bool isDragging() const {
+        return _isDragging;
+    }
+
+    /*
+    * Returns true if the user ended a drag this frame
+    * 
+    * @return true if the user ended a drag this frame
+    */
+    bool didEndDrag() const {
+        return _didDragEnd;
+    }
+
+    /*
+    * Returns the start position of the current drag or the drag that just ended
+    * Should only be called if user is currently dragging or has just finished a drag
+    * 
+    * @return the start position of the current drag or the drag that just ended
+    */
+    cugl::Vec2 getDragStart() const {
+        return _dragStart;
+    }
+
+    /*
+    * Returns the start position of the drag that just ended
+    * Should only be called if the user has just finished a drag
+    *
+    * @return the start position of the drag that just ended
+    */
+    cugl::Vec2 getDragEnd() const {
+        return _dragEnd;
+    }
 
 #pragma mark -
 #pragma mark Mouse Callbacks
@@ -335,6 +382,18 @@ private:
      * @param focus     Whether this device has focus (UNUSED)
      */
     void mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, bool focus);
+
+    /**
+     * Callback to execute when a mouse button is dragged.
+     * A drag is mouse motion while a mouse key is pressed
+     *
+     * This function will record a drag only if the left button is pressed.
+     *
+     * @param event     The event with the mouse information
+     * @param previous  The previous position of the mouse (UNUSED)
+     * @param focus     Whether this device has focus (UNUSED)
+     */
+    void mouseDragCB(const cugl::MouseEvent& event, const Vec2 previous, bool focus);
 
     /**
      * Callback to execute when a mouse button is first released.

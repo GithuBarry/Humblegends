@@ -20,7 +20,9 @@ using namespace cugl;
 
 /** How fast a double click must be in milliseconds */
 #define EVENT_DOUBLE_CLICK  400
-/** How far we must swipe left or right for a gesture */
+/** How far we must move for a drag */
+#define EVENT_DRAG_LENGTH  100
+/** How far we must swipe left, right, up or down for a gesture */
 #define EVENT_SWIPE_LENGTH  100
 /** How fast we must swipe left or right for a gesture */
 #define EVENT_SWIPE_TIME   1000
@@ -73,6 +75,8 @@ InputController::InputController() :
         _prevDown(false),
         _isScrolling(false),
         _scrollOffset(cugl::Vec2::ZERO),
+        _isDragging(false),
+        _didDragEnd(false),
 
 //Mouse-Specific Support
         _mouseDown(false),
@@ -133,6 +137,9 @@ bool InputController::init() {
         _mouseKey = mouse->acquireKey();
         mouse->addPressListener(_mouseKey, [=](const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
             this->mouseDownCB(event, clicks, focus);
+            });
+        mouse->addDragListener(_mouseKey, [=](const cugl::MouseEvent& event, const Vec2 previous, bool focus) {
+            this->mouseDragCB(event, previous, focus);
             });
         mouse->addReleaseListener(_mouseKey, [=](const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
             this->mouseUpCB(event, clicks, focus);
@@ -298,6 +305,24 @@ void InputController::mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, b
     if (!_mouseDown && event.buttons.hasLeft()) {
         _mouseDown = true;
         _mousePos = event.position;
+        _dragStart = event.position;
+    }
+}
+
+/**
+* Callback to execute when a mouse button is dragged.
+* A drag is mouse motion while a mouse key is pressed
+*
+* This function will record a drag only if the left button is pressed.
+*
+* @param event     The event with the mouse information
+* @param previous  The previous position of the mouse (UNUSED)
+* @param focus     Whether this device has focus (UNUSED)
+*/
+void InputController::mouseDragCB(const cugl::MouseEvent& event, const Vec2 previous, bool focus){
+    if (event.buttons.hasLeft()) {
+        float dist = std::abs((event.position - _dragStart).length());
+        _isDragging = dist >= EVENT_DRAG_LENGTH;
     }
 }
 
@@ -313,6 +338,10 @@ void InputController::mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, b
 void InputController::mouseUpCB(const cugl::MouseEvent &event, Uint8 clicks, bool focus) {
     if (_mouseDown && event.buttons.hasLeft()) {
         _mouseDown = false;
+        if (_isDragging) {
+            _dragEnd = event.position;
+            _isDragging = false;
+        }
     }
 }
 
