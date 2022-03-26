@@ -65,9 +65,9 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool ReynardModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
+bool ReynardModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, shared_ptr<Texture>>> animations) {
     // If initialization of parent class failed, return immediately
-    if (!(CharacterModel::init(pos, drawScale, defaultTexture, runAnimation))) return false;
+    if (!(CharacterModel::init(pos, drawScale, animations))) return false;
 
     // Have Reynard be running by default
     _moveState = MovementState::RUNNING;

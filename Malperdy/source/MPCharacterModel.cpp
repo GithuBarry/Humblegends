@@ -16,6 +16,7 @@
 #include <cugl/scene2/graph/CUPolygonNode.h>
 #include <cugl/scene2/graph/CUTexturedNode.h>
 #include <cugl/assets/CUAssetManager.h>
+#include <map>
 
 #pragma mark -
 #pragma mark Physics Constants
@@ -62,14 +63,13 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
+bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, shared_ptr<Texture>>> animations) {
 
-    _defaultTexture = defaultTexture;
-    _runAnimation = runAnimation;
+    _animations = animations;
 
     uploadTexture("run");
 
-    Size nsize = defaultTexture->getSize() / drawScale;
+    Size nsize = (*_animations)["default"]->getSize() / drawScale;
     nsize.width *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
     _drawScale = drawScale;
@@ -93,26 +93,37 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Tex
 #pragma mark Attribute Properties
 
 bool CharacterModel::uploadTexture(string tex) {
-    if (tex == "default") {
-        // Create sprite for this character from texture and store
-        setSceneNode(scene2::SpriteNode::alloc(_defaultTexture, 1, 1));
-        _node->setAnchor(0.5, 0.5);
-        _node->setScale(0.5);
-    } else if (tex == "run") {
-        // Create sprite for this character from texture and store
-        setSceneNode(scene2::SpriteNode::alloc(_runAnimation, 5, 5));
-        _node->setAnchor(0.5, 0.5);
-        _node->setScale(0.2);
+//    if (tex == "default") {
+//        // Create sprite for this character from texture and store
+//        setSceneNode(scene2::SpriteNode::alloc(_defaultTexture, 1, 1));
+//        _node->setAnchor(0.5, 0.5);
+//        _node->setScale(0.5);
+//    } else if (tex == "run") {
+//        // Create sprite for this character from texture and store
+//        setSceneNode(scene2::SpriteNode::alloc(_runAnimation, 5, 5));
+//        _node->setAnchor(0.5, 0.5);
+//        _node->setScale(0.2);
+//
+//        // initial flip of the image
+//        scene2::TexturedNode *im = dynamic_cast<scene2::TexturedNode *>(_node.get());
+//
+//        if (im != nullptr) {
+//            im->flipHorizontal(!im->isFlipHorizontal());
+//        }
+//    } else {
+//        return false;
+//    }
+    setSceneNode(scene2::SpriteNode::alloc((*_animations)["run"], 5, 5));
+    _node->setAnchor(0.5, 0.5);
+    _node->setScale(0.2);
 
-        // initial flip of the image
-        scene2::TexturedNode *im = dynamic_cast<scene2::TexturedNode *>(_node.get());
+    // initial flip of the image
+    scene2::TexturedNode *im = dynamic_cast<scene2::TexturedNode *>(_node.get());
 
-        if (im != nullptr) {
-            im->flipHorizontal(!im->isFlipHorizontal());
-        }
-    } else {
-        return false;
+    if (im != nullptr) {
+        im->flipHorizontal(!im->isFlipHorizontal());
     }
+    
     return true;
 
 }

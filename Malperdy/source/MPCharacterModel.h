@@ -18,6 +18,7 @@
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUCapsuleObstacle.h>
 #include <cugl/scene2/graph/CUWireNode.h>
+#include <map>
 
 using namespace cugl;
 
@@ -98,10 +99,7 @@ protected:
 #pragma mark Attributes
 
     /** The sheet for the running animation */
-    shared_ptr<Texture> _runAnimation;
-
-    /** Default texture */
-    shared_ptr<Texture> _defaultTexture;
+    shared_ptr<map<string, shared_ptr<Texture>>> _animations;
 
 #pragma mark Trails
 
@@ -181,7 +179,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation);
+    virtual bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, shared_ptr<Texture>>> animations);
 
 
 #pragma mark -
@@ -203,10 +201,10 @@ public:
      *
      * @return  A newly allocated CharacterModel at the given position with the given scale
      */
-    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
+    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, shared_ptr<Texture>>> animations) {
         std::shared_ptr<CharacterModel> result = std::make_shared<CharacterModel>();
 
-        return (result->init(pos, drawScale, defaultTexture, runAnimation) ? result : nullptr);
+        return (result->init(pos, drawScale, animations) ? result : nullptr);
     }
 
 #pragma mark -

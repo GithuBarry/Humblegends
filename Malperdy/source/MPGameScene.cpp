@@ -276,7 +276,12 @@ void GameScene::populate() {
     // Create a controller for Reynard based on his image texture
 //    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
 
-    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"), _assets->get<Texture>("reynard_run"));
+    shared_ptr<map<string, shared_ptr<Texture>>> reynard_animations = make_shared<map<string, shared_ptr<Texture>>>();
+    if(_assets->get<Texture>("reynard")) (*reynard_animations)["default"] = _assets->get<Texture>("reynard");
+    if(_assets->get<Texture>("reynard_run")) (*reynard_animations)["run"] = _assets->get<Texture>("reynard_run");
+    
+    _reynardController = ReynardController::alloc(pos, _scale, reynard_animations);
+    
     // Add Reynard to physics world
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
