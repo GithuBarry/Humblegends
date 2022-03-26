@@ -1,0 +1,14 @@
+{
+    "reynard_run": {
+        "size": 25,
+        "cols": 5
+    },
+    "reynard": {
+        "size": 1,
+        "cols": 1
+    },
+    "reynard_jump": {
+        "size": 25,
+        "cols": 5
+    }
+}

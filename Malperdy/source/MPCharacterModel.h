@@ -56,6 +56,27 @@ public:
         ONWALL,
         DASHING
     };
+    
+    /** Class representing an animation */
+    class Animation{
+    public:
+        shared_ptr<Texture> _frames;
+        int _size;
+        int _cols;
+        int _rows;
+        
+        Animation(){
+        };
+        
+        bool init(shared_ptr<Texture> frames, int size, int cols){
+            _frames = frames;
+            _size = size;
+            _cols = cols;
+            _rows = _size / _cols +  1;
+            return frames && size != 0;
+        }
+    };
+
 
     /** SceneNode representing the sprite for the character */
     shared_ptr<scene2::SpriteNode> _node;
@@ -99,7 +120,7 @@ protected:
 #pragma mark Attributes
 
     /** The sheet for the running animation */
-    shared_ptr<map<string, shared_ptr<Texture>>> _animations;
+    shared_ptr<map<string, Animation>> _animations;
 
 #pragma mark Trails
 
@@ -179,7 +200,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, shared_ptr<Texture>>> animations);
+    virtual bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, Animation>> animations);
 
 
 #pragma mark -
@@ -201,7 +222,7 @@ public:
      *
      * @return  A newly allocated CharacterModel at the given position with the given scale
      */
-    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, shared_ptr<Texture>>> animations) {
+    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, Animation>> animations) {
         std::shared_ptr<CharacterModel> result = std::make_shared<CharacterModel>();
 
         return (result->init(pos, drawScale, animations) ? result : nullptr);

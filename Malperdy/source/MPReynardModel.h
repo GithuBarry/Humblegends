@@ -62,7 +62,7 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, shared_ptr<Texture>>> animations) override;
+    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, Animation>> animations) override;
 
     /**
      * Updates the object's physics state (NOT GAME LOGIC).

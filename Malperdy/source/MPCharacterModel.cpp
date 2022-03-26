@@ -63,13 +63,13 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, shared_ptr<Texture>>> animations) {
+bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations) {
 
     _animations = animations;
 
     uploadTexture("run");
 
-    Size nsize = (*_animations)["default"]->getSize() / drawScale;
+    Size nsize = (*_animations)["default"]._frames->getSize() / drawScale;
     nsize.width *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
     _drawScale = drawScale;
@@ -93,29 +93,17 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map
 #pragma mark Attribute Properties
 
 bool CharacterModel::uploadTexture(string tex) {
-//    if (tex == "default") {
-//        // Create sprite for this character from texture and store
-//        setSceneNode(scene2::SpriteNode::alloc(_defaultTexture, 1, 1));
-//        _node->setAnchor(0.5, 0.5);
-//        _node->setScale(0.5);
-//    } else if (tex == "run") {
-//        // Create sprite for this character from texture and store
-//        setSceneNode(scene2::SpriteNode::alloc(_runAnimation, 5, 5));
-//        _node->setAnchor(0.5, 0.5);
-//        _node->setScale(0.2);
-//
-//        // initial flip of the image
-//        scene2::TexturedNode *im = dynamic_cast<scene2::TexturedNode *>(_node.get());
-//
-//        if (im != nullptr) {
-//            im->flipHorizontal(!im->isFlipHorizontal());
-//        }
-//    } else {
-//        return false;
-//    }
-    setSceneNode(scene2::SpriteNode::alloc((*_animations)["run"], 5, 5));
+    
+    setSceneNode(scene2::SpriteNode::alloc((*_animations)[tex]._frames, (*_animations)[tex]._rows, (*_animations)[tex]._cols, (*_animations)[tex]._size));
     _node->setAnchor(0.5, 0.5);
-    _node->setScale(0.2);
+    if(tex == "default"){
+        _node->setScale(1);
+    }
+    else{
+        _node->setScale(0.2);
+    }
+
+
 
     // initial flip of the image
     scene2::TexturedNode *im = dynamic_cast<scene2::TexturedNode *>(_node.get());

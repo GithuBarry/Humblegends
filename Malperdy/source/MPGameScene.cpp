@@ -276,9 +276,29 @@ void GameScene::populate() {
     // Create a controller for Reynard based on his image texture
 //    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
 
-    shared_ptr<map<string, shared_ptr<Texture>>> reynard_animations = make_shared<map<string, shared_ptr<Texture>>>();
-    if(_assets->get<Texture>("reynard")) (*reynard_animations)["default"] = _assets->get<Texture>("reynard");
-    if(_assets->get<Texture>("reynard_run")) (*reynard_animations)["run"] = _assets->get<Texture>("reynard_run");
+    // Make a dictionary of animations for reynard
+    shared_ptr<map<string, CharacterModel::Animation>> reynard_animations = make_shared<map<string, CharacterModel::Animation>>();
+    shared_ptr<Texture> frames;
+    int size;
+    int cols;
+    
+    // If there is a default texture, add the animation using framedata from the JSON
+    if(_assets->get<Texture>("reynard")){
+        frames =_assets->get<Texture>("reynard");
+        size = _assets->get<JsonValue>("framedata")->get("reynard")->get("size")->asInt();
+        cols = _assets->get<JsonValue>("framedata")->get("reynard")->get("cols")->asInt();
+        (*reynard_animations)["default"] = CharacterModel::Animation();
+        (*reynard_animations)["default"].init(frames, size, cols);
+    }
+    
+    // If there is a running, add the animation using framedata from the JSON
+    if(_assets->get<Texture>("reynard_run")){
+        frames =_assets->get<Texture>("reynard_run");
+        size = _assets->get<JsonValue>("framedata")->get("reynard_run")->get("size")->asInt();
+        cols = _assets->get<JsonValue>("framedata")->get("reynard_run")->get("cols")->asInt();
+        (*reynard_animations)["run"] = CharacterModel::Animation();
+        (*reynard_animations)["run"].init(frames, size, cols);
+    }
     
     _reynardController = ReynardController::alloc(pos, _scale, reynard_animations);
     
