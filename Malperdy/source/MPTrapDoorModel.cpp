@@ -45,6 +45,7 @@ bool TrapDoor::init(){
 //    CULog("max Y: %f", _polyNode->getPolygon().getBounds().getMaxY());
     CULog("scale: %f", 720.0 / _polyNode->getPolygon().getBounds().getMaxX());
 //    _polyNode->setPolygon(poly);
-//    _polyNode->setColor(Color4::GREEN);
+    _polyNode->setColor(Color4::GREEN);
+//    setSensor(true);
    return this->TrapModel::init();
 }

@@ -356,7 +356,9 @@ void GridModel::calculatePhysicsGeometry() {
 
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
                 _grid->at(row)->at(col)->getTrap()->initObstacle(obstacle);
-
+                if(_grid->at(row)->at(col)->getTrap()->getType()=="trapdoor"){
+                    _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
+                }
             }
         }
     }
