@@ -32,7 +32,7 @@ using namespace cugl;
  */
 bool TrapDoor::init(){
     _polyNode = make_shared<scene2::PolygonNode>();
-//    _polyNode->initWithFile("textures/spikes.png");
+    _polyNode->initWithFile("textures/spikes.png");
     _type = "trapdoor";
     
     
@@ -45,6 +45,6 @@ bool TrapDoor::init(){
 //    CULog("max Y: %f", _polyNode->getPolygon().getBounds().getMaxY());
     CULog("scale: %f", 720.0 / _polyNode->getPolygon().getBounds().getMaxX());
 //    _polyNode->setPolygon(poly);
-    _polyNode->setColor(Color4::GREEN);
+//    _polyNode->setColor(Color4::GREEN);
    return this->TrapModel::init();
 }

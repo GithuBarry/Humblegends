@@ -163,6 +163,14 @@ bool RoomModel::initTrap(string type){
         
         addChild(_trap);
     }
+    if (type == "trapdoor"){
+        shared_ptr<TrapDoor> trap = make_shared<TrapDoor>();
+        trap->init();
+        
+        _trap = trap;
+        
+        addChild(_trap);
+    }
     else{
         return false;
     }
