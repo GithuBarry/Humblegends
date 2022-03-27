@@ -24,6 +24,9 @@
     "reynard_run": {
       "file": "textures/reynard_run.png"
     },
+    "reynard_jump": {
+      "file": "textures/reynard_jump.png"
+    },
     "rabbit": {
       "file": "textures/rabbit.png"
     },

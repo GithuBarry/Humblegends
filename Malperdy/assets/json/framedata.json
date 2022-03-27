@@ -1,14 +1,17 @@
 {
     "reynard_run": {
-        "size": 25,
-        "cols": 5
+        "size": 27,
+        "cols": 5,
+        "loop": "true"
     },
     "reynard": {
         "size": 1,
-        "cols": 1
+        "cols": 1,
+        "loop": "true"
     },
     "reynard_jump": {
-        "size": 25,
-        "cols": 5
+        "size": 28,
+        "cols": 5,
+        "loop": "false"
     }
 }

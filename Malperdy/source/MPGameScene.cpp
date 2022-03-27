@@ -278,28 +278,24 @@ void GameScene::populate() {
 
     // Make a dictionary of animations for reynard
     shared_ptr<map<string, CharacterModel::Animation>> reynard_animations = make_shared<map<string, CharacterModel::Animation>>();
-    shared_ptr<Texture> frames;
-    int size;
-    int cols;
+
+    // The names of the sprite sheet assets
+    string textureName[] = {"reynard", "reynard_run", "reynard_jump"};
+    // The animation names
+    string animationName[] = {"default", "run", "jump"};
     
-    // If there is a default texture, add the animation using framedata from the JSON
-    if(_assets->get<Texture>("reynard")){
-        frames =_assets->get<Texture>("reynard");
-        size = _assets->get<JsonValue>("framedata")->get("reynard")->get("size")->asInt();
-        cols = _assets->get<JsonValue>("framedata")->get("reynard")->get("cols")->asInt();
-        (*reynard_animations)["default"] = CharacterModel::Animation();
-        (*reynard_animations)["default"].init(frames, size, cols);
+    // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
+    for(int i = 0; i < sizeof(textureName)/sizeof(textureName[0]); i++){
+        if(_assets->get<Texture>(textureName[i])){
+            //shared_ptr<Texture> frames =_assets->get<Texture>(textureName[i]);
+            int size = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("size")->asInt();
+            int cols = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("cols")->asInt();
+            string loop = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("loop")->asString();
+            (*reynard_animations)[animationName[i]] = CharacterModel::Animation();
+            (*reynard_animations)[animationName[i]].init(_assets->get<Texture>(textureName[i]), size, cols, loop);
+        }
     }
-    
-    // If there is a running, add the animation using framedata from the JSON
-    if(_assets->get<Texture>("reynard_run")){
-        frames =_assets->get<Texture>("reynard_run");
-        size = _assets->get<JsonValue>("framedata")->get("reynard_run")->get("size")->asInt();
-        cols = _assets->get<JsonValue>("framedata")->get("reynard_run")->get("cols")->asInt();
-        (*reynard_animations)["run"] = CharacterModel::Animation();
-        (*reynard_animations)["run"].init(frames, size, cols);
-    }
-    
+    // initialize reynardController with the final animation map
     _reynardController = ReynardController::alloc(pos, _scale, reynard_animations);
     
     // Add Reynard to physics world

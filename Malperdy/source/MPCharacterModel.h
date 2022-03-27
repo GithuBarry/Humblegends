@@ -60,20 +60,30 @@ public:
     /** Class representing an animation */
     class Animation{
     public:
+        // The sprite sheet
         shared_ptr<Texture> _frames;
+        
+        // Frame data
         int _size;
         int _cols;
         int _rows;
+        bool _loop = false;
         
-        Animation(){
-        };
+        // Empty constructor, must initialize to usse
+        Animation(){};
         
-        bool init(shared_ptr<Texture> frames, int size, int cols){
+        // Sets all attributes
+        bool init(shared_ptr<Texture> frames, int size, int cols, string loop){
+            // Frame data
             _frames = frames;
             _size = size;
             _cols = cols;
-            _rows = _size / _cols +  1;
-            return frames && size != 0;
+            // Calculate the number of rows from size & cols
+            _rows = (_size-1) / _cols + 1;
+            if (loop == "true") _loop = true;
+            
+            // return false if spritesheet is null or the size is nonpositive
+            return frames && size > 0;
         }
     };
 
@@ -119,8 +129,11 @@ protected:
 
 #pragma mark Attributes
 
-    /** The sheet for the running animation */
+    /** The dictionary of all character animations */
     shared_ptr<map<string, Animation>> _animations;
+    
+    /** The frame data the current animation */
+    Animation _currAnimation;
 
 #pragma mark Trails
 
@@ -281,10 +294,7 @@ public:
      */
     void flipDirection() {
         _faceRight = !_faceRight;
-        scene2::TexturedNode *image = dynamic_cast<scene2::TexturedNode *>(_node.get());
-        if (image != nullptr) {
-            image->flipHorizontal(!image->isFlipHorizontal());
-        }
+        _node->setScale(_node->getScale()*Vec2(-1,1));
     }
 
     /**
@@ -383,6 +393,13 @@ public:
         _node->setPosition(value * _drawScale);
     }
 
+    /**
+     * Replaces the node with the specified animation
+     *
+     * @param tex is the key representing an animation in _animations
+     *
+     * @returns whether or not the animation was uplaoded
+     */
     bool uploadTexture(string tex);
 
     /**
