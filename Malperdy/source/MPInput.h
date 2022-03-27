@@ -123,6 +123,13 @@ private:
     /* The position of the current touch (for touch-based interfaces) */
     cugl::Vec2 _touchPos;
 
+    /* Whether the mouse is currently dragging */
+    bool _touchDragging;
+    /* The start position of the current drag, or the last drag */
+    cugl::Vec2 _touchDragStart;
+    /* The end position of the last drag */
+    cugl::Vec2 _touchDragEnd;
+
     // MULTITOUCH SUPPORT
     /* The key for multitouch listeners */
     Uint32 _multiKey;

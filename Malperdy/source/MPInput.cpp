@@ -87,6 +87,8 @@ InputController::InputController() :
         _touchKey(0),
         _touchDown(false),
         _currentTouch(0),
+        _touchDragging(false),
+
         _multiKey(0),
         _inMulti(false),
         _pinchGesture(false),
@@ -269,6 +271,10 @@ void InputController::update(float dt) {
     _isScrolling = _panGesture;
     _scrollOffset = _panOffsetMobile;
 
+    _currDrag = _touchDragging;
+    _dragStart = _touchDragStart;
+    _dragEnd = _touchDragEnd;
+
 #endif
 
 // If it does not support keyboard, we must reset "virtual" keyboard
@@ -361,11 +367,11 @@ void InputController::mouseUpCB(const cugl::MouseEvent &event, Uint8 clicks, boo
  * @param event     The event with the touch information
  */
 void InputController::touchBeginCB(const cugl::TouchEvent &event, bool focus) {
-    //CULog("Touch Begin");
     if (!_touchDown) {
         _touchDown = true;
         _currentTouch = event.touch;
         _touchPos = event.position;
+        _touchDragStart = event.position;
     }
 }
 
@@ -375,9 +381,11 @@ void InputController::touchBeginCB(const cugl::TouchEvent &event, bool focus) {
 * @param event     The event with the touch information
 */
 void InputController::touchMotionCB(const cugl::TouchEvent &event, const cugl::Vec2 previous, bool focus) {
-    //CULog("Touch Move");
     if (_touchDown && event.touch == _currentTouch) {
         _touchPos = event.position;
+
+        float dist = std::abs((event.position - _touchDragStart).length());
+        _touchDragging = dist >= EVENT_DRAG_LENGTH;
     }
 }
 
@@ -387,9 +395,12 @@ void InputController::touchMotionCB(const cugl::TouchEvent &event, const cugl::V
  * @param event     The event with the touch information
  */
 void InputController::touchEndCB(const cugl::TouchEvent &event, bool focus) {
-    //CULog("Touch End");
     if (_touchDown && event.touch == _currentTouch) {
         _touchDown = false;
+        if (_touchDragging) {
+            _touchDragEnd = event.position;
+            _touchDragging = false;
+        }
     }
 }
 
