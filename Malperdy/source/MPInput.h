@@ -33,9 +33,9 @@ protected:
     cugl::Vec2 _currPos;
 
     /* Whether a drag is currently happening */
-    bool _isDragging;
+    bool _currDrag;
     /* Whether a drag just ended */
-    bool _didDragEnd;
+    bool _prevDrag;
     /* The start position of the current drag, or the last drag */
     cugl::Vec2 _dragStart;
     /* The end position of the last drag */
@@ -105,6 +105,13 @@ private:
     bool _mouseDown;
     /* The mouse position (for mice-based interfaces) */
     cugl::Vec2 _mousePos;
+
+    /* Whether the mouse is currently dragging */
+    bool _mouseDragging;
+    /* The start position of the current drag, or the last drag */
+    cugl::Vec2 _mouseDragStart;
+    /* The end position of the last drag */
+    cugl::Vec2 _mouseDragEnd;
 
     // TOUCHSCREEN SUPPORT
     /* The key for touchscreen listeners */
@@ -337,7 +344,7 @@ public:
     * @return true if the user is currently executing a drag
     */
     bool isDragging() const {
-        return _isDragging;
+        return _currDrag;
     }
 
     /*
@@ -346,7 +353,7 @@ public:
     * @return true if the user ended a drag this frame
     */
     bool didEndDrag() const {
-        return _didDragEnd;
+        return !_currDrag && _prevDrag;
     }
 
     /*
@@ -393,7 +400,7 @@ private:
      * @param previous  The previous position of the mouse (UNUSED)
      * @param focus     Whether this device has focus (UNUSED)
      */
-    void mouseDragCB(const cugl::MouseEvent& event, const Vec2 previous, bool focus);
+    void mouseDragCB(const cugl::MouseEvent& event, const cugl::Vec2 previous, bool focus);
 
     /**
      * Callback to execute when a mouse button is first released.

@@ -75,12 +75,13 @@ InputController::InputController() :
         _prevDown(false),
         _isScrolling(false),
         _scrollOffset(cugl::Vec2::ZERO),
-        _isDragging(false),
-        _didDragEnd(false),
+        _currDrag(false),
+        _prevDrag(false),
 
 //Mouse-Specific Support
         _mouseDown(false),
         _mouseKey(0),
+        _mouseDragging(false),
 
 //Touchscreen-Specific Support
         _touchKey(0),
@@ -191,6 +192,7 @@ void InputController::dispose() {
 #ifndef CU_TOUCH_SCREEN
         Mouse* mouse = Input::get<Mouse>();
         mouse->removePressListener(_mouseKey);
+        mouse->removeDragListener(_mouseKey);
         mouse->removeReleaseListener(_mouseKey); 
         mouse->setPointerAwareness(Mouse::PointerAwareness::BUTTON);
         Input::deactivate<Keyboard>();
@@ -219,6 +221,7 @@ void InputController::dispose() {
  */
 void InputController::update(float dt) {
     _prevDown = _currDown;
+    _prevDrag = _currDrag;
 
 #ifndef CU_TOUCH_SCREEN
     Keyboard* keys = Input::get<Keyboard>();
@@ -238,6 +241,10 @@ void InputController::update(float dt) {
 
     _currDown = _mouseDown;
     _currPos = _mousePos;
+
+    _currDrag = _mouseDragging;
+    _dragStart = _mouseDragStart;
+    _dragEnd = _mouseDragEnd;
 
     keys->keyDown(KeyCode::ARROW_DOWN);
 
@@ -275,6 +282,7 @@ void InputController::update(float dt) {
 
 /* Clears any buffered inputs so that we may start fresh. */
 void InputController::clear() {
+    //TODO: update this
     _resetPressed = false;
     _debugPressed = false;
     _exitPressed = false;
@@ -305,7 +313,7 @@ void InputController::mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, b
     if (!_mouseDown && event.buttons.hasLeft()) {
         _mouseDown = true;
         _mousePos = event.position;
-        _dragStart = event.position;
+        _mouseDragStart = event.position;
     }
 }
 
@@ -319,10 +327,10 @@ void InputController::mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, b
 * @param previous  The previous position of the mouse (UNUSED)
 * @param focus     Whether this device has focus (UNUSED)
 */
-void InputController::mouseDragCB(const cugl::MouseEvent& event, const Vec2 previous, bool focus){
+void InputController::mouseDragCB(const cugl::MouseEvent& event, const cugl::Vec2 previous, bool focus){
     if (event.buttons.hasLeft()) {
-        float dist = std::abs((event.position - _dragStart).length());
-        _isDragging = dist >= EVENT_DRAG_LENGTH;
+        float dist = std::abs((event.position - _mouseDragStart).length());
+        _mouseDragging = dist >= EVENT_DRAG_LENGTH;
     }
 }
 
@@ -338,9 +346,9 @@ void InputController::mouseDragCB(const cugl::MouseEvent& event, const Vec2 prev
 void InputController::mouseUpCB(const cugl::MouseEvent &event, Uint8 clicks, bool focus) {
     if (_mouseDown && event.buttons.hasLeft()) {
         _mouseDown = false;
-        if (_isDragging) {
-            _dragEnd = event.position;
-            _isDragging = false;
+        if (_mouseDragging) {
+            _mouseDragEnd = event.position;
+            _mouseDragging = false;
         }
     }
 }
