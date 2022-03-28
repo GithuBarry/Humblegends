@@ -2,6 +2,9 @@
   "jsons" : {
      "framedata" : "json/framedata.json"
   },
+  "rooms" : {
+      "T" : "json/rooms/T.json"
+  },
     
   "textures": {
     "earth": {

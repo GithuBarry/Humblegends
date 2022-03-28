@@ -152,6 +152,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // Start up the input handler
     _assets = assets;
     _input.init();
+    
+    shared_ptr<JsonValue> jv = _assets->get<JsonValue>("rooms");
 
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect, gravity);
