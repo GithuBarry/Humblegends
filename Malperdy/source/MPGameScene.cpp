@@ -276,7 +276,28 @@ void GameScene::populate() {
     // Create a controller for Reynard based on his image texture
 //    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
 
-    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"), _assets->get<Texture>("reynard_run"));
+    // Make a dictionary of animations for reynard
+    shared_ptr<map<string, CharacterModel::Animation>> reynard_animations = make_shared<map<string, CharacterModel::Animation>>();
+
+    // The names of the sprite sheet assets
+    string textureName[] = {"reynard", "reynard_run", "reynard_jump"};
+    // The animation names
+    string animationName[] = {"default", "run", "jump"};
+    
+    // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
+    for(int i = 0; i < sizeof(textureName)/sizeof(textureName[0]); i++){
+        if(_assets->get<Texture>(textureName[i])){
+            //shared_ptr<Texture> frames =_assets->get<Texture>(textureName[i]);
+            int size = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("size")->asInt();
+            int cols = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("cols")->asInt();
+            string loop = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("loop")->asString();
+            (*reynard_animations)[animationName[i]] = CharacterModel::Animation();
+            (*reynard_animations)[animationName[i]].init(_assets->get<Texture>(textureName[i]), size, cols, loop);
+        }
+    }
+    // initialize reynardController with the final animation map
+    _reynardController = ReynardController::alloc(pos, _scale, reynard_animations);
+    
     // Add Reynard to physics world
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
