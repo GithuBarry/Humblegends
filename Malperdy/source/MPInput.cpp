@@ -20,7 +20,9 @@ using namespace cugl;
 
 /** How fast a double click must be in milliseconds */
 #define EVENT_DOUBLE_CLICK  400
-/** How far we must swipe left or right for a gesture */
+/** How far we must move for a drag */
+#define EVENT_DRAG_LENGTH  100
+/** How far we must swipe left, right, up or down for a gesture */
 #define EVENT_SWIPE_LENGTH  100
 /** How fast we must swipe left or right for a gesture */
 #define EVENT_SWIPE_TIME   1000
@@ -71,18 +73,28 @@ InputController::InputController() :
 //General Touch Support
         _currDown(false),
         _prevDown(false),
+        _isScrolling(false),
+        _scrollOffset(cugl::Vec2::ZERO),
+        _currDrag(false),
+        _prevDrag(false),
 
 //Mouse-Specific Support
         _mouseDown(false),
         _mouseKey(0),
+        _mouseDragging(false),
 
 //Touchscreen-Specific Support
         _touchKey(0),
         _touchDown(false),
         _currentTouch(0),
+        _touchDragging(false),
+
         _multiKey(0),
-        _isPinching(false),
-        _isZooming(false),
+        _inMulti(false),
+        _pinchGesture(false),
+        _zoomGesture(false),
+        _panGesture(false),
+        _panOffsetMobile(cugl::Vec2::ZERO),
 
 //Reynard Direct Presses
         _spaceDown(false),
@@ -128,6 +140,9 @@ bool InputController::init() {
         _mouseKey = mouse->acquireKey();
         mouse->addPressListener(_mouseKey, [=](const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
             this->mouseDownCB(event, clicks, focus);
+            });
+        mouse->addDragListener(_mouseKey, [=](const cugl::MouseEvent& event, const Vec2 previous, bool focus) {
+            this->mouseDragCB(event, previous, focus);
             });
         mouse->addReleaseListener(_mouseKey, [=](const cugl::MouseEvent& event, Uint8 clicks, bool focus) {
             this->mouseUpCB(event, clicks, focus);
@@ -179,6 +194,7 @@ void InputController::dispose() {
 #ifndef CU_TOUCH_SCREEN
         Mouse* mouse = Input::get<Mouse>();
         mouse->removePressListener(_mouseKey);
+        mouse->removeDragListener(_mouseKey);
         mouse->removeReleaseListener(_mouseKey); 
         mouse->setPointerAwareness(Mouse::PointerAwareness::BUTTON);
         Input::deactivate<Keyboard>();
@@ -206,8 +222,8 @@ void InputController::dispose() {
  * frame, so we need to accumulate all of the data together.
  */
 void InputController::update(float dt) {
-
     _prevDown = _currDown;
+    _prevDrag = _currDrag;
 
 #ifndef CU_TOUCH_SCREEN
     Keyboard* keys = Input::get<Keyboard>();
@@ -228,6 +244,10 @@ void InputController::update(float dt) {
     _currDown = _mouseDown;
     _currPos = _mousePos;
 
+    _currDrag = _mouseDragging;
+    _dragStart = _mouseDragStart;
+    _dragEnd = _mouseDragEnd;
+
     keys->keyDown(KeyCode::ARROW_DOWN);
 
     // USE INTERNAL PRIVATE VARIABLES TO CHANGE THE EXTERNAL FLAGS
@@ -242,12 +262,18 @@ void InputController::update(float dt) {
     _zoomOutPressed = _qDown;
 
 #else
-    _currDown = _touchDown;
+    _currDown = _touchDown && !_inMulti;
     _jumpPressed = _touchDown;
     _currPos = _touchPos;
 
-    _zoomOutPressed = _isPinching;
-    _zoomInPressed = _isZooming;
+    _zoomOutPressed = _pinchGesture;
+    _zoomInPressed = _zoomGesture;
+    _isScrolling = _panGesture;
+    _scrollOffset = _panOffsetMobile;
+
+    _currDrag = _touchDragging;
+    _dragStart = _touchDragStart;
+    _dragEnd = _touchDragEnd;
 
 #endif
 
@@ -262,6 +288,7 @@ void InputController::update(float dt) {
 
 /* Clears any buffered inputs so that we may start fresh. */
 void InputController::clear() {
+    //TODO: update this
     _resetPressed = false;
     _debugPressed = false;
     _exitPressed = false;
@@ -292,6 +319,24 @@ void InputController::mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, b
     if (!_mouseDown && event.buttons.hasLeft()) {
         _mouseDown = true;
         _mousePos = event.position;
+        _mouseDragStart = event.position;
+    }
+}
+
+/**
+* Callback to execute when a mouse button is dragged.
+* A drag is mouse motion while a mouse key is pressed
+*
+* This function will record a drag only if the left button is pressed.
+*
+* @param event     The event with the mouse information
+* @param previous  The previous position of the mouse (UNUSED)
+* @param focus     Whether this device has focus (UNUSED)
+*/
+void InputController::mouseDragCB(const cugl::MouseEvent& event, const cugl::Vec2 previous, bool focus){
+    if (event.buttons.hasLeft()) {
+        float dist = std::abs((event.position - _mouseDragStart).length());
+        _mouseDragging = dist >= EVENT_DRAG_LENGTH;
     }
 }
 
@@ -307,6 +352,10 @@ void InputController::mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, b
 void InputController::mouseUpCB(const cugl::MouseEvent &event, Uint8 clicks, bool focus) {
     if (_mouseDown && event.buttons.hasLeft()) {
         _mouseDown = false;
+        if (_mouseDragging) {
+            _mouseDragEnd = event.position;
+            _mouseDragging = false;
+        }
     }
 }
 
@@ -318,11 +367,11 @@ void InputController::mouseUpCB(const cugl::MouseEvent &event, Uint8 clicks, boo
  * @param event     The event with the touch information
  */
 void InputController::touchBeginCB(const cugl::TouchEvent &event, bool focus) {
-    //CULog("Touch Begin");
     if (!_touchDown) {
         _touchDown = true;
         _currentTouch = event.touch;
         _touchPos = event.position;
+        _touchDragStart = event.position;
     }
 }
 
@@ -332,9 +381,11 @@ void InputController::touchBeginCB(const cugl::TouchEvent &event, bool focus) {
 * @param event     The event with the touch information
 */
 void InputController::touchMotionCB(const cugl::TouchEvent &event, const cugl::Vec2 previous, bool focus) {
-    //CULog("Touch Move");
     if (_touchDown && event.touch == _currentTouch) {
         _touchPos = event.position;
+
+        float dist = std::abs((event.position - _touchDragStart).length());
+        _touchDragging = dist >= EVENT_DRAG_LENGTH;
     }
 }
 
@@ -344,9 +395,12 @@ void InputController::touchMotionCB(const cugl::TouchEvent &event, const cugl::V
  * @param event     The event with the touch information
  */
 void InputController::touchEndCB(const cugl::TouchEvent &event, bool focus) {
-    //CULog("Touch End");
     if (_touchDown && event.touch == _currentTouch) {
         _touchDown = false;
+        if (_touchDragging) {
+            _touchDragEnd = event.position;
+            _touchDragging = false;
+        }
     }
 }
 
@@ -357,7 +411,7 @@ void InputController::touchEndCB(const cugl::TouchEvent &event, bool focus) {
 * @param focus  Whether the listener currently has focus (UNUSED)
 */
 void InputController::multiBeginCB(const cugl::CoreGestureEvent &event, bool focus) {
-    //TODO: implement
+    _inMulti = true;
 }
 
 /*
@@ -367,17 +421,24 @@ void InputController::multiBeginCB(const cugl::CoreGestureEvent &event, bool foc
 * @param focus  Whether the listener currently has focus (UNUSED)
 */
 void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool focus) {
-    //TODO: implement
     if (event.type == CoreGestureType::PINCH) {
-        //CULog("Pinch gesture type");
+        _panGesture = false;
+        _panOffsetMobile = Vec2::ZERO;
         float spreadDiff = event.currSpread - event.origSpread;
-        _isPinching = spreadDiff < -EVENT_SPREAD_LENGTH;
-        _isZooming = spreadDiff > EVENT_SPREAD_LENGTH;
-        //if (_isPinching)//CULog("Pinch detected");
-        //if (_isZooming)//CULog("Zoom detected");
+        _pinchGesture = spreadDiff < -EVENT_SPREAD_LENGTH;
+        _zoomGesture = spreadDiff > EVENT_SPREAD_LENGTH;
+    }
+    else if (event.type == CoreGestureType::PAN) {
+        Vec2 scrollVec = event.currPosition - event.origPosition;
+        _panGesture = scrollVec.length() > EVENT_SWIPE_LENGTH;
+        if (_panGesture) {
+            _panOffsetMobile = scrollVec;
+        }
     } else {
-        _isPinching = false;
-        _isZooming = false;
+        _panGesture = false;
+        _panOffsetMobile = Vec2::ZERO;
+        _pinchGesture = false;
+        _zoomGesture = false;
     }
 }
 
@@ -389,6 +450,9 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool fo
 * @param focus  Whether the listener currently has focus (UNUSED)
 */
 void InputController::multiEndCB(const cugl::CoreGestureEvent &event, bool focus) {
-    _isPinching = false;
-    _isZooming = false;
+    _pinchGesture = false;
+    _zoomGesture = false;
+    _panGesture = false;
+    _panOffsetMobile = Vec2::ZERO;
+    _inMulti = false;
 }

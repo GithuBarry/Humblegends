@@ -24,7 +24,7 @@ protected:
     /** Whether or not this input is active */
     bool _active;
 
-    // PRESS AND GESTURE SUPPORT
+    // PRESS SUPPORT
     /** Whether there is an active button/touch press */
     bool _currDown;
     /** Whether there was an active button/touch press last frame */
@@ -32,12 +32,33 @@ protected:
     /** The current touch/mouse position */
     cugl::Vec2 _currPos;
 
+    /* Whether a drag is currently happening */
+    bool _currDrag;
+    /* Whether a drag just ended */
+    bool _prevDrag;
+    /* The start position of the current drag, or the last drag */
+    cugl::Vec2 _dragStart;
+    /* The end position of the last drag */
+    cugl::Vec2 _dragEnd;
+
+    /** Whether the zoom in toggle was chosen. */
+    bool _zoomInPressed;
+    /** Whether the zoom out toggle was chosen. */
+    bool _zoomOutPressed;
+
+    /* Whether the user is scrolling */
+    bool _isScrolling;
+    /* 
+     * The difference between the scroll start and end positions, if currently scrolling
+     * Otherwise (0,0) if there is no current scroll
+     */
+    cugl::Vec2 _scrollOffset;
+
     /** The initial touch location for the current gesture */
     cugl::Vec2 _dtouch;
     /** The timestamp for the beginning of the current gesture */
     cugl::Timestamp _timestamp;
 
-    // INPUT RESULTS
     /** Whether the reset action was chosen. */
     bool _resetPressed;
     /** Whether the debug toggle was chosen. */
@@ -52,17 +73,13 @@ protected:
     /** The key for exit listeners */
     bool _keyExit;
 
-    // INPUT RESULTS SPECIFICALLY FOR REYNARD
+    //REYNARD CONTROLS
     /** Whether the jump action was chosen. */
     bool _jumpPressed;
     /** Whether the dash right action was chosen. */
     bool _dashRightPressed;
     /** Whether the dash left action was chosen. */
     bool _dashLeftPressed;
-    /** Whether the zoom in toggle was chosen. */
-    bool _zoomInPressed;
-    /** Whether the zoom out toggle was chosen. */
-    bool _zoomOutPressed;
 
 // Device-specific fields are kept private
 private:
@@ -89,6 +106,13 @@ private:
     /* The mouse position (for mice-based interfaces) */
     cugl::Vec2 _mousePos;
 
+    /* Whether the mouse is currently dragging */
+    bool _mouseDragging;
+    /* The start position of the current drag, or the last drag */
+    cugl::Vec2 _mouseDragStart;
+    /* The end position of the last drag */
+    cugl::Vec2 _mouseDragEnd;
+
     // TOUCHSCREEN SUPPORT
     /* The key for touchscreen listeners */
     Uint32 _touchKey;
@@ -99,13 +123,29 @@ private:
     /* The position of the current touch (for touch-based interfaces) */
     cugl::Vec2 _touchPos;
 
+    /* Whether the mouse is currently dragging */
+    bool _touchDragging;
+    /* The start position of the current drag, or the last drag */
+    cugl::Vec2 _touchDragStart;
+    /* The end position of the last drag */
+    cugl::Vec2 _touchDragEnd;
+
     // MULTITOUCH SUPPORT
     /* The key for multitouch listeners */
     Uint32 _multiKey;
+    /* 
+     * Whether a multitouch gesture is being detected 
+     * Used to turn off single-touch detection
+     */
+    bool _inMulti;
     /* Whether a pinch gesture was detected */
-    bool _isPinching;
+    bool _pinchGesture;
     /* Whether a zoom gesture was detected */
-    bool _isZooming;
+    bool _zoomGesture;
+    /* Whether a scroll gesture was detected */
+    bool _panGesture;
+    /* The offset from the start of the pan */
+    cugl::Vec2 _panOffsetMobile;
 
 public:
 #pragma mark -
@@ -206,7 +246,6 @@ public:
     bool didZoomIn() const {
         return _zoomInPressed;
     }
-    //TODO: figure out why _zoomInPressed isn't updating & remove _isZooming
 
     /**
      * Returns true if the button to zoom out was pressed.
@@ -216,7 +255,26 @@ public:
     bool didZoomOut() const {
         return _zoomOutPressed;
     }
-    //TODO: figure out why _zoomOutPressed isn't updating & remove _isPinching
+
+    /**
+     * Returns true if user is currently scrolling.
+     *
+     * @return true if user is currently scrolling.
+     */
+    bool isScrolling() const {
+        return _isScrolling;
+    }
+
+    /**
+     * Returns the offset of the current scroll, if there is a current scroll.
+     * Otherwise returns zero if there is no current scroll.
+     *
+     * @return the offset of the current scroll, if there is one
+     *         zero if there is no current scroll
+     */
+    cugl::Vec2 scrollOffset() const {
+        return _scrollOffset;
+    }
 
     /**
      * Returns true if the exit button was pressed.
@@ -267,6 +325,18 @@ public:
     }
 
     /**
+     * Return true if the user released a press this frame.
+     *
+     * A release means that the user is not pressing (mouse/finger) 
+     * this animation frame, but was pressing during the last frame.
+     *
+     * @return true if the user initiated a press this frame.
+     */
+    bool didRelease() const {
+        return _prevDown && !_currDown;
+    }
+
+    /**
      * Returns the current mouse/touch position
      *
      * @return the current mouse/touch position
@@ -275,6 +345,43 @@ public:
         return _currPos;
     }
 
+    /*
+    * Returns true if the user is currently executing a drag
+    * 
+    * @return true if the user is currently executing a drag
+    */
+    bool isDragging() const {
+        return _currDrag;
+    }
+
+    /*
+    * Returns true if the user ended a drag this frame
+    * 
+    * @return true if the user ended a drag this frame
+    */
+    bool didEndDrag() const {
+        return !_currDrag && _prevDrag;
+    }
+
+    /*
+    * Returns the start position of the current drag or the drag that just ended
+    * Should only be called if user is currently dragging or has just finished a drag
+    * 
+    * @return the start position of the current drag or the drag that just ended
+    */
+    cugl::Vec2 getDragStart() const {
+        return _dragStart;
+    }
+
+    /*
+    * Returns the start position of the drag that just ended
+    * Should only be called if the user has just finished a drag
+    *
+    * @return the start position of the drag that just ended
+    */
+    cugl::Vec2 getDragEnd() const {
+        return _dragEnd;
+    }
 
 #pragma mark -
 #pragma mark Mouse Callbacks
@@ -289,6 +396,18 @@ private:
      * @param focus     Whether this device has focus (UNUSED)
      */
     void mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, bool focus);
+
+    /**
+     * Callback to execute when a mouse button is dragged.
+     * A drag is mouse motion while a mouse key is pressed
+     *
+     * This function will record a drag only if the left button is pressed.
+     *
+     * @param event     The event with the mouse information
+     * @param previous  The previous position of the mouse (UNUSED)
+     * @param focus     Whether this device has focus (UNUSED)
+     */
+    void mouseDragCB(const cugl::MouseEvent& event, const cugl::Vec2 previous, bool focus);
 
     /**
      * Callback to execute when a mouse button is first released.
