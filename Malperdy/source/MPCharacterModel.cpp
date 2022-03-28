@@ -68,6 +68,7 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map
     _animations = animations;
     // create initial scene node with running animation
     setSceneNode(scene2::SpriteNode::alloc((*_animations)["run"]._frames, (*_animations)["run"]._rows, (*_animations)["run"]._cols, (*_animations)["run"]._size));
+    _node->setScale(0.2);
 
     Size nsize = (*_animations)["default"]._frames->getSize() / drawScale;
     nsize.width *= DUDE_HSHRINK;
