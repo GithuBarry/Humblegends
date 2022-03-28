@@ -1,4 +1,8 @@
 {
+  "jsons" : {
+     "framedata" : "json/framedata.json"
+  },
+    
   "textures": {
     "earth": {
       "file": "textures/earthtile.png",
@@ -19,6 +23,9 @@
     },
     "reynard_run": {
       "file": "textures/reynard_run.png"
+    },
+    "reynard_jump": {
+      "file": "textures/reynard_jump.png"
     },
     "rabbit": {
       "file": "textures/rabbit.png"
@@ -58,6 +65,7 @@
             "volume":   0.5
         }
     },
+
 	"fonts": {
 		"retro": {
 			"file":     "fonts/RetroGame.ttf",
