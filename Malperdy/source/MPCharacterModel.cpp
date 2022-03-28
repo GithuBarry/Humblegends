@@ -410,7 +410,8 @@ void CharacterModel::update(float dt) {
         _elapsed += dt;
 
         // if it is time to update the frame...
-        if (_elapsed > FRAME_TIME) {
+        float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
+        if (_elapsed > frame_time ) {
 
             // if on the last frame
             if (_currFrame >= _node->getSize()-1){
