@@ -372,7 +372,6 @@ void InputController::touchBeginCB(const cugl::TouchEvent &event, bool focus) {
         _currentTouch = event.touch;
         _touchPos = event.position;
         _touchDragStart = event.position;
-        CULog("Drag Start (or touch): (%f, %f)", _touchDragStart.x, _touchDragStart.y);
     }
 }
 
@@ -387,7 +386,6 @@ void InputController::touchMotionCB(const cugl::TouchEvent &event, const cugl::V
 
         float dist = std::abs((event.position - _touchDragStart).length());
         _touchDragging = dist >= EVENT_DRAG_LENGTH;
-        if (_touchDragging) CULog("Dragging");
     }
 }
 
@@ -402,7 +400,6 @@ void InputController::touchEndCB(const cugl::TouchEvent &event, bool focus) {
         if (_touchDragging) {
             _touchDragEnd = event.position;
             _touchDragging = false;
-            CULog("Drag End (or click): (%f, %f)", _touchDragEnd.x, _touchDragEnd.y);
         }
     }
 }
@@ -432,15 +429,12 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool fo
         _zoomGesture = spreadDiff > EVENT_SPREAD_LENGTH;
     }
     else if (event.type == CoreGestureType::PAN) {
-        if (!_panGesture) CULog("Pan start");
         Vec2 scrollVec = event.currPosition - event.origPosition;
         _panGesture = scrollVec.length() > EVENT_SWIPE_LENGTH;
         if (_panGesture) {
             _panOffsetMobile = scrollVec;
-            CULog("Scroll offset (%f, %f)", scrollVec.x, scrollVec.y);
         }
     } else {
-        if (_panGesture) CULog("Pan end");
         _panGesture = false;
         _panOffsetMobile = Vec2::ZERO;
         _pinchGesture = false;
@@ -458,7 +452,6 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool fo
 void InputController::multiEndCB(const cugl::CoreGestureEvent &event, bool focus) {
     _pinchGesture = false;
     _zoomGesture = false;
-    if (_panGesture) CULog("Pan end");
     _panGesture = false;
     _panOffsetMobile = Vec2::ZERO;
     _inMulti = false;
