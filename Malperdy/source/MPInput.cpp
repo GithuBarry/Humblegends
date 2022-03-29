@@ -9,7 +9,7 @@
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Spencer Hurst
 //  Version: 3/07/2022
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #include "MPInput.h"
@@ -195,7 +195,7 @@ void InputController::dispose() {
         Mouse* mouse = Input::get<Mouse>();
         mouse->removePressListener(_mouseKey);
         mouse->removeDragListener(_mouseKey);
-        mouse->removeReleaseListener(_mouseKey); 
+        mouse->removeReleaseListener(_mouseKey);
         mouse->setPointerAwareness(Mouse::PointerAwareness::BUTTON);
         Input::deactivate<Keyboard>();
         Input::deactivate<Mouse>();
@@ -232,7 +232,7 @@ void InputController::update(float dt) {
     _keyReset  = keys->keyPressed(RESET_KEY);
     _keyDebug  = keys->keyPressed(DEBUG_KEY);
     _keyExit   = keys->keyPressed(EXIT_KEY);
-    
+
     // Reynard Specific Code:
     _dDown = keys->keyPressed(DASH_RIGHT_KEY);
     _aDown = keys->keyPressed(DASH_LEFT_KEY);

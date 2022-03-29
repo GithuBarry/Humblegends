@@ -47,9 +47,9 @@ protected:
     /** A uniform value represneting scale between the physics world and the screen */
     float _drawScale;
     
-//    /** Vec2 representing position of the trap within the room */
-//    cugl::Vec2 _position;
-    
+    /** A string value represneting the subtype of the child */
+    string _type;
+
     /** The current activation state of the trap. */
     TrapState _trapState;
         
@@ -165,6 +165,10 @@ public:
      */
     virtual void setTrapState(TrapState newState){
         _trapState = newState;
+    }
+    
+    string getType(){
+        return _type;
     }
     
         
