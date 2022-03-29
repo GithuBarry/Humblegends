@@ -18,6 +18,7 @@
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUCapsuleObstacle.h>
 #include <cugl/scene2/graph/CUWireNode.h>
+#include <map>
 
 using namespace cugl;
 
@@ -55,6 +56,37 @@ public:
         ONWALL,
         DASHING
     };
+    
+    /** Class representing an animation */
+    class Animation{
+    public:
+        // The sprite sheet
+        shared_ptr<Texture> _frames;
+        
+        // Frame data
+        int _size;
+        int _cols;
+        int _rows;
+        bool _loop = false;
+        
+        // Empty constructor, must initialize to usse
+        Animation(){};
+        
+        // Sets all attributes
+        bool init(shared_ptr<Texture> frames, int size, int cols, string loop){
+            // Frame data
+            _frames = frames;
+            _size = size;
+            _cols = cols;
+            // Calculate the number of rows from size & cols
+            _rows = (_size-1) / _cols + 1;
+            if (loop == "true") _loop = true;
+            
+            // return false if spritesheet is null or the size is nonpositive
+            return frames && size > 0;
+        }
+    };
+
 
     /** SceneNode representing the sprite for the character */
     shared_ptr<scene2::SpriteNode> _node;
@@ -97,11 +129,11 @@ protected:
 
 #pragma mark Attributes
 
-    /** The sheet for the running animation */
-    shared_ptr<Texture> _runAnimation;
-
-    /** Default texture */
-    shared_ptr<Texture> _defaultTexture;
+    /** The dictionary of all character animations */
+    shared_ptr<map<string, Animation>> _animations;
+    
+    /** The frame data the current animation */
+    Animation _currAnimation;
 
 #pragma mark Trails
 
@@ -152,7 +184,7 @@ public:
     /**
      * Destroys this CharacterModel, releasing all resources.
      */
-    virtual ~CharacterModel(void) {
+    virtual ~CharacterModel(void){
         dispose();
     }
 
@@ -181,7 +213,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation);
+    virtual bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, Animation>> animations);
 
 
 #pragma mark -
@@ -203,10 +235,10 @@ public:
      *
      * @return  A newly allocated CharacterModel at the given position with the given scale
      */
-    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
+    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, Animation>> animations) {
         std::shared_ptr<CharacterModel> result = std::make_shared<CharacterModel>();
 
-        return (result->init(pos, drawScale, defaultTexture, runAnimation) ? result : nullptr);
+        return (result->init(pos, drawScale, animations) ? result : nullptr);
     }
 
 #pragma mark -
@@ -262,10 +294,7 @@ public:
      */
     void flipDirection() {
         _faceRight = !_faceRight;
-        scene2::TexturedNode *image = dynamic_cast<scene2::TexturedNode *>(_node.get());
-        if (image != nullptr) {
-            image->flipHorizontal(!image->isFlipHorizontal());
-        }
+        _node->setScale(_node->getScale()*Vec2(-1,1));
     }
 
     /**
@@ -364,6 +393,13 @@ public:
         _node->setPosition(value * _drawScale);
     }
 
+    /**
+     * Replaces the node with the specified animation
+     *
+     * @param tex is the key representing an animation in _animations
+     *
+     * @returns whether or not the animation was uplaoded
+     */
     bool uploadTexture(string tex);
 
     /**

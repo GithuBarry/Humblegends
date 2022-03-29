@@ -16,6 +16,7 @@
 #include <cugl/scene2/graph/CUPolygonNode.h>
 #include <cugl/scene2/graph/CUTexturedNode.h>
 #include <cugl/assets/CUAssetManager.h>
+#include <map>
 
 #pragma mark -
 #pragma mark Physics Constants
@@ -62,14 +63,14 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Texture> defaultTexture, shared_ptr<Texture> runAnimation) {
+bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations) {
 
-    _defaultTexture = defaultTexture;
-    _runAnimation = runAnimation;
+    _animations = animations;
+    // create initial scene node with running animation
+    setSceneNode(scene2::SpriteNode::alloc((*_animations)["run"]._frames, (*_animations)["run"]._rows, (*_animations)["run"]._cols, (*_animations)["run"]._size));
+    _node->setScale(0.2);
 
-    uploadTexture("run");
-
-    Size nsize = defaultTexture->getSize() / drawScale;
+    Size nsize = (*_animations)["default"]._frames->getSize() / drawScale;
     nsize.width *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
     _drawScale = drawScale;
@@ -92,29 +93,54 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Tex
 #pragma mark -
 #pragma mark Attribute Properties
 
+/**
+ * Replaces the node with the specified animation
+ *
+ * @param tex is the key representing an animation in _animations
+ *
+ * @returns whether or not the animation was uplaoded
+ */
 bool CharacterModel::uploadTexture(string tex) {
-    if (tex == "default") {
-        // Create sprite for this character from texture and store
-        setSceneNode(scene2::SpriteNode::alloc(_defaultTexture, 1, 1));
-        _node->setAnchor(0.5, 0.5);
-        _node->setScale(0.5);
-    } else if (tex == "run") {
-        // Create sprite for this character from texture and store
-        setSceneNode(scene2::SpriteNode::alloc(_runAnimation, 5, 5));
-        _node->setAnchor(0.5, 0.5);
-        _node->setScale(0.2);
-
-        // initial flip of the image
-        scene2::TexturedNode *im = dynamic_cast<scene2::TexturedNode *>(_node.get());
-
-        if (im != nullptr) {
-            im->flipHorizontal(!im->isFlipHorizontal());
-        }
-    } else {
-        return false;
+    
+    // If the animation doesn't exist, return false
+    if (!(*_animations).count(tex)) return false;
+    
+    // Jump to the beginning of the animation
+    _currFrame = 0;
+    _elapsed = 0;
+    
+    // Make a new node for the animation
+    shared_ptr<scene2::SpriteNode> newNode = make_shared<scene2::SpriteNode>();
+    newNode->initWithSprite((*_animations)[tex]._frames, (*_animations)[tex]._rows, (*_animations)[tex]._cols, (*_animations)[tex]._size);
+    
+    // Add the node to the scenegraph, and then delete the old node
+    scene2::SceneNode* p = _node->getParent();
+    p->addChild(newNode);
+    _node->SceneNode::dispose();
+    _node = newNode;
+    _node->setPosition(getPosition() * _drawScale);
+    
+    // Update the current Animation class
+    _currAnimation = (*_animations)[tex];
+    _node->setAnchor(0.5, 0.5);
+    
+    // Set the scale appropriately (might have to change this)
+    if(tex == "default"){
+        _node->setScale(_node->getScale()*Vec2(1,1));
     }
-    return true;
+    else if (tex == "run" ){
+        _node->setScale(_node->getScale()*Vec2(0.2,0.2));
+    }
+    else{
+        _node->setScale(_node->getScale()*Vec2(-0.2,0.2));
+    }
+    
+    // Flip the node if the character is facing right
+    if(isFacingRight()){
+        _node->setScale(_node->getScale()*Vec2(-1,1));
+    }
 
+    return true;
 }
 
 /**
@@ -150,7 +176,6 @@ bool CharacterModel::setMoveState(MovementState newState) {
             break;
     }
 
-    //uploadTexture("default");
     // Do what needs to be done when switching into the new state
     switch (newState) {
         case MovementState::STOPPED:
@@ -159,7 +184,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             // Set character moving in the given direction at the right speed
             setVX((_faceRight ? 1 : -1) * _speed);
             _hasDashed = false;
-            //uploadTexture("run");
+            uploadTexture("run");
             break;
         case MovementState::JUMPING:
             // Disable double jump (jumping/falling to jumping)
@@ -169,6 +194,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
             // If character is on a wall, then also give a horizontal velocity away
             if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * RUN_SPEED);
+            uploadTexture("jump");
             break;
         case MovementState::FALLING:
             break;
@@ -289,6 +315,8 @@ void CharacterModel::releaseFixtures() {
 void CharacterModel::dispose() {
     _node = nullptr;
     _sensorNode = nullptr;
+    _animations = nullptr;
+
 }
 
 /**
@@ -379,22 +407,28 @@ void CharacterModel::update(float dt) {
         _node->setAngle(getAngle());
     }
 
-    if (_moveState == MovementState::RUNNING) {
+    // UPDATE THE ANIMATION
+    if (_moveState == MovementState::RUNNING || true) {
+        // update time since last frame update
         _elapsed += dt;
 
-        if (_elapsed > FRAME_TIME) {
-            _currFrame = _currFrame + 1;
-            if (_currFrame >= _node->getSize()) _currFrame = 0;
+        // if it is time to update the frame...
+        float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
+        if (_elapsed > frame_time ) {
 
-            if (!_faceRight) {
-                _node->setFrame(_currFrame);
-            } else {
-                int row = _currFrame / 5;
-                int col = _currFrame % 5;
-                col = 4 - col;
-                int frame = row * 5 + col;
-                _node->setFrame(frame);
+            // if on the last frame
+            if (_currFrame >= _node->getSize()-1){
+                // loop the animation if needed
+                if(_currAnimation._loop){
+                    _currFrame = 0;
+                }
             }
+            // if not on the last frame, then increment
+            else{
+                _currFrame = _currFrame + 1;
+            }
+            _node->setFrame(_currFrame);
+            // reset time since last frame update
             _elapsed = 0;
         }
     }
