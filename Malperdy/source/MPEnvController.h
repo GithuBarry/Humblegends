@@ -28,6 +28,9 @@ private:
     /* The row, column of the room to be swapped */
     Vec2 _toSwap;
 
+    /* Reynard's current room */
+    Vec2 _reyRoom;
+
 public:
     /* Creates an envrionment controller and initializes its grid and rooms */
     EnvController();
@@ -37,9 +40,12 @@ public:
     *
     * @param grid   the GridModel to store in this controller
     */
-    void setGrid(std::shared_ptr<GridModel> grid) {
+    void setGrid(const std::shared_ptr<GridModel> grid) {
         _grid = grid;
     }
+
+    /* Updates the environment */
+    void update(const shared_ptr<ReynardController>& reynard);
 
     /*
     * Selects the room at the given location
@@ -94,6 +100,14 @@ private:
     * @return true if Reynard is inside the given room
     */
     bool containsReynard(Vec2 room, const shared_ptr<ReynardController> &reynard);
+
+    /*
+    * Removes fog of war from the eight rooms adjacent to this one, if they exist
+    * Also defogs the specified room.
+    * 
+    * @param room   the row and column of the central room
+    */
+    void defogSurrounding(Vec2 room);
 };
 
 #endif /* MPEnvController_h */

@@ -25,8 +25,8 @@
 //  of the rooms accordingly.
 //
 //  Owner: Kristina Gu
-//  Contributors: Kristina Gu
-//  Version: 2/21/22
+//  Contributors: Kristina Gu, Jordan Selin
+//  Version: 3/28/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -62,6 +62,8 @@ private:
     // STATUS
     /** Whether this room is currently locked/unable to be swapped. False by default */
     bool locked = false;
+    /* Whether this room's contents are currently hidden. False by default */
+    bool fogged = false;
 
     // GEOMETRY
     /** Vector of polygon nodes forming the room's geometry */
@@ -337,6 +339,14 @@ public:
      * @return  Whether this room is locked, meaning it can't be swapped
      */
     bool isLocked() { return locked; }
+
+    /**
+     * Returns whether or not this room has fog of war, meaning its 
+     * contents are hidden.
+     *
+     * @return  true if this room has fog of war
+     */
+    bool isFogged() { return fogged; }
     
     shared_ptr<TrapModel> getTrap(){
         return _trap;
@@ -352,6 +362,11 @@ public:
      * Sets this room to be unlocked, meaning it can now be swapped.
      */
     void unlock() { locked = false; }
+
+    /**
+     * Sets whether this room is fogged (contents hidden) or not.
+     */
+    void setFogged(bool isFogged) { locked = isFogged; }
 
     /**
      * Sets this room to be at the given location in grid space, where the
