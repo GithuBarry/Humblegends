@@ -11,8 +11,8 @@
 //  when zooming in and out. Each room is stored as child SceneNode of the grid.
 //
 //  Owner: Evan Azari
-//  Contributors: Evan Azari, Barry Wang
-//  Version: 2/21/22
+//  Contributors: Evan Azari, Barry Wang, Jordan Selin
+//  Version: 3/28/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //

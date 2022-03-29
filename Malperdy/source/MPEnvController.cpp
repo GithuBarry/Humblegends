@@ -7,7 +7,7 @@
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
 //  Copyright (c) 2022 Humblegends. All rights reserved.
-//  Version: 3/13/22
+//  Version: 3/28/22
 //
 
 #include "MPEnvController.h"
@@ -18,6 +18,16 @@ EnvController::EnvController() {
     _grid = std::make_shared<GridModel>();
     _grid->init(1, true, 10, 10);
     _toSwap = Vec2(-1, -1);
+    _reyRoom = Vec2(-1, -1);
+}
+
+/* Updates the environment */
+void EnvController::update(const shared_ptr<ReynardController>& reynard) {
+    Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getPosition());
+    if (!_reyRoom.equals(newReyRoom)) {
+        _reyRoom = newReyRoom;
+        defogSurrounding(_reyRoom);
+    }
 }
 
 /*
@@ -31,7 +41,6 @@ EnvController::EnvController() {
 * @return true if room was successfully selected, and false otherwise
 */
 bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard) {
-    //CULog("Mouse coords: (%f, %f)", coords.x, coords.y);
     Vec2 room1 = _grid->screenSpaceToRoom(coords);
     bool isValidRoom = room1.x != -1 && room1.y != -1;
     bool isOccupied = containsReynard(room1, reynard);
@@ -40,7 +49,7 @@ bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController> 
         deselectRoom();
         return false;
     } else {
-        _grid->getRoom(room1)->setColor(Color4::RED);
+        lookSelected(room1);
         _toSwap = room1;
         return true;
     }
@@ -89,7 +98,7 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
 /* Deselects the currently selected room, if one is selected */
 void EnvController::deselectRoom() {
     if (_toSwap.x != -1 && _toSwap.y != -1) {
-        _grid->getRoom(_toSwap)->setColor(Color4::WHITE);
+        lookDeselected(_toSwap);
     }
     _toSwap = Vec2(-1, -1);
 }
@@ -105,28 +114,69 @@ void EnvController::deselectRoom() {
 * @return true if Reynard is inside the given room
 */
 bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardController> &reynard) {
-    //CULog("room: (%f, %f)", room.x, room.y);
     Vec2 pos = reynard->getPosition(); //reynard's center
-    //CULog("position: (%f, %f)", pos.x, pos.y);
 
-
-    // TODO: character->getSize() returns the wrong size, so fix that later
+    // TODO: fix the code below to lock a room when any part of Reynard is in it
+    // character->getSize() returns the wrong size
     //float width = reynard->getSize().width;
     //float height = reynard->getSize().height;
-    float width = 0;
-    float height = 0;
-
-    for (float x = -0.5f; x <= 0.5f; x++) {
-        for (float y = -0.5f; y <= 0.5f; y++) {
-            Vec2 corner = pos + Vec2(width * x, height * y);
-            Vec2 cRoom = _grid->worldSpaceToRoom(corner);
+    //for (float x = -0.5f; x <= 0.5f; x++) {
+        //for (float y = -0.5f; y <= 0.5f; y++) {
+            //Vec2 corner = pos + Vec2(width * x, height * y);
+            //Vec2 cRoom = _grid->worldSpaceToRoom(corner);
             //CULog("corner: (%f, %f)", corner.x, corner.y);
             //CULog("in room: (%f, %f)", cRoom.x, cRoom.y);
-            if (room.equals(cRoom)) return true;
-        }
-    }
+            //if (room.equals(cRoom)) return true;
+        //}
+    //}
+
     Vec2 cRoom = _grid->worldSpaceToRoom(pos);
-    //CULog("in room: (%f, %f)", cRoom.x, cRoom.y);
     if (room.equals(cRoom)) return true;
     return false;
+}
+
+/*
+* Removes fog of war from the eight rooms adjacent to this one, if they exist
+* Also defogs the specified room.
+*
+* @param room   the row and column of the central room
+*/
+void EnvController::defogSurrounding(Vec2 room) {
+    for (float x = -1; x <= 1; x++) {
+        for (float y = -1; y <= 1; y++) {
+            // Doesn't have to check if room exists, since GridModel does
+            Vec2 newRoom = room + Vec2(x, y);
+            CULog("Defogging room (%f, %f)", newRoom.x, newRoom.y);
+            _grid->setRoomFog(newRoom, false);
+            lookUnfogged(newRoom);
+        }
+    }
+}
+
+/* Sets the room to look selected */
+void EnvController::lookSelected(Vec2 room) {
+    if (_grid->getRoom(room)) {
+        _grid->getRoom(room)->setColor(Color4::RED);
+    }
+}
+
+/* Sets the room to look deselected */
+void EnvController::lookDeselected(Vec2 room) {
+    if (_grid->getRoom(room)){
+        _grid->getRoom(room)->setColor(Color4::WHITE);
+    }
+}
+
+/* Sets the room to have fog of war */
+void EnvController::lookFogged(Vec2 room) {
+    if (_grid->getRoom(room)) {
+        _grid->getRoom(room)->setColor(Color4::BLUE);
+    }
+}
+
+/* Sets the room to have no fog of war */
+void EnvController::lookUnfogged(Vec2 room) {
+    if (_grid->getRoom(room)) {
+        _grid->getRoom(room)->setColor(Color4::WHITE);
+    }
 }

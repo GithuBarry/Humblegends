@@ -6,8 +6,8 @@
 //  Storing all data of rooms grid
 //
 //  Owner: Evan Azari
-//  Contributors: Evan Azari, Barry Wang
-//  Version: 2/21/22
+//  Contributors: Evan Azari, Barry Wang, Jordan Selin
+//  Version: 3/28/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -165,9 +165,17 @@ public:
         return gridSpaceToRoom(gridcoords);
     }
 
-//    /** Returns the row and colum of the room located at the given coordinates
-//    * If there is no room at the given coordinates, returns null*/
-//    Vec2 worldToRoomCoords(Vec2 coord);
+    /** Returns whether the rooms can be swapped or not */
+    bool canSwap(Vec2 room1, Vec2 room2);
+
+    /*
+    * Returns whether the room at the given coordinates has fog of war
+    * 
+    * @return whether the room at the given coordinates has fog of war
+    */
+    bool isRoomFogged(Vec2 coord) {
+        return getRoom(coord)->isFogged();
+    }
 
 #pragma mark Setters
 
@@ -204,8 +212,15 @@ public:
      * returns true if the swap occurs successfully, returns false if rooms cannot be swapped */
     bool swapRooms(Vec2 room1, Vec2 room2);
 
-    /** Returns whether the rooms can be swapped or not */
-    bool canSwap(Vec2 room1, Vec2 room2);
+    /*
+    * Sets the fog of war for the room at the given coordinates.
+    * True means contents are hidden. False means they are visible.
+    * 
+    * Does nothing if the coordinates are out of bounds.
+    */
+    void setRoomFog(Vec2 coord, bool hasFog) {
+        if (getRoom(coord)) getRoom(coord)->setFogged(hasFog);
+    }
 
 #pragma mark Helpers
 

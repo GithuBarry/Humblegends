@@ -25,8 +25,8 @@
 //  of the rooms accordingly.
 //
 //  Owner: Kristina Gu
-//  Contributors: Kristina Gu
-//  Version: 2/22/22
+//  Contributors: Kristina Gu, Jordan Selin
+//  Version: 3/28/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -149,6 +149,8 @@ bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
 	boundNode->setColor(Color4(Vec4(0.65, 0.65, 0.65, 0.5)));
 	boundNode->setClosed(true);
 	addChild(boundNode);
+
+	setColor(Color4::BLUE);
 
 	// Initialize with the default room width/height and given position
 	return this->initWithBounds(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
