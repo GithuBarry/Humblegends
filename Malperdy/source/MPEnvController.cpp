@@ -43,6 +43,7 @@ void EnvController::update(const shared_ptr<ReynardController>& reynard) {
 bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard) {
     Vec2 room1 = _grid->screenSpaceToRoom(coords);
     bool isValidRoom = room1.x != -1 && room1.y != -1;
+    isValidRoom = isValidRoom && !_grid->isRoomFogged(room1);
     bool isOccupied = containsReynard(room1, reynard);
 
     if (!isValidRoom || isOccupied || _grid->getRoom(room1) == nullptr) {
@@ -74,6 +75,7 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
 
     Vec2 room2 = _grid->screenSpaceToRoom(coords);
     bool isValidRoom = room2.x != -1 && room2.y != -1;
+    isValidRoom = isValidRoom && !_grid->isRoomFogged(room2);
     bool isOccupied = containsReynard(room2, reynard) || containsReynard(_toSwap, reynard);
 
     if (!isValidRoom) return false;
@@ -146,7 +148,6 @@ void EnvController::defogSurrounding(Vec2 room) {
         for (float y = -1; y <= 1; y++) {
             // Doesn't have to check if room exists, since GridModel does
             Vec2 newRoom = room + Vec2(x, y);
-            CULog("Defogging room (%f, %f)", newRoom.x, newRoom.y);
             _grid->setRoomFog(newRoom, false);
             lookUnfogged(newRoom);
         }

@@ -63,7 +63,7 @@ private:
     /** Whether this room is currently locked/unable to be swapped. False by default */
     bool locked = false;
     /* Whether this room's contents are currently hidden. False by default */
-    bool fogged = false;
+    bool fogged = true;
 
     // GEOMETRY
     /** Vector of polygon nodes forming the room's geometry */
@@ -366,7 +366,7 @@ public:
     /**
      * Sets whether this room is fogged (contents hidden) or not.
      */
-    void setFogged(bool isFogged) { locked = isFogged; }
+    void setFogged(bool isFogged) { fogged = isFogged; }
 
     /**
      * Sets this room to be at the given location in grid space, where the
