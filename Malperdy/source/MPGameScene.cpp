@@ -438,13 +438,13 @@ void GameScene::update(float dt) {
     _debugnode->applyZoom(1 / _debugnode->getZoom());
     _debugnode->applyZoom(_worldnode->getZoom());
 
-
-
     // Update all enemies
     vector<std::shared_ptr<EnemyController>>::iterator itr;
     for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
         (*itr)->update(dt);
     }
+
+    _envController->update(_reynardController);
 }
 
 /**

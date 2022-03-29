@@ -18,6 +18,7 @@ EnvController::EnvController() {
     _grid = std::make_shared<GridModel>();
     _grid->init(1, true, 10, 10);
     _toSwap = Vec2(-1, -1);
+    _reyRoom = Vec2(-1, -1);
 }
 
 /* Updates the environment */
@@ -142,31 +143,40 @@ bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardControlle
 */
 void EnvController::defogSurrounding(Vec2 room) {
     for (float x = -1; x <= 1; x++) {
-        for (float y = -1; y <= 1; x++) {
+        for (float y = -1; y <= 1; y++) {
             // Doesn't have to check if room exists, since GridModel does
             Vec2 newRoom = room + Vec2(x, y);
+            CULog("Defogging room (%f, %f)", newRoom.x, newRoom.y);
             _grid->setRoomFog(newRoom, false);
-            lookUnfogged(_reyRoom);
+            lookUnfogged(newRoom);
         }
     }
 }
 
 /* Sets the room to look selected */
 void EnvController::lookSelected(Vec2 room) {
-    _grid->getRoom(room)->setColor(Color4::RED);
+    if (_grid->getRoom(room)) {
+        _grid->getRoom(room)->setColor(Color4::RED);
+    }
 }
 
 /* Sets the room to look deselected */
 void EnvController::lookDeselected(Vec2 room) {
-    _grid->getRoom(_toSwap)->setColor(Color4::WHITE);
+    if (_grid->getRoom(room)){
+        _grid->getRoom(room)->setColor(Color4::WHITE);
+    }
 }
 
 /* Sets the room to have fog of war */
 void EnvController::lookFogged(Vec2 room) {
-    //TODO: implement
+    if (_grid->getRoom(room)) {
+        _grid->getRoom(room)->setColor(Color4::BLUE);
+    }
 }
 
 /* Sets the room to have no fog of war */
 void EnvController::lookUnfogged(Vec2 room) {
-    //TODO: implement
+    if (_grid->getRoom(room)) {
+        _grid->getRoom(room)->setColor(Color4::WHITE);
+    }
 }
