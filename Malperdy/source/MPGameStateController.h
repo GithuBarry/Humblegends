@@ -19,14 +19,20 @@
 
 class GameStateController {
 private:
-    bool _zoomed_in = true;
-    int SLOW_MO_SCALAR = 3;
+    bool _zoomed_in;
+    int SLOW_MO_SCALAR;
 public:
     /**
      * Change parameter as you need
      */
     GameStateController() {
+        reset();
     };
+
+    void reset() {
+        _zoomed_in = true;
+        SLOW_MO_SCALAR = 3;
+    }
 
 
     /**

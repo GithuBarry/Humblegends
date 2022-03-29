@@ -233,7 +233,7 @@ void GameScene::reset() {
     _world->clear();
     _worldnode->removeAllChildren();
     _debugnode->removeAllChildren();
-    
+    _gamestate.reset();
     
     
     setComplete(false);
@@ -252,7 +252,6 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
-
 
 #pragma mark Rooms
     /////////////////////////////////////
