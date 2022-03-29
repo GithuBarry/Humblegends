@@ -108,6 +108,20 @@ private:
     * @param room   the row and column of the central room
     */
     void defogSurrounding(Vec2 room);
+
+#pragma mark Appearance Setters
+
+    /* Sets the room to look selected */
+    void lookSelected(Vec2 room);
+
+    /* Sets the room to look deselected */
+    void lookDeselected(Vec2 room);
+
+    /* Sets the room to have fog of war */
+    void lookFogged(Vec2 room);
+
+    /* Sets the room to have no fog of war */
+    void lookUnfogged(Vec2 room);
 };
 
 #endif /* MPEnvController_h */
