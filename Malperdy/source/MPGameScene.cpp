@@ -227,10 +227,15 @@ void GameScene::dispose() {
  * This method disposes of the world and creates a new one.
  */
 void GameScene::reset() {
+    
+    _reynardController = nullptr;
+    _grid = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
     _debugnode->removeAllChildren();
-
+    
+    
+    
     setComplete(false);
     populate();
 }
@@ -604,7 +609,7 @@ void GameScene::beginContact(b2Contact *contact) {
 void GameScene::endContact(b2Contact *contact) {
     // CULog("Is this a Reynard collision END? %d", isReynardCollision(contact));
     // CULog("rey is off da ground");
-    if (isReynardCollision(contact)) {
+    if (_reynardController != nullptr && isReynardCollision(contact)) {
         b2Fixture *reynardFixture = getReynardFixture(contact);
         // If Reynard leaves the ground
         if (isCharacterGroundFixture(reynardFixture)) {

@@ -315,6 +315,8 @@ void CharacterModel::releaseFixtures() {
 void CharacterModel::dispose() {
     _node = nullptr;
     _sensorNode = nullptr;
+    _animations = nullptr;
+
 }
 
 /**
