@@ -323,6 +323,16 @@ public:
      * @param  contact  The two bodies that collided
      */
     bool isSpikeTrapCollision(b2Contact *contact);
+    
+    /**
+     * This is the helper function behind the collision between Reynard and a trapdoor
+     *
+     * While the primary purpose behind this funcition is to return true or false
+     * The function will return true if it is the case and false otherwise.
+     *
+     * @param  contact  The two bodies that collided
+     */
+    bool resolveIfTrapDoorCollision(b2Contact *contact);
 
     void resolveTrapCollision();
 
