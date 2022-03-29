@@ -68,6 +68,7 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map
     _animations = animations;
     // create initial scene node with running animation
     setSceneNode(scene2::SpriteNode::alloc((*_animations)["run"]._frames, (*_animations)["run"]._rows, (*_animations)["run"]._cols, (*_animations)["run"]._size));
+    _node->setScale(0.2);
 
     Size nsize = (*_animations)["default"]._frames->getSize() / drawScale;
     nsize.width *= DUDE_HSHRINK;
@@ -314,6 +315,8 @@ void CharacterModel::releaseFixtures() {
 void CharacterModel::dispose() {
     _node = nullptr;
     _sensorNode = nullptr;
+    _animations = nullptr;
+
 }
 
 /**
@@ -410,7 +413,8 @@ void CharacterModel::update(float dt) {
         _elapsed += dt;
 
         // if it is time to update the frame...
-        if (_elapsed > FRAME_TIME) {
+        float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
+        if (_elapsed > frame_time ) {
 
             // if on the last frame
             if (_currFrame >= _node->getSize()-1){

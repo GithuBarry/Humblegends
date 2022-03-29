@@ -73,7 +73,9 @@ public:
      */
     virtual void update(float dt) override;
     
-
+    ~ReynardModel(){
+        _core = nullptr;
+    };
 
 };
 

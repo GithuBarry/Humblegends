@@ -11,8 +11,8 @@
 //  when zooming in and out. Each room is stored as child SceneNode of the grid.
 //
 //  Owner: Evan Azari
-//  Contributors: Evan Azari, Barry Wang
-//  Version: 2/21/22
+//  Contributors: Evan Azari, Barry Wang, Jordan Selin
+//  Version: 3/28/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -83,7 +83,7 @@ bool GridModel::init(float scale, bool json, float hgap, float vgap, shared_ptr<
     // TODO: WHY DOES THIS CODE HAVE NO IMPACT ON ANYTHING
     // create organized back of physics geometry
     //calculatePhysicsGeometry();
-    _grid->at(1)->at(1)->initTrap("spike");
+    _grid->at(1)->at(1)->initTrap("trapdoor");
     _grid->at(1)->at(3)->initTrap("spike");
 //    cout<<"HERE YOU ARE 1"<<endl;
 //    cout<<_grid->at(0)->at(1)->initTrap("spike")<<endl;
@@ -356,7 +356,9 @@ void GridModel::calculatePhysicsGeometry() {
 
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
                 _grid->at(row)->at(col)->getTrap()->initObstacle(obstacle);
-
+                if(_grid->at(row)->at(col)->getTrap()->getType()=="trapdoor"){
+                    _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
+                }
             }
         }
     }
