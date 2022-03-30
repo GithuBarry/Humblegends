@@ -173,7 +173,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     //Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
     Vec2 offset;
 
-    _envController = make_shared<EnvController>();
+    
 
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
@@ -231,6 +231,7 @@ void GameScene::reset() {
 
     _reynardController = nullptr;
     _grid = nullptr;
+    _envController = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
     _debugnode->removeAllChildren();
@@ -253,7 +254,7 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
-
+    _envController = make_shared<EnvController>();
 #pragma mark Rooms
     /////////////////////////////////////
     // DEBUG: add room to scene graph

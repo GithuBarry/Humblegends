@@ -49,7 +49,7 @@ const Vec2 RoomModel::ROOM_SCALE = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT)
 
 
 // Create color for geometry
-Color4 geometryColor = Color4(60,60,60,255);
+Color4 geometryColor = Color4(20,20,20,255);
 
 #pragma mark Room Layout
 /** The vertices for the boundary of a room */
@@ -168,8 +168,9 @@ bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_pt
 	boundNode->setColor(Color4(Vec4(0.65, 0.65, 0.65, 0.5)));
 	boundNode->setClosed(true);
 	addChild(boundNode);
-
-	setColor(Color4::BLUE);
+    
+    //Fog of war
+	setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
 
 	// Initialize with the default room width/height and given position
 	return this->initWithBounds(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
