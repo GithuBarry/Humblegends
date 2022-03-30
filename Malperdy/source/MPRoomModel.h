@@ -84,7 +84,7 @@ private:
      *
      * @param roomID	ID of room type with the desired geometry
      */
-    void buildGeometry(string roomID);
+    void buildGeometry(shared_ptr<JsonValue> roomJSON);
 
 public:
 #pragma mark Constructors
@@ -93,78 +93,78 @@ public:
      */
     RoomModel() {};
 
-    /**
-     * Initializes the default room at the origin, which is the lower left
-     * corner of the grid.
-     *
-     * Rooms are automatically initialized to have the bounds given by
-     * the default room width/height.
-     *
-     * @return  true if the room is initialized properly, false otherwise.
-     */
-    bool init() { return init(0, 0, ""); }
+//    /**
+//     * Initializes the default room at the origin, which is the lower left
+//     * corner of the grid.
+//     *
+//     * Rooms are automatically initialized to have the bounds given by
+//     * the default room width/height.
+//     *
+//     * @return  true if the room is initialized properly, false otherwise.
+//     */
+//    bool init() { return init(0, 0, ""); }
 
-    /**
-     * Initializes the default room at the given location in grid space,
-     * where the location is given as a row and column to place the room
-     * at. These coordinates will be scaled by the room width and height to
-     * be placed in world space.
-     *
-     * Rooms are automatically initialized to have the bounds given by
-     * the default room width/height.
-     *
-     * @param pos   The room's location in grid space in the form (column, row)
-     * @return      true if the room is initialized properly, false otherwise.
-     */
-    bool init(const Vec2 pos) { return init(pos.x, pos.y, ""); }
+//    /**
+//     * Initializes the default room at the given location in grid space,
+//     * where the location is given as a row and column to place the room
+//     * at. These coordinates will be scaled by the room width and height to
+//     * be placed in world space.
+//     *
+//     * Rooms are automatically initialized to have the bounds given by
+//     * the default room width/height.
+//     *
+//     * @param pos   The room's location in grid space in the form (column, row)
+//     * @return      true if the room is initialized properly, false otherwise.
+//     */
+//    bool init(const Vec2 pos) { return init(pos.x, pos.y, ""); }
 
-    /**
-     * Initializes the default room at the given location in grid space,
-     * where the location is given as a row and column to place the room
-     * at. These coordinates will be scaled by the room width and height to
-     * be placed in world space.
-     *
-     * Rooms are automatically initialized to have the bounds given by
-     * the default room width/height.
-     *
-     * @param x The column of the room in grid space
-     * @param y The row of the room in grid space
-     * @return  true if the room is initialized properly, false otherwise.
-     */
-    bool init(float x, float y) { return init(x, y, ""); }
+//    /**
+//     * Initializes the default room at the given location in grid space,
+//     * where the location is given as a row and column to place the room
+//     * at. These coordinates will be scaled by the room width and height to
+//     * be placed in world space.
+//     *
+//     * Rooms are automatically initialized to have the bounds given by
+//     * the default room width/height.
+//     *
+//     * @param x The column of the room in grid space
+//     * @param y The row of the room in grid space
+//     * @return  true if the room is initialized properly, false otherwise.
+//     */
+//    bool init(float x, float y) { return init(x, y, ""); }
 
-    /**
-     * Initializes the room with the type of the given ID at the origin, which
-     * is the lower left corner of the grid.
-     * 
-     * The geometry corresponding to the room type given by the room ID is
-     * taken from the JSON file of rooms.
-     *
-     * Rooms are automatically initialized to have the bounds given by
-     * the default room width/height.
-     *
-     * @param roomID    ID of room type with the desired geometry
-     * @return          true if the room is initialized properly, false otherwise.
-     */
-    bool init(string roomID) { return init(0, 0, roomID); }
+//    /**
+//     * Initializes the room with the type of the given ID at the origin, which
+//     * is the lower left corner of the grid.
+//     *
+//     * The geometry corresponding to the room type given by the room ID is
+//     * taken from the JSON file of rooms.
+//     *
+//     * Rooms are automatically initialized to have the bounds given by
+//     * the default room width/height.
+//     *
+//     * @param roomID    ID of room type with the desired geometry
+//     * @return          true if the room is initialized properly, false otherwise.
+//     */
+//    bool init(string roomID) { return init(0, 0, roomID); }
 
-    /**
-     * Initializes the room with the type of the given ID at the given
-     * location in grid space, where the location is given as a row and
-     * column to place the room at. These coordinates will be scaled by
-     * the room width and height to be placed in world space.
-     * 
-     * The geometry corresponding to the room type given by the room ID is
-     * taken from the JSON file of rooms.
-     *
-     * Rooms are automatically initialized to have the bounds given by
-     * the default room width/height.
-     *
-     * @param pos       The room's location in grid space in the form (column, row)
-     * @param roomID    ID of room type with the desired geometry
-     * @return          true if the room is initialized properly, false otherwise.
-     */
-    bool init(Vec2 pos, string roomID) { return init(pos.x, pos.y, roomID); }
+//    /**
+//     * Initializes the room with the type of the given ID at the given
+//     * location in grid space, where the location is given as a row and
+//     * column to place the room at. These coordinates will be scaled by
+//     * the room width and height to be placed in world space.
+//     *
+//     * The geometry corresponding to the room type given by the room ID is
+//     * taken from the JSON file of rooms.
+//     *
+//     * Rooms are automatically initialized to have the bounds given by
+//     * the default room width/height.
+//     *
+//     * @param pos       The room's location in grid space in the form (column, row)
+//     * @param roomID    ID of room type with the desired geometry
+//     * @return          true if the room is initialized properly, false otherwise.
+//     */
+//    bool init(Vec2 pos, string roomID) { return init(pos.x, pos.y, roomID); }
 
     /**
      * Initializes the room with the type of the given ID at the given
@@ -184,99 +184,99 @@ public:
      * @param bg		Background texture to apply to the room
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(float x, float y, string roomID, shared_ptr<Texture> bg = nullptr);
+    bool init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg = nullptr);
     
     /** */
     bool initTrap(string type);
 
 #pragma mark Static Constructors
-    /**
-     * Returns a default room at the origin, which is the lower left
-     * corner of the grid.
-     *
-     * Rooms are automatically initialized to have the bounds given by
-     * the default room width/height.
-     *
-     * @return  A newly-allocated RoomModel at the origin.
-     */
-    static std::shared_ptr<RoomModel> alloc() {
-        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init() ? result : nullptr);
-    }
+//    /**
+//     * Returns a default room at the origin, which is the lower left
+//     * corner of the grid.
+//     *
+//     * Rooms are automatically initialized to have the bounds given by
+//     * the default room width/height.
+//     *
+//     * @return  A newly-allocated RoomModel at the origin.
+//     */
+//    static std::shared_ptr<RoomModel> alloc() {
+//        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+//        return (result->init() ? result : nullptr);
+//    }
 
-    /**
-     * Returns a newly-allocated default room at the given location in
-     * grid space, where the location is given as a row and column to place
-     * the room at. These coordinates will be scaled by the room width and
-     * height to be placed in world space.
-     *
-     * Rooms are automatically initialized to have the bounds given by
-     * the default room width/height.
-     *
-     * @param pos   The room's location in grid space in the form (column, row)
-     * @return      A newly-allocated RoomModel
-     */
-    static std::shared_ptr<RoomModel> alloc(const Vec2 pos) {
-        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init(pos) ? result : nullptr);
-    }
+//    /**
+//     * Returns a newly-allocated default room at the given location in
+//     * grid space, where the location is given as a row and column to place
+//     * the room at. These coordinates will be scaled by the room width and
+//     * height to be placed in world space.
+//     *
+//     * Rooms are automatically initialized to have the bounds given by
+//     * the default room width/height.
+//     *
+//     * @param pos   The room's location in grid space in the form (column, row)
+//     * @return      A newly-allocated RoomModel
+//     */
+//    static std::shared_ptr<RoomModel> alloc(const Vec2 pos) {
+//        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+//        return (result->init(pos) ? result : nullptr);
+//    }
 
-    /**
-     * Returns a newly-allocated default room at the given location in
-     * grid space, where the location is given as a row and column to place
-     * the room at. These coordinates will be scaled by the room width and
-     * height to be placed in world space.
-     *
-     * Rooms are automatically initialized to have the bounds given by
-     * the default room width/height.
-     *
-     * @param x The column of the room in grid space
-     * @param y The row of the room in grid space
-     * @return  A newly-allocated RoomModel
-     */
-    static std::shared_ptr<RoomModel> alloc(float x, float y) {
-        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init(x, y) ? result : nullptr);
-    }
+//    /**
+//     * Returns a newly-allocated default room at the given location in
+//     * grid space, where the location is given as a row and column to place
+//     * the room at. These coordinates will be scaled by the room width and
+//     * height to be placed in world space.
+//     *
+//     * Rooms are automatically initialized to have the bounds given by
+//     * the default room width/height.
+//     *
+//     * @param x The column of the room in grid space
+//     * @param y The row of the room in grid space
+//     * @return  A newly-allocated RoomModel
+//     */
+//    static std::shared_ptr<RoomModel> alloc(float x, float y) {
+//        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+//        return (result->init(x, y) ? result : nullptr);
+//    }
 
-    /**
-     * Returns a newly-allocated room with the type of the given ID at the
-     * origin, which is the lower left corner of the grid.
-     *
-     * The geometry corresponding to the room type given by the room ID is
-     * taken from the JSON file of rooms.
-     *
-     * Rooms are automatically initialized to have the bounds given by
-     * the default room width/height.
-     *
-     * @param roomID    ID of room type with the desired geometry
-     * @return          A newly-allocated RoomModel
-     */
-    static std::shared_ptr<RoomModel> alloc(string roomID) {
-        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init(roomID) ? result : nullptr);
-    }
+//    /**
+//     * Returns a newly-allocated room with the type of the given ID at the
+//     * origin, which is the lower left corner of the grid.
+//     *
+//     * The geometry corresponding to the room type given by the room ID is
+//     * taken from the JSON file of rooms.
+//     *
+//     * Rooms are automatically initialized to have the bounds given by
+//     * the default room width/height.
+//     *
+//     * @param roomID    ID of room type with the desired geometry
+//     * @return          A newly-allocated RoomModel
+//     */
+//    static std::shared_ptr<RoomModel> alloc(string roomID) {
+//        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+//        return (result->init(roomID) ? result : nullptr);
+//    }
 
-    /**
-     * Returns a newly-allocated room with the type of the given ID at
-     * the given location in grid space, where the location is given as
-     * a row and column to place the room at. These coordinates will be
-     * scaled by the room width and height to be placed in world space.
-     *
-     * The geometry corresponding to the room type given by the room ID is
-     * taken from the JSON file of rooms.
-     *
-     * Rooms are automatically initialized to have the bounds given by
-     * the default room width/height.
-     *
-     * @param pos       The room's location in grid space in the form (column, row)
-     * @param roomID    ID of room type with the desired geometry
-     * @return          A newly-allocated RoomModel
-     */
-    static std::shared_ptr<RoomModel> alloc(Vec2 pos, string roomID) {
-        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init(pos, roomID) ? result : nullptr);
-    }
+//    /**
+//     * Returns a newly-allocated room with the type of the given ID at
+//     * the given location in grid space, where the location is given as
+//     * a row and column to place the room at. These coordinates will be
+//     * scaled by the room width and height to be placed in world space.
+//     *
+//     * The geometry corresponding to the room type given by the room ID is
+//     * taken from the JSON file of rooms.
+//     *
+//     * Rooms are automatically initialized to have the bounds given by
+//     * the default room width/height.
+//     *
+//     * @param pos       The room's location in grid space in the form (column, row)
+//     * @param roomID    ID of room type with the desired geometry
+//     * @return          A newly-allocated RoomModel
+//     */
+//    static std::shared_ptr<RoomModel> alloc(Vec2 pos, string roomID) {
+//        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
+//        return (result->init(pos, roomID) ? result : nullptr);
+//    }
 
     /**
      * Returns a newly-allocated room with the type of the given ID at
@@ -296,9 +296,9 @@ public:
      * @param bg		Background texture to apply to the room
      * @return          A newly-allocated RoomModel
      */
-    static std::shared_ptr<RoomModel> alloc(float x, float y, string roomID, shared_ptr<Texture> bg) {
+    static std::shared_ptr<RoomModel> alloc(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {
         std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init(x, y, roomID, bg) ? result : nullptr);
+        return (result->init(x, y, roomJSON, bg) ? result : nullptr);
     }
 
 #pragma mark Destructors

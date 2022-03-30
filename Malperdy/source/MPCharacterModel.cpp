@@ -184,7 +184,10 @@ bool CharacterModel::setMoveState(MovementState newState) {
             // Set character moving in the given direction at the right speed
             setVX((_faceRight ? 1 : -1) * _speed);
             _hasDashed = false;
-            uploadTexture("run");
+            if(_moveState != MovementState::RUNNING){
+                uploadTexture("run");
+            }
+
             break;
         case MovementState::JUMPING:
             // Disable double jump (jumping/falling to jumping)

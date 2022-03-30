@@ -152,8 +152,6 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // Start up the input handler
     _assets = assets;
     _input.init();
-    
-    shared_ptr<JsonValue> jv = _assets->get<JsonValue>("rooms");
 
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect, gravity);
@@ -168,13 +166,14 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _world->beforeSolve = [this](b2Contact *contact, const b2Manifold *oldManifold) {
         beforeSolve(contact, oldManifold);
     };
-    _envController = make_shared<EnvController>();
 
     // IMPORTANT: SCALING MUST BE UNIFORM
     // This means that we cannot change the aspect ratio of the physics world. Shift to center if a bad fit
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
     //Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
     Vec2 offset;
+    
+    _envController = make_shared<EnvController>();
 
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
@@ -259,12 +258,11 @@ void GameScene::populate() {
     /////////////////////////////////////
     // DEBUG: add room to scene graph
     /////////////////////////////////////
-    _grid = make_shared<GridModel>();
-    _grid->init(_scale, true, 10, 10, _assets->get<Texture>("overgrowth1"));
+    _grid = _envController->getGrid();
+    _grid->init(_assets, _scale, _assets->get<Texture>("overgrowth1"));
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.4);
-    _envController->setGrid(_grid);
 
     //_grid->setPosition(0,-240);
 

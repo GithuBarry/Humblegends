@@ -1,16 +1,16 @@
 { "compressionlevel":-1,
- "height":4,
+ "height":8,
  "infinite":false,
  "layers":[
         {
-         "data":[2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 3, 3, 2, 2],
-         "height":4,
+         "data":[1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+         "height":8,
          "id":1,
          "name":"Tile Layer 1",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
-         "width":6,
+         "width":12,
          "x":0,
          "y":0
         }],
@@ -23,10 +23,10 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/Documents\/tiled\/mytiles.tsx"
+         "source":"..\/geometry.tsx"
         }],
  "tilewidth":10,
  "type":"map",
  "version":"1.8",
- "width":6
+ "width":12
 }
