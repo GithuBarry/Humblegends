@@ -7,7 +7,7 @@
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
 //  Version: 3/13/22
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
@@ -28,8 +28,12 @@ private:
     /* The row, column of the room to be swapped */
     Vec2 _toSwap;
 
+
     /* Reynard's current room */
     Vec2 _reyRoom;
+
+    vector<vector<Vec2>> _swapHistory;
+
 
 public:
     /* Creates an envrionment controller and initializes its grid and rooms */
@@ -43,7 +47,7 @@ public:
     void setGrid(const std::shared_ptr<GridModel> grid) {
         _grid = grid;
     }
-    
+
     shared_ptr<GridModel> getGrid(){ return _grid; }
 
     /* Updates the environment */
@@ -53,17 +57,17 @@ public:
     * Selects the room at the given location
     * Selection is for the purpose of being swapped with another room in swapWithSelected
     * Will not select a room if it contains Reynard
-    * 
+    *
     * @param coords     the coordinates of the selection in worldspace
     * @param reynard    the controller for reynard
-    * 
+    *
     * @return true if room was successfully selected, and false otherwise
     */
     bool selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard);
 
-    /* 
-    * Returns whether there is currently a room selected 
-    * 
+    /*
+    * Returns whether there is currently a room selected
+    *
     * @return true if there is currently a room selected
     */
     bool hasSelected() {
@@ -74,13 +78,13 @@ public:
     * Swaps the room at the given location with the selected room
     * If room at given location is the selected room, deselects the room
     * Will not swap a room if it contains Reynard
-    * 
+    *
     * Will deselect the currently selected room on a successful swap,
     * or on an attempt to swap a room with itself
-    * 
+    *
     * @param coords     the coordinates of the selection in worldspace
     * @param reynard    the controller for reynard
-    * 
+    *
     * @return   true if rooms were successfully swapped
     *           false if room was the same as selected room
     *           false if no swap occurred
@@ -90,15 +94,39 @@ public:
     /* Deselects the currently selected room, if one is selected */
     void deselectRoom();
 
+    /**
+     Return swap history up to last call of this function
+     in format of [[room11, room12],[room21,room22],...],
+     and start a new session (session as between checkpoints)
+     @return the swap history between last checkpoint and this checkpoint
+     */
+    vector<vector<Vec2>> checkPoint(){
+        vector<vector<Vec2>> result =_swapHistory;
+        _swapHistory = vector<vector<Vec2>>();
+        return result;
+    }
+
+    /** Restore the room order according to the current history (since last checkpoint) */
+    void revertHistory(){
+        for(int i = _swapHistory.size() - 1; i >= 0; i--){
+            vector<Vec2> roomPair = _swapHistory[i];
+            Vec2 room1 =roomPair[0];
+            Vec2 room2 =roomPair[1];
+            _grid->swapRooms(room1, room2);
+        }
+        _swapHistory = vector<vector<Vec2>>();
+    }
+
+
 private:
 #pragma mark Helper Functions
 
     /*
     * Checks whether Reynard is inside the indicated room
-    * 
+    *
     * @param room       the row and column of the room to check
     * @param reynard    the controller for reynard
-    * 
+    *
     * @return true if Reynard is inside the given room
     */
     bool containsReynard(Vec2 room, const shared_ptr<ReynardController> &reynard);
@@ -106,7 +134,7 @@ private:
     /*
     * Removes fog of war from the eight rooms adjacent to this one, if they exist
     * Also defogs the specified room.
-    * 
+    *
     * @param room   the row and column of the central room
     */
     void defogSurrounding(Vec2 room);

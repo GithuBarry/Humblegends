@@ -92,6 +92,12 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
         //Sloppy code, fix when refactoring UI updates
         _toSwap = room2;
         deselectRoom();
+        
+        // Record the room swapping
+        vector<Vec2> l;
+        l.push_back(room2);
+        l.push_back(_toSwap);
+        _swapHistory.push_back(l);
     }
     return success;
 }
