@@ -2,7 +2,7 @@
   "jsons" : {
      "framedata" : "json/framedata.json",
      
-     "level" : "json/levels/map_test1.tmj",
+     "level" : "json/levels/showcase1.tmj",
      
      "tileset_geometry" : "json/tilesets/geometry.tsj",
      "tileset_entities" : "json/tilesets/entities.tsj",

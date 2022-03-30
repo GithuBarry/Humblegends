@@ -60,7 +60,6 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
     shared_ptr<RoomModel> room;
     
     // fill _grid with uninstantiated rooms:
-    // For each room in the level
     for (int y = 0; y < _size.y; y++) {
         // Initialize vector for a row of rooms
         shared_ptr<vector<shared_ptr<RoomModel>>> roomRow = make_shared<vector<shared_ptr<RoomModel>>>();
