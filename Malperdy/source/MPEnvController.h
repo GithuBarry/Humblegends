@@ -28,6 +28,8 @@ private:
     /* The row, column of the room to be swapped */
     Vec2 _toSwap;
 
+    vector<vector<Vec2>> _swapHistory;
+
 public:
     /* Creates an envrionment controller and initializes its grid and rooms */
     EnvController();
@@ -82,15 +84,39 @@ public:
     /* Deselects the currently selected room, if one is selected */
     void deselectRoom();
 
+    /**
+     Return swap history up to last call of this function
+     in format of [[room11, room12],[room21,room22],...],
+     and start a new session (session as between checkpoints)
+     @return the swap history between last checkpoint and this checkpoint
+     */
+    vector<vector<Vec2>> checkPoint(){
+        vector<vector<Vec2>> result =_swapHistory;
+        _swapHistory = vector<vector<Vec2>>();
+        return result;
+    }
+
+    /** Restore the room order according to the current history (since last checkpoint) */
+    void revertHistory(){
+        for(int i = _swapHistory.size() - 1; i >= 0; i--){
+            vector<Vec2> roomPair = _swapHistory[i];
+            Vec2 room1 =roomPair[0];
+            Vec2 room2 =roomPair[1];
+            _grid->swapRooms(room1, room2);
+        }
+        _swapHistory = vector<vector<Vec2>>();
+    }
+
+
 private:
 #pragma mark Helper Functions
 
     /*
     * Checks whether Reynard is inside the indicated room
-    * 
+    *
     * @param room       the row and column of the room to check
     * @param reynard    the controller for reynard
-    * 
+    *
     * @return true if Reynard is inside the given room
     */
     bool containsReynard(Vec2 room, const shared_ptr<ReynardController> &reynard);

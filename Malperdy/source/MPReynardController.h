@@ -23,7 +23,8 @@ protected:
     
     /** The length of time in miliseconds that Reynard is invincible for after being damaged  */
     Uint64 _damageBufferLength = 1000;
-    
+
+    Vec2 lastCheckPointPosition = Vec2(-1,-1);
     /** The moment in time that Reynard was last hit */
     Timestamp _lastHit = Timestamp();
 
@@ -57,6 +58,18 @@ public:
      * @param dir   Direction to apply knockback force in
      */
     void knockback(b2Vec2 dir);
+    
+    /**
+     Record all the information needed to reset reynard to some checkpoint
+     */
+    void checkPoint(){
+        lastCheckPointPosition = _character->getPosition();
+    }
+    
+    void revert(){
+        _character->setHearts(2); //TODO change to better implementation
+        _character->setPosition(lastCheckPointPosition);
+    }
 };
 
 

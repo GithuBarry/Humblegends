@@ -363,6 +363,7 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
  */
 void GameScene::update(float dt) {
     _input.update(dt);
+    
 
     // Process the toggled key commands
     if (_input.didDebug()) {
@@ -377,6 +378,11 @@ void GameScene::update(float dt) {
     if (_input.didExit()) {
         CULog("Shutting down");
         Application::get()->quit();
+    }
+    
+    if (_reynardController->getCharacter()->getHearts()<=0){
+        reset();
+        return;
     }
 
     // Room swap initiated
