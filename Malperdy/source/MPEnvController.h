@@ -43,6 +43,8 @@ public:
     void setGrid(const std::shared_ptr<GridModel> grid) {
         _grid = grid;
     }
+    
+    shared_ptr<GridModel> getGrid(){ return _grid; }
 
     /* Updates the environment */
     void update(const shared_ptr<ReynardController>& reynard);

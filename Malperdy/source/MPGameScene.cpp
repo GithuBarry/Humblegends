@@ -8,7 +8,7 @@
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
 //  Version: 3/13/22
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #include "MPGameScene.h"
@@ -166,13 +166,14 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _world->beforeSolve = [this](b2Contact *contact, const b2Manifold *oldManifold) {
         beforeSolve(contact, oldManifold);
     };
-    _envController = make_shared<EnvController>();
 
     // IMPORTANT: SCALING MUST BE UNIFORM
     // This means that we cannot change the aspect ratio of the physics world. Shift to center if a bad fit
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
     //Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
     Vec2 offset;
+
+    _envController = make_shared<EnvController>();
 
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
@@ -227,15 +228,15 @@ void GameScene::dispose() {
  * This method disposes of the world and creates a new one.
  */
 void GameScene::reset() {
-    
+
     _reynardController = nullptr;
     _grid = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
     _debugnode->removeAllChildren();
     _gamestate.reset();
-    
-    
+
+
     setComplete(false);
     populate();
 }
@@ -254,12 +255,14 @@ void GameScene::reset() {
 void GameScene::populate() {
 
 #pragma mark Rooms
-    _grid = make_shared<GridModel>();
-    _grid->init(_scale, true, 10, 10, _assets->get<Texture>("overgrowth1"));
+    /////////////////////////////////////
+    // DEBUG: add room to scene graph
+    /////////////////////////////////////
+    _grid = _envController->getGrid();
+    _grid->init(_assets, _scale, _assets->get<Texture>("overgrowth1"));
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.4);
-    _envController->setGrid(_grid);
 
     //_grid->setPosition(0,-240);
 
@@ -284,7 +287,7 @@ void GameScene::populate() {
     string textureName[] = {"reynard", "reynard_run", "reynard_jump"};
     // The animation names
     string animationName[] = {"default", "run", "jump"};
-    
+
     // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
     for(int i = 0; i < sizeof(textureName)/sizeof(textureName[0]); i++){
         if(_assets->get<Texture>(textureName[i])){
@@ -298,7 +301,7 @@ void GameScene::populate() {
     }
     // initialize reynardController with the final animation map
     _reynardController = ReynardController::alloc(pos, _scale, reynard_animations);
-    
+
     // Add Reynard to physics world
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 

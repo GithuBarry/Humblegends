@@ -1,8 +1,25 @@
 {
   "jsons" : {
-     "framedata" : "json/framedata.json"
+     "framedata" : "json/framedata.json",
+     
+     "level" : "json/levels/showcase1.tmj",
+     
+     "tileset_geometry" : "json/tilesets/geometry.tsj",
+     "tileset_entities" : "json/tilesets/entities.tsj",
+     
+     "room_downleft" : "json/rooms/room_downleft.tmj",
+     "room_downleftright" : "json/rooms/room_downleftright.tmj",
+     "room_downright" : "json/rooms/room_downright.tmj",
+     "room_leftright" : "json/rooms/room_leftright.tmj",
+     "room_updown" : "json/rooms/room_updown.tmj",
+     "room_updownleft" : "json/rooms/room_updownleft.tmj",
+     "room_updownleftright" : "json/rooms/room_updownleftright.tmj",
+     "room_updownright" : "json/rooms/room_updownright.tmj",
+     "room_upleft" : "json/rooms/room_upleft.tmj",
+     "room_upleftright" : "json/rooms/room_upleftright.tmj",
+     "room_upright" : "json/rooms/room_upright.tmj"
   },
-    
+  
   "textures": {
     "earth": {
       "file": "textures/earthtile.png",

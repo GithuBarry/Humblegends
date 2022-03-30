@@ -66,9 +66,9 @@ public:
     /**
      * @return shared pointer to an empty grid model
      */
-    static std::shared_ptr<GridModel> alloc() {
+    static std::shared_ptr<GridModel> alloc(shared_ptr<AssetManager> assets) {
         std::shared_ptr<GridModel> result = std::make_shared<GridModel>();
-        return (result->init() ? result : nullptr);
+        return (result->init(assets) ? result : nullptr);
     }
 
     /**
@@ -76,7 +76,7 @@ public:
      * @param json - whether to use json loader or not
      * @return a grid with 3x3 rooms, each room the default
      */
-    bool init(float scale = 1, bool json = false, float hgap = 0, float vgap = 0, shared_ptr<Texture> bg = nullptr);
+    bool init(shared_ptr<AssetManager> assets, float scale = 1,  shared_ptr<Texture> bg = nullptr);
 
 #pragma mark Destructors
     /**

@@ -68,12 +68,14 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map
     _animations = animations;
     // create initial scene node with running animation
     setSceneNode(scene2::SpriteNode::alloc((*_animations)["run"]._frames, (*_animations)["run"]._rows, (*_animations)["run"]._cols, (*_animations)["run"]._size));
-    _node->setScale(0.2);
+    _node->setScale(Vec2(-0.2,0.2));
 
     Size nsize = (*_animations)["default"]._frames->getSize() / drawScale;
     nsize.width *= DUDE_HSHRINK;
     nsize.height *= DUDE_VSHRINK;
     _drawScale = drawScale;
+    
+    _currAnimation = (*animations)["run"];
 
     // Create physics
     if (CapsuleObstacle::init(pos, nsize)) {
@@ -184,7 +186,10 @@ bool CharacterModel::setMoveState(MovementState newState) {
             // Set character moving in the given direction at the right speed
             setVX((_faceRight ? 1 : -1) * _speed);
             _hasDashed = false;
-            uploadTexture("run");
+            if(_moveState != MovementState::RUNNING){
+                uploadTexture("run");
+            }
+
             break;
         case MovementState::JUMPING:
             // Disable double jump (jumping/falling to jumping)
@@ -193,7 +198,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVY(JUMP_SPEED);
             setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
             // If character is on a wall, then also give a horizontal velocity away
-            if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * RUN_SPEED);
+            if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
             uploadTexture("jump");
             break;
         case MovementState::FALLING:

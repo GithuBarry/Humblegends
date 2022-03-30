@@ -16,7 +16,6 @@
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController() {
     _grid = std::make_shared<GridModel>();
-    _grid->init(1, true, 10, 10);
     _toSwap = Vec2(-1, -1);
     _reyRoom = Vec2(-1, -1);
 }
