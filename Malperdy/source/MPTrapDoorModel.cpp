@@ -38,9 +38,11 @@ bool TrapDoor::init(){
     // Inherantly starts activated
     _trapState = TrapModel::TrapState::ACTIVATED;
     
+//    FULL SIZE IS 720
     
     _polyNode->setAnchor(Vec2::ZERO);
-    _polyNode->setScale(720.0 / _polyNode->getPolygon().getBounds().getMaxX());
+    _polyNode->setScale(400.0 / _polyNode->getPolygon().getBounds().getMaxX());
+    _polyNode->setPosition(_polyNode->getPosition().x +180, _polyNode->getPosition().y +80);
     _polyNode->setAbsolute(true);
     
     return this->TrapModel::init();
