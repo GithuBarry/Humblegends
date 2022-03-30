@@ -308,7 +308,7 @@ void GameScene::populate() {
 #pragma mark Enemies
     //pos = Vec2(15, 3);
     //// Create a controller for an enemy based on its image texture
-    //_enemies->push_back(EnemyController::alloc(pos, _scale, _assets->get<Texture>("rabbit"), _assets->get<Texture>("rabbit")));
+    //_enemies->push_back(EnemyController::alloc(pos, _scale, reynard_animations));
     //// Add enemies to physics world
     //vector<std::shared_ptr<EnemyController>>::iterator itr;
     //for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
