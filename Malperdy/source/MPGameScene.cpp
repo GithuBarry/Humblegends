@@ -254,9 +254,6 @@ void GameScene::reset() {
 void GameScene::populate() {
 
 #pragma mark Rooms
-    /////////////////////////////////////
-    // DEBUG: add room to scene graph
-    /////////////////////////////////////
     _grid = make_shared<GridModel>();
     _grid->init(_scale, true, 10, 10, _assets->get<Texture>("overgrowth1"));
 
@@ -315,6 +312,8 @@ void GameScene::populate() {
     //    addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
     //}
 }
+
+
 
 
 /**
@@ -383,7 +382,7 @@ void GameScene::update(float dt) {
     // Room swap initiated
     if (_input.didRelease() && !_gamestate.zoomed_in()) {
         // Scale tap/click location by camera pan
-        Vec2 pos = _input.getPosition() - Application::get()->getDisplaySize().height / SCENE_HEIGHT * _worldnode->getPaneTransform().getTranslation();
+        Vec2 pos = _input.getPosition() - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0,_worldnode->getPaneTransform().getTranslation().y)*2);
         //CULog("Touch_x: %f Scene_pos_x: %f",_input.getPosition().x ,pos.x);
         bool hasSwapped = false;
         if (_envController->hasSelected()) {
