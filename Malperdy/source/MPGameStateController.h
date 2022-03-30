@@ -31,7 +31,7 @@ public:
 
     void reset() {
         _zoomed_in = true;
-        SLOW_MO_SCALAR = 3;
+        SLOW_MO_SCALAR = 7;
     }
 
 
@@ -108,12 +108,14 @@ public:
         Vec2 result;
         if (_zoomed_in) {
             result = (Vec2(screenSize.width, screenSize.height) / 2 - reynardScreenPosition);
-
         } else {
-            result = Vec2(screenSize.width / 2 - reynardScreenPosition.x, 0);
-            result.add(Vec2(0, -currentTranslation.y));
+            result = Vec2(screenSize.width, screenSize.height)/ 2  - reynardScreenPosition;
+            
             if (currentTranslation.x + result.x > 0) {
                 result = Vec2(-currentTranslation.x, result.y);
+            }
+            if (currentTranslation.y + result.y > 0) {
+                result = Vec2(result.x, -currentTranslation.y);
             }
         }
         result = result * result.length() / 3000;
