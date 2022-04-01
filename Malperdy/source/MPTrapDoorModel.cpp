@@ -30,8 +30,7 @@ using namespace cugl;
  *
  * @return  true if the trap is initialized properly, false otherwise.
  */
-bool TrapDoor::init(){
-    float roomsize = 720.0;
+bool TrapDoor::init(float roomWidth, float roomHeight){
     _polyNode = make_shared<scene2::PolygonNode>();
     _polyNode->initWithFile("textures/MP_TrapDoor-1.png");
     _type = "trapdoor";
@@ -41,8 +40,8 @@ bool TrapDoor::init(){
 //    FULL SIZE IS 720
     
     _polyNode->setAnchor(Vec2::ZERO);
-    _polyNode->setScale((roomsize/2) / _polyNode->getPolygon().getBounds().getMaxX());
-    _polyNode->setPosition(_polyNode->getPosition().x +(roomsize/4), _polyNode->getPosition().y +30);
+    _polyNode->setScale((roomWidth/2) / _polyNode->getPolygon().getBounds().getMaxX());
+    _polyNode->setPosition(_polyNode->getPosition().x +(roomWidth/4), _polyNode->getPosition().y + (roomHeight/16));
     _polyNode->setAbsolute(true);
     
     return this->TrapModel::init();
