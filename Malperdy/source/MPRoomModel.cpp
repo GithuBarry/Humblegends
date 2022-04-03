@@ -187,7 +187,7 @@ bool RoomModel::initTrap(string type){
     }
     if (type == "trapdoor"){
         shared_ptr<TrapDoor> trap = make_shared<TrapDoor>();
-        trap->init();
+        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
         
         _trap = trap;
         
