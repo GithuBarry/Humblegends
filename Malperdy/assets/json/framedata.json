@@ -13,5 +13,10 @@
         "size": 28,
         "cols": 5,
         "loop": "false"
+    },
+    "rabbit": {
+        "size": 1,
+        "cols": 1,
+        "loop": "true"
     }
 }

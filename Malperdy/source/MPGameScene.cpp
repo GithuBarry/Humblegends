@@ -307,14 +307,36 @@ void GameScene::populate() {
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
-    //pos = Vec2(15, 3);
-    //// Create a controller for an enemy based on its image texture
-    //_enemies->push_back(EnemyController::alloc(pos, _scale, reynard_animations));
-    //// Add enemies to physics world
-    //vector<std::shared_ptr<EnemyController>>::iterator itr;
-    //for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
-    //    addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
-    //}
+
+    
+    Vec2 rab_pos = Vec2(3, 3);
+    // Create a controller for Reynard based on his image texture
+//    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
+
+    // Make a dictionary of animations for reynard
+    shared_ptr<map<string, CharacterModel::Animation>> rabbit_animations = make_shared<map<string, CharacterModel::Animation>>();
+
+    // The names of the sprite sheet assets
+    string rtextureName[] = {"rabbit", "rabbit", "rabbit"};
+    // The animation names
+    string ranimationName[] = {"default", "run", "jump"};
+
+    // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
+    for(int i = 0; i < sizeof(rtextureName)/sizeof(rtextureName[0]); i++){
+        if(_assets->get<Texture>(rtextureName[i])){
+            //shared_ptr<Texture> frames =_assets->get<Texture>(textureName[i]);
+            int size = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("size")->asInt();
+            int cols = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("cols")->asInt();
+            string loop = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("loop")->asString();
+            (*rabbit_animations)[ranimationName[i]] = CharacterModel::Animation();
+            (*rabbit_animations)[ranimationName[i]].init(_assets->get<Texture>(rtextureName[i]), size, cols, loop);
+        }
+    }
+    // initialize reynardController with the final animation map
+    _enemies->push_back(EnemyController::alloc(rab_pos, _scale, rabbit_animations));
+
+    // Add Reynard to physics world
+    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
 }
 
 
