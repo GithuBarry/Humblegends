@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 3/13/22
+//  Version: 4/16/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -519,10 +519,11 @@ bool GameScene::isSpikeTrapCollision(b2Contact *contact) {
         for (int col = 0; col < _grid->getHeight(); col++) {
             if (_grid->getRoom(row, col)->getTrap() != nullptr) {
                 shared_ptr<TrapModel> _trap = _grid->getRoom(row, col)->getTrap();
-                if ((_trap->getType() == "spike" && _trap->getObstacle()->getBody() == body1)
-                        || (_trap->getType() == "spike" && _trap->getObstacle()->getBody() == body2)) {
-                    return true;
-                }
+
+                b2Body* body = _trap->getObstacle()->getBody();
+                bool isCollision = body == body1 || body == body2;
+                bool isSpike = _trap->getType() == TrapModel::TrapType::SPIKE;
+                return isSpike && isCollision;
             }
         }
     }

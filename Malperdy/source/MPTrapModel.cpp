@@ -1,9 +1,12 @@
 //
 //  MPTrapModel.cpp
-//  RocketDemo
+//  Malperdy
 //
-//  Created by Spencer Hurst on 3/13/22.
-//  Copyright © 2022 Cornell Game Design Initiative. All rights reserved.
+//  Owner: Spencer Hurst
+//  Contributors: Evan Azari, Abu Qader, Jordan Selin
+//  Version: 4/16/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #include "MPTrapModel.hpp"
@@ -35,6 +38,7 @@ bool TrapModel::init()
     addChild(_polyNode);
 
     _trapState = TrapState::DEACTIVATED;
+    _type = TrapType::UNTYPED;
 
     return this->scene2::SceneNode::init();
 }
