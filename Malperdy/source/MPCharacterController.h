@@ -122,7 +122,9 @@ public:
      * @param body  The body to check if it belongs to this character
      * @return      Whether the given body belongs to this character
      */
-    bool isMyBody(b2Body *body) { return body == _character->getBody(); }
+    bool isMyBody(b2Body *body) {
+        return body == _character->getBody();
+    }
 
     /**
      * Returns this character's trail, so its past locations for the past

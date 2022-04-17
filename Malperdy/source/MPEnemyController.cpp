@@ -1,6 +1,10 @@
 //
 //  MPEnemyController.cpp
 //  Malperdy
+// 
+//  This class handles the behavior of a single enemy. Before any enemies are created to populate the
+//  GameScene, the static references to Reynard and the ObstacleWorld must be set; otherwise, the enemies
+//  will be inert and not do anything.
 //
 //  Owner: Kristina Gu
 //  Contributors: Kristina Gu
@@ -14,7 +18,8 @@
 
 #include "MPEnemyController.h"
 
-shared_ptr<physics2::ObstacleWorld> EnemyController::_obstacleWorld = make_shared<physics2::ObstacleWorld>();
+shared_ptr<physics2::ObstacleWorld> EnemyController::_obstacleWorld = nullptr;
+shared_ptr<ReynardController> EnemyController::_reynard = nullptr;
 
 /**
  * This method handles anything about the character that needs to change over time.
@@ -25,12 +30,24 @@ void EnemyController::update(float delta) {
 	// Call parent method first
 	CharacterController::update(delta);
 
+	// Don't update any behavior if the enemy doesn't have a reference to Reynard or the ObstacleWorld yet
+	if (_reynard == nullptr || _obstacleWorld == nullptr) {
+		CULog("ERROR: set Reynard and ObstacleWorld for EnemyController before creating enemies");
+		return;
+	}
+
+	// Raycast to Reynard
+	reyCast();
+
 	// Handle what the enemy does depending on their current behavior state
 	switch (_character->getBehaveState()) {
 	case (EnemyModel::BehaviorState::PATROLLING):
+		// TODO: handle transition to REALIZING based on target status
 		break;
 	case (EnemyModel::BehaviorState::REALIZING):
 	{
+		// TODO: replace detection with something without sensors
+
 		CULog("Detection time: %f", _detectTime);
 		// If enough time has passed that enemy realizes Reynard's there
 		if (_detectTime > DETECTION_TIME) {
@@ -51,6 +68,8 @@ void EnemyController::update(float delta) {
 		break;
 	case (EnemyModel::BehaviorState::CHASING):
 	{
+		// TODO: make this proper chase behavior
+
 		// CULog("CHASING");
 		// Turn to face the direction of the target
 		Vec2 dir = _target->getPosition() - _character->getPosition();
@@ -63,54 +82,6 @@ void EnemyController::update(float delta) {
 		// Otherwise, chase them
 		else _character->setMoveState(CharacterModel::MovementState::RUNNING);
 
-
-		// Otherwise, start chasing target by following their trail
-		//shared_ptr<deque<Vec2>> currTrail = _target->getTrail();
-		// Initialize values for input and output of raycast
-		/*b2RayCastInput input;
-		input.p1 = b2Vec2(_character->getX() * _character->_drawScale, _character->getY() * _character->_drawScale);
-		input.maxFraction = 1;
-		b2RayCastOutput *output = new b2RayCastOutput();*/
-		// Boolean for whether a raycast succeeded
-		//bool onTheTrail = false;
-		// For each point on the target's trail, starting with the closest point to the target
-		//for (deque<Vec2>::iterator itr = currTrail->begin(); itr != currTrail->end(); ++itr) {
-			// Raycast from self to the point on target's trail closest to the target
-			//_obstacleWorld->rayCast( // Lambda expression for what happens on a hit
-			//	[this](b2Fixture* fixture, const Vec2 point, const Vec2 normal, float fraction)->float{
-			//		// If there is line of sight to the hit location, add that to future movement queue
-			//		if (fraction >= 1.0f) _character->_futureMoveLocations->push_back(point);
-			//	},
-			//	_character->getPosition(), *itr);
-
-			//input.p2 = b2Vec2((*itr).x * _character->_drawScale, (*itr).y * _character->_drawScale);
-			//onTheTrail = _target->getBody()->GetFixtureList()->RayCast(output, input, 1);
-
-			//CULog("Fraction: %f", output->fraction);
-
-			//// draw raycast line (for some reason, always seems to go into the ground?)
-			//Path2 line;
-			//vector<Vec2> points;
-			//points.push_back(_character->getPosition());
-			//points.push_back(*itr);
-			//line.set(points);
-			//SimpleExtruder se = SimpleExtruder(line);
-			//se.calculate(5.0f);
-			//shared_ptr<scene2::PolygonNode> linePoly = scene2::PolygonNode::alloc();
-			//linePoly->setPolygon(se.getPolygon());
-			//linePoly->setColor(Color4::GREEN);
-			//linePoly->setAbsolute(true);
-			//_character->_node->addChild(linePoly);
-			//linePoly->setAbsolute(true);
-
-			//// If raycast made it to its destination
-			//if (onTheTrail && output->fraction == 1.0f) {
-			//	// Start running towards target and break
-			//	_character->setMoveState(CharacterModel::MovementState::RUNNING);
-			//	break;
-			//}
-		//}
-
 		// If no such point, so enemy lost the target, move enemy to Searching state
 		//if (!onTheTrail) _character->setBehaveState(EnemyModel::BehaviorState::SEARCHING);
 	}
@@ -120,8 +91,104 @@ void EnemyController::update(float delta) {
 		_character->setMoveState(CharacterModel::MovementState::STOPPED);
 		break;
 	case (EnemyModel::BehaviorState::RETURNING):
+		// TODO: does the enemy go home? Or does it just give up and start patrolling where it is?
+
 		break;
 	}
+}
+
+/**
+ * Helper debug function that updates a debug line drawn to help with raycasting.
+ * 
+ * It creates the line between the two given points and attaches it to the given
+ * parent node with the given name. If there is an existing line with that name
+ * already attached to the parent, it will be removed first.
+ * 
+ * Both points should be given in world space, and will be transformed accordingly when
+ * the resulting line is attached to the given node.
+ * 
+ * @param p1		The first point to create the line with in world space
+ * @param p2		The second point to create the line with in world space
+ * @param parent	The node to attach the created line to
+ * @param name		The name to give to the line, to track what to remove
+ * @param color		The color of the resulting line (green by default)
+ * @param width		The width of the resulting line (5 by default)
+ * @return linePoly	The line between the two given points as a PolygonNode
+ */
+void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string name, Color4 color = Color4::GREEN, float width = 5.0f) {
+	// Create line
+	Path2 line;
+	vector<Vec2> points;
+	points.push_back(parent->worldToNodeCoords(p1));
+	points.push_back(parent->worldToNodeCoords(p2));
+	line.set(points);
+	SimpleExtruder se = SimpleExtruder(line);
+	se.calculate(width);
+	shared_ptr<scene2::PolygonNode> linePoly = scene2::PolygonNode::alloc();
+	linePoly->setPolygon(se.getPolygon());
+	linePoly->setColor(color);
+	linePoly->setAbsolute(true);
+
+	// Remove old line if any
+	parent->removeChildByName(name);
+	// Now add updated line to parent
+	parent->addChildWithName(linePoly, name);
+}
+
+/**
+ * Performs a raycast from this enemy to Reynard. If the raycast succeeds, then the enemy's
+ * target and/or target location will be updated accordingly. The new values of these variables
+ * will then drive changing between behavior states in the update() method of this class.
+ * 
+ * This method is called and performed at the start of each frame in the update() method
+ * above, but the actual raycast is performed asynchronously. Therefore, there may be a
+ * slight delay in a raycast succeeding and the enemy's behavior changing, although that's
+ * probably fine because it simulates slow brain.
+ */
+void EnemyController::reyCast() {
+
+	// Draw line from enemy to Reynard
+	updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard");
+
+	// Raycast to Reynard's location
+	// Note that the raycast will detect all fixtures in its path, and it will not necessarily
+	// do so in any specific order. We will need to identify what the first fixture in the
+	// raycast's path is, as that's the one that actually matters.
+	_obstacleWorld->rayCast(
+		// This callback controls how the ray cast proceeds by returning a float.
+		// If -1, it ignores this fixture and continues. If 0, it terminates the
+		// ray cast. If 1, it does not clip the ray and continues. Finally, for
+		// any fraction, it clips the ray at that point.
+		[this](b2Fixture* fixture, const Vec2 point, const Vec2 normal, float fraction)->float{
+			// Draw line from enemy to point of impact
+			updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
+
+			// If Reynard is a fixture in the path, then set the point to start going to
+			// Otherwise, set the point as a "null" value
+			_raycastCache = _reynard->isMyBody(fixture->GetBody()) ? point : Vec2(-1, -1);
+
+			return fraction;
+		},
+		_character->getPosition(), _reynard->getCharacter()->getPosition());
+
+	// If the closest hit fixture really was Reynard, then set this enemy's target accordingly
+	if (_raycastCache != Vec2(-1, -1)) {
+		_target = _reynard->getCharacter();
+		_targetLoc = _raycastCache;
+		_raycastCache = Vec2(-1, -1);
+	}
+
+	//onTheTrail = _target->getBody()->GetFixtureList()->RayCast(output, input, 1);
+
+	//CULog("Fraction: %f", output->fraction);
+
+	// If raycast made it to its destination
+	//if (output->fraction == 1.0f) {
+	//	// Start running towards target and break
+	//	/*_character->setMoveState(CharacterModel::MovementState::RUNNING);
+	//	break;*/
+	//	CULog("TARGET SPOTTED");
+	//}
 }
 
 #pragma mark -

@@ -190,12 +190,12 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     addChild(_worldnode);
     addChild(_debugnode);
 
+    // Give all enemies a reference to the ObstacleWorld for raycasting
+    EnemyController::setObstacleWorld(_world);
+
     populate();
     _active = true;
     _complete = false;
-
-    // Give all enemies a reference to the ObstacleWorld for raycasting
-    //EnemyController::setObstacleWorld(_world);
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::BLACK);
@@ -307,11 +307,10 @@ void GameScene::populate() {
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
-
+    // Give all enemies a reference to Reynard's controller to handle detection
+    EnemyController::setReynardController(_reynardController);
     
     Vec2 rab_pos = Vec2(3, 3);
-    // Create a controller for Reynard based on his image texture
-//    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
 
     // Make a dictionary of animations for reynard
     shared_ptr<map<string, CharacterModel::Animation>> rabbit_animations = make_shared<map<string, CharacterModel::Animation>>();
@@ -332,7 +331,7 @@ void GameScene::populate() {
             (*rabbit_animations)[ranimationName[i]].init(_assets->get<Texture>(rtextureName[i]), size, cols, loop);
         }
     }
-    // initialize reynardController with the final animation map
+    // Initialize EnemyController with the final animation map and store in vector of enemies
     _enemies->push_back(EnemyController::alloc(rab_pos, _scale, rabbit_animations));
 
     // Add Reynard to physics world

@@ -23,6 +23,7 @@ using namespace cugl;
 bool Checkpoint::init() {
 	// Set the checkpoint to be a sensor, so no collisions happen
 	this->setSensor(true);
+	return true;
 }
 
 /**
