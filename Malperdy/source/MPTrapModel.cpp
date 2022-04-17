@@ -38,7 +38,6 @@ bool TrapModel::init()
     addChild(_polyNode);
 
     _trapState = TrapState::DEACTIVATED;
-    _type = TrapType::UNTYPED;
 
     return this->scene2::SceneNode::init();
 }
