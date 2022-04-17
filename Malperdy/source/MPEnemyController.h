@@ -71,38 +71,17 @@ public:
 
 #pragma mark -
 #pragma mark Behavior Methods
-
-    /**
-     * Called when a target has entered this enemy's detection radius, so in beginContact
-     * when the target begins contact with this enemy's detection sensor. Takes in a pointer
-     * to the controller for the target.
-     * 
-     * Because characters other than Reynard can be pursued, this is generalized to just
-     * take in a character controller.
-     * 
-     * TODO: handle issues with multiple possible targets
-     * 
-     * @param target    The target who's just entered the enemy's detection radius
-     */
-    void detectTarget(shared_ptr<CharacterModel> target);
-
-    /**
-     * Called when a target has left this enemy's detection radius, so in endContact when the
-     * target ends contact with this enemy's detection sensor. Takes in a pointer to the
-     * model for the target that was lost.
-     *
-     * Because characters other than Reynard can be pursued, this is generalized to just
-     * take in a character model.
-     * 
-     * TODO: handle issues with multiple possible targets
-     *
-     * @param target    The target who's just exited the enemy's detection radius
-     */
-    void loseTarget(shared_ptr<CharacterModel> target);
-
-#pragma mark -
-#pragma mark Raycasting
 private:
+
+    /**
+     * Helper function that returns the distance squared between this enemy and Reynard
+     * in world units.
+     * 
+     * @return  The squared distance in world units between this enemy and Reynard
+     */
+    float distSquaredToReynard() {
+        return getPosition().distanceSquared(_reynard->getPosition());
+    }
 
     /**
      * Performs a raycast from this enemy to Reynard. If the raycast succeeds, then the enemy's
@@ -114,7 +93,7 @@ private:
      * slight delay in a raycast succeeding and the enemy's behavior changing, although that's
      * probably fine because it simulates slow brain.
      */
-    void EnemyController::reyCast();
+    void reyCast();
 
 };
 

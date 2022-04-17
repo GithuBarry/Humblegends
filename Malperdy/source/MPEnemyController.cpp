@@ -16,6 +16,9 @@
 #define VELOCITY    10
 #define DUDE_JUMP   5.5f
 
+/** Radius within which an enemy will detect Reynard, squared */
+#define DETECTION_RADIUS_SQUARED 100000.0f
+
 #include "MPEnemyController.h"
 
 shared_ptr<physics2::ObstacleWorld> EnemyController::_obstacleWorld = nullptr;
@@ -42,12 +45,13 @@ void EnemyController::update(float delta) {
 	// Handle what the enemy does depending on their current behavior state
 	switch (_character->getBehaveState()) {
 	case (EnemyModel::BehaviorState::PATROLLING):
-		// TODO: handle transition to REALIZING based on target status
+		// If Reynard is within detection radius and can be seen, transition to REALIZING
+		if (distSquaredToReynard() < DETECTION_RADIUS_SQUARED && _target != nullptr) {
+			_character->setBehaveState(EnemyModel::BehaviorState::REALIZING);
+		}
 		break;
 	case (EnemyModel::BehaviorState::REALIZING):
 	{
-		// TODO: replace detection with something without sensors
-
 		CULog("Detection time: %f", _detectTime);
 		// If enough time has passed that enemy realizes Reynard's there
 		if (_detectTime > DETECTION_TIME) {
@@ -55,8 +59,6 @@ void EnemyController::update(float delta) {
 			jump();
 			// Reset detection time
 			_detectTime = 0;
-			// Add target's current location to the enemy's next location queue
-			_character->_futureMoveLocations->push_back(_target->getPosition());
 			// Start chasing
 			_character->setBehaveState(EnemyModel::BehaviorState::CHASING);
 		}
@@ -96,6 +98,9 @@ void EnemyController::update(float delta) {
 		break;
 	}
 }
+
+#pragma mark -
+#pragma mark Behavior Methods
 
 /**
  * Helper debug function that updates a debug line drawn to help with raycasting.
@@ -146,7 +151,6 @@ void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string n
  * probably fine because it simulates slow brain.
  */
 void EnemyController::reyCast() {
-
 	// Draw line from enemy to Reynard
 	updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard");
 
@@ -171,65 +175,16 @@ void EnemyController::reyCast() {
 		},
 		_character->getPosition(), _reynard->getCharacter()->getPosition());
 
-	// If the closest hit fixture really was Reynard, then set this enemy's target accordingly
+	// If the closest hit fixture really was Reynard, then set this enemy's target accordingly and set new target location
 	if (_raycastCache != Vec2(-1, -1)) {
 		_target = _reynard->getCharacter();
 		_targetLoc = _raycastCache;
-		_raycastCache = Vec2(-1, -1);
+	}
+	// Otherwise, clear the target, as the enemy has thus lost track of Reynard
+	else {
+		_target = nullptr;
 	}
 
-	//onTheTrail = _target->getBody()->GetFixtureList()->RayCast(output, input, 1);
-
-	//CULog("Fraction: %f", output->fraction);
-
-	// If raycast made it to its destination
-	//if (output->fraction == 1.0f) {
-	//	// Start running towards target and break
-	//	/*_character->setMoveState(CharacterModel::MovementState::RUNNING);
-	//	break;*/
-	//	CULog("TARGET SPOTTED");
-	//}
+	// Reset raycast cache for next raycast
+	_raycastCache = Vec2(-1, -1);
 }
-
-#pragma mark -
-#pragma mark Behavior Methods
-
-/**
- * Called when a target has entered this enemy's detection radius, so in beginContact
- * when the target begins contact with this enemy's detection sensor. Takes in a pointer
- * to the model for the target.
- *
- * Because characters other than Reynard can be pursued, this is generalized to just
- * take in a character model.
- * 
- * TODO: handle issues with multiple possible targets
- *
- * @param target    The target who's just entered the enemy's detection radius
- */
-void EnemyController::detectTarget(shared_ptr<CharacterModel> target) {
-	// Only continue if the enemy isn't already chasing someone
-	if (_character->getBehaveState() == EnemyModel::BehaviorState::CHASING) return;
-	_target = target;
-	// Start realizing
-	_character->setBehaveState(EnemyModel::BehaviorState::REALIZING);
-}
-
-/**
- * Called when a target has left this enemy's detection radius, so in endContact when the
- * target ends contact with this enemy's detection sensor. Takes in a pointer to the
- * model for the target that was lost.
- *
- * Because characters other than Reynard can be pursued, this is generalized to just
- * take in a character model.
- * 
- * TODO: handle issues with multiple possible targets
- *
- * @param target	The target who's just exited the enemy's detection radius
- */
-void EnemyController::loseTarget(shared_ptr<CharacterModel> target) {
-	_target = nullptr;
-	// Stop realizing
-	_character->setBehaveState(EnemyModel::BehaviorState::PATROLLING);
-	// Reset detect time
-	_detectTime = 0;
-};
