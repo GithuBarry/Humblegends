@@ -74,6 +74,9 @@ void EnemyController::update(float delta) {
 
 		// CULog("CHASING");
 		// Turn to face the direction of the target
+        if(!_target){
+            return;
+        }
 		Vec2 dir = _target->getPosition() - _character->getPosition();
 		if ((dir.x < 0 && _character->isFacingRight()) ||
 			(dir.x > 0 && !_character->isFacingRight())) _character->flipDirection();
