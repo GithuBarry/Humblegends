@@ -14,9 +14,19 @@
         "cols": 5,
         "loop": "false"
     },
-    "rabbit": {
-        "size": 1,
-        "cols": 1,
+    "rabbit_death": {
+        "size": 60,
+        "cols": 5,
+        "loop": "true"
+    },
+    "rabbit_idle": {
+        "size": 180,
+        "cols": 5,
+        "loop": "true"
+    },
+    "rabbit_run": {
+        "size": 59,
+        "cols": 5,
         "loop": "true"
     }
 }
