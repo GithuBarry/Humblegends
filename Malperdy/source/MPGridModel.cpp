@@ -12,7 +12,7 @@
 //
 //  Owner: Evan Azari
 //  Contributors: Evan Azari, Barry Wang, Jordan Selin
-//  Version: 3/28/22
+//  Version: 4/16/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -166,10 +166,10 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
                     
                     // if the tile is a trap, then add it
                     if(tile_to_traps[data.at(j)] == "trapdoor"){
-                        _grid->at(curr_row)->at(curr_col)->initTrap("trapdoor");
+                        _grid->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::TRAPDOOR);
                     }
                     else if(tile_to_traps[data.at(j)] == "spike"){
-                        _grid->at(curr_row)->at(curr_col)->initTrap("spike");
+                        _grid->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::SPIKE);
                     }
                 }
             }
@@ -442,7 +442,7 @@ void GridModel::calculatePhysicsGeometry() {
 
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
                 _grid->at(row)->at(col)->getTrap()->initObstacle(obstacle);
-                if(_grid->at(row)->at(col)->getTrap()->getType()=="trapdoor"){
+                if(_grid->at(row)->at(col)->getTrap()->getType()==TrapModel::TrapType::TRAPDOOR){
                     _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
                 }
             }
