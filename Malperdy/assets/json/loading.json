@@ -4,7 +4,7 @@
 			"file":      "textures/cugl-logo.png",
             "wrapS":     "clamp",
             "wrapT":     "clamp",
-            "minfilter": "linear",
+            "minfilter": "nearest-nearest",
             "magfilter": "linear"
 		},
         "name": {

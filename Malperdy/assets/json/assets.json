@@ -47,15 +47,6 @@
     "rabbit": {
       "file": "textures/rabbit.png"
     },
-    "rabbit_run": {
-      "file": "textures/rabbit_running.png"
-    },
-    "rabbit_death": {
-      "file": "textures/rabbit_death.png"
-    },
-    "rabbit_idle": {
-      "file": "textures/rabbit_idling.png"
-    },
     "flames": {
       "file": "textures/flames.png"
     },
