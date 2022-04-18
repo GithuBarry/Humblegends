@@ -181,6 +181,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
     // Do what needs to be done when switching into the new state
     switch (newState) {
         case MovementState::STOPPED:
+            uploadTexture("idle");
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
@@ -413,10 +414,12 @@ void CharacterModel::update(float dt) {
     }
 
     // UPDATE THE ANIMATION
-    if (_moveState == MovementState::RUNNING || true) {
-        // update time since last frame update
-        _elapsed += dt;
-
+    
+    // update time since last frame update
+    _elapsed += dt;
+    
+    if (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING) {
+        
         // if it is time to update the frame...
         float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
         if (_elapsed > frame_time ) {
