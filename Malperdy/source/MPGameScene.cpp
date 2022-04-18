@@ -316,9 +316,10 @@ void GameScene::populate() {
     shared_ptr<map<string, CharacterModel::Animation>> rabbit_animations = make_shared<map<string, CharacterModel::Animation>>();
 
     // The names of the sprite sheet assets
-    string rtextureName[] = {"rabbit", "rabbit", "rabbit"};
+    //TODO change to actual
+    string rtextureName[] = {"rabbit_run", "rabbit_run", "rabbit_run","rabbit_idle"};
     // The animation names
-    string ranimationName[] = {"default", "run", "jump"};
+    string ranimationName[] = {"default", "run", "jump","idle"};
 
     // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
     for(int i = 0; i < sizeof(rtextureName)/sizeof(rtextureName[0]); i++){
