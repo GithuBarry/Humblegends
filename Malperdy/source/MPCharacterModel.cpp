@@ -67,7 +67,6 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map
 
     _animations = animations;
     // create initial scene node with running animation
-    //TODO remove hard code
     setSceneNode(scene2::SpriteNode::alloc((*_animations)["run"]._frames, (*_animations)["run"]._rows, (*_animations)["run"]._cols, (*_animations)["run"]._size));
     _node->setScale(Vec2(-0.2,0.2));
 
