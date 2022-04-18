@@ -292,7 +292,6 @@ void GameScene::populate() {
     // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
     for(int i = 0; i < sizeof(textureName)/sizeof(textureName[0]); i++){
         if(_assets->get<Texture>(textureName[i])){
-            //shared_ptr<Texture> frames =_assets->get<Texture>(textureName[i]);
             int size = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("size")->asInt();
             int cols = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("cols")->asInt();
             string loop = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("loop")->asString();
@@ -324,7 +323,6 @@ void GameScene::populate() {
     // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
     for(int i = 0; i < sizeof(rtextureName)/sizeof(rtextureName[0]); i++){
         if(_assets->get<Texture>(rtextureName[i])){
-            //shared_ptr<Texture> frames =_assets->get<Texture>(textureName[i]);
             int size = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("size")->asInt();
             int cols = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("cols")->asInt();
             string loop = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("loop")->asString();

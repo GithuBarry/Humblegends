@@ -26,10 +26,8 @@
 #define DASH_COOLDOWN   20
 /** Amount of time (in seconds) for wall slide duration */
 #define WALL_SLIDE_DURATION 1.5f
-/** The amount to shrink the body fixture (vertically) relative to the image */
-#define DUDE_VSHRINK  0.45f
-/** The amount to shrink the body fixture (horizontally) relative to the image */
-#define DUDE_HSHRINK  0.4f
+/** Any character's width*/
+#define DUDE_WIDTH  1.0f
 /** The amount to shrink the sensor fixture (horizontally) relative to the image */
 #define DUDE_SSHRINK  0.3f
 /** Height of the sensor attached to the player's feet */
@@ -72,8 +70,9 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map
     _node->setScale(Vec2(-0.2,0.2));
 
     Size nsize = (*_animations)["default"]._frames->getSize() / drawScale;
-    nsize.width *= DUDE_HSHRINK;
-    nsize.height *= DUDE_VSHRINK;
+    auto s = (*_animations)["default"]._frames;
+
+    nsize = nsize *DUDE_WIDTH/nsize.width; //!! drawScale is effective ignored!
     _drawScale = drawScale;
     
     _currAnimation = (*animations)["run"];
