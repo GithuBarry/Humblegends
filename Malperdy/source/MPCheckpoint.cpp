@@ -5,7 +5,7 @@
 //  Owner: Kristina Gu
 //  Contributors: Kristina Gu
 //  Version: 3/29/22
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
@@ -23,7 +23,7 @@ using namespace cugl;
 bool Checkpoint::init() {
 	// Set the checkpoint to be a sensor, so no collisions happen
 	this->setSensor(true);
-    return true;
+  return true;
 }
 
 /**
