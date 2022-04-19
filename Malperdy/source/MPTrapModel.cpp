@@ -63,3 +63,6 @@ void TrapModel::createFixtures() {
 void TrapModel::releaseFixtures() {
     _obstacle->releaseFixtures();
 }
+
+
+

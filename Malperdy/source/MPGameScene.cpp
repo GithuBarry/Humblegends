@@ -631,13 +631,15 @@ void GameScene::beginContact(b2Contact *contact) {
     if (isReynardCollision(contact)) {
         if (isSpikeTrapCollision(contact)) {
             resolveSpikeTrapCollision();
+            return;
         }
         if (isTrapDoorCollision(contact)) {
-            
+            //TODO: Write code to enable said trap door
+            //Ask rose, should all the entity attributes be set and changed within the object itself when set to Enabled
+            //Should it instead be updated out here where I can micro manage everything I want?
             cout << "TRAP DOOOR TRAPPPPP DOOORRRR" << endl;
         }
-//        resolveIfTrapDoorCollision(contact);
-
+        
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
         b2Fixture *reynardFixture = getReynardFixture(contact);
         // First, if Reynard has hit an enemy detection radius
@@ -677,6 +679,11 @@ void GameScene::endContact(b2Contact *contact) {
         //    _enemies->at(0)->loseTarget(_reynardController->getCharacter());
         //}
     }
+    if (isReynardCollision(contact)&&isTrapDoorCollision(contact)) {
+        
+        //TODO: Write Code to disable said trapdoor
+    }
+
 }
 
 /**

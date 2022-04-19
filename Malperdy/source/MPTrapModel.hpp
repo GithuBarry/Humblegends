@@ -39,6 +39,8 @@ public:
         SAP,
         BRAZIER
     };
+    
+    
 
 protected:
 #pragma mark -
@@ -210,6 +212,7 @@ public:
 //     */
 //    virtual void update(float dt);
 
+    bool uploadTexture(string tex); 
     
 #pragma mark Destructors
     /**
@@ -227,9 +230,9 @@ public:
         removeAllChildren();
         _obstacle = nullptr;
     };
-
-
 };
+
+
 
 
 #endif /* MPTrapModel_hpp */

@@ -191,7 +191,6 @@ bool CharacterModel::setMoveState(MovementState newState) {
             if(_moveState != MovementState::RUNNING){
                 uploadTexture("run");
             }
-
             break;
         case MovementState::JUMPING:
             // Disable double jump (jumping/falling to jumping)
@@ -428,7 +427,6 @@ void CharacterModel::update(float dt) {
             _elapsed = 0;
         }
     }
-
 }
 
 
