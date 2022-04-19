@@ -580,11 +580,22 @@ void GameScene::resolveTrapOnContact() {
     }
 }
 
+void GameScene::resolveWallJumpOntoTrap(float reynardVY) {
+    // We expect reynardVY to be a negative value
+    _reynardController->getCharacter()->setVY(-1 * reynardVY);
+}
+
 void GameScene::beginContact(b2Contact *contact) {
     if (isReynardCollision(contact)) {
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
         if (isThisASpikeTrapCollision(contact)) {
-            resolveTrapOnContact();
+            float reynardVY = _reynardController->getCharacter()->getVY();
+            if (reynardVY < 0) {
+                resolveWallJumpOntoTrap(reynardVY);
+            }
+            else {
+                resolveTrapOnContact();
+            }
         }
         else if (isThisAReynardWallContact(contact, reynardIsRight)) {
             resolveReynardWallOnContact();

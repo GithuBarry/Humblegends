@@ -423,6 +423,14 @@ public:
     void resolveTrapOnContact();
     
     /**
+     * Resolver function that fires when Reynard makes contact with a trap
+     * but only in the case where he is wall jumping through a trap (from underneath)
+     *
+     * @param  reynardVY  Reynard's Y velocity (we expect it to be negative) 
+     */
+    void resolveWallJumpOntoTrap(float reynardVY);
+    
+    /**
      * Processes the start of a collision
      *
      * This method is called when we first get a collision between two objects.  We use
