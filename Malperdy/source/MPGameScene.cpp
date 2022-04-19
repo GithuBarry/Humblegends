@@ -331,7 +331,13 @@ void GameScene::populate() {
         }
     }
     // Initialize EnemyController with the final animation map and store in vector of enemies
-    _enemies->push_back(EnemyController::alloc(rab_pos, _scale, rabbit_animations));
+    _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
+
+    // Add Reynard to physics world
+    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
+    
+    // Initialize EnemyController with the final animation map and store in vector of enemies
+    _enemies->push_back(EnemyController::alloc(Vec2(30,15), _scale, rabbit_animations));
 
     // Add Reynard to physics world
     addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front

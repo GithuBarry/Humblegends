@@ -102,6 +102,9 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
                 
                 // instantiate the room and add it as a child
                 _grid->at(y)->at(x)->init(x, y, roomJSON, bg);
+                if (name == "room_solid"){
+                    _grid->at(y)->at(x)->permlocked = true;
+                }
                 addChild(_grid->at(y)->at(x));
             }
             break;
