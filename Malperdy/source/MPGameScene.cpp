@@ -460,26 +460,29 @@ void GameScene::update(float dt) {
     _envController->update(_reynardController);
 }
 
-/**
- * Processes the start of a collision
- *
- * This method is called when we after get a collision between two objects.  We use
- * this method to test if it is the "right" kind of collision.  In particular, we
- * use it to test if we need to turn around Reynard.
- *
- * To do that , we check if reynard's contact points align vertically
- *
- * @param  contact  The two bodies that collided
- */
+#pragma mark -
+#pragma mark Collision Handling
 
-bool GameScene::isReynardCollision(b2Contact *contact) {
-    b2Body *body1 = contact->GetFixtureA()->GetBody();
-    b2Body *body2 = contact->GetFixtureB()->GetBody();
-    return body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody();
+bool GameScene::isCharacterGroundFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 4);
 }
 
+bool GameScene::isCharacterRightFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 5);
+}
+
+bool GameScene::isCharacterLeftFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 6);
+}
+
+bool GameScene::isEnemyDetectFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 10);
+}
 
 b2Fixture *GameScene::getReynardFixture(b2Contact *contact) {
+    // We assume that you have checked to see that at least
+    // one of the bodies in the contact event have been
+    // verified to be a Reynard object
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
     if (body1 == _reynardController->getCharacter()->getBody()) {
@@ -489,32 +492,19 @@ b2Fixture *GameScene::getReynardFixture(b2Contact *contact) {
     }
 }
 
-// TODO: there's gotta be a better way to do this
-b2Fixture *GameScene::getNotReynardFixture(b2Contact *contact) {
+b2Fixture *GameScene::getEnemyFixture(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
     if (body1 == _reynardController->getCharacter()->getBody()) {
-        return contact->GetFixtureB();
-    } else {
         return contact->GetFixtureA();
+    } else {
+        return contact->GetFixtureB();
     }
 }
 
-/**
- * Helper function for detecting a collision between two objects
- *
- * The primary purpose of this function is to detect if one of the physical bodies
- * that have come into contact with one another are a trap.
- *
- * The function will return true if it is the case and false otherwise.
- *
- * @param  contact  The two bodies that collided
- */
-
-bool GameScene::isSpikeTrapCollision(b2Contact *contact) {
+bool GameScene::isThisASpikeTrapCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-
     for (int row = 0; row < _grid->getWidth(); row++) {
         for (int col = 0; col < _grid->getHeight(); col++) {
             if (_grid->getRoom(row, col)->getTrap() != nullptr) {
@@ -529,93 +519,97 @@ bool GameScene::isSpikeTrapCollision(b2Contact *contact) {
     return false;
 }
 
+bool GameScene::isReynardCollision(b2Contact *contact) {
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    return body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody();
+}
 
+bool GameScene::isThisAReynardWallContact(b2Contact *contact, bool reynardIsRight) {
+    b2Fixture *reynardFixture;
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        reynardFixture = contact->GetFixtureA();
+    } else {
+        reynardFixture = contact->GetFixtureB();
+    }
+    if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
+        return true;
+    }
+    else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
+bool GameScene::isThisAReynardGroundContact(b2Contact *contact) {
+    b2Fixture *reynardFixture;
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        reynardFixture = contact->GetFixtureA();
+    } else {
+        reynardFixture = contact->GetFixtureB();
+    }
+    if (isCharacterGroundFixture(reynardFixture)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
+void GameScene::resolveReynardWallOnContact() {
+    _reynardController->hitWall();
+}
 
-/**
- * The primary purpose of this function obfuscate the code
- * behind what happens during the interaction between Reynard
- * and a trap upon collision
- *
- * The current Implementation only sees Reynard's health decremented by 1.
- */
+void GameScene::resolveReynardGroundOnContact() {
+    _reynardController->hitGround();
+}
 
-void GameScene::resolveTrapCollision() {
+void GameScene::resolveReynardGroundOffContact() {
+    _reynardController->offGround();
+}
+
+void GameScene::resolveTrapOnContact() {
     if (_reynardController->canBeHit()) {
         _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
-        CULog("Reynard's Current Health: %d", (int) _reynardController->getCharacter()->getHearts());
     }
-    //TODO: Determine how else we want the game to deal with Reynard hitting a trap
-    //TODO: (do we want the trap to be turned off)?
-}
-
-
-bool isCharacterGroundFixture(b2Fixture *fixture) {
-    return (fixture->GetUserData().pointer == 4);
-}
-
-bool isCharacterLeftFixture(b2Fixture *fixture) {
-    return (fixture->GetUserData().pointer == 6);
-}
-
-bool isCharacterRightFixture(b2Fixture *fixture) {
-    return (fixture->GetUserData().pointer == 5);
-}
-
-// Whether the fixture is an enemy detection radius
-bool isEnemyDetectFixture(b2Fixture *fixture) {
-    return (fixture->GetUserData().pointer == 10);
 }
 
 void GameScene::beginContact(b2Contact *contact) {
-    // If Reynard is one of the collidees
     if (isReynardCollision(contact)) {
-        if (true && isSpikeTrapCollision(contact)) {
-            resolveTrapCollision();
-        }
-//        resolveIfTrapDoorCollision(contact);
-
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
-        b2Fixture *reynardFixture = getReynardFixture(contact);
-        // First, if Reynard has hit an enemy detection radius
-        if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
-
+        if (isThisASpikeTrapCollision(contact)) {
+            resolveTrapOnContact();
         }
-        else if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
-            _reynardController->hitWall();
-        } else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
-            _reynardController->hitWall();
+        else if (isThisAReynardWallContact(contact, reynardIsRight)) {
+            resolveReynardWallOnContact();
         }
-            // Reynard hitting ground
-        else if (isCharacterGroundFixture(reynardFixture)) {
-            _reynardController->hitGround();
-        } else {
-            //CULog("Switching C");
-            // _reynardController->hitGround();
+        else if (isThisAReynardGroundContact(contact)) {
+            resolveReynardGroundOnContact();
+        }
+        else {
+            CULog("Non-checked contact occured with Reynard");
         }
     }
-
+    else {
+        CULog("Non-checked contact occured");
+    }
 }
+
 
 void GameScene::endContact(b2Contact *contact) {
-    // CULog("Is this a Reynard collision END? %d", isReynardCollision(contact));
-    // CULog("rey is off da ground");
     if (_reynardController != nullptr && isReynardCollision(contact)) {
-        b2Fixture *reynardFixture = getReynardFixture(contact);
-        // If Reynard leaves the ground
-        if (isCharacterGroundFixture(reynardFixture)) {
-            _reynardController->offGround();
+        if (isThisAReynardGroundContact(contact)) {
+            resolveReynardGroundOffContact();
         }
-        //if (isCharacterGroundFixture(reynardFixture) && !_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
-        //    _reynardController->offGround();
-        //}
-        //// Otherwise if Reynard is leaving the enemy sensor
-        //else if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
-        //    _enemies->at(0)->loseTarget(_reynardController->getCharacter());
-        //}
     }
 }
+
 
 /**
  * Handles any modifications necessary before collision resolution
