@@ -173,7 +173,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     //Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
     Vec2 offset;
 
-    
+
 
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
@@ -367,7 +367,7 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
  */
 void GameScene::update(float dt) {
     _input.update(dt);
-    
+
 
     // Process the toggled key commands
     if (_input.didDebug()) {
@@ -383,7 +383,7 @@ void GameScene::update(float dt) {
         CULog("Shutting down");
         Application::get()->quit();
     }
-    
+
     if (_reynardController->getCharacter()->getHearts()<=0){
         reset();
         return;
@@ -483,6 +483,7 @@ b2Fixture *GameScene::getReynardFixture(b2Contact *contact) {
     // We assume that you have checked to see that at least
     // one of the bodies in the contact event have been
     // verified to be a Reynard object
+    //assert(isReynardCollision(contact))
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
     if (body1 == _reynardController->getCharacter()->getBody()) {
@@ -493,6 +494,7 @@ b2Fixture *GameScene::getReynardFixture(b2Contact *contact) {
 }
 
 b2Fixture *GameScene::getEnemyFixture(b2Contact *contact) {
+    // TODO this function is not right. Also what if both are enemies?
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
     if (body1 == _reynardController->getCharacter()->getBody()) {
@@ -537,12 +539,7 @@ bool GameScene::isThisAReynardWallContact(b2Contact *contact, bool reynardIsRigh
     if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
         return true;
     }
-    else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    else return !reynardIsRight && isCharacterLeftFixture(reynardFixture);
 }
 
 bool GameScene::isThisAReynardGroundContact(b2Contact *contact) {
@@ -554,12 +551,7 @@ bool GameScene::isThisAReynardGroundContact(b2Contact *contact) {
     } else {
         reynardFixture = contact->GetFixtureB();
     }
-    if (isCharacterGroundFixture(reynardFixture)) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return isCharacterGroundFixture(reynardFixture);
 }
 
 void GameScene::resolveReynardWallOnContact() {
