@@ -176,6 +176,9 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVX((_faceRight ? 1 : -1) * RUN_SPEED);
             setGravityScale(1.0f);
             break;
+        case MovementState::DEAD:
+            // TODO: any changes for swapping from DEAD state, if any
+            break;
     }
 
     // Do what needs to be done when switching into the new state
@@ -217,6 +220,9 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVX((_faceRight ? 1 : -1) * RUN_SPEED * 3.0);
             setVY(0);
             _dashStart = Timestamp();
+            break;
+        case MovementState::DEAD:
+            // TODO: any changes for swapping into DEAD state
             break;
     }
 
@@ -402,7 +408,9 @@ void CharacterModel::update(float dt) {
                     setMoveState(MovementState::RUNNING);
                 }
             }
-
+        case MovementState::DEAD:
+            // TODO: any updates for when in DEAD state
+            break;
     }
 
     // Update physics obstacle

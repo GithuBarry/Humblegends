@@ -54,7 +54,8 @@ public:
         JUMPING,
         FALLING,
         ONWALL,
-        DASHING
+        DASHING,
+        DEAD
     };
     
     /** Class representing an animation */
