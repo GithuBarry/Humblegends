@@ -324,7 +324,7 @@ public:
      * Helper function for detecting a collision between two objects
      *
      * The primary purpose of this function is to detect if one of the physical bodies
-     * that have come into contact with one another are a trap.
+     * that have come into contact with one another are a Spike Trap box2d Entity.
      *
      * The function will return true if it is the case and false otherwise.
      *
@@ -332,6 +332,18 @@ public:
      */
     bool isSpikeTrapCollision(b2Contact *contact);
     
+    /**
+     * Helper function for detecting a collision between two objects
+     *
+     * The primary purpose of this function is to detect if one of the physical bodies
+     * that have come into contact with one another are a TrapDoor box2d Entity.
+     *
+     * The function will return true if it is the case and false otherwise.
+     *
+     * @param  contact  The two bodies that collided
+     */
+    bool isTrapDoorCollision(b2Contact *contact);
+
     /**
      * This is the helper function behind the collision between Reynard and a trapdoor
      *
@@ -342,7 +354,7 @@ public:
      */
     bool resolveIfTrapDoorCollision(b2Contact *contact);
 
-    void resolveTrapCollision();
+    void resolveSpikeTrapCollision();
 
     void isTurnEvent(b2Contact *contact);
 

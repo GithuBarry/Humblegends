@@ -524,7 +524,7 @@ b2Fixture *GameScene::getNotReynardFixture(b2Contact *contact) {
  * Helper function for detecting a collision between two objects
  *
  * The primary purpose of this function is to detect if one of the physical bodies
- * that have come into contact with one another are a trap.
+ * that have come into contact with one another are a spike trap.
  *
  * The function will return true if it is the case and false otherwise.
  *
@@ -543,13 +543,50 @@ bool GameScene::isSpikeTrapCollision(b2Contact *contact) {
                 b2Body* body = _trap->getObstacle()->getBody();
                 bool isCollision = body == body1 || body == body2;
                 bool isSpike = _trap->getType() == TrapModel::TrapType::SPIKE;
-                return isSpike && isCollision;
+                // If we have a spike and a collision with said spike then return true
+                if(isSpike && isCollision){
+                    return true;
+                }
             }
         }
     }
     return false;
 }
 
+
+/**
+ * Helper function for detecting a collision between two objects
+ *
+ * The primary purpose of this function is to detect if one of the physical bodies
+ * that have come into contact with one another are a trap.
+ *
+ * The function will return true if it is the case and false otherwise.
+ *
+ * @param  contact  The two bodies that collided
+ */
+
+bool GameScene::isTrapDoorCollision(b2Contact *contact) {
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+
+    for (int row = 0; row < _grid->getWidth(); row++) {
+        for (int col = 0; col < _grid->getHeight(); col++) {
+            if (_grid->getRoom(row, col)->getTrap() != nullptr) {
+                //get the trap in the current room being searched through (given a trap exists in said room)
+                shared_ptr<TrapModel> _trap = _grid->getRoom(row, col)->getTrap();
+                //Get the body of the trap in the current room being checked
+                b2Body* body = _trap->getObstacle()->getBody();
+                bool isCollision = body == body1 || body == body2;
+                bool isDoor = _trap->getType() == TrapModel::TrapType::TRAPDOOR;
+                // If we have a trapdoor and a collision with said trapdoor then return true
+                if(isDoor && isCollision){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
 
 
@@ -562,7 +599,7 @@ bool GameScene::isSpikeTrapCollision(b2Contact *contact) {
  * The current Implementation only sees Reynard's health decremented by 1.
  */
 
-void GameScene::resolveTrapCollision() {
+void GameScene::resolveSpikeTrapCollision() {
     if (_reynardController->canBeHit()) {
         _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
         CULog("Reynard's Current Health: %d", (int) _reynardController->getCharacter()->getHearts());
@@ -592,8 +629,12 @@ bool isEnemyDetectFixture(b2Fixture *fixture) {
 void GameScene::beginContact(b2Contact *contact) {
     // If Reynard is one of the collidees
     if (isReynardCollision(contact)) {
-        if (true && isSpikeTrapCollision(contact)) {
-            resolveTrapCollision();
+        if (isSpikeTrapCollision(contact)) {
+            resolveSpikeTrapCollision();
+        }
+        if (isTrapDoorCollision(contact)) {
+            
+            cout << "TRAP DOOOR TRAPPPPP DOOORRRR" << endl;
         }
 //        resolveIfTrapDoorCollision(contact);
 
