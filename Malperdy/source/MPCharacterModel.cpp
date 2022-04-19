@@ -47,6 +47,7 @@ using namespace cugl;
 #pragma mark -
 #pragma mark Constructors
 
+//TODO: Refactor this naming convention. 
 /**
  * Initializes a new dude at the given position.
  *
