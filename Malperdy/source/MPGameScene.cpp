@@ -416,9 +416,9 @@ void GameScene::update(float dt) {
         //CULog("Touch_x: %f Scene_pos_x: %f",_input.getPosition().x ,pos.x);
         bool hasSwapped = false;
         if (_envController->hasSelected()) {
-            bool check = _envController->swapWithSelected(pos, _reynardController);
+            bool check = _envController->swapWithSelected(pos, _reynardController, _enemies);
         } else {
-            hasSwapped = _envController->selectRoom(pos, _reynardController);
+            hasSwapped = _envController->selectRoom(pos, _reynardController, _enemies);
         }
     }
 
