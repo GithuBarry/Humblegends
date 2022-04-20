@@ -52,7 +52,7 @@ void EnemyController::update(float delta) {
 		break;
 	case (EnemyModel::BehaviorState::REALIZING):
 	{
-		CULog("Detection time: %f", _detectTime);
+		//CULog("Detection time: %f", _detectTime);
 		// If enough time has passed that enemy realizes Reynard's there
 		if (_detectTime > DETECTION_TIME) {
 			// Do a little jump
@@ -123,7 +123,7 @@ void EnemyController::update(float delta) {
  * @param width		The width of the resulting line (5 by default)
  * @return linePoly	The line between the two given points as a PolygonNode
  */
-void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string name, Color4 color = Color4::GREEN, float width = 5.0f) {
+void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string name, Color4 color = Color4(0,0,0,0), float width = 5.0f) {
 	// Create line
 	Path2 line;
 	vector<Vec2> points;
@@ -155,7 +155,7 @@ void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string n
  */
 void EnemyController::reyCast() {
 	// Draw line from enemy to Reynard
-	updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard");
+	//updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard");
 
 	// Raycast to Reynard's location
 	// Note that the raycast will detect all fixtures in its path, and it will not necessarily
@@ -168,7 +168,7 @@ void EnemyController::reyCast() {
 		// any fraction, it clips the ray at that point.
 		[this](b2Fixture* fixture, const Vec2 point, const Vec2 normal, float fraction)->float{
 			// Draw line from enemy to point of impact
-			updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
+			//updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4(0,0,0,0), 5.0f);
 
 			// If Reynard is a fixture in the path, then set the point to start going to
 			// Otherwise, set the point as a "null" value
