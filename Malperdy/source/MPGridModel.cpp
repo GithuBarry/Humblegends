@@ -179,6 +179,10 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
         }
     }
     return this->scene2::SceneNode::init();
+}
+
+GridModel::~GridModel() {
+    _grid = nullptr;
 };
 
 #pragma mark Destructors
