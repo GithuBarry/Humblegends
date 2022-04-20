@@ -19,6 +19,7 @@
 #include <vector>
 #include "MPReynardModel.h"
 #include "MPReynardController.h"
+#include "MPAudioController.h"
 #include "MPCharacterModel.h"
 #include "MPEnemyController.h"
 #include "MPInput.h"

@@ -58,9 +58,22 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 /** Opacity of the physics outlines {@example} */
 #define SOME_COLOR   Color4::YELLOW
 
-/** The key for collisions sounds {@example} */
+/** The key for walking */
 
-#define SOME_SOUND     "somesoundname"
+#define WALK_SOUND "step"
+
+/** The key for swapping rooms */
+#define SWAP_SOUND "swap_room"
+
+/** The key for walking */
+#define JUMP_SOUND "jump"
+
+/** The key for walking */
+#define LAND_SOUND "land"
+
+
+/** The key for walking */
+#define LEVEL_MUSIC "level_music"
 
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
@@ -315,6 +328,8 @@ void GameScene::populate() {
     //for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
     //    addObstacle((*itr)->getCharacter(), (*itr)->getSceneNode());
     //}
+#pragma mark Sound
+    MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
 }
 
 
