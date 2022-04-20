@@ -176,11 +176,15 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVX((_faceRight ? 1 : -1) * RUN_SPEED);
             setGravityScale(1.0f);
             break;
+        case MovementState::DEAD:
+            // TODO: any changes for swapping from DEAD state, if any
+            break;
     }
 
     // Do what needs to be done when switching into the new state
     switch (newState) {
         case MovementState::STOPPED:
+            uploadTexture("idle");
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
@@ -216,6 +220,9 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVX((_faceRight ? 1 : -1) * RUN_SPEED * 3.0);
             setVY(0);
             _dashStart = Timestamp();
+            break;
+        case MovementState::DEAD:
+            // TODO: any changes for swapping into DEAD state
             break;
     }
 
@@ -401,7 +408,9 @@ void CharacterModel::update(float dt) {
                     setMoveState(MovementState::RUNNING);
                 }
             }
-
+        case MovementState::DEAD:
+            // TODO: any updates for when in DEAD state
+            break;
     }
 
     // Update physics obstacle
@@ -413,10 +422,12 @@ void CharacterModel::update(float dt) {
     }
 
     // UPDATE THE ANIMATION
-    if (_moveState == MovementState::RUNNING || true) {
-        // update time since last frame update
-        _elapsed += dt;
-
+    
+    // update time since last frame update
+    _elapsed += dt;
+    
+    if (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING) {
+        
         // if it is time to update the frame...
         float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
         if (_elapsed > frame_time ) {
