@@ -625,11 +625,11 @@ void GameScene::beginContact(b2Contact *contact) {
             resolveReynardGroundOnContact();
         }
         else {
-            CULog("Non-checked contact occured with Reynard");
+            //CULog("Non-checked contact occured with Reynard");
         }
     }
     else {
-        CULog("Non-checked contact occured");
+        //CULog("Non-checked contact occured");
     }
 }
 
