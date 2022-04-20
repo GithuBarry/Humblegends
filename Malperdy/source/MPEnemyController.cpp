@@ -42,7 +42,7 @@ shared_ptr<ReynardController> EnemyController::_reynard = nullptr;
  */
 bool EnemyController::init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations) {
     // If initialization of parent class failed, return immediately
-    if (!(CharacterController::init(pos, drawScale, animations))) return false;
+    return (CharacterController::init(pos, drawScale, animations));
     
     //// Create user data to store in the physics body
     //BodyData* userData = new BodyData();
