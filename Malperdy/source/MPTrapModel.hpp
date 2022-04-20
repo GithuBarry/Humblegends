@@ -4,7 +4,7 @@
 //
 //  Owner: Spencer Hurst
 //  Contributors: Evan Azari, Abu Qader, Jordan Selin
-//  Version: 4/16/22
+//  Version: 4/19/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -37,7 +37,8 @@ public:
         SPIKE,
         TRAPDOOR,
         SAP,
-        BRAZIER
+        BRAZIER,
+        CHECKPOINT
     };
 
 protected:

@@ -12,7 +12,7 @@
 //
 //  Owner: Evan Azari
 //  Contributors: Evan Azari, Barry Wang, Jordan Selin
-//  Version: 4/16/22
+//  Version: 4/19/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -143,6 +143,9 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
         else if(the_tile->get("image")->asString().find("trapdoor") != string::npos){
             tile_to_traps[the_tile->get("id")->asInt() + tileset_offset] = "trapdoor";
         }
+        else if (the_tile->get("image")->asString().find("checkpoint") != string::npos) {
+            tile_to_traps[the_tile->get("id")->asInt() + tileset_offset] = "checkpoint";
+        }
     }
     
     // now, go through the data, and for each encountered entity, if it is a trap then add it to the appropriate room
@@ -171,10 +174,19 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
                     else if(tile_to_traps[data.at(j)] == "spike"){
                         _grid->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::SPIKE);
                     }
+                    else if (tile_to_traps[data.at(j)] == "checkpoint") {
+                        _grid->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::CHECKPOINT);
+                    }
                 }
             }
         }
     }
+    // TEMP CODE TO BE DELETED ONCE CHECKPOINTS ARE IN JSON
+    int top_row = 3;
+    int left_col = 5;
+    _grid->at(0)->at(1)->initTrap(TrapModel::TrapType::CHECKPOINT);
+    // TEMP CODE END
+
     return this->scene2::SceneNode::init();
 };
 
@@ -443,6 +455,9 @@ void GridModel::calculatePhysicsGeometry() {
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
                 _grid->at(row)->at(col)->getTrap()->initObstacle(obstacle);
                 if(_grid->at(row)->at(col)->getTrap()->getType()==TrapModel::TrapType::TRAPDOOR){
+                    _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
+                }
+                if (_grid->at(row)->at(col)->getTrap()->getType() == TrapModel::TrapType::CHECKPOINT) {
                     _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
                 }
             }

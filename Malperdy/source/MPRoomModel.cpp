@@ -33,6 +33,7 @@
 
 #include "MPRoomModel.h"
 #include <cugl/util/CUDebug.h>
+#include "MPCheckpoint.h"
 
 using namespace cugl;
 
@@ -185,12 +186,20 @@ bool RoomModel::initTrap(TrapModel::TrapType type){
         
         addChild(_trap);
     }
-    if (type == TrapModel::TrapType::TRAPDOOR){
+    else if (type == TrapModel::TrapType::TRAPDOOR){
         shared_ptr<TrapDoor> trap = make_shared<TrapDoor>();
         trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
         
         _trap = trap;
         
+        addChild(_trap);
+    }
+    else if (type == TrapModel::TrapType::CHECKPOINT) {
+        shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
+        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+
+        _trap = trap;
+
         addChild(_trap);
     }
     else{
