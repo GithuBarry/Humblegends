@@ -174,7 +174,7 @@ public:
     * @return whether the room at the given coordinates has fog of war
     */
     bool isRoomFogged(Vec2 coord) {
-        return getRoom(coord)->isFogged();
+        return getRoom(coord) != nullptr && getRoom(coord)->isFogged();
     }
 
 #pragma mark Setters
