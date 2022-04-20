@@ -12,6 +12,34 @@
 #include "MPReynardController.h"
 
 /**
+ * Initializes a new controller for the character at the given position.
+ *
+ * The character is sized according to the given drawing scale.
+ *
+ * The scene graph is completely decoupled from the physics system.
+ * The node does not have to be the same size as the physics body. We
+ * only guarantee that the scene graph node is positioned correctly
+ * according to the drawing scale.
+ *
+ * @param pos       Initial position in world coordinates
+ * @param drawScale The drawing scale (world to screen)
+ * @param image     The image for the character's appearance
+ *
+ * @return  true if the character is initialized properly, false otherwise.
+ */
+bool ReynardController::init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations) {
+    // If initialization of parent class failed, return immediately
+    if (!(CharacterController::init(pos, drawScale, animations))) return false;
+
+    //// Create user data to store in the physics body
+    //BodyData* userData = new BodyData();
+    //userData->_type = CharacterType::REYNARD;
+    //userData->_controller = (void*)this;
+    //// Store pointer to user data in attached physics body
+    //_character->getBody()->GetUserData().pointer = (uintptr_t)(void*)userData;
+}
+
+/**
  * This method handles anything about the character that needs to change over time.
  *
  * @param delta The amount of time that has passed since the last frame

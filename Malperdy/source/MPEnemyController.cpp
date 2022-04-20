@@ -25,6 +25,34 @@ shared_ptr<physics2::ObstacleWorld> EnemyController::_obstacleWorld = nullptr;
 shared_ptr<ReynardController> EnemyController::_reynard = nullptr;
 
 /**
+ * Initializes a new controller for the character at the given position.
+ *
+ * The character is sized according to the given drawing scale.
+ *
+ * The scene graph is completely decoupled from the physics system.
+ * The node does not have to be the same size as the physics body. We
+ * only guarantee that the scene graph node is positioned correctly
+ * according to the drawing scale.
+ *
+ * @param pos       Initial position in world coordinates
+ * @param drawScale The drawing scale (world to screen)
+ * @param image     The image for the character's appearance
+ *
+ * @return  true if the character is initialized properly, false otherwise.
+ */
+bool EnemyController::init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations) {
+    // If initialization of parent class failed, return immediately
+    if (!(CharacterController::init(pos, drawScale, animations))) return false;
+    
+    //// Create user data to store in the physics body
+    //BodyData* userData = new BodyData();
+    //userData->_type = CharacterType::ENEMY;
+    //userData->_controller = (void*)this;
+    //// Store pointer to user data in attached physics body
+    //_character->getBody()->GetUserData().pointer = (uintptr_t)(void*)userData;
+}
+
+/**
  * This method handles anything about the character that needs to change over time.
  *
  * @param delta The amount of time that has passed since the last frame
@@ -40,7 +68,7 @@ void EnemyController::update(float delta) {
     }
 
     // Raycast to Reynard
-    rayCast();
+    reyCast();
 
     // Handle what the enemy does depending on their current behavior state
     switch (_character->getBehaveState()) {
@@ -51,11 +79,10 @@ void EnemyController::update(float delta) {
             }
             break;
         case (EnemyModel::BehaviorState::REALIZING): {
-            //CULog("Detection time: %f", _detectTime);
             // If enough time has passed that enemy realizes Reynard's there
             if (_detectTime > DETECTION_TIME) {
                 // Do a little jump
-                //jump();
+                _character->setVY(JUMP_SPEED / 1.5f);
                 // Reset detection time
                 _detectTime = 0;
                 // Start chasing
@@ -95,7 +122,8 @@ void EnemyController::update(float delta) {
             break;
         case (EnemyModel::BehaviorState::RETURNING):
             // TODO: does the enemy go home? Or does it just give up and start patrolling where it is?
-
+            // For now, just stay in place
+            _character->setMoveState(CharacterModel::MovementState::STOPPED);
             break;
     }
 }
@@ -151,9 +179,9 @@ void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string n
  * slight delay in a raycast succeeding and the enemy's behavior changing, although that's
  * probably fine because it simulates slow brain.
  */
-void EnemyController::rayCast() {
+void EnemyController::reyCast() {
     // Draw line from enemy to Reynard
-    updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard");
+    //updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard");
 
     // Raycast to Reynard's location
     // Note that the raycast will detect all fixtures in its path, and it will not necessarily
@@ -176,9 +204,12 @@ void EnemyController::rayCast() {
             },
             _character->getPosition(), _reynard->getCharacter()->getPosition());
 
+    // TODO: move this somewhere more appropriate
+    // Wall jump if there's a wall in front
+    //bool wallInFront = false;
     _obstacleWorld->rayCast(
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
-                //updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
+                updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
                 if ((!_character->isJumping()) && _character->isGrounded() && (!_reynard->isMyBody(fixture->GetBody())) )
                     jump();
                 return fraction;

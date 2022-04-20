@@ -71,6 +71,7 @@ bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<str
 
     // Have enemies be stopped by default
     _moveState = MovementState::STOPPED;
+	_currAnimation = (*animations)["idle"];
     // Also have enemies be patrolling by default
     _behaveState = BehaviorState::PATROLLING;
 
@@ -105,10 +106,6 @@ void EnemyModel::update(float dt) {
 		setMoveState(MovementState::STOPPED);
 		break;
 	case (EnemyModel::BehaviorState::CHASING):
-		// Start moving to next future move location if not yet there
-		/*if (abs(getPosition().distanceSquared(_futureMoveLocations->at(0))) > FUTURE_MOVE_ERROR_SQUARED) {
-
-		}*/
 		break;
 	case (EnemyModel::BehaviorState::SEARCHING):
 		break;

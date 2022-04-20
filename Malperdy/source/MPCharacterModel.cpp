@@ -227,6 +227,8 @@ bool CharacterModel::setMoveState(MovementState newState) {
             break;
         case MovementState::DEAD:
             // TODO: any changes for swapping into DEAD state
+            setVX(0);
+            setVY(0);
             break;
     }
 

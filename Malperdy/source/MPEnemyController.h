@@ -47,6 +47,24 @@ protected:
 public:
 
     /**
+     * Initializes a new controller for the character at the given position.
+     *
+     * The character is sized according to the given drawing scale.
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param pos       Initial position in world coordinates
+     * @param drawScale The drawing scale (world to screen)
+     * @param image     The image for the character's appearance
+     *
+     * @return  true if the character is initialized properly, false otherwise.
+     */
+    bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations);
+
+    /**
      * This method handles anything about the character that needs to change over time.
      *
      * @param delta The amount of time that has passed since the last frame
@@ -93,7 +111,7 @@ private:
      * slight delay in a raycast succeeding and the enemy's behavior changing, although that's
      * probably fine because it simulates slow brain.
      */
-    void rayCast();
+    void reyCast();
 
 };
 
