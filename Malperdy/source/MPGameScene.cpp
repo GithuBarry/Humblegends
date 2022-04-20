@@ -612,6 +612,9 @@ void GameScene::beginContact(b2Contact *contact) {
         else if (isThisAReynardWallContact(contact, reynardIsRight)) {
             resolveReynardWallOnContact();
         }
+        else if (isThisAReynardWallContact(contact, !reynardIsRight){
+            // the wall reynard's tail is touching lol
+        }
         else if (isThisAReynardGroundContact(contact)) {
             resolveReynardGroundOnContact();
         }
