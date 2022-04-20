@@ -17,6 +17,7 @@
 #include <cugl/cugl.h>
 #include "MPGridModel.h"
 #include "MPReynardController.h"
+#include "MPEnemyController.h"
 
 using namespace cugl;
 
@@ -63,7 +64,7 @@ public:
     *
     * @return true if room was successfully selected, and false otherwise
     */
-    bool selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard);
+    bool selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
 
     /*
     * Returns whether there is currently a room selected
@@ -89,7 +90,7 @@ public:
     *           false if room was the same as selected room
     *           false if no swap occurred
     */
-    bool swapWithSelected(Vec2 coords, const shared_ptr<ReynardController> &reynard);
+    bool swapWithSelected(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
 
     /* Deselects the currently selected room, if one is selected */
     void deselectRoom();
@@ -130,6 +131,16 @@ private:
     * @return true if Reynard is inside the given room
     */
     bool containsReynard(Vec2 room, const shared_ptr<ReynardController> &reynard);
+
+    /*
+    * Checks whether any enemies are inside the indicated room
+    *
+    * @param room       the row and column of the room to check
+    * @param reynard    the controllers for the enemies
+    *
+    * @return true if at least one enemy is inside the given room
+    */
+    bool containsEnemies(Vec2 room, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
 
     /*
     * Removes fog of war from the eight rooms adjacent to this one, if they exist

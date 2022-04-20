@@ -17,6 +17,21 @@ using namespace std;
 // Type of the model that this character controller holds
 template<class ModelType, class ControllerType>
 class CharacterController {
+public:
+    /** Enum representing the type of character this is */
+    enum class CharacterType : int {
+        REYNARD,
+        ENEMY
+    };
+
+    /** Struct for body data for the controlled character */
+    struct BodyData {
+        // Type of character
+        CharacterType _type;
+        // Pointer to self
+        void* _controller;
+    };
+
 protected:
     /** The model storing this character's data */
     shared_ptr<ModelType> _character;
@@ -54,6 +69,7 @@ public:
         // Get model cast to subclass type
         _character = make_shared<ModelType>();
         _character->init(pos, drawScale, animations);
+
         return (_character != nullptr);
     }
 
@@ -122,15 +138,9 @@ public:
      * @param body  The body to check if it belongs to this character
      * @return      Whether the given body belongs to this character
      */
-    bool isMyBody(b2Body *body) { return body == _character->getBody(); }
-
-    /**
-     * Returns this character's trail, so its past locations for the past
-     * TRAIL_LENGTH frames.
-     *
-     * @return  Vector of past position data along the character's trail
-     */
-    shared_ptr<deque<Vec2>> getTrail() { return _character->_trail; }
+    bool isMyBody(b2Body *body) {
+        return body == _character->getBody();
+    }
 
 #pragma mark -
 #pragma mark Animation
@@ -176,7 +186,7 @@ public:
      * @return  Whether the character jumped successfully
      */
     bool jump() {
-        return _character->setMoveState(CharacterModel::MovementState::JUMPING);
+        return (!_character->isJumping()) && _character->setMoveState(CharacterModel::MovementState::JUMPING);
     }
     
     /**

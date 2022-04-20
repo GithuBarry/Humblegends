@@ -29,6 +29,24 @@ protected:
     Timestamp _lastHit = Timestamp();
 
 public:
+
+    /**
+     * Initializes a new controller for the character at the given position.
+     *
+     * The character is sized according to the given drawing scale.
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param pos       Initial position in world coordinates
+     * @param drawScale The drawing scale (world to screen)
+     * @param image     The image for the character's appearance
+     *
+     * @return  true if the character is initialized properly, false otherwise.
+     */
+    bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations);
     
     /**  This method checks if the the difference between _lastHit and the current time exceeds
      *      the damageBufferLength. If it does, then the _lastHit is set to be the current time, and the function

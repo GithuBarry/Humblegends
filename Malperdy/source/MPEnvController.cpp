@@ -12,6 +12,7 @@
 
 #include "MPEnvController.h"
 #include "MPReynardModel.h"
+#include "MPEnemyController.h"
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController() {
@@ -39,11 +40,12 @@ void EnvController::update(const shared_ptr<ReynardController>& reynard) {
 *
 * @return true if room was successfully selected, and false otherwise
 */
-bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard) {
+bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
     Vec2 room1 = _grid->screenSpaceToRoom(coords);
     bool isValidRoom = room1.x != -1 && room1.y != -1;
     isValidRoom = isValidRoom && !_grid->isRoomFogged(room1);
     bool isOccupied = containsReynard(room1, reynard);
+    isOccupied = isOccupied || containsEnemies(room1, enemies);
 
     if (!isValidRoom || isOccupied || _grid->getRoom(room1) == nullptr) {
         deselectRoom();
@@ -67,7 +69,7 @@ bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController> 
 *			false if room was the same as selected room & is now deselected
 *			false if no swap occurred
 */
-bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardController> &reynard) {
+bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
     if (!hasSelected()) {
         return false;
     }
@@ -76,6 +78,7 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
     bool isValidRoom = room2.x != -1 && room2.y != -1;
     isValidRoom = isValidRoom && !_grid->isRoomFogged(room2);
     bool isOccupied = containsReynard(room2, reynard) || containsReynard(_toSwap, reynard);
+    isOccupied = isOccupied || containsEnemies(room2, enemies) || containsEnemies(_toSwap, enemies);
 
     if (!isValidRoom) return false;
     if (isOccupied) {
@@ -138,8 +141,26 @@ bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardControlle
     //}
 
     Vec2 cRoom = _grid->worldSpaceToRoom(pos);
-    if (room.equals(cRoom)) return true;
-    return false;
+    return room.equals(cRoom);
+}
+
+/*
+* Checks whether any enemies are inside the indicated room
+*
+* @param room       the row and column of the room to check
+* @param reynard    the controllers for the enemies
+*
+* @return true if at least one enemy is inside the given room
+*/
+bool EnvController::containsEnemies(Vec2 room, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+    bool isTrue = false;
+    for (auto i = enemies->begin(); i != enemies->end(); i++) {
+        Vec2 pos = (*i)->getPosition();
+        Vec2 cRoom = _grid->worldSpaceToRoom(pos);
+        isTrue = isTrue || room.equals(cRoom);
+    }
+    
+    return isTrue;
 }
 
 /*

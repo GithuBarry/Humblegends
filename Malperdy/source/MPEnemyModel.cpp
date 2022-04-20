@@ -71,6 +71,7 @@ bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<str
 
     // Have enemies be stopped by default
     _moveState = MovementState::STOPPED;
+	_currAnimation = (*animations)["idle"];
     // Also have enemies be patrolling by default
     _behaveState = BehaviorState::PATROLLING;
 
@@ -91,8 +92,8 @@ bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<str
  */
 void EnemyModel::update(float dt) {
 	// Update location of detection radius
-	Vec2 enemyLoc = getPosition() * _drawScale;
-	_detectionArea.m_p.Set(enemyLoc.x, enemyLoc.y);
+	/*Vec2 enemyLoc = getPosition() * _drawScale;
+	_detectionArea.m_p.Set(enemyLoc.x, enemyLoc.y);*/
 
 	// Handle the enemy's physics depending on their current behavior state
 	switch (_behaveState) {
@@ -105,10 +106,6 @@ void EnemyModel::update(float dt) {
 		setMoveState(MovementState::STOPPED);
 		break;
 	case (EnemyModel::BehaviorState::CHASING):
-		// Start moving to next future move location if not yet there
-		/*if (abs(getPosition().distanceSquared(_futureMoveLocations->at(0))) > FUTURE_MOVE_ERROR_SQUARED) {
-
-		}*/
 		break;
 	case (EnemyModel::BehaviorState::SEARCHING):
 		break;
@@ -140,7 +137,7 @@ void EnemyModel::createFixtures() {
 	CharacterModel::createFixtures();
 
 	// Now add a fixture/sensor around the enemy to act as a detection radius
-	b2CircleShape circle = b2CircleShape();
+	/*b2CircleShape circle = b2CircleShape();
 	circle.m_p = b2Vec2(getWidth() / 2.0f, getHeight() / 2.0f);
 	circle.m_radius = _detectionRadius;
 
@@ -149,7 +146,7 @@ void EnemyModel::createFixtures() {
 	sensorDef.shape = &circle;
 	sensorDef.density = 1.0f;
 	sensorDef.userData.pointer = DETECTION_SENSOR_NAME;
-	_detectFixture = _body->CreateFixture(&sensorDef);
+	_detectFixture = _body->CreateFixture(&sensorDef);*/
 }
 
 /**

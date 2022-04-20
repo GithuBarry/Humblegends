@@ -26,10 +26,8 @@
 #define DASH_COOLDOWN   20
 /** Amount of time (in seconds) for wall slide duration */
 #define WALL_SLIDE_DURATION 1.5f
-/** The amount to shrink the body fixture (vertically) relative to the image */
-#define DUDE_VSHRINK  0.45f
-/** The amount to shrink the body fixture (horizontally) relative to the image */
-#define DUDE_HSHRINK  0.4f
+/** Any character's width*/
+#define DUDE_WIDTH  1.0f
 /** The amount to shrink the sensor fixture (horizontally) relative to the image */
 #define DUDE_SSHRINK  0.3f
 /** Height of the sensor attached to the player's feet */
@@ -67,12 +65,14 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map
 
     _animations = animations;
     // create initial scene node with running animation
+    //TODO remove hard code
     setSceneNode(scene2::SpriteNode::alloc((*_animations)["run"]._frames, (*_animations)["run"]._rows, (*_animations)["run"]._cols, (*_animations)["run"]._size));
     _node->setScale(Vec2(-0.2,0.2));
 
     Size nsize = (*_animations)["default"]._frames->getSize() / drawScale;
-    nsize.width *= DUDE_HSHRINK;
-    nsize.height *= DUDE_VSHRINK;
+    auto s = (*_animations)["default"]._frames;
+
+    nsize = nsize *DUDE_WIDTH/nsize.width; //!! drawScale is effective ignored!
     _drawScale = drawScale;
     
     _currAnimation = (*animations)["run"];
@@ -117,6 +117,10 @@ bool CharacterModel::uploadTexture(string tex) {
     
     // Add the node to the scenegraph, and then delete the old node
     scene2::SceneNode* p = _node->getParent();
+    if (p== nullptr){
+        CULog("CharacterModel Error: NULL of _node");
+        return false;
+    }
     p->addChild(newNode);
     _node->SceneNode::dispose();
     _node = newNode;
@@ -184,7 +188,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
     // Do what needs to be done when switching into the new state
     switch (newState) {
         case MovementState::STOPPED:
-            uploadTexture("idle");
+            //uploadTexture("idle");
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
@@ -223,6 +227,8 @@ bool CharacterModel::setMoveState(MovementState newState) {
             break;
         case MovementState::DEAD:
             // TODO: any changes for swapping into DEAD state
+            setVX(0);
+            setVY(0);
             break;
     }
 
@@ -370,19 +376,6 @@ void CharacterModel::update(float dt) {
     //    }
     //}
     //else _wallSlideDuration = 0;
-
-    // If enough time has passed since the last trail marking, add a trail marking
-    if (_trailAcc >= TRAIL_INCREMENT) {
-        _trailAcc = 0;
-        // Get the character's position and add it to their trail
-        _trail->push_back(getPosition());
-        // Trim trail back down to size if necessary
-        if (_trail->size() > TRAIL_LENGTH) _trail->pop_back();
-    }
-        // Otherwise increment the trail time accumulator
-    else {
-        _trailAcc += dt;
-    }
 
     // Handle any necessary behavior for the current move state
     switch (_moveState) {
