@@ -333,37 +333,6 @@ void CharacterModel::dispose() {
  * @param delta Number of seconds since last animation frame
  */
 void CharacterModel::update(float dt) {
-    // Apply cooldowns
-    //if (_moveState == MovementState::FALLING || _moveState == MovementState::JUMPING) {
-    //    _jumpCooldown = JUMP_COOLDOWN;
-    //} else {
-    //    // Only cooldown while grounded
-    //    _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
-    //
-    //}
-
-    //if (isDashing()) {
-    //    _dashCooldown = DASH_COOLDOWN;
-    //} else {
-    //    // Only cooldown while grounded
-    //    _dashCooldown = (_dashCooldown > 0 ? _dashCooldown-1 : 0);
-    //}
-
-    // Check to make sure Reynard can still continue wall sliding, if he already is
-    //if (_moveState == MovementState::ONWALL) {
-    //    // If Reynard is out of time
-    //    if (_wallSlideDuration >= WALL_SLIDE_DURATION) {
-    //        setOnWall(false);
-    //        setGrounded(false);
-    //        _wallSlideDuration = 0;
-    //        _isFallingOffWall = true;
-    //    }
-    //    // Otherwise, just increment duration
-    //    else {
-    //        _wallSlideDuration += dt;
-    //    }
-    //}
-    //else _wallSlideDuration = 0;
 
     // Handle any necessary behavior for the current move state
     switch (_moveState) {

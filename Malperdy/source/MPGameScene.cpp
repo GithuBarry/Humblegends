@@ -453,6 +453,7 @@ void GameScene::update(float dt) {
 
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
+    //TODO: Why does both these updates exist you only need the _world one
     _reynardController->update(scaled_dt);
     _world->update(scaled_dt);
 

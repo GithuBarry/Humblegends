@@ -28,7 +28,7 @@ using namespace cugl;
  * @return  true if the trap is initialized properly, false otherwise.
  */
 bool SpikeTrap::init(){
-    _polyNode = make_shared<scene2::PolygonNode>();
+    _polyNode = make_shared<scene2::SpriteNode>();
     _polyNode->initWithFile("textures/spikes.png");
     _type = TrapType::SPIKE;
     

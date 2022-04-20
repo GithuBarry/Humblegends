@@ -164,8 +164,7 @@ public:
      * This constructor does not initialize any of the character values beyond
      * the defaults. To use a CharacterModel, you must call init().
      */
-    CharacterModel() : CapsuleObstacle(), _sensorName(SENSOR_NAME) {
-    }
+    CharacterModel() : CapsuleObstacle(), _sensorName(SENSOR_NAME) {}
 
     /**
      * Destroys this CharacterModel, releasing all resources.
