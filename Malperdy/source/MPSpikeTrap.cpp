@@ -28,13 +28,13 @@ using namespace cugl;
  * @return  true if the trap is initialized properly, false otherwise.
  */
 bool SpikeTrap::init(){
-    _polyNode = make_shared<scene2::SpriteNode>();
-    _polyNode->initWithFile("textures/spikes.png");
+    _sceneNode = make_shared<scene2::SpriteNode>();
+    _sceneNode->initWithFile("textures/spikes.png");
     _type = TrapType::SPIKE;
     
-    _polyNode->setAnchor(Vec2::ZERO);
-    _polyNode->setScale(720.0 / _polyNode->getPolygon().getBounds().getMaxX());
-    _polyNode->setAbsolute(true);
+    _sceneNode->setAnchor(Vec2::ZERO);
+    _sceneNode->setScale(720.0 / _sceneNode->getPolygon().getBounds().getMaxX());
+    _sceneNode->setAbsolute(true);
 
     return this->TrapModel::init();
 }

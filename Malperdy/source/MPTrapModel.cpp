@@ -35,7 +35,7 @@ using namespace cugl::physics2;
 bool TrapModel::init()
 {
 
-    addChild(_polyNode);
+    addChild(_sceneNode);
 
     _trapState = TrapState::DEACTIVATED;
 
@@ -107,18 +107,18 @@ bool TrapModel::uploadTexture(string tex) {
     newNode->initWithSprite((*_animations)[tex]._frames, (*_animations)[tex]._rows, (*_animations)[tex]._cols, (*_animations)[tex]._size);
     
     // Add the node to the scenegraph, and then delete the old node
-    scene2::SceneNode* p = _polyNode->getParent();
+    scene2::SceneNode* p = _sceneNode->getParent();
     if(p != nullptr) return false;
     p->addChild(newNode);
-    _polyNode->SceneNode::dispose();
-    _polyNode = newNode;
-    _polyNode->setPosition(getPosition() * _drawScale);
+    _sceneNode->SceneNode::dispose();
+    _sceneNode = newNode;
+    _sceneNode->setPosition(getPosition() * _drawScale);
     
     // Update the current Animation class
     _currAnimation = (*_animations)[tex];
-//    _polyNode->setAnchor(0.5, 0.5);
+//    _sceneNode->setAnchor(0.5, 0.5);
     
-    _polyNode->setScale(_polyNode->getScale()*Vec2(1,1));
+    _sceneNode->setScale(_sceneNode->getScale()*Vec2(1,1));
     
     return true;
 }
@@ -149,7 +149,7 @@ void TrapModel::update(float dt) {
             if (_elapsed > frame_time ) {
 
                 // if on the last frame
-                if (_currFrame >= _polyNode->getSize()-1){
+                if (_currFrame >= _sceneNode->getSize()-1){
                     // loop the animation if needed
                     if(_currAnimation._loop){
                         _currFrame = 0;
@@ -159,7 +159,7 @@ void TrapModel::update(float dt) {
                 else{
                     _currFrame = _currFrame + 1;
                 }
-                _polyNode->setFrame(_currFrame);
+                _sceneNode->setFrame(_currFrame);
                 // reset time since last frame update
                 _elapsed = 0;
             }

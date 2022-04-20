@@ -98,7 +98,7 @@ protected:
     shared_ptr<cugl::physics2::PolygonObstacle> _obstacle;
     
     /** The polynode (alternative for) representing the physical entity for the trap */
-    shared_ptr<cugl::scene2::SpriteNode> _polyNode;
+    shared_ptr<cugl::scene2::SpriteNode> _sceneNode;
     
     // ANIMATION RELATED ATTRIBUTES
     /** The amount of time since last frame update */
@@ -192,12 +192,12 @@ public:
      * @return      Whether the change happened successfully
      */
     Poly2 getImageBody(){
-        return _polyNode->getPolygon();
+        return _sceneNode->getPolygon();
         
     }
     
     shared_ptr<scene2::PolygonNode> getPolyNode(){
-        return _polyNode;
+        return _sceneNode;
     }
     
     // Trap State Section
