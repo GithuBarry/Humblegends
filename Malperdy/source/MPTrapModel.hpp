@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include <cugl/cugl.h>
+#include <cugl/physics2/CUCapsuleObstacle.h>
 #include <map>
 
 using namespace cugl;
@@ -257,14 +258,14 @@ public:
      */
     virtual void releaseFixtures();
 
-//    /**
-//     * Updates the object's physics state (NOT GAME LOGIC).
-//     *
-//     * We use this method to reset cooldowns.
-//     *
-//     * @param delta Number of seconds since last animation frame
-//     */
-//    virtual void update(float dt) override;
+    /**
+     * Updates the object's physics state (NOT GAME LOGIC).
+     *
+     * We use this method to reset cooldowns.
+     *
+     * @param delta Number of seconds since last animation frame
+     */
+    void update(float dt);
 
     bool uploadTexture(string tex); 
     

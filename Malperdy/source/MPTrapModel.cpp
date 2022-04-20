@@ -108,6 +108,7 @@ bool TrapModel::uploadTexture(string tex) {
     
     // Add the node to the scenegraph, and then delete the old node
     scene2::SceneNode* p = _polyNode->getParent();
+    if(p != nullptr) return false;
     p->addChild(newNode);
     _polyNode->SceneNode::dispose();
     _polyNode = newNode;
@@ -122,69 +123,69 @@ bool TrapModel::uploadTexture(string tex) {
     return true;
 }
 
-//void TrapModel::update(float dt) {
-//    switch(_trapState){
-//        case TrapState::SPAWN:
-//            setTrapState(TrapState::SPAWN);
-//            break;
-//        case TrapState::ACTIVATED:
-//            setTrapState(TrapState::ACTIVATED);
-//            break;
-//        case TrapState::DEACTIVATED:
-//            setTrapState(TrapState::DEACTIVATED);
-//            
-//            break;
-//    }
-//    // UPDATE THE ANIMATION
-//    
-//    // update time since last frame update
-//    _elapsed += dt;
-//    
-//    if (_trapState == TrapState::ACTIVATED || _trapState == TrapState::DEACTIVATED) {
-//        // update time since last frame update
-//            
-//            // if it is time to update the frame...
-//            float frame_time = FRAME_TIME * ((_trapState == TrapState::ACTIVATED) ? 2.0 : 1.0);
-//            if (_elapsed > frame_time ) {
+void TrapModel::update(float dt) {
+    switch(_trapState){
+        case TrapState::SPAWN:
+            setTrapState(TrapState::SPAWN);
+            break;
+        case TrapState::ACTIVATED:
+            setTrapState(TrapState::ACTIVATED);
+            break;
+        case TrapState::DEACTIVATED:
+            setTrapState(TrapState::DEACTIVATED);
+
+            break;
+    }
+
+    // UPDATE THE ANIMATION
+    // update time since last frame update
+    _elapsed += dt;
+
+    if (_trapState == TrapState::ACTIVATED || _trapState == TrapState::DEACTIVATED) {
+        // update time since last frame update
+
+            // if it is time to update the frame...
+            float frame_time = FRAME_TIME * ((_trapState == TrapState::ACTIVATED) ? 2.0 : 1.0);
+            if (_elapsed > frame_time ) {
+
+                // if on the last frame
+                if (_currFrame >= _polyNode->getSize()-1){
+                    // loop the animation if needed
+                    if(_currAnimation._loop){
+                        _currFrame = 0;
+                    }
+                }
+                // if not on the last frame, then increment
+                else{
+                    _currFrame = _currFrame + 1;
+                }
+                _polyNode->setFrame(_currFrame);
+                // reset time since last frame update
+                _elapsed = 0;
+            }
+        }
+
+        // if it is time to update the frame...
+//        float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
+//        if (_elapsed > frame_time ) {
 //
-//                // if on the last frame
-//                if (_currFrame >= _polyNode->getSize()-1){
-//                    // loop the animation if needed
-//                    if(_currAnimation._loop){
-//                        _currFrame = 0;
-//                    }
+//            // if on the last frame
+//            if (_currFrame >= _node->getSize()-1){
+//                // loop the animation if needed
+//                if(_currAnimation._loop){
+//                    _currFrame = 0;
 //                }
-//                // if not on the last frame, then increment
-//                else{
-//                    _currFrame = _currFrame + 1;
-//                }
-//                _polyNode->setFrame(_currFrame);
-//                // reset time since last frame update
-//                _elapsed = 0;
 //            }
+//            // if not on the last frame, then increment
+//            else{
+//                _currFrame = _currFrame + 1;
+//            }
+//            _node->setFrame(_currFrame);
+//            // reset time since last frame update
+//            _elapsed = 0;
 //        }
-//
-//        // if it is time to update the frame...
-////        float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
-////        if (_elapsed > frame_time ) {
-////
-////            // if on the last frame
-////            if (_currFrame >= _node->getSize()-1){
-////                // loop the animation if needed
-////                if(_currAnimation._loop){
-////                    _currFrame = 0;
-////                }
-////            }
-////            // if not on the last frame, then increment
-////            else{
-////                _currFrame = _currFrame + 1;
-////            }
-////            _node->setFrame(_currFrame);
-////            // reset time since last frame update
-////            _elapsed = 0;
-////        }
 //    }
-//    
-//}
-//
-//
+
+}
+
+
