@@ -184,7 +184,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
     // Do what needs to be done when switching into the new state
     switch (newState) {
         case MovementState::STOPPED:
-            uploadTexture("idle");
+            //uploadTexture("idle");
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed

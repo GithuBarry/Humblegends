@@ -65,6 +65,8 @@ private:
     bool locked = false;
     /* Whether this room's contents are currently hidden. False by default */
     bool fogged = true;
+    
+
 
     // GEOMETRY
     /** Vector of polygon nodes forming the room's geometry */
@@ -317,6 +319,9 @@ public:
 
 #pragma mark -
 #pragma mark Getters
+    
+    bool permlocked = false;
+    
     /**
      * Returns a shared pointer to the vector of physics objects that compose
      * the room geometry.
@@ -339,7 +344,7 @@ public:
      * 
      * @return  Whether this room is locked, meaning it can't be swapped
      */
-    bool isLocked() { return locked; }
+    bool isLocked() { return locked || permlocked; }
 
     /**
      * Returns whether or not this room has fog of war, meaning its 

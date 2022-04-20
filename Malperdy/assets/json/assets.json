@@ -2,7 +2,7 @@
   "jsons" : {
      "framedata" : "json/framedata.json",
      
-     "level" : "json/levels/showcase1.tmj",
+     "level" : "json/levels/biglevel.json",
      
      "tileset_geometry" : "json/tilesets/geometry.tsj",
      "tileset_entities" : "json/tilesets/entities.tsj",
@@ -17,7 +17,8 @@
      "room_updownright" : "json/rooms/room_updownright.tmj",
      "room_upleft" : "json/rooms/room_upleft.tmj",
      "room_upleftright" : "json/rooms/room_upleftright.tmj",
-     "room_upright" : "json/rooms/room_upright.tmj"
+     "room_upright" : "json/rooms/room_upright.tmj",
+     "room_solid"  : "json/rooms/solid.json"
   },
   
   "textures": {
