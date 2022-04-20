@@ -181,14 +181,22 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _worldnode->setPosition(offset);
 
-    _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
-    _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
-    //_debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
-    _debugnode->setPosition(offset / _scale);
+    //_debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
+    //_debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
+    //_debugnode->setPosition(offset / _scale);
     setDebug(false);
 
+    _winNode = scene2::Label::allocWithText("VICTORY!", _assets->get<Font>(PRIMARY_FONT));
+    _winNode->setAnchor(Vec2::ANCHOR_CENTER);
+    _winNode->setPosition(offset);
+    _winNode->setBackground(Color4::BLACK);
+    _winNode->setForeground(STATIC_COLOR);
+    _winNode->setPadding(dimen.width/2, dimen.height/2, dimen.width / 2, dimen.height / 2);
+    setComplete(false);
+
     addChild(_worldnode);
-    addChild(_debugnode);
+    //addChild(_debugnode);
+    addChild(_winNode);
 
     populate();
     _active = true;
@@ -211,7 +219,8 @@ void GameScene::dispose() {
         _input.dispose();
         _world = nullptr;
         _worldnode = nullptr;
-        _debugnode = nullptr;
+        //_debugnode = nullptr;
+        _winNode = nullptr;
         _complete = false;
         _debug = false;
         Scene2::dispose();
@@ -234,7 +243,7 @@ void GameScene::reset() {
     _envController = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
-    _debugnode->removeAllChildren();
+    //_debugnode->removeAllChildren();
     _gamestate.reset();
 
 
@@ -271,7 +280,7 @@ void GameScene::populate() {
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
-        (*itr)->setDebugScene(_debugnode);
+        //(*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
         //CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
@@ -334,7 +343,7 @@ void GameScene::populate() {
 void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
         const std::shared_ptr<scene2::SceneNode> &node) {
     _world->addObstacle(obj);
-    obj->setDebugScene(_debugnode);
+    //obj->setDebugScene(_debugnode);
     obj->setDebugColor(Color4::RED);
 
     // Position the scene graph node (enough for static objects)
@@ -446,10 +455,10 @@ void GameScene::update(float dt) {
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
-    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
+    /*_debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
     _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
     _debugnode->applyZoom(1 / _debugnode->getZoom());
-    _debugnode->applyZoom(_worldnode->getZoom());
+    _debugnode->applyZoom(_worldnode->getZoom());*/
 
     // Update all enemies
     vector<std::shared_ptr<EnemyController>>::iterator itr;
@@ -504,9 +513,17 @@ b2Fixture *GameScene::getEnemyFixture(b2Contact *contact) {
     }
 }
 
-bool GameScene::isThisASpikeTrapCollision(b2Contact *contact) {
-    b2Body *body1 = contact->GetFixtureA()->GetBody();
-    b2Body *body2 = contact->GetFixtureB()->GetBody();
+/**
+* Detects if a collision includes a trap object, and if so returns the trap type
+*
+* @param  contact  The two bodies that collided
+*
+* @return  trap type if one body is a trap
+        or UNTYPED if neither body is a trap
+*/
+TrapModel::TrapType GameScene::isTrapCollision(b2Contact* contact) {
+    b2Body* body1 = contact->GetFixtureA()->GetBody();
+    b2Body* body2 = contact->GetFixtureB()->GetBody();
     for (int row = 0; row < _grid->getWidth(); row++) {
         for (int col = 0; col < _grid->getHeight(); col++) {
             if (_grid->getRoom(row, col)->getTrap() != nullptr) {
@@ -514,12 +531,11 @@ bool GameScene::isThisASpikeTrapCollision(b2Contact *contact) {
 
                 b2Body* body = _trap->getObstacle()->getBody();
                 bool isCollision = body == body1 || body == body2;
-                bool isSpike = _trap->getType() == TrapModel::TrapType::SPIKE;
-                return isSpike && isCollision;
+                if (isCollision) return _trap->getType();
             }
         }
     }
-    return false;
+    return TrapModel::TrapType::UNTYPED;
 }
 
 bool GameScene::isReynardCollision(b2Contact *contact) {
@@ -581,7 +597,9 @@ void GameScene::resolveWallJumpOntoTrap(float reynardVY) {
 void GameScene::beginContact(b2Contact *contact) {
     if (isReynardCollision(contact)) {
         bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
-        if (isThisASpikeTrapCollision(contact)) {
+
+        TrapModel::TrapType trapType = isTrapCollision(contact);
+        if (trapType == TrapModel::TrapType::SPIKE) {
             float reynardVY = _reynardController->getCharacter()->getVY();
             if (reynardVY < 0) {
                 resolveWallJumpOntoTrap(reynardVY);
@@ -590,6 +608,10 @@ void GameScene::beginContact(b2Contact *contact) {
                 resolveTrapOnContact();
             }
         }
+        else if (trapType == TrapModel::TrapType::CHECKPOINT) {
+            setComplete(true);
+        }
+
         else if (isThisAReynardWallContact(contact, reynardIsRight)) {
             resolveReynardWallOnContact();
         }

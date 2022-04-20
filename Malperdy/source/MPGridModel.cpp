@@ -182,9 +182,9 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
         }
     }
     // TEMP CODE TO BE DELETED ONCE CHECKPOINTS ARE IN JSON
-    int top_row = 3;
-    int left_col = 5;
-    _grid->at(0)->at(1)->initTrap(TrapModel::TrapType::CHECKPOINT);
+    int top_row = _size.y-1;
+    int left_col = _size.x-1;
+    _grid->at(top_row)->at(left_col)->initTrap(TrapModel::TrapType::CHECKPOINT);
     // TEMP CODE END
 
     return this->scene2::SceneNode::init();
