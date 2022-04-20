@@ -1,15 +1,12 @@
 //
 //  MPTrapDoorModel.hpp
-//  Rocket Demo (Mac)
-//
-//  Created by Spencer Hurst on 3/13/22.
-//  Copyright © 2022 Cornell Game Design Initiative. All rights reserved.
-//
+//  Malperdy
 //
 //  Owner: Spencer Hurst
-//  Contributors: Evan, Abu
-//  Copyright (c) 2022 Humblegends. All rights reserved.
+//  Contributors: Evan Azari, Abu Qader
 //  Version: 3/10/22
+// 
+//  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #ifndef MPTrapDoorModel_hpp

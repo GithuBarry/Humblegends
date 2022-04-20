@@ -38,13 +38,6 @@ using namespace cugl;
 /** The speed at which this character jumps */
 #define JUMP_SPEED 10.5f
 
-#pragma Gameplay Constants
-/** How many "scent trail" locations this character should store. The greater this is,
-the further away pursuers have to be before the character loses them */
-#define TRAIL_LENGTH 10
-/** How long in seconds should pass between scent trail locations being marked */
-#define TRAIL_INCREMENT 0.7f
-
 class CharacterModel : public cugl::physics2::CapsuleObstacle {
 public:
     /** Enum representing the current state of movement that the character is in */
@@ -54,7 +47,8 @@ public:
         JUMPING,
         FALLING,
         ONWALL,
-        DASHING
+        DASHING,
+        DEAD
     };
     
     /** Class representing an animation */
@@ -86,7 +80,6 @@ public:
             return frames && size > 0;
         }
     };
-
 
     /** SceneNode representing the sprite for the character */
     shared_ptr<scene2::SpriteNode> _node;
@@ -134,13 +127,6 @@ protected:
     
     /** The frame data the current animation */
     Animation _currAnimation;
-
-#pragma mark Trails
-
-    /** The character's past few locations in world space, from oldest to most recent */
-    shared_ptr<deque<Vec2>> _trail = make_shared<deque<Vec2>>();
-    /** Accumulator for time passed between trail locations being tracked */
-    float _trailAcc = 0.0f;
 
 #pragma mark Attributes
 
@@ -401,17 +387,6 @@ public:
      * @returns whether or not the animation was uplaoded
      */
     bool uploadTexture(string tex);
-
-    /**
-     * Gets the queue representing the trail this character is leaving behind.
-     * This is used by chasing enemies to determine whether they can still see
-     * the character.
-     * 
-     * @return  The queue representing the character's trail
-     */
-    shared_ptr<deque<Vec2>> getTrail() {
-        return _trail;
-    }
 
 #pragma mark -
 #pragma mark Physics Methods

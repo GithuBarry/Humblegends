@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 3/13/22
+//  Version: 4/16/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -186,7 +186,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     //Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
     Vec2 offset;
 
-    
+
 
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
@@ -194,21 +194,29 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _worldnode->setPosition(offset);
 
-    _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
-    _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
-    //_debugnode->setAnchor(Vec2::ANCHOR_BOTTOM_LEFT);
-    _debugnode->setPosition(offset / _scale);
+    //_debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
+    //_debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
+    //_debugnode->setPosition(offset / _scale);
     setDebug(false);
 
+    _winNode = scene2::Label::allocWithText("VICTORY!", _assets->get<Font>(PRIMARY_FONT));
+    _winNode->setAnchor(Vec2::ANCHOR_CENTER);
+    _winNode->setPosition(offset);
+    _winNode->setBackground(Color4::BLACK);
+    _winNode->setForeground(STATIC_COLOR);
+    _winNode->setPadding(dimen.width/2, dimen.height/2, dimen.width / 2, dimen.height / 2);
+    setComplete(false);
+
     addChild(_worldnode);
-    addChild(_debugnode);
+    //addChild(_debugnode);
+    addChild(_winNode);
+
+    // Give all enemies a reference to the ObstacleWorld for raycasting
+    EnemyController::setObstacleWorld(_world);
 
     populate();
     _active = true;
     _complete = false;
-
-    // Give all enemies a reference to the ObstacleWorld for raycasting
-    //EnemyController::setObstacleWorld(_world);
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::BLACK);
@@ -224,7 +232,8 @@ void GameScene::dispose() {
         _input.dispose();
         _world = nullptr;
         _worldnode = nullptr;
-        _debugnode = nullptr;
+        //_debugnode = nullptr;
+        _winNode = nullptr;
         _complete = false;
         _debug = false;
         Scene2::dispose();
@@ -247,7 +256,7 @@ void GameScene::reset() {
     _envController = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
-    _debugnode->removeAllChildren();
+    //_debugnode->removeAllChildren();
     _gamestate.reset();
 
 
@@ -284,7 +293,7 @@ void GameScene::populate() {
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
-        (*itr)->setDebugScene(_debugnode);
+        //(*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
         //CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
@@ -305,7 +314,6 @@ void GameScene::populate() {
     // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
     for(int i = 0; i < sizeof(textureName)/sizeof(textureName[0]); i++){
         if(_assets->get<Texture>(textureName[i])){
-            //shared_ptr<Texture> frames =_assets->get<Texture>(textureName[i]);
             int size = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("size")->asInt();
             int cols = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("cols")->asInt();
             string loop = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("loop")->asString();
@@ -319,7 +327,8 @@ void GameScene::populate() {
     // Add Reynard to physics world
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
-#pragma mark Enemies
+
+
     //pos = Vec2(15, 3);
     //// Create a controller for an enemy based on its image texture
     //_enemies->push_back(EnemyController::alloc(pos, _scale, reynard_animations));
@@ -330,6 +339,45 @@ void GameScene::populate() {
     //}
 #pragma mark Sound
     MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
+
+#pragma mark Enemies
+
+    // Give all enemies a reference to Reynard's controller to handle detection
+    EnemyController::setReynardController(_reynardController);
+
+    Vec2 rab_pos = Vec2(3, 3);
+
+    // Make a dictionary of animations for reynard
+    shared_ptr<map<string, CharacterModel::Animation>> rabbit_animations = make_shared<map<string, CharacterModel::Animation>>();
+
+    // The names of the sprite sheet assets
+    //TODO change to actual
+    string rtextureName[] = {"rabbit_run", "rabbit_run", "rabbit_run","rabbit_idle"};
+    // The animation names
+    string ranimationName[] = {"default", "run", "jump","idle"};
+
+    // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
+    for(int i = 0; i < sizeof(rtextureName)/sizeof(rtextureName[0]); i++){
+        if(_assets->get<Texture>(rtextureName[i])){
+            int size = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("size")->asInt();
+            int cols = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("cols")->asInt();
+            string loop = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("loop")->asString();
+            (*rabbit_animations)[ranimationName[i]] = CharacterModel::Animation();
+            (*rabbit_animations)[ranimationName[i]].init(_assets->get<Texture>(rtextureName[i]), size, cols, loop);
+        }
+    }
+    // Initialize EnemyController with the final animation map and store in vector of enemies
+    _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
+
+    // Add Reynard to physics world
+    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
+
+    // Initialize EnemyController with the final animation map and store in vector of enemies
+    _enemies->push_back(EnemyController::alloc(Vec2(30,15), _scale, rabbit_animations));
+
+    // Add Reynard to physics world
+    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
+
 }
 
 
@@ -349,7 +397,7 @@ void GameScene::populate() {
 void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
         const std::shared_ptr<scene2::SceneNode> &node) {
     _world->addObstacle(obj);
-    obj->setDebugScene(_debugnode);
+    //obj->setDebugScene(_debugnode);
     obj->setDebugColor(Color4::RED);
 
     // Position the scene graph node (enough for static objects)
@@ -382,7 +430,7 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
  */
 void GameScene::update(float dt) {
     _input.update(dt);
-    
+
 
     // Process the toggled key commands
     if (_input.didDebug()) {
@@ -398,7 +446,7 @@ void GameScene::update(float dt) {
         CULog("Shutting down");
         Application::get()->quit();
     }
-    
+
     if (_reynardController->getCharacter()->getHearts()<=0){
         reset();
         return;
@@ -411,9 +459,9 @@ void GameScene::update(float dt) {
         //CULog("Touch_x: %f Scene_pos_x: %f",_input.getPosition().x ,pos.x);
         bool hasSwapped = false;
         if (_envController->hasSelected()) {
-            bool check = _envController->swapWithSelected(pos, _reynardController);
+            bool check = _envController->swapWithSelected(pos, _reynardController, _enemies);
         } else {
-            hasSwapped = _envController->selectRoom(pos, _reynardController);
+            hasSwapped = _envController->selectRoom(pos, _reynardController, _enemies);
         }
     }
 
@@ -461,10 +509,10 @@ void GameScene::update(float dt) {
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
-    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
+    /*_debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
     _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
     _debugnode->applyZoom(1 / _debugnode->getZoom());
-    _debugnode->applyZoom(_worldnode->getZoom());
+    _debugnode->applyZoom(_worldnode->getZoom());*/
 
     // Update all enemies
     vector<std::shared_ptr<EnemyController>>::iterator itr;
@@ -475,17 +523,74 @@ void GameScene::update(float dt) {
     _envController->update(_reynardController);
 }
 
+#pragma mark -
+#pragma mark Collision Handling
+
+bool GameScene::isCharacterGroundFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 4);
+}
+
+bool GameScene::isCharacterRightFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 5);
+}
+
+bool GameScene::isCharacterLeftFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 6);
+}
+
+bool GameScene::isEnemyDetectFixture(b2Fixture *fixture) {
+    return (fixture->GetUserData().pointer == 10);
+}
+
+b2Fixture *GameScene::getReynardFixture(b2Contact *contact) {
+    // We assume that you have checked to see that at least
+    // one of the bodies in the contact event have been
+    // verified to be a Reynard object
+    //assert(isReynardCollision(contact))
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        return contact->GetFixtureA();
+    } else {
+        return contact->GetFixtureB();
+    }
+}
+
+b2Fixture *GameScene::getEnemyFixture(b2Contact *contact) {
+    // TODO this function is not right. Also what if both are enemies?
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        return contact->GetFixtureA();
+    } else {
+        return contact->GetFixtureB();
+    }
+}
+
 /**
- * Processes the start of a collision
- *
- * This method is called when we after get a collision between two objects.  We use
- * this method to test if it is the "right" kind of collision.  In particular, we
- * use it to test if we need to turn around Reynard.
- *
- * To do that , we check if reynard's contact points align vertically
- *
- * @param  contact  The two bodies that collided
- */
+* Detects if a collision includes a trap object, and if so returns the trap type
+*
+* @param  contact  The two bodies that collided
+*
+* @return  trap type if one body is a trap
+        or UNTYPED if neither body is a trap
+*/
+TrapModel::TrapType GameScene::isTrapCollision(b2Contact* contact) {
+    b2Body* body1 = contact->GetFixtureA()->GetBody();
+    b2Body* body2 = contact->GetFixtureB()->GetBody();
+    for (int row = 0; row < _grid->getWidth(); row++) {
+        for (int col = 0; col < _grid->getHeight(); col++) {
+            if (_grid->getRoom(row, col)->getTrap() != nullptr) {
+                shared_ptr<TrapModel> _trap = _grid->getRoom(row, col)->getTrap();
+
+                b2Body* body = _trap->getObstacle()->getBody();
+                bool isCollision = body == body1 || body == body2;
+                if (isCollision) return _trap->getType();
+            }
+        }
+    }
+    return TrapModel::TrapType::UNTYPED;
+}
 
 bool GameScene::isReynardCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
@@ -493,144 +598,214 @@ bool GameScene::isReynardCollision(b2Contact *contact) {
     return body1 == _reynardController->getCharacter()->getBody() || body2 == _reynardController->getCharacter()->getBody();
 }
 
-
-b2Fixture *GameScene::getReynardFixture(b2Contact *contact) {
-    b2Body *body1 = contact->GetFixtureA()->GetBody();
-    b2Body *body2 = contact->GetFixtureB()->GetBody();
-    if (body1 == _reynardController->getCharacter()->getBody()) {
-        return contact->GetFixtureA();
-    } else {
-        return contact->GetFixtureB();
-    }
-}
-
-// TODO: there's gotta be a better way to do this
-b2Fixture *GameScene::getNotReynardFixture(b2Contact *contact) {
-    b2Body *body1 = contact->GetFixtureA()->GetBody();
-    b2Body *body2 = contact->GetFixtureB()->GetBody();
-    if (body1 == _reynardController->getCharacter()->getBody()) {
-        return contact->GetFixtureB();
-    } else {
-        return contact->GetFixtureA();
-    }
-}
-
 /**
- * Helper function for detecting a collision between two objects
+ * Returns whether the given body belongs to a character in the scene.
  *
- * The primary purpose of this function is to detect if one of the physical bodies
- * that have come into contact with one another are a trap.
- *
- * The function will return true if it is the case and false otherwise.
- *
- * @param  contact  The two bodies that collided
+ * @param body  The body to check against characters in the scene
+ * @return      Whether the given body belongs to a character in the scene
  */
+bool GameScene::isCharacterBody(b2Body* body) {
+    // Return true if it's Reynard
+    if (body == _reynardController->getCharacter()->getBody()) return true;
 
-bool GameScene::isSpikeTrapCollision(b2Contact *contact) {
-    b2Body *body1 = contact->GetFixtureA()->GetBody();
-    b2Body *body2 = contact->GetFixtureB()->GetBody();
-
-    for (int row = 0; row < _grid->getWidth(); row++) {
-        for (int col = 0; col < _grid->getHeight(); col++) {
-            if (_grid->getRoom(row, col)->getTrap() != nullptr) {
-                shared_ptr<TrapModel> _trap = _grid->getRoom(row, col)->getTrap();
-                if ((_trap->getType() == "spike" && _trap->getObstacle()->getBody() == body1)
-                        || (_trap->getType() == "spike" && _trap->getObstacle()->getBody() == body2)) {
-                    return true;
-                }
-            }
-        }
+    // Otherwise check against the enemies and return true if it's one of them
+    for (auto itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+        if ((*itr)->getCharacter()->getBody() == body) return true;
     }
+
+    // If not, return false
     return false;
 }
 
+/**
+ * Returns a pointer to the character's body if the collision involved a character
+ * and a non-character object.
+ *
+ * @param contact   Contact event generated by beginContact / endContact callbacks
+ * @return          Pointer to the character's body, or nullptr if collision isn't character-on-object
+ */
+b2Body* GameScene::getCharacterBodyInObjectCollision(b2Contact* contact) {
+    b2Body* body1 = contact->GetFixtureA()->GetBody();
+    b2Body* body2 = contact->GetFixtureB()->GetBody();
 
+    //// Only characters have their body user data set to something nonzero
+    //// Thus, it's a character-on-object collision if only one of these bodies has nonzero user data
+    //// Return nullptr if it's not character-on-object
+    //if (!((body1->GetUserData().pointer == 0 && body2->GetUserData().pointer != 0) ||
+    //    (body1->GetUserData().pointer != 0 && body2->GetUserData().pointer == 0))) return nullptr;
 
+    //// Return whichever body is the character involved in the collision
+    //return body1->GetUserData().pointer == 0 ? body2 : body1;
 
+    // Return nullptr if it's not character-on-object
+    if ((isCharacterBody(body1) && isCharacterBody(body2)) || (!isCharacterBody(body1) && !isCharacterBody(body2)))
+        return nullptr;
+
+    // Otherwise return whichever one is the character
+    return isCharacterBody(body1) ? body1 : body2;
+}
 
 /**
- * The primary purpose of this function obfuscate the code
- * behind what happens during the interaction between Reynard
- * and a trap upon collision
+ * Returns a pointer to Reynard's controller if he is involved in the collision; otherwise
+ * returns nullptr.
  *
- * The current Implementation only sees Reynard's health decremented by 1.
+ * @param body  The body of the character to get the controller for
+ * @return      Pointer to Reynard's controller if he's in the collision, or nullptr otherwise
  */
+shared_ptr<EnemyController> GameScene::getEnemyControllerInCollision(b2Body* body) {
+    //// Get body user data and convert to BodyData
+    //CharacterController<EnemyModel, EnemyController>::BodyData* bodyData =
+    //    static_cast<CharacterController<EnemyModel, EnemyController>::BodyData*>
+    //    ((void*)body->GetUserData().pointer);
 
-void GameScene::resolveTrapCollision() {
+    //// Return nullptr now if it's not for an enemy
+    //if (bodyData->_type != CharacterController<EnemyModel, EnemyController>::CharacterType::ENEMY)
+    //    return nullptr;
+
+    //// Otherwise, cast the given pointer to an EnemyController pointer and return
+    //EnemyController* enemyPtr = static_cast<EnemyController*>(bodyData->_controller);
+
+    //return make_shared<EnemyController>(*enemyPtr);
+
+    // Check body against all enemies in level
+    for (auto itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+        if ((*itr)->getCharacter()->getBody() == body) return (*itr);
+    }
+
+    // If not an enemy, return nullptr
+    return nullptr;
+}
+
+bool GameScene::isThisAReynardWallContact(b2Contact *contact, bool reynardIsRight) {
+    b2Fixture *reynardFixture;
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        reynardFixture = contact->GetFixtureA();
+    } else {
+        reynardFixture = contact->GetFixtureB();
+    }
+    if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
+        return true;
+    }
+    else return !reynardIsRight && isCharacterLeftFixture(reynardFixture);
+}
+
+bool GameScene::isThisAReynardGroundContact(b2Contact *contact) {
+    b2Fixture *reynardFixture;
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == _reynardController->getCharacter()->getBody()) {
+        reynardFixture = contact->GetFixtureA();
+    } else {
+        reynardFixture = contact->GetFixtureB();
+    }
+    return isCharacterGroundFixture(reynardFixture);
+}
+
+void GameScene::resolveReynardWallOnContact() {
+    _reynardController->hitWall();
+}
+
+void GameScene::resolveReynardGroundOnContact() {
+    _reynardController->hitGround();
+}
+
+void GameScene::resolveReynardGroundOffContact() {
+    _reynardController->offGround();
+}
+
+void GameScene::resolveTrapOnContact() {
     if (_reynardController->canBeHit()) {
         _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
-        CULog("Reynard's Current Health: %d", (int) _reynardController->getCharacter()->getHearts());
     }
-    //TODO: Determine how else we want the game to deal with Reynard hitting a trap
-    //TODO: (do we want the trap to be turned off)?
 }
 
-
-bool isCharacterGroundFixture(b2Fixture *fixture) {
-    return (fixture->GetUserData().pointer == 4);
-}
-
-bool isCharacterLeftFixture(b2Fixture *fixture) {
-    return (fixture->GetUserData().pointer == 6);
-}
-
-bool isCharacterRightFixture(b2Fixture *fixture) {
-    return (fixture->GetUserData().pointer == 5);
-}
-
-// Whether the fixture is an enemy detection radius
-bool isEnemyDetectFixture(b2Fixture *fixture) {
-    return (fixture->GetUserData().pointer == 10);
+void GameScene::resolveWallJumpOntoTrap(float reynardVY) {
+    // We expect reynardVY to be a negative value
+    _reynardController->getCharacter()->setVY(-1 * reynardVY);
 }
 
 void GameScene::beginContact(b2Contact *contact) {
-    // If Reynard is one of the collidees
-    if (isReynardCollision(contact)) {
-        if (true && isSpikeTrapCollision(contact)) {
-            resolveTrapCollision();
-        }
-//        resolveIfTrapDoorCollision(contact);
+    // TODO: all of these collisions need to apply for every character, not just Reynard
 
-        bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
-        b2Fixture *reynardFixture = getReynardFixture(contact);
-        // First, if Reynard has hit an enemy detection radius
-        if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
-
+    // Try to get the character, assuming it's a character-on-object collision
+    b2Body* charInCharOnObject = getCharacterBodyInObjectCollision(contact);
+    // If it is a character-on-object collision
+    if (charInCharOnObject != 0) {
+        // Now try to get if it's an enemy-on-object collision
+        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
+        // If it's nullptr, then it's Reynard, and handle all that accordingly
+        if (enemy == nullptr) {
+            bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
+            TrapModel::TrapType trapType = isTrapCollision(contact);
+            if (trapType == TrapModel::TrapType::SPIKE) {
+                float reynardVY = _reynardController->getCharacter()->getVY();
+                if (reynardVY < 0) {
+                    resolveWallJumpOntoTrap(reynardVY);
+                }
+                else {
+                    resolveTrapOnContact();
+                }
+            }
+            else if (trapType == TrapModel::TrapType::CHECKPOINT) {
+                setComplete(true);
+            }
+            else if (isThisAReynardWallContact(contact, reynardIsRight)) {
+                resolveReynardWallOnContact();
+            }
+            else if (isThisAReynardWallContact(contact, !reynardIsRight)) {
+                // the wall reynard's tail is touching lol
+            }
+            else if (isThisAReynardGroundContact(contact)) {
+                resolveReynardGroundOnContact();
+            }
+            else {
+                //CULog("Non-checked contact occured with Reynard");
+            }
         }
-        else if (reynardIsRight && isCharacterRightFixture(reynardFixture)) {
-            _reynardController->hitWall();
-        } else if (!reynardIsRight && isCharacterLeftFixture(reynardFixture)) {
-            _reynardController->hitWall();
-        }
-            // Reynard hitting ground
-        else if (isCharacterGroundFixture(reynardFixture)) {
-            _reynardController->hitGround();
-        } else {
-            //CULog("Switching C");
-            // _reynardController->hitGround();
+        // Otherwise it's an enemy-on-object collision, and handle that accordingly
+        else {
+            // TODO: this is trash
+            // ENEMY COLLISION CODE STARTS HERE
+            //bool enemyIsRight = enemy->getCharacter()->isFacingRight();
+            //if (isThisASpikeTrapCollision(contact)) {
+            //    float enemyVY = enemy->getCharacter()->getVY();
+            //    if (enemyVY < 0) {
+            //        resolveWallJumpOntoTrap(enemyVY);
+            //    }
+            //    else {
+            //        resolveTrapOnContact();
+            //    }
+            //}
+            //else if (isThisAReynardWallContact(contact, reynardIsRight)) {
+            //    resolveReynardWallOnContact();
+            //}
+            //else if (isThisAReynardWallContact(contact, !reynardIsRight)) {
+            //    // the wall reynard's tail is touching lol
+            //}
+            //else if (isThisAReynardGroundContact(contact)) {
+            //    resolveReynardGroundOnContact();
+            //}
+            //else {
+            //    //CULog("Non-checked contact occured with Reynard");
+            //}
         }
     }
-
+    else {
+        //CULog("Non-checked contact occured");
+    }
 }
+
 
 void GameScene::endContact(b2Contact *contact) {
-    // CULog("Is this a Reynard collision END? %d", isReynardCollision(contact));
-    // CULog("rey is off da ground");
     if (_reynardController != nullptr && isReynardCollision(contact)) {
-        b2Fixture *reynardFixture = getReynardFixture(contact);
-        // If Reynard leaves the ground
-        if (isCharacterGroundFixture(reynardFixture)) {
-            _reynardController->offGround();
+        if (isThisAReynardGroundContact(contact)) {
+            resolveReynardGroundOffContact();
         }
-        //if (isCharacterGroundFixture(reynardFixture) && !_enemies->at(0)->isMyBody(getNotReynardFixture(contact)->GetBody())) {
-        //    _reynardController->offGround();
-        //}
-        //// Otherwise if Reynard is leaving the enemy sensor
-        //else if (isEnemyDetectFixture(getNotReynardFixture(contact))) {
-        //    _enemies->at(0)->loseTarget(_reynardController->getCharacter());
-        //}
     }
 }
+
 
 /**
  * Handles any modifications necessary before collision resolution
