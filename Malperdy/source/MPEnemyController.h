@@ -93,7 +93,7 @@ private:
      * slight delay in a raycast succeeding and the enemy's behavior changing, although that's
      * probably fine because it simulates slow brain.
      */
-    void reyCast();
+    void rayCast();
 
 };
 
