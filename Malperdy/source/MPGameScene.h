@@ -495,6 +495,18 @@ public:
      */
     void beforeSolve(b2Contact *contact, const b2Manifold *oldManifold);
     
+    void resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyController> enemy);
+    
+    void resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy);
+    
+    void resolveEnemyWallOnContact(shared_ptr<EnemyController> enemy);
+    
+    bool isThisAEnemyWallContact(b2Contact *contact, bool enemyIsRight, shared_ptr<EnemyController> enemy);
+    
+    bool isThisAEnemyGroundContact(b2Contact *contact, shared_ptr<EnemyController> enemy);
+    
+    void resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy);
+    
 };
 
 #endif /* __MP_GAME_MODE_H__ */

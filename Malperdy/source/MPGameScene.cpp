@@ -631,6 +631,7 @@ shared_ptr<EnemyController> GameScene::getEnemyControllerInCollision(b2Body* bod
     return nullptr;
 }
 
+
 bool GameScene::isThisAReynardWallContact(b2Contact *contact, bool reynardIsRight) {
     b2Fixture *reynardFixture;
     b2Body *body1 = contact->GetFixtureA()->GetBody();
@@ -644,6 +645,33 @@ bool GameScene::isThisAReynardWallContact(b2Contact *contact, bool reynardIsRigh
         return true;
     }
     else return !reynardIsRight && isCharacterLeftFixture(reynardFixture);
+}
+
+bool GameScene::isThisAEnemyWallContact(b2Contact *contact, bool enemyIsRight, shared_ptr<EnemyController> enemy) {
+    b2Fixture *enemyFixture;
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == enemy->getCharacter()->getBody()) {
+        enemyFixture = contact->GetFixtureA();
+    } else {
+        enemyFixture = contact->GetFixtureB();
+    }
+    if (enemyIsRight && isCharacterRightFixture(enemyFixture)) {
+        return true;
+    }
+    else return !enemyIsRight && isCharacterLeftFixture(enemyFixture);
+}
+
+bool GameScene::isThisAEnemyGroundContact(b2Contact *contact, shared_ptr<EnemyController> enemy) {
+    b2Fixture *enemyFixture;
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    if (body1 == enemy->getCharacter()->getBody()) {
+        enemyFixture = contact->GetFixtureA();
+    } else {
+        enemyFixture = contact->GetFixtureB();
+    }
+    return isCharacterGroundFixture(enemyFixture);
 }
 
 bool GameScene::isThisAReynardGroundContact(b2Contact *contact) {
@@ -662,9 +690,18 @@ void GameScene::resolveReynardWallOnContact() {
     _reynardController->hitWall();
 }
 
+void GameScene::resolveEnemyWallOnContact(shared_ptr<EnemyController> enemy) {
+    enemy->hitWall();
+}
+
 void GameScene::resolveReynardGroundOnContact() {
     _reynardController->hitGround();
 }
+
+void GameScene::resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy) {
+    enemy->hitGround();
+}
+
 
 void GameScene::resolveReynardGroundOffContact() {
     _reynardController->offGround();
@@ -680,6 +717,16 @@ void GameScene::resolveWallJumpOntoTrap(float reynardVY) {
     // We expect reynardVY to be a negative value
     _reynardController->getCharacter()->setVY(-1 * reynardVY);
 }
+
+void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy) {
+    enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
+}
+
+void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyController> enemy) {
+    // We expect reynardVY to be a negative value
+    enemy->getCharacter()->setVY(-1 * enemyVY);
+}
+
 
 void GameScene::beginContact(b2Contact *contact) {
     // TODO: all of these collisions need to apply for every character, not just Reynard
@@ -717,34 +764,37 @@ void GameScene::beginContact(b2Contact *contact) {
         }
         // Otherwise it's an enemy-on-object collision, and handle that accordingly
         else {
-            // TODO: this is trash
-            // ENEMY COLLISION CODE STARTS HERE
             bool enemyIsRight = enemy->getCharacter()->isFacingRight();
             if (isThisASpikeTrapCollision(contact)) {
                 float enemyVY = enemy->getCharacter()->getVY();
                 if (enemyVY < 0) {
-                    resolveWallJumpOntoTrap(enemyVY);
+                    resolveEnemyWallJumpOntoTrap(enemyVY, enemy);
                 }
                 else {
-                    resolveTrapOnContact();
+                    resolveEnemyTrapOnContact(enemy);
                 }
             }
-            else if (isThisAReynardWallContact(contact, reynardIsRight)) {
-                resolveReynardWallOnContact();
+            else if (isThisAEnemyWallContact(contact, enemyIsRight, enemy)) {
+                resolveEnemyWallOnContact(enemy);
             }
-            else if (isThisAReynardWallContact(contact, !reynardIsRight)) {
-                // the wall reynard's tail is touching lol
+            else if (isThisAEnemyWallContact(contact, !enemyIsRight, enemy)) {
+                // the wall enemy tail is touching lol
             }
-            else if (isThisAReynardGroundContact(contact)) {
-                resolveReynardGroundOnContact();
+            else if (isThisAEnemyGroundContact(contact, enemy)) {
+                resolveEnemyGroundOnContact(enemy);
             }
             else {
-                //CULog("Non-checked contact occured with Reynard");
+                //CULog("Non-checked contact occured with Enemy");
             }
         }
     }
+    // Reynard-on-enemy collision
     else {
-        //CULog("Non-checked contact occured");
+        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
+        if (isReynardCollision(contact) and enemy != nullptr) {
+            // Collision between Reynard and an enemy
+            _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
+        }
     }
 }
 
