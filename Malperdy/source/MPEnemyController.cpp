@@ -156,8 +156,10 @@ void EnemyController::update(float delta) {
             // Turn to face the direction of the target point
             Vec2 dir = _targetLoc - _character->getPosition();
             if ((dir.x < 0 && _character->isFacingRight()) ||
-                    (dir.x > 0 && !_character->isFacingRight()))
+                (dir.x > 0 && !_character->isFacingRight())) {
                 _character->flipDirection();
+                CULog("TURN");
+            }
             // If there is a wall in front of this enemy, jump if the target is above them
             if (_wallInFront && _target->getY() - _character->getY() > 0) jump();
 
@@ -239,7 +241,7 @@ void EnemyController::reyCast() {
     // If the closest hit fixture really was Reynard, then set this enemy's target accordingly and set new target location
     if (_raycastCache != Vec2(-1, -1)) {
         _target = _reynard->getCharacter();
-        _targetLoc = _raycastCache * _character->_drawScale;
+        _targetLoc = _raycastCache;
     }
         // Otherwise, clear the target, as the enemy has thus lost track of Reynard
     else {
