@@ -117,6 +117,10 @@ bool CharacterModel::uploadTexture(string tex) {
     
     // Add the node to the scenegraph, and then delete the old node
     scene2::SceneNode* p = _node->getParent();
+    if (p== nullptr){
+        CULog("CharacterModel Error: NULL of _node");
+        return false;
+    }
     p->addChild(newNode);
     _node->SceneNode::dispose();
     _node = newNode;
