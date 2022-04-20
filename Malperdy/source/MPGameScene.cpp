@@ -717,7 +717,30 @@ void GameScene::beginContact(b2Contact *contact) {
         }
         // Otherwise it's an enemy-on-object collision, and handle that accordingly
         else {
-            CULog("ENEMY COLLISION");
+            // TODO: this is trash
+            // ENEMY COLLISION CODE STARTS HERE
+            bool enemyIsRight = enemy->getCharacter()->isFacingRight();
+            if (isThisASpikeTrapCollision(contact)) {
+                float enemyVY = enemy->getCharacter()->getVY();
+                if (enemyVY < 0) {
+                    resolveWallJumpOntoTrap(enemyVY);
+                }
+                else {
+                    resolveTrapOnContact();
+                }
+            }
+            else if (isThisAReynardWallContact(contact, reynardIsRight)) {
+                resolveReynardWallOnContact();
+            }
+            else if (isThisAReynardWallContact(contact, !reynardIsRight)) {
+                // the wall reynard's tail is touching lol
+            }
+            else if (isThisAReynardGroundContact(contact)) {
+                resolveReynardGroundOnContact();
+            }
+            else {
+                //CULog("Non-checked contact occured with Reynard");
+            }
         }
     }
     else {
