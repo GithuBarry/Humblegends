@@ -308,7 +308,7 @@ void GameScene::populate() {
     // Give all enemies a reference to Reynard's controller to handle detection
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
     EnemyController::setReynardController(_reynardController);
-    
+
     Vec2 rab_pos = Vec2(3, 3);
 
     // Make a dictionary of animations for reynard
@@ -335,7 +335,7 @@ void GameScene::populate() {
 
     // Add first enemy to physics world
     addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
-    
+
     // Initialize EnemyController with the final animation map and store in vector of enemies
     //_enemies->push_back(EnemyController::alloc(Vec2(30,15), _scale, rabbit_animations));
 
@@ -462,9 +462,14 @@ void GameScene::update(float dt) {
     _reynardController->update(scaled_dt);
     _world->update(scaled_dt);
 
-    if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0){
+    //TODO debugging area. Disable for releases
+    if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0 && (_reynardController->getCharacter()->getHearts()>=0)){
         //assert (0==1);
-        CULog("FIX Needed: Reynard stuck. See gamescene update and breakpoint here");
+        CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+    }
+    if ( _reynardController->getCharacter()->isJumping()  && _reynardController->getCharacter()->getLinearVelocity().x<7){
+        //assert (0==1);
+        CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
     }
 
 
