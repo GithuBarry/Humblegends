@@ -26,14 +26,13 @@
 //
 //  Owner: Kristina Gu
 //  Contributors: Kristina Gu, Jordan Selin
-//  Version: 4/16/22
+//  Version: 3/28/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
 #include "MPRoomModel.h"
 #include <cugl/util/CUDebug.h>
-#include "MPCheckpoint.h"
 
 using namespace cugl;
 
@@ -177,8 +176,8 @@ bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_pt
 	return this->initWithBounds(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
 }
 
-bool RoomModel::initTrap(TrapModel::TrapType type){
-    if (type == TrapModel::TrapType::SPIKE){
+bool RoomModel::initTrap(string type){
+    if (type == "spike"){
         shared_ptr<SpikeTrap> trap = make_shared<SpikeTrap>();
         trap->init();
         
@@ -186,20 +185,12 @@ bool RoomModel::initTrap(TrapModel::TrapType type){
         
         addChild(_trap);
     }
-    else if (type == TrapModel::TrapType::TRAPDOOR){
+    if (type == "trapdoor"){
         shared_ptr<TrapDoor> trap = make_shared<TrapDoor>();
         trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
         
         _trap = trap;
         
-        addChild(_trap);
-    }
-    else if (type == TrapModel::TrapType::CHECKPOINT) {
-        shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
-        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
-
-        _trap = trap;
-
         addChild(_trap);
     }
     else{
