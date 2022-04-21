@@ -230,15 +230,13 @@ void GameScene::dispose() {
 void GameScene::reset() {
 
     _reynardController = nullptr;
-    _enemies = nullptr;
     _grid = nullptr;
     _envController = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
     _debugnode->removeAllChildren();
     _gamestate.reset();
-
-
+    _enemies = nullptr;
     setComplete(false);
     populate();
 }
