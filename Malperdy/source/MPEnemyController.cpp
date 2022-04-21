@@ -42,52 +42,14 @@ shared_ptr<ReynardController> EnemyController::_reynard = nullptr;
  */
 bool EnemyController::init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations) {
     // If initialization of parent class failed, return immediately
-    return (CharacterController::init(pos, drawScale, animations));
-    
+    if (!(CharacterController::init(pos, drawScale, animations))) return false;
+    else return true;
     //// Create user data to store in the physics body
     //BodyData* userData = new BodyData();
     //userData->_type = CharacterType::ENEMY;
     //userData->_controller = (void*)this;
     //// Store pointer to user data in attached physics body
     //_character->getBody()->GetUserData().pointer = (uintptr_t)(void*)userData;
-}
-
-/**
- * Helper debug function that updates a debug line drawn to help with raycasting.
- *
- * It creates the line between the two given points and attaches it to the given
- * parent node with the given name. If there is an existing line with that name
- * already attached to the parent, it will be removed first.
- *
- * Both points should be given in world space, and will be transformed accordingly when
- * the resulting line is attached to the given node.
- *
- * @param p1		The first point to create the line with in world space
- * @param p2		The second point to create the line with in world space
- * @param parent	The node to attach the created line to
- * @param name		The name to give to the line, to track what to remove
- * @param color		The color of the resulting line (green by default)
- * @param width		The width of the resulting line (5 by default)
- * @return linePoly	The line between the two given points as a PolygonNode
- */
-void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string name, Color4 color = Color4(0, 0, 0, 0), float width = 5.0f) {
-    // Create line
-    Path2 line;
-    vector<Vec2> points;
-    points.push_back(parent->worldToNodeCoords(p1));
-    points.push_back(parent->worldToNodeCoords(p2));
-    line.set(points);
-    SimpleExtruder se = SimpleExtruder(line);
-    se.calculate(width);
-    shared_ptr<scene2::PolygonNode> linePoly = scene2::PolygonNode::alloc();
-    linePoly->setPolygon(se.getPolygon());
-    linePoly->setColor(color);
-    linePoly->setAbsolute(true);
-
-    // Remove old line if any
-    parent->removeChildByName(name);
-    // Now add updated line to parent
-    parent->addChildWithName(linePoly, name);
 }
 
 /**
@@ -107,18 +69,6 @@ void EnemyController::update(float delta) {
 
     // Raycast to Reynard
     reyCast();
-
-    // Generic ray cast in front of this enemy to sense for a wall
-    // Wall jump if there's a wall in front
-    _wallInFront = false;
-    _obstacleWorld->rayCast(
-        [this](b2Fixture* fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
-            //updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
-            if (!_reynard->isMyBody(fixture->GetBody()))
-                _wallInFront = true;
-            return fraction;
-        },
-        _character->getPosition(), _character->getPosition() + Vec2(5 * (_character->isFacingRight() ? 1 : -1), -0.5));
 
     // Handle what the enemy does depending on their current behavior state
     switch (_character->getBehaveState()) {
@@ -147,22 +97,14 @@ void EnemyController::update(float delta) {
         case (EnemyModel::BehaviorState::CHASING): {
             // TODO: make this proper chase behavior
 
-            // If there's no target anymore, go to SEARCHING
+            // Turn to face the direction of the target
             if (!_target) {
-                _character->setBehaveState(EnemyModel::BehaviorState::SEARCHING);
                 return;
             }
-
-            // Turn to face the direction of the target point
-            Vec2 dir = _targetLoc - _character->getPosition();
+            Vec2 dir = _target->getPosition() - _character->getPosition();
             if ((dir.x < 0 && _character->isFacingRight()) ||
-                (dir.x > 0 && !_character->isFacingRight())) {
+                    (dir.x > 0 && !_character->isFacingRight()))
                 _character->flipDirection();
-                CULog("TURN");
-            }
-            // If there is a wall in front of this enemy, jump if the target is above them
-            if (_wallInFront && _target->getY() - _character->getY() > 0) jump();
-
             // TODO: if target is within attack range, attack
 
             // For now, if target is too close, stop
@@ -170,31 +112,17 @@ void EnemyController::update(float delta) {
                 // Otherwise, chase them
             else _character->setMoveState(CharacterModel::MovementState::RUNNING);
 
+            // If no such point, so enemy lost the target, move enemy to Searching state
+            //if (!onTheTrail) _character->setBehaveState(EnemyModel::BehaviorState::SEARCHING);
         }
             break;
-        case (EnemyModel::BehaviorState::SEARCHING): {
+        case (EnemyModel::BehaviorState::SEARCHING):
             // TODO: proper searching behavior
-
-            // For now, just stay up
             _character->setMoveState(CharacterModel::MovementState::STOPPED);
-
-            // If enough time has passed that enemy gives up
-            if (_searchTime > SEARCH_TIME) {
-                // Reset search time
-                _searchTime = 0;
-                // Go back to patrolling
-                _character->setBehaveState(EnemyModel::BehaviorState::PATROLLING);
-            }
-            // If not, tick search time
-            else {
-                _searchTime += delta;
-            }
-        }
             break;
         case (EnemyModel::BehaviorState::RETURNING):
             // TODO: does the enemy go home? Or does it just give up and start patrolling where it is?
             // For now, just stay in place
-            // Also for now, this state is never used
             _character->setMoveState(CharacterModel::MovementState::STOPPED);
             break;
     }
@@ -202,6 +130,44 @@ void EnemyController::update(float delta) {
 
 #pragma mark -
 #pragma mark Behavior Methods
+
+/**
+ * Helper debug function that updates a debug line drawn to help with raycasting.
+ * 
+ * It creates the line between the two given points and attaches it to the given
+ * parent node with the given name. If there is an existing line with that name
+ * already attached to the parent, it will be removed first.
+ * 
+ * Both points should be given in world space, and will be transformed accordingly when
+ * the resulting line is attached to the given node.
+ * 
+ * @param p1		The first point to create the line with in world space
+ * @param p2		The second point to create the line with in world space
+ * @param parent	The node to attach the created line to
+ * @param name		The name to give to the line, to track what to remove
+ * @param color		The color of the resulting line (green by default)
+ * @param width		The width of the resulting line (5 by default)
+ * @return linePoly	The line between the two given points as a PolygonNode
+ */
+void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string name, Color4 color = Color4(0, 0, 0, 0), float width = 5.0f) {
+    // Create line
+    Path2 line;
+    vector<Vec2> points;
+    points.push_back(parent->worldToNodeCoords(p1));
+    points.push_back(parent->worldToNodeCoords(p2));
+    line.set(points);
+    SimpleExtruder se = SimpleExtruder(line);
+    se.calculate(width);
+    shared_ptr<scene2::PolygonNode> linePoly = scene2::PolygonNode::alloc();
+    linePoly->setPolygon(se.getPolygon());
+    linePoly->setColor(color);
+    linePoly->setAbsolute(true);
+
+    // Remove old line if any
+    parent->removeChildByName(name);
+    // Now add updated line to parent
+    parent->addChildWithName(linePoly, name);
+}
 
 /**
  * Performs a raycast from this enemy to Reynard. If the raycast succeeds, then the enemy's
@@ -237,6 +203,18 @@ void EnemyController::reyCast() {
                 return fraction;
             },
             _character->getPosition(), _reynard->getCharacter()->getPosition());
+
+    // TODO: move this somewhere more appropriate
+    // Wall jump if there's a wall in front
+    //bool wallInFront = false;
+    _obstacleWorld->rayCast(
+            [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
+                updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
+                if ((!_character->isJumping()) && _character->isGrounded() && (!_reynard->isMyBody(fixture->GetBody())) )
+                    jump();
+                return fraction;
+            },
+            _character->getPosition(), _character->getPosition() + Vec2(5 * (_character->isFacingRight() ? 1 : -1), -0.5));
 
     // If the closest hit fixture really was Reynard, then set this enemy's target accordingly and set new target location
     if (_raycastCache != Vec2(-1, -1)) {

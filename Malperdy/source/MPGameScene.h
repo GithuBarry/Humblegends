@@ -6,7 +6,7 @@
 //  That was based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
 //  
 //  Owner: Barry Wang
-//  Contributors: Barry Wang, Jordan Selin
+//  Contributors: Barry Wang
 //  Version: 3/01/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
@@ -50,6 +50,9 @@ protected:
     // VIEW
     /** Reference to the physics root of the scene graph */
     std::shared_ptr<cugl::scene2::ScrollPane> _worldnode;
+
+    //    /** Reference to the exit message label */
+    //    std::shared_ptr<cugl::scene2::Label> _exitnode;
 
     /** The Box2D world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
@@ -119,10 +122,7 @@ public:
 #pragma mark -
 #pragma mark Constructors
     /** Reference to the debug root of the scene graph */
-    //std::shared_ptr<cugl::scene2::ScrollPane> _debugnode;
-
-    /** Reference to the debug root of the scene graph */
-    std::shared_ptr<cugl::scene2::Label> _winNode;
+    std::shared_ptr<cugl::scene2::ScrollPane> _debugnode;
 
     /**
      * Creates a new game world with the default values.
@@ -233,7 +233,7 @@ public:
      */
     void setDebug(bool value) {
         _debug = value;
-        //_debugnode->setVisible(value);
+        _debugnode->setVisible(value);
     }
 
     /**
@@ -256,7 +256,7 @@ public:
      */
     void setComplete(bool value) {
         _complete = value;
-        _winNode->setVisible(value);
+        //        _exitnode->setVisible(value);
     }
 
 
@@ -370,20 +370,7 @@ public:
      *
      * @param  contact  The two bodies that collided
      */
-    bool isThisASpikeTrapCollision(b2Contact* contact) {
-        //TODO: replace all references to this with references to isTrapCollision
-        return isTrapCollision(contact) == TrapModel::TrapType::SPIKE;
-    }
-
-    /**
-     * Detects if a collision includes a trap object, and if so returns the trap type
-     *
-     * @param  contact  The two bodies that collided
-     * 
-     * @return  trap type if one body is a trap
-                or UNTYPED if neither body is a trap
-     */
-    TrapModel::TrapType isTrapCollision(b2Contact* contact);
+    bool isThisASpikeTrapCollision(b2Contact *contact);
     
     /**
      * Helper function that checks if a contact event includes Reynard
@@ -507,6 +494,18 @@ public:
      * @param  contact  The collision manifold before contact
      */
     void beforeSolve(b2Contact *contact, const b2Manifold *oldManifold);
+    
+    void resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyController> enemy);
+    
+    void resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy);
+    
+    void resolveEnemyWallOnContact(shared_ptr<EnemyController> enemy);
+    
+    bool isThisAEnemyWallContact(b2Contact *contact, bool enemyIsRight, shared_ptr<EnemyController> enemy);
+    
+    bool isThisAEnemyGroundContact(b2Contact *contact, shared_ptr<EnemyController> enemy);
+    
+    void resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy);
     
 };
 

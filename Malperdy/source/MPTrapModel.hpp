@@ -1,13 +1,14 @@
 //
 //  MPTrapModel.hpp
-//  Malperdy
+//  RocketDemo
+//
+//  Created by Spencer Hurst on 3/7/22.
+//  Copyright © 2022 Cornell Game Design Initiative. All rights reserved.
 //
 //  Owner: Spencer Hurst
-//  Contributors: Evan Azari, Abu Qader, Jordan Selin
-//  Version: 4/19/22
-// 
+//  Contributors: Evan, Abu
 //  Copyright (c) 2022 Humblegends. All rights reserved.
-//
+//  Version: 3/10/22
 
 #ifndef MPTrapModel_hpp
 #define MPTrapModel_hpp
@@ -31,15 +32,7 @@ public:
         ACTIVATED,
         DEACTIVATED
     };
-
-    enum class TrapType : int {
-        UNTYPED,
-        SPIKE,
-        TRAPDOOR,
-        SAP,
-        BRAZIER,
-        CHECKPOINT
-    };
+    
 
 protected:
 #pragma mark -
@@ -54,8 +47,8 @@ protected:
     /** A uniform value represneting scale between the physics world and the screen */
     float _drawScale;
     
-    /** The subtype of the trap */
-    TrapType _type;
+    /** A string value represneting the subtype of the child */
+    string _type;
 
     /** The current activation state of the trap. */
     TrapState _trapState;
@@ -174,7 +167,7 @@ public:
         _trapState = newState;
     }
     
-    TrapType getType(){
+    string getType(){
         return _type;
     }
     
