@@ -230,6 +230,7 @@ void GameScene::dispose() {
 void GameScene::reset() {
 
     _reynardController = nullptr;
+    _enemies = nullptr;
     _grid = nullptr;
     _envController = nullptr;
     _world->clear();
@@ -307,6 +308,7 @@ void GameScene::populate() {
 
 #pragma mark Enemies
     // Give all enemies a reference to Reynard's controller to handle detection
+    _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
     EnemyController::setReynardController(_reynardController);
     
     Vec2 rab_pos = Vec2(3, 3);
@@ -467,7 +469,7 @@ void GameScene::update(float dt) {
         CULog("FIX Needed: Reynard stuck. See gamescene update and breakpoint here");
     }
 
-    
+
     // Camera following reynard, with some non-linear smoothing
     Vec2 currentTranslation = _worldnode->getPaneTransform().getTranslation();
     Vec2 reynardScreenPosition = _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition());

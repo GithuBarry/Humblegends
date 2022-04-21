@@ -73,7 +73,7 @@ protected:
     std::unordered_set<b2Fixture *> _sensorFixtures;
 
     /** References to all the enemy controllers */
-    std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
+    std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies;
 
     /** Whether we have completed this "game" */
     bool _complete;
