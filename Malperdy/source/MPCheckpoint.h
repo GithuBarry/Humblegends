@@ -2,9 +2,9 @@
 //  MPCheckpoint.h
 //  Malperdy
 //
-//  Owner: Kristina Gu
-//  Contributors: Kristina Gu
-//  Version: 3/29/22
+//  Owner: Jordan Selin
+//  Contributors: Jordan Selin
+//  Version: 4/19/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -13,44 +13,28 @@
 #define MPCheckpoint_h
 
 #include <cugl/cugl.h>
-#include <stdlib.h>
+#include <cugl/physics2/CUBoxObstacle.h>
+#include <cugl/physics2/CUCapsuleObstacle.h>
+#include <cugl/scene2/graph/CUWireNode.h>
 
+#include "MPTrapModel.hpp"
+#include "MPRoomModel.h"
+
+#include <stdio.h>
 using namespace cugl;
 
-class Checkpoint : public cugl::physics2::BoxObstacle {
+class Checkpoint : public TrapModel {
+
 public:
 
-    /** The most recent checkpoint that Reynard hit */
-    static shared_ptr<Checkpoint> activeCheckpoint;
+#pragma mark Constructor
 
-#pragma mark Constructors
-    /**
-     * Creates a blank checkpoint. Should not be called; use init() or alloc() instead.
-     */
-    Checkpoint() {};
-
-    /**
-     * Initializes a checkpoint with the given texture.
+    /*
+     * Initializes a new checkpoint
      *
-     * @return          true if the checkpoint is initialized properly, false otherwise.
+     * @return  true if the trap is initialized properly, false otherwise.
      */
-    bool init();
-
-    /**
-     * Returns a newly-allocated checkpoint with the given texture.
-     * 
-     * @return          A newly-allocated RoomModel
-     */
-    static std::shared_ptr<Checkpoint> alloc() {
-        std::shared_ptr<Checkpoint> result = std::make_shared<Checkpoint>();
-        return (result->init() ? result : nullptr);
-    }
-
-    /**
-     * Called when Reynard collides with this checkpoint.
-     */
-    void activate();
-
+    bool init(float roomWidth, float roomHeight);
 };
 
 #endif /* MPCheckpoint_h */

@@ -23,6 +23,8 @@
 
 /** How many seconds Reynard must be within an enemy's detection radius before the enemy realizes that he is there */
 #define DETECTION_TIME 1.0f
+/** How many seconds an enemy will search for before giving up */
+#define SEARCH_TIME 3.0f
 
 class EnemyController : public CharacterController<EnemyModel, EnemyController> {
 
@@ -39,10 +41,14 @@ protected:
     Vec2 _targetLoc = Vec2(-1, -1);
     /** Vector cache to temporarily store values in when handling raycasting, because there may be multiple fixtures */
     Vec2 _raycastCache = Vec2(-1, -1);
+    /** Whether there is currently a wall in front of this enemy's face */
+    bool _wallInFront = false;
 
     // COOLDOWNS
     /** How long Reynard has been in the enemy's detection radius so far */
     float _detectTime = 0.0f;
+    /** How long the enemy has been searching for Reynard so far after losing him */
+    float _searchTime = 0.0f;
 
 public:
 
