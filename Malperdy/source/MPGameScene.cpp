@@ -462,6 +462,12 @@ void GameScene::update(float dt) {
     _reynardController->update(scaled_dt);
     _world->update(scaled_dt);
 
+    if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0){
+        //assert (0==1);
+        CULog("FIX Needed: Reynard stuck. See gamescene update and breakpoint here");
+    }
+
+    
     // Camera following reynard, with some non-linear smoothing
     Vec2 currentTranslation = _worldnode->getPaneTransform().getTranslation();
     Vec2 reynardScreenPosition = _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition());
