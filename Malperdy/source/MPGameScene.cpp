@@ -333,14 +333,14 @@ void GameScene::populate() {
     // Initialize EnemyController with the final animation map and store in vector of enemies
     _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
-    // Add Reynard to physics world
+    // Add first enemy to physics world
     addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
     
     // Initialize EnemyController with the final animation map and store in vector of enemies
-    _enemies->push_back(EnemyController::alloc(Vec2(30,15), _scale, rabbit_animations));
+    //_enemies->push_back(EnemyController::alloc(Vec2(30,15), _scale, rabbit_animations));
 
-    // Add Reynard to physics world
-    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
+    // Add second enemy to physics world
+    //addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
 }
 
 
@@ -791,7 +791,7 @@ void GameScene::beginContact(b2Contact *contact) {
     // Reynard-on-enemy collision
     else {
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
-        if (isReynardCollision(contact) and enemy != nullptr) {
+        if (isReynardCollision(contact) && enemy != nullptr) {
             // Collision between Reynard and an enemy
             _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
         }
