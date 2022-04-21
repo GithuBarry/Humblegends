@@ -171,6 +171,7 @@ public:
      * Destroys this CharacterModel, releasing all resources.
      */
     virtual ~CharacterModel(void){
+        _core = nullptr;
         dispose();
     }
 

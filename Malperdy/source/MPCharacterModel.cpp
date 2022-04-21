@@ -195,7 +195,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVX((_faceRight ? 1 : -1) * _speed);
             _hasDashed = false;
             if(_moveState != MovementState::RUNNING){
-                uploadTexture("run");
+                //uploadTexture("run");
             }
 
             break;
@@ -207,7 +207,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
             // If character is on a wall, then also give a horizontal velocity away
             if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
-            uploadTexture("jump");
+            //uploadTexture("jump");
             break;
         case MovementState::FALLING:
             break;
