@@ -61,21 +61,22 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations) {
+bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation) {
 
-    _animations = animations;
+    _animation = animation;
     // create initial scene node with running animation
-    //TODO remove hard code
-    setSceneNode(scene2::SpriteNode::alloc((*_animations)["run"]._frames, (*_animations)["run"]._rows, (*_animations)["run"]._cols, (*_animations)["run"]._size));
+
+    setSceneNode(scene2::SpriteNode::alloc(_animation->getSheet(), _animation->getRows(), _animation->getCols(), _animation->getSize()));
+    
     _node->setScale(Vec2(-0.2,0.2));
 
-    Size nsize = (*_animations)["default"]._frames->getSize() / drawScale;
-    auto s = (*_animations)["default"]._frames;
+    Size nsize = _animation->getSheet()->getSize() / drawScale;
+    auto s = _animation->getSheet();
 
     nsize = nsize *DUDE_WIDTH/nsize.width; //!! drawScale is effective ignored!
     _drawScale = drawScale;
     
-    _currAnimation = (*animations)["run"];
+    _currAnimation = "run";
 
     // Create physics
     if (CapsuleObstacle::init(pos, nsize)) {
@@ -102,52 +103,52 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map
  *
  * @returns whether or not the animation was uplaoded
  */
-bool CharacterModel::uploadTexture(string tex) {
-    
-    // If the animation doesn't exist, return false
-    if (!(*_animations).count(tex)) return false;
-    
-    // Jump to the beginning of the animation
-    _currFrame = 0;
-    _elapsed = 0;
-    
-    // Make a new node for the animation
-    shared_ptr<scene2::SpriteNode> newNode = make_shared<scene2::SpriteNode>();
-    newNode->initWithSprite((*_animations)[tex]._frames, (*_animations)[tex]._rows, (*_animations)[tex]._cols, (*_animations)[tex]._size);
-    
-    // Add the node to the scenegraph, and then delete the old node
-    scene2::SceneNode* p = _node->getParent();
-    if (p== nullptr){
-        CULog("CharacterModel Error: NULL of _node");
-        return false;
-    }
-    p->addChild(newNode);
-    _node->SceneNode::dispose();
-    _node = newNode;
-    _node->setPosition(getPosition() * _drawScale);
-    
-    // Update the current Animation class
-    _currAnimation = (*_animations)[tex];
-    _node->setAnchor(0.5, 0.5);
-    
-    // Set the scale appropriately (might have to change this)
-    if(tex == "default"){
-        _node->setScale(_node->getScale()*Vec2(1,1));
-    }
-    else if (tex == "run" ){
-        _node->setScale(_node->getScale()*Vec2(0.2,0.2));
-    }
-    else{
-        _node->setScale(_node->getScale()*Vec2(-0.2,0.2));
-    }
-    
-    // Flip the node if the character is facing right
-    if(isFacingRight()){
-        _node->setScale(_node->getScale()*Vec2(-1,1));
-    }
-
-    return true;
-}
+//bool CharacterModel::uploadTexture(string tex) {
+//    
+//    // If the animation doesn't exist, return false
+//    if (!(*_animations).count(tex)) return false;
+//    
+//    // Jump to the beginning of the animation
+//    _currFrame = 0;
+//    _elapsed = 0;
+//    
+//    // Make a new node for the animation
+//    shared_ptr<scene2::SpriteNode> newNode = make_shared<scene2::SpriteNode>();
+//    newNode->initWithSprite((*_animations)[tex]._frames, (*_animations)[tex]._rows, (*_animations)[tex]._cols, (*_animations)[tex]._size);
+//    
+//    // Add the node to the scenegraph, and then delete the old node
+//    scene2::SceneNode* p = _node->getParent();
+//    if (p== nullptr){
+//        CULog("CharacterModel Error: NULL of _node");
+//        return false;
+//    }
+//    p->addChild(newNode);
+//    _node->SceneNode::dispose();
+//    _node = newNode;
+//    _node->setPosition(getPosition() * _drawScale);
+//    
+//    // Update the current Animation class
+//    _currAnimation = (*_animations)[tex];
+//    _node->setAnchor(0.5, 0.5);
+//    
+//    // Set the scale appropriately (might have to change this)
+//    if(tex == "default"){
+//        _node->setScale(_node->getScale()*Vec2(1,1));
+//    }
+//    else if (tex == "run" ){
+//        _node->setScale(_node->getScale()*Vec2(0.2,0.2));
+//    }
+//    else{
+//        _node->setScale(_node->getScale()*Vec2(-0.2,0.2));
+//    }
+//    
+//    // Flip the node if the character is facing right
+//    if(isFacingRight()){
+//        _node->setScale(_node->getScale()*Vec2(-1,1));
+//    }
+//
+//    return true;
+//}
 
 /**
  * Sets the character's movement state, changing physical attributes
@@ -333,7 +334,7 @@ void CharacterModel::releaseFixtures() {
 void CharacterModel::dispose() {
     _node = nullptr;
     _sensorNode = nullptr;
-    _animations = nullptr;
+    _animation = nullptr;
 
 }
 
@@ -428,7 +429,9 @@ void CharacterModel::update(float dt) {
             // if on the last frame
             if (_currFrame >= _node->getSize()-1){
                 // loop the animation if needed
-                if(_currAnimation._loop){
+                
+                //TODO: fix this
+                if(true){
                     _currFrame = 0;
                 }
             }

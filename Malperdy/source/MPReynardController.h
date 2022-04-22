@@ -46,7 +46,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations);
+    bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation);
     
     /**  This method checks if the the difference between _lastHit and the current time exceeds
      *      the damageBufferLength. If it does, then the _lastHit is set to be the current time, and the function

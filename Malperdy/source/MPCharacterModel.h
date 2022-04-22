@@ -19,6 +19,7 @@
 #include <cugl/physics2/CUCapsuleObstacle.h>
 #include <cugl/scene2/graph/CUWireNode.h>
 #include <map>
+#include "MPAnimation.h"
 
 using namespace cugl;
 
@@ -51,35 +52,35 @@ public:
         DEAD
     };
     
-    /** Class representing an animation */
-    class Animation{
-    public:
-        // The sprite sheet
-        shared_ptr<Texture> _frames;
-        
-        // Frame data
-        int _size;
-        int _cols;
-        int _rows;
-        bool _loop = false;
-        
-        // Empty constructor, must initialize to usse
-        Animation(){};
-        
-        // Sets all attributes
-        bool init(shared_ptr<Texture> frames, int size, int cols, string loop){
-            // Frame data
-            _frames = frames;
-            _size = size;
-            _cols = cols;
-            // Calculate the number of rows from size & cols
-            _rows = (_size-1) / _cols + 1;
-            if (loop == "true") _loop = true;
-            
-            // return false if spritesheet is null or the size is nonpositive
-            return frames && size > 0;
-        }
-    };
+//    /** Class representing an animation */
+//    class Animation{
+//    public:
+//        // The sprite sheet
+//        shared_ptr<Texture> _frames;
+//
+//        // Frame data
+//        int _size;
+//        int _cols;
+//        int _rows;
+//        bool _loop = false;
+//
+//        // Empty constructor, must initialize to usse
+//        Animation(){};
+//
+//        // Sets all attributes
+//        bool init(shared_ptr<Texture> frames, int size, int cols, string loop){
+//            // Frame data
+//            _frames = frames;
+//            _size = size;
+//            _cols = cols;
+//            // Calculate the number of rows from size & cols
+//            _rows = (_size-1) / _cols + 1;
+//            if (loop == "true") _loop = true;
+//
+//            // return false if spritesheet is null or the size is nonpositive
+//            return frames && size > 0;
+//        }
+//    };
 
     /** SceneNode representing the sprite for the character */
     shared_ptr<scene2::SpriteNode> _node;
@@ -123,10 +124,12 @@ protected:
 #pragma mark Attributes
 
     /** The dictionary of all character animations */
-    shared_ptr<map<string, Animation>> _animations;
+    shared_ptr<Animation> _animation;
     
     /** The frame data the current animation */
-    Animation _currAnimation;
+    string _currAnimation;
+    int _startframe;
+    int _lastframe;
 
 #pragma mark Attributes
 
@@ -200,7 +203,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, Animation>> animations);
+    virtual bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation);
 
 
 #pragma mark -
@@ -222,10 +225,10 @@ public:
      *
      * @return  A newly allocated CharacterModel at the given position with the given scale
      */
-    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2 &pos, float drawScale, shared_ptr<map<string, Animation>> animations) {
+    static std::shared_ptr<CharacterModel> alloc(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation) {
         std::shared_ptr<CharacterModel> result = std::make_shared<CharacterModel>();
 
-        return (result->init(pos, drawScale, animations) ? result : nullptr);
+        return (result->init(pos, drawScale, animation) ? result : nullptr);
     }
 
 #pragma mark -
@@ -387,7 +390,7 @@ public:
      *
      * @returns whether or not the animation was uplaoded
      */
-    bool uploadTexture(string tex);
+    //bool uploadTexture(string tex);
 
 #pragma mark -
 #pragma mark Physics Methods

@@ -11,6 +11,9 @@
 
 #include <map>
 #include <tuple>
+#include <cugl/cugl.h>
+
+using namespace cugl;
 
 
 #endif /* MPAnimation_h */
@@ -47,5 +50,17 @@ public:
             _frames[key] = tuple<int, int>(start, end);
         }
     };
+
+#pragma mark Accessors
+    
+    shared_ptr<Texture> getSheet(){
+        return _spritesheet;
+    }
+    
+    int getRows(){ return _rows;}
+    
+    int getCols(){ return _cols;}
+    
+    int getSize(){ return _size;}
     
 };

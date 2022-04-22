@@ -1,8 +1,8 @@
 {
     "reynard": {
         "cols" : 5,
-        "rows" : 5,
-        "size" : 5,
+        "rows" : 36,
+        "size" : 177,
         "frames" : {
             "run" : [1, 25]
         }
