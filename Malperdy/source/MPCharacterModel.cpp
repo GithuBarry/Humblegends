@@ -97,60 +97,6 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Ani
 #pragma mark Attribute Properties
 
 /**
- * Replaces the node with the specified animation
- *
- * @param tex is the key representing an animation in _animations
- *
- * @returns whether or not the animation was uplaoded
- */
-//bool CharacterModel::uploadTexture(string tex) {
-//    
-//    // If the animation doesn't exist, return false
-//    if (!(*_animations).count(tex)) return false;
-//    
-//    // Jump to the beginning of the animation
-//    _currFrame = 0;
-//    _elapsed = 0;
-//    
-//    // Make a new node for the animation
-//    shared_ptr<scene2::SpriteNode> newNode = make_shared<scene2::SpriteNode>();
-//    newNode->initWithSprite((*_animations)[tex]._frames, (*_animations)[tex]._rows, (*_animations)[tex]._cols, (*_animations)[tex]._size);
-//    
-//    // Add the node to the scenegraph, and then delete the old node
-//    scene2::SceneNode* p = _node->getParent();
-//    if (p== nullptr){
-//        CULog("CharacterModel Error: NULL of _node");
-//        return false;
-//    }
-//    p->addChild(newNode);
-//    _node->SceneNode::dispose();
-//    _node = newNode;
-//    _node->setPosition(getPosition() * _drawScale);
-//    
-//    // Update the current Animation class
-//    _currAnimation = (*_animations)[tex];
-//    _node->setAnchor(0.5, 0.5);
-//    
-//    // Set the scale appropriately (might have to change this)
-//    if(tex == "default"){
-//        _node->setScale(_node->getScale()*Vec2(1,1));
-//    }
-//    else if (tex == "run" ){
-//        _node->setScale(_node->getScale()*Vec2(0.2,0.2));
-//    }
-//    else{
-//        _node->setScale(_node->getScale()*Vec2(-0.2,0.2));
-//    }
-//    
-//    // Flip the node if the character is facing right
-//    if(isFacingRight()){
-//        _node->setScale(_node->getScale()*Vec2(-1,1));
-//    }
-//
-//    return true;
-//}
-
-/**
  * Sets the character's movement state, changing physical attributes
  * accordingly as necessary.
  *
