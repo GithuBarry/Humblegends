@@ -123,6 +123,17 @@ private:
 #pragma mark Helper Functions
 
     /*
+    * Checks if the room satisfies the conditions to be swappable
+    * 
+    * @param room       the row and column of the room to check
+    * @param reynard    the controller for reynard
+    * @param enemies    the controllers for the enemies
+    * 
+    * @ return true if room doesn't contain Reynard, enemies or a checkpoint
+    */
+    bool isSwappable(Vec2 room, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+
+    /*
     * Checks whether Reynard is inside the indicated room
     *
     * @param room       the row and column of the room to check
@@ -136,7 +147,7 @@ private:
     * Checks whether any enemies are inside the indicated room
     *
     * @param room       the row and column of the room to check
-    * @param reynard    the controllers for the enemies
+    * @param enemies    the controllers for the enemies
     *
     * @return true if at least one enemy is inside the given room
     */

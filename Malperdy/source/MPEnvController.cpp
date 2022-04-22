@@ -13,6 +13,7 @@
 #include "MPEnvController.h"
 #include "MPReynardModel.h"
 #include "MPEnemyController.h"
+#include "MPTrapModel.hpp"
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController() {
@@ -114,6 +115,21 @@ void EnvController::deselectRoom() {
 }
 
 #pragma mark Helper Functions
+
+/*
+* Checks if the room satisfies the conditions to be swappable
+*
+* @param room       the row and column of the room to check
+* @param reynard    the controller for reynard
+* @param enemies    the controllers for the enemies
+*
+* @ return true if room doesn't contain Reynard, enemies or a checkpoint
+*/
+bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+    bool hasNoChars = !containsEnemies(room, enemies) && !containsReynard(room, reynard);
+    //bool hasGoal = _grid->getRoom(room)->getTrap()->getType() == TrapModel::TrapType::CHEKPOINT;
+    return hasNoChars;
+}
 
 /*
 * Checks whether Reynard is inside the indicated room
