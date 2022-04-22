@@ -26,6 +26,7 @@
 #include "MPRoomModel.h"
 #include "MPGridModel.h"
 #include "MPEnvController.h"
+#include "MPAnimation.h"
 
 /**
  * This class is the primary gameplay constroller for the demo.

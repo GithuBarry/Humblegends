@@ -1,0 +1,18 @@
+{
+    "reynard": {
+        "cols" : 5,
+        "rows" : 5,
+        "size" : 5,
+        "frames" : {
+            "run" : [1, 25]
+        }
+    },
+    "rabbit": {
+        "cols" : 5,
+        "rows" : 5,
+        "size" : 5,
+        "frames" : {
+            "run" : [1, 25]
+        }
+    }
+}

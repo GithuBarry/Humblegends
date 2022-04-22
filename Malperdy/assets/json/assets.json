@@ -1,6 +1,7 @@
 {
   "jsons" : {
      "framedata" : "json/framedata.json",
+     "framedata2" : "json/framedatanew.json",
      
      "level" : "json/levels/biglevel.json",
      
@@ -68,6 +69,9 @@
     },
     "overgrowth1": {
       "file": "textures/environment/b_overgrowth1_1.png"
+    },
+    "reynard_all": {
+        "file": "textures/reynard_all.png"
     }
   },
     "sounds": {

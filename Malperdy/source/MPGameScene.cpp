@@ -253,6 +253,9 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
+    
+    Animation anim = Animation(_assets->get<Texture>("reynard_all"), _assets->get<JsonValue>("framedata2")->get("reynard"));
+    
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     /////////////////////////////////////
