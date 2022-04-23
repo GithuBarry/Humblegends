@@ -709,6 +709,10 @@ void GameScene::resolveReynardGroundOnContact() {
     _reynardController->hitGround();
 }
 
+void GameScene::resolveEnemyGroundOffContact(shared_ptr<EnemyController> enemy) {
+    _enemy->hitGround();
+}
+
 void GameScene::resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy) {
     enemy->hitGround();
 }
@@ -799,7 +803,7 @@ void GameScene::beginContact(b2Contact *contact) {
             }
         }
     }
-    // Reynard-on-enemy collision
+    // Reynard-on-enemy collision 
     else {
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
         if (isReynardCollision(contact) && enemy != nullptr) {
@@ -814,6 +818,27 @@ void GameScene::endContact(b2Contact *contact) {
     if (_reynardController != nullptr && isReynardCollision(contact)) {
         if (isThisAReynardGroundContact(contact)) {
             resolveReynardGroundOffContact();
+        }
+    }
+}
+
+void GameScene::endContact(b2Contact *contact) {
+    b2Body* charInCharOnObject = getCharacterBodyInObjectCollision(contact);
+    if (charInCharOnObject != 0) {
+        // Now try to get if it's an enemy-on-object collision
+        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
+        // If it's nullptr, then it's Reynard, and handle all that accordingly
+        if (enemy == nullptr) {
+            if (_reynardController != nullptr && isReynardCollision(contact)) {
+                if (isThisAReynardGroundContact(contact)) {
+                    resolveReynardGroundOffContact();
+                }
+            }
+        }
+        else {
+            if (isThisAEnemyGroundContact(contact, enemy)) {
+                    resolveEnemyGroundOffContact();
+            }
         }
     }
 }
