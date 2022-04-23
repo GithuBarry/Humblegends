@@ -66,9 +66,9 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Ani
     _animation = animation;
     // create initial scene node with running animation
 
-    setSceneNode(scene2::SpriteNode::alloc(_animation->getSheet(), _animation->getRows(), _animation->getCols(), _animation->getSize()));
+    setSceneNode(scene2::SpriteNode::alloc(_animation->getSheet(), _animation->getRows(), _animation->getCols()));
     
-    _node->setScale(Vec2(-0.2,0.2));
+    _node->setScale(Vec2(0.2,0.2));
 
     Size nsize = _animation->getSheet()->getSize() / drawScale;
     auto s = _animation->getSheet();
@@ -366,7 +366,7 @@ void CharacterModel::update(float dt) {
     // update time since last frame update
     _elapsed += dt;
     
-    if (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING) {
+    if (false && (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING)) {
         
         // if it is time to update the frame...
         float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);

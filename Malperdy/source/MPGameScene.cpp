@@ -277,7 +277,7 @@ void GameScene::populate() {
     }
 
 #pragma mark Reynard
-    Vec2 pos = Vec2(4, 3);
+    Vec2 pos = Vec2(8, 4);
 
     shared_ptr<Animation> reynard_animations = make_shared<Animation>(_assets->get<Texture>("reynard_all"), _assets->get<JsonValue>("framedata2")->get("reynard"));
     // initialize reynardController with the final animation map
