@@ -7,13 +7,14 @@
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
 //  Copyright (c) 2022 Humblegends. All rights reserved.
-//  Version: 3/28/22
+//  Version: 4/23/22
 //
 
 #include "MPEnvController.h"
 #include "MPReynardModel.h"
 #include "MPEnemyController.h"
 #include "MPTrapModel.hpp"
+#include <cugl/cugl.h>
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController() {
@@ -196,6 +197,16 @@ void EnvController::defogSurrounding(Vec2 room) {
             lookUnfogged(newRoom);
         }
     }
+}
+
+#pragma mark Appearance Setters
+
+/* Animates a room swap */
+void EnvController::animateSwap(Vec2 vec1, Vec2 vec2) {
+    //shared_ptr<Scene2::MoveTo> move1;
+    //move1.alloc();
+    //shared_ptr<RoomModel> room1 = _grid->getRoom(vec1);
+    //shared_ptr<RoomModel> room2 = _grid->getRoom(vec2);
 }
 
 /* Sets the room to look selected */
