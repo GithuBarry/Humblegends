@@ -13,6 +13,7 @@
 #include "MPEnvController.h"
 #include "MPReynardModel.h"
 #include "MPEnemyController.h"
+#include "MPTrapModel.hpp"
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController() {
@@ -41,19 +42,16 @@ void EnvController::update(const shared_ptr<ReynardController>& reynard) {
 * @return true if room was successfully selected, and false otherwise
 */
 bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
-    Vec2 room1 = _grid->screenSpaceToRoom(coords);
-    bool isValidRoom = room1.x != -1 && room1.y != -1;
-    isValidRoom = isValidRoom && !_grid->isRoomFogged(room1);
-    bool isOccupied = containsReynard(room1, reynard);
-    isOccupied = isOccupied || containsEnemies(room1, enemies);
+    Vec2 room = _grid->screenSpaceToRoom(coords);
 
-    if (!isValidRoom || isOccupied || _grid->getRoom(room1) == nullptr) {
+    if (isSwappable(room, reynard, enemies)) {
+        lookSelected(room);
+        _toSwap = room;
+        return true;
+    } 
+    else {
         deselectRoom();
         return false;
-    } else {
-        lookSelected(room1);
-        _toSwap = room1;
-        return true;
     }
 }
 
@@ -75,17 +73,11 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
     }
 
     Vec2 room2 = _grid->screenSpaceToRoom(coords);
-    bool isValidRoom = room2.x != -1 && room2.y != -1;
-    isValidRoom = isValidRoom && !_grid->isRoomFogged(room2);
-    bool isOccupied = containsReynard(room2, reynard) || containsReynard(_toSwap, reynard);
-    isOccupied = isOccupied || containsEnemies(room2, enemies) || containsEnemies(_toSwap, enemies);
+    bool invalid = !isSwappable(room2, reynard, enemies);
+    invalid = invalid || !isSwappable(_toSwap, reynard, enemies);
+    invalid = invalid || room2.x == _toSwap.x && room2.y == _toSwap.y; // can't be the sam room
 
-    if (!isValidRoom) return false;
-    if (isOccupied) {
-        deselectRoom();
-        return false;
-    }
-    if (room2.x == _toSwap.x && room2.y == _toSwap.y) {
+    if (invalid) {
         deselectRoom();
         return false;
     }
@@ -114,6 +106,32 @@ void EnvController::deselectRoom() {
 }
 
 #pragma mark Helper Functions
+
+/*
+* Checks if the room satisfies the conditions to be swappable
+*
+* @param room       the row and column of the room to check
+* @param reynard    the controller for reynard
+* @param enemies    the controllers for the enemies
+*
+* @ return true if room doesn't contain Reynard, enemies or a checkpoint
+*/
+bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+    // check if the room number is valid
+    if (room.x == -1 || room.y == -1) return false;
+    if (_grid->getRoom(room) == nullptr) return false;
+    // check if the room is fogged
+    if (_grid->isRoomFogged(room)) return false;
+    // check if the room is occupied
+    if (containsEnemies(room, enemies)) return false;
+    if (containsReynard(room, reynard)) return false;
+    // check if the room contains a checkpoint
+    shared_ptr<TrapModel> trap = _grid->getRoom(room)->getTrap();
+    if ((trap != nullptr) && (trap->getType() == TrapModel::TrapType::CHECKPOINT)) {
+        return false;
+    }
+    return true;
+}
 
 /*
 * Checks whether Reynard is inside the indicated room

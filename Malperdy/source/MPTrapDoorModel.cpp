@@ -1,14 +1,13 @@
 //
 //  MPTrapDoorModel.cpp
-//  Rocket Demo (Mac)
-//
-//  Created by Spencer Hurst on 3/27/22.
-//  Copyright © 2022 Cornell Game Design Initiative. All rights reserved.
+//  Malperdy
 //
 //  Owner: Spencer Hurst
-//  Contributors: Evan, Abu
+//  Contributors: Evan Azari, Abu Qader, Jordan Selin
+//  Version: 4/16/22
+// 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
-//  Version: 3/10/22
+//
 
 #include "MPTrapDoorModel.hpp"
 
@@ -33,7 +32,7 @@ using namespace cugl;
 bool TrapDoor::init(float roomWidth, float roomHeight){
     _polyNode = make_shared<scene2::PolygonNode>();
     _polyNode->initWithFile("textures/MP_TrapDoor-1.png");
-    _type = "trapdoor";
+    _type = TrapType::TRAPDOOR;
     // Inherantly starts activated
     _trapState = TrapModel::TrapState::ACTIVATED;
     

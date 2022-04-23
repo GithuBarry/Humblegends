@@ -29,12 +29,11 @@ private:
     /* The row, column of the room to be swapped */
     Vec2 _toSwap;
 
-
     /* Reynard's current room */
     Vec2 _reyRoom;
 
+    /* History of room swaps as a list of pairs of rooms that have been swapped */
     vector<vector<Vec2>> _swapHistory;
-
 
 public:
     /* Creates an envrionment controller and initializes its grid and rooms */
@@ -95,12 +94,14 @@ public:
     /* Deselects the currently selected room, if one is selected */
     void deselectRoom();
 
-    /**
-     Return swap history up to last call of this function
-     in format of [[room11, room12],[room21,room22],...],
-     and start a new session (session as between checkpoints)
-     @return the swap history between last checkpoint and this checkpoint
-     */
+    /*
+    * Return swap history up to last call of this function (since last checkpoint) 
+    * and start a new session (session as between checkpoints)
+    * 
+    * @return   the swap history between last checkpoint and this checkpoint
+    *           History is returned as a list of room pairs that have been swapped
+    *           (i.e. [[room1, room2], [room2, room3] ... ])
+    */
     vector<vector<Vec2>> checkPoint(){
         vector<vector<Vec2>> result =_swapHistory;
         _swapHistory = vector<vector<Vec2>>();
@@ -123,6 +124,17 @@ private:
 #pragma mark Helper Functions
 
     /*
+    * Checks if the room satisfies the conditions to be swappable
+    * 
+    * @param room       the row and column of the room to check
+    * @param reynard    the controller for reynard
+    * @param enemies    the controllers for the enemies
+    * 
+    * @ return true if room doesn't contain Reynard, enemies or a checkpoint
+    */
+    bool isSwappable(Vec2 room, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+
+    /*
     * Checks whether Reynard is inside the indicated room
     *
     * @param room       the row and column of the room to check
@@ -136,7 +148,7 @@ private:
     * Checks whether any enemies are inside the indicated room
     *
     * @param room       the row and column of the room to check
-    * @param reynard    the controllers for the enemies
+    * @param enemies    the controllers for the enemies
     *
     * @return true if at least one enemy is inside the given room
     */
