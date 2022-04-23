@@ -441,6 +441,9 @@ public:
      */
     void resolveReynardGroundOnContact();
     
+    void resolveEnemyGroundOffContact(shared_ptr<EnemyController> enemy);
+
+    
     /**
      * Resolver function that fires when Reynard ends contact with the ground
      */
