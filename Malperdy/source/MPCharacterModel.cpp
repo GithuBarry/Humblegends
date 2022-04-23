@@ -366,7 +366,7 @@ void CharacterModel::update(float dt) {
     // update time since last frame update
     _elapsed += dt;
     
-    if (false && (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING)) {
+    if (true && (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING)) {
         
         // if it is time to update the frame...
         float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
