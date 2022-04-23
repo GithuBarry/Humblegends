@@ -236,7 +236,7 @@ public:
      */
     void setDebug(bool value) {
         _debug = value;
-        //_debugnode->setVisible(value);
+        _debugnode->setVisible(value);
     }
 
     /**
