@@ -135,17 +135,14 @@ bool CharacterModel::setMoveState(MovementState newState) {
     // Do what needs to be done when switching into the new state
     switch (newState) {
         case MovementState::STOPPED:
-            //uploadTexture("idle");
-            _currAnimation = "";
+
             setAnimation("idle");
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
             setVX((_faceRight ? 1 : -1) * _speed);
             _hasDashed = false;
-            if(_moveState != MovementState::RUNNING){
-                //uploadTexture("run");
-            }
+
             
             setAnimation("run");
 
@@ -158,7 +155,6 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
             // If character is on a wall, then also give a horizontal velocity away
             if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
-            //uploadTexture("jump");
             
             setAnimation("jump");
             

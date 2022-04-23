@@ -227,24 +227,29 @@ public:
         _node->setPosition(getPosition() * _drawScale);
     }
     
+    /** Sets the animation to the string specified, and changes the relevant frame data
+     * returns whether the animation was swapped successsfully
+     */
     bool setAnimation(string anim){
+        
+        // return false if the animation doesn't exist, or we are already on the animation
         if (!_animation->hasKey(anim)) return false;
         if (_currAnimation == anim) return false;
         
 
-        
+        // change frame data
         _currAnimation = anim;
         _startframe = _animation->getStart(anim);
         _lastframe = _animation->getLast(anim);
         _loop = _animation->isLoop(anim);
         
+        // flip the animation if we need to
         _node->setVisible(false);
         if (_flip ^ _animation->isFlip(anim)){
             _node->setScale(_node->getScale() * Vec2(-1,1));
         }
         _node->setFrame(_currFrame);
         _node->setVisible(true);
-        
         _flip = _animation->isFlip(anim);
         
         _currFrame = _animation->isReversed() ? _lastframe : _startframe;

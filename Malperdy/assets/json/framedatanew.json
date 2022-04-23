@@ -32,11 +32,26 @@
         "reversed": "false",
         "frames" : {
             "run" : {
-                "start" : 1,
-                "last" :  386,
+                "start" : 180,
+                "last" :  239,
                 "loop" : "true",
                 "flip" : "false"
+            },
+
+            
+            "jump" : {
+                "start" : 240,
+                "last" :  324,
+                "loop" : "false",
+                "flip" : "false"
+            },
+            "dead" : {
+                "start" : 325,
+                "last" :  385,
+                "loop" : "false",
+                "flip" : "false"
             }
+
         }
     }
 }
