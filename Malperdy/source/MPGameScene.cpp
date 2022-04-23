@@ -829,7 +829,7 @@ void GameScene::endContact(b2Contact *contact) {
         }
         else {
             if (isThisAEnemyGroundContact(contact, enemy)) {
-                    resolveEnemyGroundOffContact();
+                    resolveEnemyGroundOffContact(enemy);
             }
         }
     }
