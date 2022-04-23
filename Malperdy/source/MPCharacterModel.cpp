@@ -68,9 +68,9 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Ani
 
     setSceneNode(scene2::SpriteNode::alloc(_animation->getSheet(), _animation->getRows(), _animation->getCols()));
     
-    _node->setScale(Vec2(0.2,0.2));
+    _node->setScale(Vec2(-0.2,0.2));
 
-    Size nsize = _animation->getSheet()->getSize() / drawScale;
+    Size nsize = _animation->getSheet()->getSize() / drawScale / Vec2(_animation->getCols(), _animation->getRows());
     auto s = _animation->getSheet();
 
     nsize = nsize *DUDE_WIDTH/nsize.width; //!! drawScale is effective ignored!
