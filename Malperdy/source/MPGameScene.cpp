@@ -465,11 +465,11 @@ void GameScene::update(float dt) {
     //TODO debugging area. Disable for releases
     if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0 && (_reynardController->getCharacter()->getHearts()>=0)){
         //assert (0==1);
-        CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+        //CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
     }
     if ( _reynardController->getCharacter()->isJumping()  && _reynardController->getCharacter()->getLinearVelocity().x<7){
         //assert (0==1);
-        CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
+        //CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
     }
 
 
@@ -571,9 +571,10 @@ bool GameScene::isReynardCollision(b2Contact *contact) {
  * @return      Whether the given body belongs to a character in the scene
  */
 bool GameScene::isCharacterBody(b2Body* body) {
-    // Return true if it's Reynard
-    if (body == _reynardController->getCharacter()->getBody()) return true;
-
+    if (_reynardController != nullptr) {
+        // Return true if it's Reynard
+        if (body == _reynardController->getCharacter()->getBody()) return true;
+    }
     // Otherwise check against the enemies and return true if it's one of them
     for (auto itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
         if ((*itr)->getCharacter()->getBody() == body) return true;
@@ -710,7 +711,7 @@ void GameScene::resolveReynardGroundOnContact() {
 }
 
 void GameScene::resolveEnemyGroundOffContact(shared_ptr<EnemyController> enemy) {
-    enemy->hitGround();
+    enemy->offGround();
 }
 
 void GameScene::resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy) {
@@ -756,13 +757,7 @@ void GameScene::beginContact(b2Contact *contact) {
         if (enemy == nullptr) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
             if (isThisASpikeTrapCollision(contact)) {
-                float reynardVY = _reynardController->getCharacter()->getVY();
-                if (reynardVY < 0) {
-                    resolveWallJumpOntoTrap(reynardVY);
-                }
-                else {
-                    resolveTrapOnContact();
-                }
+                resolveTrapOnContact();
             }
             else if (isThisAReynardWallContact(contact, reynardIsRight)) {
                 resolveReynardWallOnContact();
@@ -808,6 +803,7 @@ void GameScene::beginContact(b2Contact *contact) {
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
         if (isReynardCollision(contact) && enemy != nullptr) {
             // Collision between Reynard and an enemy
+            CULog("Enemy makes contact with Reynard");
             _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
         }
     }
@@ -823,12 +819,14 @@ void GameScene::endContact(b2Contact *contact) {
         if (enemy == nullptr) {
             if (_reynardController != nullptr && isReynardCollision(contact)) {
                 if (isThisAReynardGroundContact(contact)) {
+                    CULog("Reynard is off the ground");
                     resolveReynardGroundOffContact();
                 }
             }
         }
         else {
             if (isThisAEnemyGroundContact(contact, enemy)) {
+                    CULog("Reynard is off the ground");
                     resolveEnemyGroundOffContact(enemy);
             }
         }
