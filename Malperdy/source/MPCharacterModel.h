@@ -101,6 +101,8 @@ protected:
     string _currAnimation;
     int _startframe;
     int _lastframe;
+    bool _loop;
+    bool _flip;
 
 #pragma mark Attributes
 
@@ -223,6 +225,30 @@ public:
     void setSceneNode(const std::shared_ptr<cugl::scene2::SpriteNode> &node) {
         _node = node;
         _node->setPosition(getPosition() * _drawScale);
+    }
+    
+    bool setAnimation(string anim){
+        if (!_animation->hasKey(anim)) return false;
+        if (_currAnimation == anim) return false;
+        
+
+        
+        _currAnimation = anim;
+        _startframe = _animation->getStart(anim);
+        _lastframe = _animation->getLast(anim);
+        _loop = _animation->isLoop(anim);
+        
+        _node->setVisible(false);
+        if (_flip ^ _animation->isFlip(anim)){
+            _node->setScale(_node->getScale() * Vec2(-1,1));
+        }
+        _node->setFrame(_currFrame);
+        _node->setVisible(true);
+        
+        _flip = _animation->isFlip(anim);
+        
+        _currFrame = _animation->isReversed() ? _lastframe : _startframe;
+        return true;
     }
 
 #pragma mark -

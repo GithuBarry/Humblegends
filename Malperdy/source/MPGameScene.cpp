@@ -287,11 +287,14 @@ void GameScene::populate() {
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
+    
+    shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
+    
     // Give all enemies a reference to Reynard's controller to handle detection
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
     // Initialize EnemyController with the final animation map and store in vector of enemies
-    _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, reynard_animations));
+    _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
     // Add first enemy to physics world
     addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put

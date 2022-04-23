@@ -76,7 +76,7 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Ani
     nsize = nsize *DUDE_WIDTH/nsize.width; //!! drawScale is effective ignored!
     _drawScale = drawScale;
     
-    _currAnimation = "run";
+    setAnimation("run");
 
     // Create physics
     if (CapsuleObstacle::init(pos, nsize)) {
@@ -136,6 +136,8 @@ bool CharacterModel::setMoveState(MovementState newState) {
     switch (newState) {
         case MovementState::STOPPED:
             //uploadTexture("idle");
+            _currAnimation = "";
+            setAnimation("idle");
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
@@ -144,6 +146,8 @@ bool CharacterModel::setMoveState(MovementState newState) {
             if(_moveState != MovementState::RUNNING){
                 //uploadTexture("run");
             }
+            
+            setAnimation("run");
 
             break;
         case MovementState::JUMPING:
@@ -155,6 +159,9 @@ bool CharacterModel::setMoveState(MovementState newState) {
             // If character is on a wall, then also give a horizontal velocity away
             if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
             //uploadTexture("jump");
+            
+            setAnimation("jump");
+            
             break;
         case MovementState::FALLING:
             break;
@@ -162,6 +169,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             // Reduce gravity so that character "sticks" to wall
             setGravityScale(WALL_SLIDE_GRAV_SCALE);
             // Stop moving temporarily as character sticks
+            _currAnimation = "";
             setVX(0);
             setVY(0);
             break;
@@ -176,6 +184,9 @@ bool CharacterModel::setMoveState(MovementState newState) {
             // TODO: any changes for swapping into DEAD state
             setVX(0);
             setVY(0);
+            
+            setAnimation("dead");
+            
             break;
     }
 
@@ -366,30 +377,29 @@ void CharacterModel::update(float dt) {
     // update time since last frame update
     _elapsed += dt;
     
-    if (true && (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING)) {
+    //if (true && (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING)) {
         
         // if it is time to update the frame...
         float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
         if (_elapsed > frame_time ) {
 
             // if on the last frame
-            if (_currFrame >= _node->getSize()-1){
+            if ((_animation->isReversed() ? _currFrame <= _startframe : _currFrame >= _lastframe)){
                 // loop the animation if needed
-                
-                //TODO: fix this
-                if(true){
-                    _currFrame = 0;
+            
+                if(_loop){
+                    _currFrame = (_animation->isReversed()  ? _lastframe : _startframe);
                 }
             }
             // if not on the last frame, then increment
             else{
-                _currFrame = _currFrame + 1;
+                _currFrame = (_animation->isReversed() ? _currFrame - 1 : _currFrame + 1);
             }
             _node->setFrame(_currFrame);
             // reset time since last frame update
             _elapsed = 0;
         }
-    }
+    //}
 
 }
 

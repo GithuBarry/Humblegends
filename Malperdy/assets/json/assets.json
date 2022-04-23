@@ -72,6 +72,9 @@
     },
     "reynard_all": {
         "file": "textures/reynard_all.png"
+    },
+    "rabbit_all": {
+        "file": "textures/rabbit_all.png"
     }
   },
     "sounds": {

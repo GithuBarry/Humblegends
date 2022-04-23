@@ -28,8 +28,10 @@ private:
     int _cols;
     int _rows;
     int _size;
+    bool _reversed;
     
-    map<string, tuple<int, int>> _frames;
+    // animation name : (start frame, end frame, loop, flip)
+    map<string, tuple<int, int, bool, bool>> _frames;
     
 public:
 #pragma mark Constructors
@@ -40,14 +42,18 @@ public:
         _cols = framedata->get("cols")->asInt();
         _rows = framedata->get("rows")->asInt();
         _size = framedata->get("size")->asInt();
+        _reversed = framedata->get("reversed")->asString() == "true";
         
         int numAnims =  framedata->get("frames")->size();
         for(int i = 0; i< numAnims; i++){
             shared_ptr<JsonValue> ob = framedata->get("frames")->get(i);
             string key = ob->key();
-            int start = ob->get(0)->asInt();
-            int end = ob->get(1)->asInt();
-            _frames[key] = tuple<int, int>(start, end);
+            int start = ob->get("start")->asInt();
+            int last = ob->get("last")->asInt();
+            bool loop = ob->get("loop")->asString() == "true";
+            bool flip = ob->get("flip")->asString() == "true";
+            
+            _frames[key] = tuple<int, int, bool, bool>(start, last, loop, flip);
         }
     };
 
@@ -62,5 +68,30 @@ public:
     int getCols(){ return _cols;}
     
     int getSize(){ return _size;}
+    
+    bool hasKey(string key){
+        return _frames.count(key) > 0;
+    }
+    
+    int getStart(string key){
+        return std::get<0>(_frames[key]);
+    }
+    
+    int getLast(string key){
+        return std::get<1>(_frames[key]);
+    }
+    
+    bool isLoop(string key){
+        return std::get<2>(_frames[key]);
+    }
+    
+    bool isFlip(string key){
+        return std::get<3>(_frames[key]);
+    }
+    
+    bool isReversed(){
+        return _reversed;
+    }
+    
     
 };
