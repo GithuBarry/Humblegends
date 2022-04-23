@@ -65,13 +65,13 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations) {
+bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
     // If initialization of parent class failed, return immediately
-    if (!(CharacterModel::init(pos, drawScale, animations))) return false;
+    if (!(CharacterModel::init(pos, drawScale, animation))) return false;
 
     // Have enemies be stopped by default
     _moveState = MovementState::STOPPED;
-	_currAnimation = (*animations)["idle"];
+	_currAnimation = "run";
     // Also have enemies be patrolling by default
     _behaveState = BehaviorState::PATROLLING;
 

@@ -262,6 +262,7 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
+    
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     /////////////////////////////////////
@@ -286,27 +287,8 @@ void GameScene::populate() {
 
 #pragma mark Reynard
     Vec2 pos = Vec2(4, 3);
-    // Create a controller for Reynard based on his image texture
-//    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
 
-    // Make a dictionary of animations for reynard
-    shared_ptr<map<string, CharacterModel::Animation>> reynard_animations = make_shared<map<string, CharacterModel::Animation>>();
-
-    // The names of the sprite sheet assets
-    string textureName[] = {"reynard", "reynard_run", "reynard_jump"};
-    // The animation names
-    string animationName[] = {"default", "run", "jump"};
-
-    // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
-    for(int i = 0; i < sizeof(textureName)/sizeof(textureName[0]); i++){
-        if(_assets->get<Texture>(textureName[i])){
-            int size = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("size")->asInt();
-            int cols = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("cols")->asInt();
-            string loop = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("loop")->asString();
-            (*reynard_animations)[animationName[i]] = CharacterModel::Animation();
-            (*reynard_animations)[animationName[i]].init(_assets->get<Texture>(textureName[i]), size, cols, loop);
-        }
-    }
+    shared_ptr<Animation> reynard_animations = make_shared<Animation>(_assets->get<Texture>("reynard_all"), _assets->get<JsonValue>("framedata2")->get("reynard"));
     // initialize reynardController with the final animation map
     _reynardController = ReynardController::alloc(pos, _scale, reynard_animations);
 
@@ -314,42 +296,17 @@ void GameScene::populate() {
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
+    
+    shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
+    
     // Give all enemies a reference to Reynard's controller to handle detection
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
-    EnemyController::setReynardController(_reynardController);
 
-    Vec2 rab_pos = Vec2(3, 3);
-
-    // Make a dictionary of animations for reynard
-    shared_ptr<map<string, CharacterModel::Animation>> rabbit_animations = make_shared<map<string, CharacterModel::Animation>>();
-
-    // The names of the sprite sheet assets
-    //TODO change to actual
-    string rtextureName[] = {"rabbit_run", "rabbit_run", "rabbit_run","rabbit_idle"};
-    // The animation names
-    string ranimationName[] = {"default", "run", "jump","idle"};
-
-    // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
-    for(int i = 0; i < sizeof(rtextureName)/sizeof(rtextureName[0]); i++){
-        if(_assets->get<Texture>(rtextureName[i])){
-            int size = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("size")->asInt();
-            int cols = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("cols")->asInt();
-            string loop = _assets->get<JsonValue>("framedata")->get(rtextureName[i])->get("loop")->asString();
-            (*rabbit_animations)[ranimationName[i]] = CharacterModel::Animation();
-            (*rabbit_animations)[ranimationName[i]].init(_assets->get<Texture>(rtextureName[i]), size, cols, loop);
-        }
-    }
     // Initialize EnemyController with the final animation map and store in vector of enemies
     _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
     // Add first enemy to physics world
-    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
-
-    // Initialize EnemyController with the final animation map and store in vector of enemies
-    //_enemies->push_back(EnemyController::alloc(Vec2(30,15), _scale, rabbit_animations));
-
-    // Add second enemy to physics world
-    //addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
+    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put
 }
 
 

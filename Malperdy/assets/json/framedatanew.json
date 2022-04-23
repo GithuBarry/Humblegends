@@ -1,0 +1,57 @@
+{
+    "reynard": {
+        "cols" : 5,
+        "rows" : 36,
+        "size" : 177,
+        "reversed" : "true",
+        "frames" : {
+            "run" : {
+                "start" : 0,
+                "last" :  26,
+                "loop" : "true",
+                "flip" : "false"
+            },
+            "jump" : {
+                "start" : 27,
+                "last" : 56,
+                "loop" : "false",
+                "flip" : "true"
+            },
+            "dead" : {
+                "start" : 57,
+                "last" : 146,
+                "loop" : "false",
+                "flip" : "false"
+            }
+        }
+    },
+    "rabbit": {
+        "cols" : 5,
+        "rows" : 78,
+        "size" : 386,
+        "reversed": "false",
+        "frames" : {
+            "run" : {
+                "start" : 180,
+                "last" :  239,
+                "loop" : "true",
+                "flip" : "false"
+            },
+
+            
+            "jump" : {
+                "start" : 240,
+                "last" :  324,
+                "loop" : "false",
+                "flip" : "false"
+            },
+            "dead" : {
+                "start" : 325,
+                "last" :  385,
+                "loop" : "false",
+                "flip" : "false"
+            }
+
+        }
+    }
+}
