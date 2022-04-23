@@ -35,6 +35,8 @@ using namespace cugl;
 #pragma Movement Constants
 /** The default speed at which this character runs */
 #define RUN_SPEED 3.7f
+/** The default speed at which this character runs */
+#define DELAY_SPEED 2.0f
 /** The speed at which this character jumps */
 #define JUMP_SPEED 10.5f
 
@@ -252,11 +254,20 @@ public:
 #pragma mark -
 #pragma mark Attribute Properties
 
+    
+    void slowCharacter() {
+        _speed = DELAY_SPEED;
+    }
+    
+    void restoreSpeed() {
+        _speed = RUN_SPEED;
+    }
+    
     /** whether or not the character can dash */
     bool canDash() {
         return (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION) && !_hasDashed;
     }
-
+    
     /**
      * Sets the character's direction to be facing in the opposite direction that
      * it is currently facing in.
@@ -264,7 +275,7 @@ public:
     float getHearts() {
         return _hearts;
     }
-
+    
     /**
      * Sets the character's direction to be facing in the opposite direction that
      * it is currently facing in.
@@ -272,7 +283,7 @@ public:
     void setHearts(float v) {
         _hearts = v;
     }
-
+    
     /**
      * Sets the character's direction to be facing in the opposite direction that
      * it is currently facing in.
@@ -281,7 +292,7 @@ public:
         _faceRight = !_faceRight;
         _node->setScale(_node->getScale()*Vec2(-1,1));
     }
-
+    
     /**
      * Returns true if the character is currently running.
      *
@@ -290,7 +301,7 @@ public:
     bool isRunning() const {
         return (_moveState == MovementState::RUNNING);
     }
-
+    
     /**
      * Returns true if the character is currently jumping.
      *
@@ -299,7 +310,7 @@ public:
     bool isJumping() const {
         return (_moveState == MovementState::JUMPING);
     }
-
+    
     /**
      * Returns true if the character is on the ground.
      *
@@ -308,7 +319,7 @@ public:
     bool isGrounded() const {
         return (_moveState == MovementState::STOPPED || _moveState == MovementState::RUNNING);
     }
-
+    
     /**
      * Returns true if the character is falling.
      *
@@ -317,7 +328,7 @@ public:
     bool isFalling() const {
         return (_moveState == MovementState::FALLING);
     }
-
+    
     /**
      * Returns true if the character is on the wall.
      *
@@ -326,7 +337,7 @@ public:
     bool isOnWall() const {
         return (_moveState == MovementState::ONWALL);
     }
-
+    
     /**
      * Returns true if the character is dashing.
      *
@@ -335,7 +346,7 @@ public:
     bool isDashing() const {
         return (_moveState == MovementState::DASHING);
     }
-
+    
     /**
      * Returns the name of the ground sensor
      *
@@ -346,7 +357,7 @@ public:
     std::string *getSensorName() {
         return &_sensorName;
     }
-
+    
     /**
      * Returns true if this character is facing right
      *
@@ -355,7 +366,7 @@ public:
     bool isFacingRight() const {
         return _faceRight;
     }
-
+    
     /**
      * Sets the character's movement state, changing physical attributes
      * accordingly as necessary.
@@ -364,7 +375,7 @@ public:
      * @return      Whether the state change happened successfully
      */
     bool setMoveState(MovementState newState);
-
+    
     /**
      * Sets the current position for this physics body
      *
@@ -377,7 +388,7 @@ public:
         SimpleObstacle::setPosition(value);
         _node->setPosition(value * _drawScale);
     }
-
+    
     /**
      * Replaces the node with the specified animation
      *
@@ -386,7 +397,7 @@ public:
      * @returns whether or not the animation was uplaoded
      */
     bool uploadTexture(string tex);
-
+    
 #pragma mark -
 #pragma mark Physics Methods
 
