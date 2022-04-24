@@ -98,7 +98,7 @@
 
     "level_music": {
       "type": "sample",
-      "file": "sounds/level_music.ogg",
+      "file": "sounds/levelmusic.ogg",
       "volume": 0.3
     }
   },
