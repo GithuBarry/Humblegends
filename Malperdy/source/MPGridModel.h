@@ -229,8 +229,6 @@ public:
     void calculatePhysicsGeometry();
 
     shared_ptr<physics2::PolygonObstacle> makeStaticFromPath(Path2 path);
-
-    virtual ~GridModel();
 };
 
 
