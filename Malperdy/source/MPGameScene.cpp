@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 3/13/22
+//  Version: 4/16/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -60,7 +60,7 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 
 /** The key for collisions sounds {@example} */
 
-#define SOME_SOUND     "somesoundname"
+#define LEVEL_MUSIC "level_music"
 
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
@@ -181,13 +181,24 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _worldnode->setPosition(offset);
 
-    _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
-    _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
-    _debugnode->setPosition(offset / _scale);
+    //_debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
+    //_debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
+    //_debugnode->setPosition(offset / _scale);
+
     setDebug(false);
 
+    _winNode = scene2::Label::allocWithText("VICTORY!", _assets->get<Font>(PRIMARY_FONT));
+    _winNode->setAnchor(Vec2::ANCHOR_CENTER);
+    _winNode->setPosition(offset);
+    _winNode->setBackground(Color4::BLACK);
+    _winNode->setForeground(STATIC_COLOR);
+    _winNode->setPadding(dimen.width / 2, dimen.height / 2, dimen.width / 2, dimen.height / 2);
+    setComplete(false);
+
     addChild(_worldnode);
-    addChild(_debugnode);
+
+    //addChild(_debugnode);
+
     addChild(_winNode);
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
@@ -211,7 +222,9 @@ void GameScene::dispose() {
         _input.dispose();
         _world = nullptr;
         _worldnode = nullptr;
-        _debugnode = nullptr;
+
+        //_debugnode = nullptr;
+
         _winNode = nullptr;
         _complete = false;
         _debug = false;
@@ -235,7 +248,7 @@ void GameScene::reset() {
     _envController = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
-    _debugnode->removeAllChildren();
+    //_debugnode->removeAllChildren();
     _gamestate.reset();
 
 
@@ -255,6 +268,7 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
+    
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     /////////////////////////////////////
@@ -272,34 +286,15 @@ void GameScene::populate() {
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
-        (*itr)->setDebugScene(_debugnode);
+        //(*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
         //CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
 
 #pragma mark Reynard
     Vec2 pos = Vec2(4, 3);
-    // Create a controller for Reynard based on his image texture
-//    _reynardController = ReynardController::alloc(pos, _scale, _assets->get<Texture>("reynard"));
 
-    // Make a dictionary of animations for reynard
-    shared_ptr<map<string, CharacterModel::Animation>> reynard_animations = make_shared<map<string, CharacterModel::Animation>>();
-
-    // The names of the sprite sheet assets
-    string textureName[] = {"reynard", "reynard_run", "reynard_jump"};
-    // The animation names
-    string animationName[] = {"default", "run", "jump"};
-
-    // For each asset, retrieve the frame data and texture, and assign it to the appropriate animation
-    for(int i = 0; i < sizeof(textureName)/sizeof(textureName[0]); i++){
-        if(_assets->get<Texture>(textureName[i])){
-            int size = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("size")->asInt();
-            int cols = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("cols")->asInt();
-            string loop = _assets->get<JsonValue>("framedata")->get(textureName[i])->get("loop")->asString();
-            (*reynard_animations)[animationName[i]] = CharacterModel::Animation();
-            (*reynard_animations)[animationName[i]].init(_assets->get<Texture>(textureName[i]), size, cols, loop);
-        }
-    }
+    shared_ptr<Animation> reynard_animations = make_shared<Animation>(_assets->get<Texture>("reynard_all"), _assets->get<JsonValue>("framedata2")->get("reynard"));
     // initialize reynardController with the final animation map
     _reynardController = ReynardController::alloc(pos, _scale, reynard_animations);
 
@@ -307,7 +302,11 @@ void GameScene::populate() {
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
+    
+    shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
+    
     // Give all enemies a reference to Reynard's controller to handle detection
+
     EnemyController::setReynardController(_reynardController);
 
     Vec2 rab_pos = Vec2(3, 3);
@@ -331,17 +330,15 @@ void GameScene::populate() {
             (*rabbit_animations)[ranimationName[i]].init(_assets->get<Texture>(rtextureName[i]), size, cols, loop);
         }
     }
+    _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
+
     // Initialize EnemyController with the final animation map and store in vector of enemies
     _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
     // Add first enemy to physics world
-    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
-
-    // Initialize EnemyController with the final animation map and store in vector of enemies
-    //_enemies->push_back(EnemyController::alloc(Vec2(30,15), _scale, rabbit_animations));
-
-    // Add second enemy to physics world
-    //addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put this at the very front
+    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put
+#pragma mark Sound
+    MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
 }
 
 
@@ -361,7 +358,7 @@ void GameScene::populate() {
 void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
         const std::shared_ptr<scene2::SceneNode> &node) {
     _world->addObstacle(obj);
-    obj->setDebugScene(_debugnode);
+    //obj->setDebugScene(_debugnode);
     obj->setDebugColor(Color4::RED);
 
     // Position the scene graph node (enough for static objects)
@@ -468,7 +465,11 @@ void GameScene::update(float dt) {
     // TODO debug purposes
     if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0){
         //assert (0==1);
-        CULog("FIX Needed: Reynard stuck. See gamescene update and breakpoint here");
+        CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+    }
+    if ( _reynardController->getCharacter()->isJumping()  && _reynardController->getCharacter()->getLinearVelocity().x<7){
+        //assert (0==1);
+        //CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
     }
 
 
@@ -482,10 +483,10 @@ void GameScene::update(float dt) {
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
-    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
+    /*_debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
     _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
     _debugnode->applyZoom(1 / _debugnode->getZoom());
-    _debugnode->applyZoom(_worldnode->getZoom());
+    _debugnode->applyZoom(_worldnode->getZoom());*/
 
     // Update all enemies
     vector<std::shared_ptr<EnemyController>>::iterator itr;
@@ -540,21 +541,28 @@ b2Fixture *GameScene::getEnemyFixture(b2Contact *contact) {
     }
 }
 
-bool GameScene::isThisASpikeTrapCollision(b2Contact *contact) {
+/**
+* Detects if a collision includes a trap object, and if so returns the trap type
+*
+* @param  contact  The two bodies that collided
+*
+* @return  trap type if one body is a trap
+        or UNTYPED if neither body is a trap
+*/
+TrapModel::TrapType GameScene::isTrapCollision(b2Contact* contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
     for (int row = 0; row < _grid->getWidth(); row++) {
         for (int col = 0; col < _grid->getHeight(); col++) {
             if (_grid->getRoom(row, col)->getTrap() != nullptr) {
                 shared_ptr<TrapModel> _trap = _grid->getRoom(row, col)->getTrap();
-                if ((_trap->getType() == "spike" && _trap->getObstacle()->getBody() == body1)
-                        || (_trap->getType() == "spike" && _trap->getObstacle()->getBody() == body2)) {
-                    return true;
-                }
+                b2Body* body = _trap->getObstacle()->getBody();
+                bool isCollision = body == body1 || body == body2;
+                if (isCollision) return _trap->getType();
             }
         }
     }
-    return false;
+    return TrapModel::TrapType::UNTYPED;
 }
 
 bool GameScene::isReynardCollision(b2Contact *contact) {
@@ -570,9 +578,10 @@ bool GameScene::isReynardCollision(b2Contact *contact) {
  * @return      Whether the given body belongs to a character in the scene
  */
 bool GameScene::isCharacterBody(b2Body* body) {
-    // Return true if it's Reynard
-    if (body == _reynardController->getCharacter()->getBody()) return true;
-
+    if (_reynardController != nullptr) {
+        // Return true if it's Reynard
+        if (body == _reynardController->getCharacter()->getBody()) return true;
+    }
     // Otherwise check against the enemies and return true if it's one of them
     for (auto itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
         if ((*itr)->getCharacter()->getBody() == body) return true;
@@ -708,6 +717,10 @@ void GameScene::resolveReynardGroundOnContact() {
     _reynardController->hitGround();
 }
 
+void GameScene::resolveEnemyGroundOffContact(shared_ptr<EnemyController> enemy) {
+    enemy->offGround();
+}
+
 void GameScene::resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy) {
     enemy->hitGround();
 }
@@ -750,7 +763,8 @@ void GameScene::beginContact(b2Contact *contact) {
         // If it's nullptr, then it's Reynard, and handle all that accordingly
         if (enemy == nullptr) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
-            if (isThisASpikeTrapCollision(contact)) {
+            TrapModel::TrapType trapType = isTrapCollision(contact);
+            if (trapType == TrapModel::TrapType::SPIKE) {
                 float reynardVY = _reynardController->getCharacter()->getVY();
                 if (reynardVY < 0) {
                     resolveWallJumpOntoTrap(reynardVY);
@@ -758,6 +772,9 @@ void GameScene::beginContact(b2Contact *contact) {
                 else {
                     resolveTrapOnContact();
                 }
+            }
+            else if (trapType == TrapModel::TrapType::CHECKPOINT) {
+                setComplete(true);
             }
             else if (isThisAReynardWallContact(contact, reynardIsRight)) {
                 resolveReynardWallOnContact();
@@ -775,7 +792,8 @@ void GameScene::beginContact(b2Contact *contact) {
         // Otherwise it's an enemy-on-object collision, and handle that accordingly
         else {
             bool enemyIsRight = enemy->getCharacter()->isFacingRight();
-            if (isThisASpikeTrapCollision(contact)) {
+            TrapModel::TrapType trapType = isTrapCollision(contact);
+            if (trapType == TrapModel::TrapType::SPIKE) {
                 float enemyVY = enemy->getCharacter()->getVY();
                 if (enemyVY < 0) {
                     resolveEnemyWallJumpOntoTrap(enemyVY, enemy);
@@ -803,6 +821,7 @@ void GameScene::beginContact(b2Contact *contact) {
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
         if (isReynardCollision(contact) && enemy != nullptr) {
             // Collision between Reynard and an enemy
+            CULog("Enemy makes contact with Reynard");
             _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
         }
     }
@@ -810,9 +829,24 @@ void GameScene::beginContact(b2Contact *contact) {
 
 
 void GameScene::endContact(b2Contact *contact) {
-    if (_reynardController != nullptr && isReynardCollision(contact)) {
-        if (isThisAReynardGroundContact(contact)) {
-            resolveReynardGroundOffContact();
+    b2Body* charInCharOnObject = getCharacterBodyInObjectCollision(contact);
+    if (charInCharOnObject != 0) {
+        // Now try to get if it's an enemy-on-object collision
+        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
+        // If it's nullptr, then it's Reynard, and handle all that accordingly
+        if (enemy == nullptr) {
+            if (_reynardController != nullptr && isReynardCollision(contact)) {
+                if (isThisAReynardGroundContact(contact)) {
+                    CULog("Reynard is off the ground");
+                    resolveReynardGroundOffContact();
+                }
+            }
+        }
+        else {
+            if (isThisAEnemyGroundContact(contact, enemy)) {
+                    CULog("Reynard is off the ground");
+                    resolveEnemyGroundOffContact(enemy);
+            }
         }
     }
 }

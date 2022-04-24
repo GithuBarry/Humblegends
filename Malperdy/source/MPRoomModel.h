@@ -26,7 +26,7 @@
 //
 //  Owner: Kristina Gu
 //  Contributors: Kristina Gu, Jordan Selin
-//  Version: 3/28/22
+//  Version: 4/16/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -189,7 +189,7 @@ public:
     bool init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg = nullptr);
     
     /** */
-    bool initTrap(string type);
+    bool initTrap(TrapModel::TrapType type);
 
 #pragma mark Static Constructors
 //    /**
