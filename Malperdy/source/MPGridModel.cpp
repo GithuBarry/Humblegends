@@ -442,6 +442,7 @@ void GridModel::calculatePhysicsGeometry() {
 
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
                 _grid->at(row)->at(col)->getTrap()->initObstacle(obstacle);
+//                HERE IS WHERE TRAPDoors Are set correctly. 
                 if(_grid->at(row)->at(col)->getTrap()->getType()==TrapModel::TrapType::TRAPDOOR){
                     _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
                 }
