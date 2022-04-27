@@ -193,6 +193,14 @@ bool RoomModel::initTrap(TrapModel::TrapType type){
         
         addChild(_trap);
     }
+    if (type == TrapModel::TrapType::SAP){
+        shared_ptr<SapTrap> trap = make_shared<SapTrap>();
+        trap->init();
+        
+        _trap = trap;
+        
+        addChild(_trap);
+    }
     else{
         return false;
     }

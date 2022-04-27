@@ -27,7 +27,7 @@ using namespace cugl;
 bool SapTrap::init(){
     _sceneNode = make_shared<scene2::SpriteNode>();
     _sceneNode->initWithFile("textures/spikes.png");
-    _type = TrapType::SPIKE;
+    _type = TrapType::SAP;
     
     _sceneNode->setAnchor(Vec2::ZERO);
     _sceneNode->setScale(720.0 / _sceneNode->getPolygon().getBounds().getMaxX());

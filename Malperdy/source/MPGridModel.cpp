@@ -145,6 +145,8 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
         }
     }
     
+    
+    
     // now, go through the data, and for each encountered entity, if it is a trap then add it to the appropriate room
     // first, loop through the level layers again
     for(int i = 0; i < levelJSON->get("layers")->size(); i++){
@@ -175,6 +177,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
             }
         }
     }
+    _grid->at(2)->at(2)->initTrap(TrapModel::TrapType::SAP);
     return this->scene2::SceneNode::init();
 };
 
@@ -444,6 +447,9 @@ void GridModel::calculatePhysicsGeometry() {
                 _grid->at(row)->at(col)->getTrap()->initObstacle(obstacle);
 //                HERE IS WHERE TRAPDoors Are set correctly. 
                 if(_grid->at(row)->at(col)->getTrap()->getType()==TrapModel::TrapType::TRAPDOOR){
+                    _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
+                }
+                if(_grid->at(row)->at(col)->getTrap()->getType()==TrapModel::TrapType::SAP){
                     _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
                 }
             }
