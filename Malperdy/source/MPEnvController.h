@@ -119,6 +119,8 @@ public:
         _swapHistory = vector<vector<Vec2>>();
     }
 
+    virtual ~EnvController();
+
 
 private:
 #pragma mark Helper Functions

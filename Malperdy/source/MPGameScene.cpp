@@ -302,11 +302,18 @@ void GameScene::populate() {
     // Give all enemies a reference to Reynard's controller to handle detection
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
+
     // Initialize EnemyController with the final animation map and store in vector of enemies
     _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
-    // Add first enemy to physics world
-    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put
+    for(shared_ptr<EnemyController> enemy : *_enemies){
+        enemy->setObstacleWorld(_world);
+        enemy->setReynardController(_reynardController);
+        addObstacle(enemy->getCharacter(), enemy->getSceneNode()); // Put
+    }
+
+
+
 }
 
 
@@ -444,8 +451,9 @@ void GameScene::update(float dt) {
     Vec2 reynardScreenPosition = _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition());
 
     bool faceRight = _reynardController->getCharacter()->isFacingRight();
+    Vec2 reynardVelocity = _reynardController->getCharacter()->getLinearVelocity();
 
-    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(), faceRight));
+    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(), faceRight,reynardVelocity));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
@@ -803,14 +811,14 @@ void GameScene::endContact(b2Contact *contact) {
         if (enemy == nullptr) {
             if (_reynardController != nullptr && isReynardCollision(contact)) {
                 if (isThisAReynardGroundContact(contact)) {
-                    CULog("Reynard is off the ground");
+                    //CULog("Reynard is off the ground");
                     resolveReynardGroundOffContact();
                 }
             }
         }
         else {
             if (isThisAEnemyGroundContact(contact, enemy)) {
-                    CULog("Reynard is off the ground");
+                    //CULog("Reynard is off the ground");
                     resolveEnemyGroundOffContact(enemy);
             }
         }

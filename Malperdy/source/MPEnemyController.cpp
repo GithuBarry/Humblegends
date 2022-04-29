@@ -63,7 +63,7 @@ void EnemyController::update(float delta) {
 
     // Don't update any behavior if the enemy doesn't have a reference to Reynard or the ObstacleWorld yet
     if (_reynard == nullptr || _obstacleWorld == nullptr) {
-        CULog("ERROR: set Reynard and ObstacleWorld for EnemyController before creating enemies");
+        CULog("EnemyController: ERROR: set Reynard and ObstacleWorld for EnemyController before creating enemies");
         return;
     }
 
@@ -181,7 +181,7 @@ void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string n
  */
 void EnemyController::reyCast() {
     // Draw line from enemy to Reynard
-    //updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard");
+    updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard");
 
     // Raycast to Reynard's location
     // Note that the raycast will detect all fixtures in its path, and it will not necessarily
@@ -194,7 +194,7 @@ void EnemyController::reyCast() {
             // any fraction, it clips the ray at that point.
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
                 // Draw line from enemy to point of impact
-                //updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4(0,0,0,0), 5.0f);
+                updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4(0,0,0,0), 5.0f);
 
                 // If Reynard is a fixture in the path, then set the point to start going to
                 // Otherwise, set the point as a "null" value
