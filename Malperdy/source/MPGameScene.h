@@ -119,7 +119,7 @@ public:
 #pragma mark -
 #pragma mark Constructors
     /** Reference to the debug root of the scene graph */
-    //std::shared_ptr<cugl::scene2::ScrollPane> _debugnode;
+    std::shared_ptr<cugl::scene2::ScrollPane> _debugnode;
 
     /** Reference to the debug root of the scene graph */
     std::shared_ptr<cugl::scene2::Label> _winNode;
@@ -233,7 +233,7 @@ public:
      */
     void setDebug(bool value) {
         _debug = value;
-        //_debugnode->setVisible(value);
+        _debugnode->setVisible(value);
     }
 
     /**
