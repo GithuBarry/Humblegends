@@ -440,9 +440,9 @@ void GameScene::update(float dt) {
         //assert (0==1);
         CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
     }
-    if ( _reynardController->getCharacter()->isJumping()  && _reynardController->getCharacter()->getLinearVelocity().x<7){
+    if ( _reynardController->getCharacter()->isJumping()  && abs(_reynardController->getCharacter()->getLinearVelocity().x)<7){
         //assert (0==1);
-        //CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
+        CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
     }
 
 
@@ -727,7 +727,6 @@ void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyCont
 
 void GameScene::beginContact(b2Contact *contact) {
     // TODO: all of these collisions need to apply for every character, not just Reynard
-
     // Try to get the character, assuming it's a character-on-object collision
     b2Body* charInCharOnObject = getCharacterBodyInObjectCollision(contact);
     // If it is a character-on-object collision

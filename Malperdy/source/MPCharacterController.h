@@ -186,7 +186,7 @@ public:
      * @return  Whether the character jumped successfully
      */
     bool jump() {
-        return (!_character->isJumping()) && _character->setMoveState(CharacterModel::MovementState::JUMPING);
+        return  _character->setMoveState(CharacterModel::MovementState::JUMPING);
     }
     
     /**
