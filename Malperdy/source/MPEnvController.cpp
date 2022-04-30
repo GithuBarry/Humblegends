@@ -24,11 +24,19 @@ EnvController::EnvController() {
 }
 
 /* Updates the environment */
-void EnvController::update(const shared_ptr<ReynardController>& reynard) {
+void EnvController::update(const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
     Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getPosition());
+    // Defog rooms
     if (!_reyRoom.equals(newReyRoom)) {
         _reyRoom = newReyRoom;
         defogSurrounding(_reyRoom);
+    }
+    // Apply fog to external objects
+    for (auto i = enemies->begin(); i != enemies->end(); i++) {
+        Vec2 pos = (*i)->getPosition();
+        bool isFogged = _grid->isRoomFogged(_grid->worldSpaceToRoom(pos));
+        if (isFogged) (*i)->getSceneNode()->setColor(Color4::BLUE);
+        else (*i)->getSceneNode()->setColor(Color4::WHITE);
     }
 }
 

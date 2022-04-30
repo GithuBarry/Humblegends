@@ -468,7 +468,7 @@ void GameScene::update(float dt) {
         (*itr)->update(dt);
     }
 
-    _envController->update(_reynardController);
+    _envController->update(_reynardController, _enemies);
 }
 
 #pragma mark -
