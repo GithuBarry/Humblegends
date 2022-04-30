@@ -236,3 +236,7 @@ void EnvController::lookUnfogged(Vec2 room) {
         _grid->getRoom(room)->setColor(Color4::WHITE);
     }
 }
+
+EnvController::~EnvController() {
+    _grid = nullptr;
+}

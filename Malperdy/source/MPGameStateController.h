@@ -104,12 +104,19 @@ public:
      * @param faceRight whether reynard is facing right.
      * @return Pan to be applied to nodes
      */
-    Vec2 getPan(Vec2 currentTranslation, Vec2 reynardScreenPosition, float scale, Size screenSize, bool faceRight) {
+    Vec2 getPan(Vec2 currentTranslation, Vec2 reynardScreenPosition, float scale, Size screenSize, bool faceRight, Vec2 reynardVelocity) {
         Vec2 result;
+        Vec2 target;
+        target = reynardScreenPosition;
+        int thr = 8;
+        if (reynardVelocity.y<-thr){
+            target = target + Vec2(0,(reynardVelocity.y+thr)*15);
+        }
+
         if (_zoomed_in) {
-            result = (Vec2(screenSize.width, screenSize.height) / 2 - reynardScreenPosition);
+            result = (Vec2(screenSize.width, screenSize.height) / 2 - target);
         } else {
-            result = Vec2(screenSize.width, screenSize.height)/ 2  - reynardScreenPosition;
+            result = Vec2(screenSize.width, screenSize.height)/ 2  - target;
             
             if (currentTranslation.x + result.x > 0) {
                 result = Vec2(-currentTranslation.x, result.y);

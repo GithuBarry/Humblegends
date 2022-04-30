@@ -65,10 +65,10 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations) {
+    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
         // Get model cast to subclass type
         _character = make_shared<ModelType>();
-        _character->init(pos, drawScale, animations);
+        _character->init(pos, drawScale, animation);
 
         return (_character != nullptr);
     }
@@ -92,9 +92,9 @@ public:
      * 
      * @return  A newly allocated CharacterController for the character at the given position with the given scale
      */
-    static shared_ptr<ControllerType> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations) {
+    static shared_ptr<ControllerType> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
         std::shared_ptr<ControllerType> result = std::make_shared<ControllerType>();
-        return (result->init(pos, drawScale, animations) ? result : nullptr);
+        return (result->init(pos, drawScale, animation) ? result : nullptr);
     }
 
 #pragma mark -

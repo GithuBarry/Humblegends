@@ -62,7 +62,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<map<string, CharacterModel::Animation>> animations);
+    bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation);
 
     /**
      * This method handles anything about the character that needs to change over time.
