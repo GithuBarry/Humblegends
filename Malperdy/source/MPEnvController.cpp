@@ -31,6 +31,9 @@ void EnvController::update(const shared_ptr<ReynardController>& reynard, const s
         _reyRoom = newReyRoom;
         defogSurrounding(_reyRoom);
     }
+    if (!isSwappable(_toSwap, reynard, enemies)) {
+        deselectRoom();
+    }
     // Apply fog to external objects
     for (auto i = enemies->begin(); i != enemies->end(); i++) {
         Vec2 pos = (*i)->getPosition();
