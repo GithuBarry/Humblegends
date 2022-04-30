@@ -38,7 +38,7 @@ void EnvController::update(const shared_ptr<ReynardController>& reynard, const s
     for (auto i = enemies->begin(); i != enemies->end(); i++) {
         Vec2 pos = (*i)->getPosition();
         bool isFogged = _grid->isRoomFogged(_grid->worldSpaceToRoom(pos));
-        if (isFogged) (*i)->getSceneNode()->setColor(Color4::BLUE);
+        if (isFogged) (*i)->getSceneNode()->setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
         else (*i)->getSceneNode()->setColor(Color4::WHITE);
     }
 }
@@ -155,21 +155,6 @@ bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& 
 */
 bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardController> &reynard) {
     Vec2 pos = reynard->getPosition(); //reynard's center
-
-    // TODO: fix the code below to lock a room when any part of Reynard is in it
-    // character->getSize() returns the wrong size
-    //float width = reynard->getSize().width;
-    //float height = reynard->getSize().height;
-    //for (float x = -0.5f; x <= 0.5f; x++) {
-        //for (float y = -0.5f; y <= 0.5f; y++) {
-            //Vec2 corner = pos + Vec2(width * x, height * y);
-            //Vec2 cRoom = _grid->worldSpaceToRoom(corner);
-            //CULog("corner: (%f, %f)", corner.x, corner.y);
-            //CULog("in room: (%f, %f)", cRoom.x, cRoom.y);
-            //if (room.equals(cRoom)) return true;
-        //}
-    //}
-
     Vec2 cRoom = _grid->worldSpaceToRoom(pos);
     return room.equals(cRoom);
 }
