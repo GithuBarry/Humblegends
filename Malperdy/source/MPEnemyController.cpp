@@ -210,13 +210,9 @@ void EnemyController::reyCast() {
     _obstacleWorld->rayCast(
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
                 updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
-                //if (abs(fixture->GetBody()->GetPosition().x) + abs(fixture->GetBody()->GetPosition().y) == 0){
-                //    fixture->GetBody()->SetEnabled(false);
-                //}
                 if ((!_character->isJumping())
                         && _character->isGrounded()
                         && (!_reynard->isMyBody(fixture->GetBody()))
-                        //&& (abs(fixture->GetBody()->GetPosition().x) + abs(fixture->GetBody()->GetPosition().y) != 0)
                         )
                     jump();
                 return fraction;
