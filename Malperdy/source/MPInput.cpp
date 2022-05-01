@@ -264,7 +264,6 @@ void InputController::update(float dt) {
 
 #else
     _currDown = _touchDown && !_inMulti;
-    _jumpPressed = _touchDown;
     _currPos = _touchPos;
 
     _zoomOutPressed = _pinchGesture;
@@ -290,7 +289,7 @@ void InputController::update(float dt) {
      CULog("MPInput dashed right");
 }
     
-    
+    _jumpPressed = didRelease() && !_dashLeftPressed && !_dashRightPressed;
 
 #endif
 
