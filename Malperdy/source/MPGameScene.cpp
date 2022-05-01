@@ -366,7 +366,7 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
  */
 void GameScene::update(float dt) {
     _input.update(dt);
-
+    Vec2 inputPos = inputToGameCoords(_input.getPosition());
 
     // Process the toggled key commands
     if (_input.didDebug()) {
@@ -388,16 +388,30 @@ void GameScene::update(float dt) {
         return;
     }
 
-    // Room swap initiated
-    if (_input.didRelease() && !_gamestate.zoomed_in()) {
-        // Scale tap/click location by camera pan
-        Vec2 pos = _input.getPosition() - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0,_worldnode->getPaneTransform().getTranslation().y)*2);
-        //CULog("Touch_x: %f Scene_pos_x: %f",_input.getPosition().x ,pos.x);
-        bool hasSwapped = false;
+    // Variables to indicate which forms of room swap are being used
+    bool usingClick = true;
+    bool usingDrag = true;
+
+    bool hasSwapped = false;
+    Vec2 progressCoords = Vec2(-1, -1);
+    // Room swap by click
+    if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
-            bool check = _envController->swapWithSelected(pos, _reynardController, _enemies);
+            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
         } else {
-            hasSwapped = _envController->selectRoom(pos, _reynardController, _enemies);
+            _envController->selectRoom(inputPos, _reynardController, _enemies);
+        }
+    }
+    // Room swap by drag
+    if (usingDrag && !_gamestate.zoomed_in()) {
+        if (_input.didPress() && !hasSwapped) {
+            _envController->selectRoom(inputPos, _reynardController, _enemies);
+        }
+        else if (_input.didEndDrag() && _envController->hasSelected()) {
+            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+        }
+        if (_input.isDragging() && _envController->hasSelected()) {
+            progressCoords = inputPos;
         }
     }
 
@@ -416,6 +430,7 @@ void GameScene::update(float dt) {
     // When zooming out
     if (_input.didZoomOut()) {
         _gamestate.zoom_out();
+        _envController->deselectRoom();
     }
 
     // When dashing right
@@ -468,7 +483,7 @@ void GameScene::update(float dt) {
         (*itr)->update(dt);
     }
 
-    _envController->update(_reynardController, _enemies);
+    _envController->update(progressCoords, _reynardController, _enemies);
 }
 
 #pragma mark -
@@ -885,4 +900,9 @@ Size GameScene::computeActiveSize() const {
  */
 void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
     Scene2::render(batch);
+}
+
+/* Converts input coordinates to coordinates in the game world */
+Vec2 GameScene::inputToGameCoords(Vec2 inputCoords) {
+    return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }

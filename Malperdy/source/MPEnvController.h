@@ -50,8 +50,17 @@ public:
 
     shared_ptr<GridModel> getGrid(){ return _grid; }
 
-    /* Updates the environment */
-    void update(const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+    /*  
+    * Updates the environment
+    * 
+    * Defogs rooms, applies fog to moving (non-Reynard) objects entering fogged rooms
+    * Updates the animations for an in-progress drag
+    * 
+    * @param dragCoords     the coordinates of the in-progress drag, or (-1, -1) if there is none
+    * @param reynard        Reynard's controller
+    * @param enemies        the enemies' controllers
+    */
+    void update(Vec2 dragCoords, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
 
     /*
     * Selects the room at the given location

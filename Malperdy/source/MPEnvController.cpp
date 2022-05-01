@@ -24,7 +24,7 @@ EnvController::EnvController() {
 }
 
 /* Updates the environment */
-void EnvController::update(const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+void EnvController::update(Vec2 dragCoords, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
     Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getPosition());
     // Defog rooms
     if (!_reyRoom.equals(newReyRoom)) {
