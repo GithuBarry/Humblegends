@@ -34,6 +34,21 @@ private:
 
     /* History of room swaps as a list of pairs of rooms that have been swapped */
     vector<vector<Vec2>> _swapHistory;
+    
+    // ROOM SWAPPING ANIMATION
+    /* The row, column of the room that the swap gesture STARTS on */
+    Vec2 _firstRoom;
+    
+    /* The row, column of the room that the gesture is CURRENTLY on */
+    Vec2 _secondRoom;
+    
+    /* Whether or not the swap animation is activated */
+    bool _isSwapping;
+    
+    /* The time that a swap gesture most recently hovered over a new room */
+    Timestamp _swapStart;
+    
+    
 
 public:
     /* Creates an envrionment controller and initializes its grid and rooms */
