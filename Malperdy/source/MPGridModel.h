@@ -41,6 +41,8 @@ private:
     Vec2 _size = Vec2(3, 3);
 
     float _physics_scale;
+    
+    shared_ptr<scene2::SceneNode> _swapAnimation;
 
     /*
      * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
@@ -94,6 +96,32 @@ public:
 
 #pragma mark -
 #pragma mark Accessors
+    
+    shared_ptr<SceneNode> getSwapNode(){
+        return _swapAnimation;
+    }
+    
+    /** createGhosst(coord) sets _swapAnimation to be a copy of the
+     * node corresponding to 'coord' and all its children
+     */
+    void createGhost(Vec2 roomCoords){
+        shared_ptr<RoomModel> room = getRoom(roomCoords);
+        _swapAnimation.reset();
+        _swapAnimation = make_shared<SceneNode>();
+        copyNode(room, _swapAnimation);
+        addChild(_swapAnimation);
+    }
+    
+    void copyNode(shared_ptr<SceneNode> src, shared_ptr<SceneNode> dst){
+        src->copy(dst);
+        
+        for(auto itr = src->getChildren().begin(); itr != src->getChildren().end(); ++itr){
+            
+            shared_ptr<SceneNode> child = make_shared<SceneNode>();
+            copyNode((*itr), child);
+            dst->addChild(child);
+        }
+    }
 
     /** Getter for grid width */
     int getWidth() const {

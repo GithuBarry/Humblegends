@@ -41,6 +41,15 @@ void EnvController::update(Vec2 dragCoords, const shared_ptr<ReynardController>&
         if (isFogged) (*i)->getSceneNode()->setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
         else (*i)->getSceneNode()->setColor(Color4::WHITE);
     }
+    
+    if(hasSelected() && !_isSwapping){
+        _grid->createGhost(_toSwap);
+        _isSwapping = true;
+    }
+    
+    if(_isSwapping){
+        _grid->getSwapNode()->setPosition(_grid->screenToNodeCoords(dragCoords));
+    }
 }
 
 /*
@@ -105,6 +114,7 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
         l.push_back(room2);
         l.push_back(_toSwap);
         _swapHistory.push_back(l);
+        _isSwapping = false;
     }
     return success;
 }
