@@ -366,7 +366,7 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
  */
 void GameScene::update(float dt) {
     _input.update(dt);
-
+    Vec2 inputPos = inputToGameCoords(_input.getPosition());
 
     // Process the toggled key commands
     if (_input.didDebug()) {
@@ -393,23 +393,25 @@ void GameScene::update(float dt) {
     bool usingDrag = true;
 
     bool hasSwapped = false;
+    Vec2 progressCoords = Vec2(-1, -1);
     // Room swap by click
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
-        Vec2 pos = inputToGameCoords(_input.getPosition());
         if (_envController->hasSelected()) {
-            hasSwapped = _envController->swapWithSelected(pos, _reynardController, _enemies);
+            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
         } else {
-            _envController->selectRoom(pos, _reynardController, _enemies);
+            _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
     }
     // Room swap by drag
     if (usingDrag && !_gamestate.zoomed_in()) {
-        Vec2 pos = inputToGameCoords(_input.getPosition());
         if (_input.didPress() && !hasSwapped) {
-            _envController->selectRoom(pos, _reynardController, _enemies);
+            _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
         else if (_input.didEndDrag() && _envController->hasSelected()) {
-            _envController->swapWithSelected(pos, _reynardController, _enemies);
+            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+        }
+        if (_input.isDragging() && _envController->hasSelected()) {
+            progressCoords = inputPos;
         }
     }
 
@@ -481,7 +483,7 @@ void GameScene::update(float dt) {
         (*itr)->update(dt);
     }
 
-    _envController->update(_reynardController, _enemies);
+    _envController->update(progressCoords, _reynardController, _enemies);
 }
 
 #pragma mark -
