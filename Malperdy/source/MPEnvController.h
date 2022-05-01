@@ -6,7 +6,7 @@
 //
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
-//  Version: 3/13/22
+//  Version: 4/23/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -51,7 +51,7 @@ public:
     shared_ptr<GridModel> getGrid(){ return _grid; }
 
     /* Updates the environment */
-    void update(const shared_ptr<ReynardController>& reynard);
+    void update(const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
 
     /*
     * Selects the room at the given location
@@ -166,6 +166,9 @@ private:
 
 #pragma mark Appearance Setters
 
+    /* Animates a room swap */
+    void animateSwap(Vec2 room1, Vec2 room2);
+    
     /* Sets the room to look selected */
     void lookSelected(Vec2 room);
 

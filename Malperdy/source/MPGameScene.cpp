@@ -181,9 +181,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _worldnode->setPosition(offset);
 
-    //_debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
-    //_debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
-    //_debugnode->setPosition(offset / _scale);
+    _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
+    _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
+    _debugnode->setPosition(offset / _scale);
     setDebug(false);
 
     _winNode = scene2::Label::allocWithText("VICTORY!", _assets->get<Font>(PRIMARY_FONT));
@@ -195,7 +195,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     setComplete(false);
 
     addChild(_worldnode);
-    //addChild(_debugnode);
+    addChild(_debugnode);
     addChild(_winNode);
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
@@ -219,7 +219,7 @@ void GameScene::dispose() {
         _input.dispose();
         _world = nullptr;
         _worldnode = nullptr;
-        //_debugnode = nullptr;
+        _debugnode = nullptr;
         _winNode = nullptr;
         _complete = false;
         _debug = false;
@@ -243,7 +243,7 @@ void GameScene::reset() {
     _envController = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
-    //_debugnode->removeAllChildren();
+    _debugnode->removeAllChildren();
     _gamestate.reset();
     _enemies = nullptr;
     setComplete(false);
@@ -280,7 +280,7 @@ void GameScene::populate() {
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
-        //(*itr)->setDebugScene(_debugnode);
+        (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
         //CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
@@ -333,7 +333,7 @@ void GameScene::populate() {
 void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
         const std::shared_ptr<scene2::SceneNode> &node) {
     _world->addObstacle(obj);
-    //obj->setDebugScene(_debugnode);
+    obj->setDebugScene(_debugnode);
     obj->setDebugColor(Color4::RED);
 
     // Position the scene graph node (enough for static objects)
@@ -457,10 +457,10 @@ void GameScene::update(float dt) {
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
-    /*_debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
+    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
     _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
     _debugnode->applyZoom(1 / _debugnode->getZoom());
-    _debugnode->applyZoom(_worldnode->getZoom());*/
+    _debugnode->applyZoom(_worldnode->getZoom());
 
     // Update all enemies
     vector<std::shared_ptr<EnemyController>>::iterator itr;
@@ -468,7 +468,7 @@ void GameScene::update(float dt) {
         (*itr)->update(dt);
     }
 
-    _envController->update(_reynardController);
+    _envController->update(_reynardController, _enemies);
 }
 
 #pragma mark -

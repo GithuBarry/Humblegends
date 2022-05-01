@@ -51,6 +51,12 @@ protected:
     /** Reference to the physics root of the scene graph */
     std::shared_ptr<cugl::scene2::ScrollPane> _worldnode;
 
+    /** Reference to the win screen root of the scene graph */
+    std::shared_ptr<cugl::scene2::Label> _winNode;
+
+    /** Reference to the UI root of the scene graph */
+    std::shared_ptr<cugl::scene2::SceneNode> _UINode;
+
     /** The Box2D world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
@@ -119,10 +125,7 @@ public:
 #pragma mark -
 #pragma mark Constructors
     /** Reference to the debug root of the scene graph */
-    //std::shared_ptr<cugl::scene2::ScrollPane> _debugnode;
-
-    /** Reference to the debug root of the scene graph */
-    std::shared_ptr<cugl::scene2::Label> _winNode;
+    std::shared_ptr<cugl::scene2::ScrollPane> _debugnode;
 
     /**
      * Creates a new game world with the default values.
@@ -233,7 +236,7 @@ public:
      */
     void setDebug(bool value) {
         _debug = value;
-        //_debugnode->setVisible(value);
+        _debugnode->setVisible(value);
     }
 
     /**
