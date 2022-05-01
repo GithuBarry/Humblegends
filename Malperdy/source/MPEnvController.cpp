@@ -7,13 +7,14 @@
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
 //  Copyright (c) 2022 Humblegends. All rights reserved.
-//  Version: 3/28/22
+//  Version: 4/23/22
 //
 
 #include "MPEnvController.h"
 #include "MPReynardModel.h"
 #include "MPEnemyController.h"
 #include "MPTrapModel.hpp"
+#include <cugl/cugl.h>
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController() {
@@ -23,11 +24,22 @@ EnvController::EnvController() {
 }
 
 /* Updates the environment */
-void EnvController::update(const shared_ptr<ReynardController>& reynard) {
+void EnvController::update(Vec2 dragCoords, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
     Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getPosition());
+    // Defog rooms
     if (!_reyRoom.equals(newReyRoom)) {
         _reyRoom = newReyRoom;
         defogSurrounding(_reyRoom);
+    }
+    if (!isSwappable(_toSwap, reynard, enemies)) {
+        deselectRoom();
+    }
+    // Apply fog to external objects
+    for (auto i = enemies->begin(); i != enemies->end(); i++) {
+        Vec2 pos = (*i)->getPosition();
+        bool isFogged = _grid->isRoomFogged(_grid->worldSpaceToRoom(pos));
+        if (isFogged) (*i)->getSceneNode()->setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
+        else (*i)->getSceneNode()->setColor(Color4::WHITE);
     }
 }
 
@@ -143,21 +155,6 @@ bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& 
 */
 bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardController> &reynard) {
     Vec2 pos = reynard->getPosition(); //reynard's center
-
-    // TODO: fix the code below to lock a room when any part of Reynard is in it
-    // character->getSize() returns the wrong size
-    //float width = reynard->getSize().width;
-    //float height = reynard->getSize().height;
-    //for (float x = -0.5f; x <= 0.5f; x++) {
-        //for (float y = -0.5f; y <= 0.5f; y++) {
-            //Vec2 corner = pos + Vec2(width * x, height * y);
-            //Vec2 cRoom = _grid->worldSpaceToRoom(corner);
-            //CULog("corner: (%f, %f)", corner.x, corner.y);
-            //CULog("in room: (%f, %f)", cRoom.x, cRoom.y);
-            //if (room.equals(cRoom)) return true;
-        //}
-    //}
-
     Vec2 cRoom = _grid->worldSpaceToRoom(pos);
     return room.equals(cRoom);
 }
@@ -196,6 +193,16 @@ void EnvController::defogSurrounding(Vec2 room) {
             lookUnfogged(newRoom);
         }
     }
+}
+
+#pragma mark Appearance Setters
+
+/* Animates a room swap */
+void EnvController::animateSwap(Vec2 vec1, Vec2 vec2) {
+    //shared_ptr<Scene2::MoveTo> move1;
+    //move1.alloc();
+    //shared_ptr<RoomModel> room1 = _grid->getRoom(vec1);
+    //shared_ptr<RoomModel> room2 = _grid->getRoom(vec2);
 }
 
 /* Sets the room to look selected */
