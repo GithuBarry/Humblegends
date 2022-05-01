@@ -282,9 +282,15 @@ void InputController::update(float dt) {
     bool couldBeDash = didRelease() && _touchTime <= EVENT_SWIPE_TIME;
     float xDist = (_touchEndPos - _touchStartPos).x;
     _dashLeftPressed = couldBeDash && xDist <= (-1) * EVENT_SWIPE_LENGTH;
-    if (_dashLeftPressed) CULog("MPInput dashed left");
-    _dashRightPressed = couldBeDash && xDist >= -EVENT_SWIPE_LENGTH;
-    if (_dashRightPressed) CULog("MPInput dashed right");
+    if (_dashLeftPressed){
+        CULog("MPInput dashed left");}
+    _dashRightPressed = couldBeDash && xDist >= EVENT_SWIPE_LENGTH;
+    if (_dashRightPressed){
+        
+     CULog("MPInput dashed right");
+}
+    
+    
 
 #endif
 
