@@ -388,16 +388,28 @@ void GameScene::update(float dt) {
         return;
     }
 
-    // Room swap initiated
-    if (_input.didRelease() && !_gamestate.zoomed_in()) {
-        // Scale tap/click location by camera pan
-        Vec2 pos = _input.getPosition() - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0,_worldnode->getPaneTransform().getTranslation().y)*2);
-        //CULog("Touch_x: %f Scene_pos_x: %f",_input.getPosition().x ,pos.x);
-        bool hasSwapped = false;
+    // Variables to indicate which forms of room swap are being used
+    bool usingClick = true;
+    bool usingDrag = true;
+
+    bool hasSwapped = false;
+    // Room swap by click
+    if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
+        Vec2 pos = inputToGameCoords(_input.getPosition());
         if (_envController->hasSelected()) {
-            bool check = _envController->swapWithSelected(pos, _reynardController, _enemies);
+            hasSwapped = _envController->swapWithSelected(pos, _reynardController, _enemies);
         } else {
-            hasSwapped = _envController->selectRoom(pos, _reynardController, _enemies);
+            _envController->selectRoom(pos, _reynardController, _enemies);
+        }
+    }
+    // Room swap by drag
+    if (usingDrag && !_gamestate.zoomed_in()) {
+        Vec2 pos = inputToGameCoords(_input.getPosition());
+        if (_input.didPress() && !hasSwapped) {
+            _envController->selectRoom(pos, _reynardController, _enemies);
+        }
+        else if (_input.didEndDrag() && _envController->hasSelected()) {
+            _envController->swapWithSelected(pos, _reynardController, _enemies);
         }
     }
 
@@ -416,6 +428,7 @@ void GameScene::update(float dt) {
     // When zooming out
     if (_input.didZoomOut()) {
         _gamestate.zoom_out();
+        _envController->deselectRoom();
     }
 
     // When dashing right
@@ -885,4 +898,9 @@ Size GameScene::computeActiveSize() const {
  */
 void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
     Scene2::render(batch);
+}
+
+/* Converts input coordinates to coordinates in the game world */
+Vec2 GameScene::inputToGameCoords(Vec2 inputCoords) {
+    return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }

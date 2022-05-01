@@ -511,6 +511,9 @@ public:
     
     void resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy);
     
+#pragma mark Helper Functions
+    /* Converts input coordinates to coordinates in the game world */
+    Vec2 inputToGameCoords(Vec2 inputCoords);
 };
 
 #endif /* __MP_GAME_MODE_H__ */

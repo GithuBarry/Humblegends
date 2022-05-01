@@ -347,6 +347,7 @@ void InputController::mouseDragCB(const cugl::MouseEvent& event, const cugl::Vec
     if (event.buttons.hasLeft()) {
         float dist = std::abs((event.position - _mouseDragStart).length());
         _mouseDragging = dist >= EVENT_DRAG_LENGTH;
+        _mousePos = event.position;
     }
 }
 
