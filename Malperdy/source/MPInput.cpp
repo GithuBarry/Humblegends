@@ -24,7 +24,7 @@ using namespace cugl;
 #define EVENT_DRAG_LENGTH  100
 /** How far we must swipe left, right, up or down for a gesture */
 #define EVENT_SWIPE_LENGTH  100
-/** How fast we must swipe left or right for a gesture */
+/** How fast we must swipe left or right for a gesture (in milliseconds) */
 #define EVENT_SWIPE_TIME   1000
 /** How far we must pinch or zoom for a gesture */
 #define EVENT_SPREAD_LENGTH  100
@@ -88,6 +88,7 @@ InputController::InputController() :
         _touchDown(false),
         _currentTouch(0),
         _touchDragging(false),
+        _touchTime(0.0),
 
         _multiKey(0),
         _inMulti(false),
@@ -272,13 +273,22 @@ void InputController::update(float dt) {
     _scrollOffset = _panOffsetMobile;
 
     _currDrag = _touchDragging;
-    _dragStart = _touchDragStart;
-    _dragEnd = _touchDragEnd;
+    _dragStart = _touchStartPos;
+    _dragEnd = _touchEndPos;
+
+    if (_currDown && _prevDown) {
+        _touchTime += dt;
+    }
+    bool couldBeDash = didRelease() && _touchTime <= EVENT_SWIPE_TIME;
+    float xDist = (_touchEndPos - _touchStartPos).x;
+    _dashLeftPressed = couldBeDash && xDist >= EVENT_SWIPE_LENGTH;
+    if (_dashLeftPressed) CULog("MPInput dashed left");
+    _dashRightPressed = couldBeDash && xDist <= -EVENT_SWIPE_LENGTH;
+    if (_dashRightPressed) CULog("MPInput dashed right");
 
 #endif
 
 // If it does not support keyboard, we must reset "virtual" keyboard
-//    TODO: ADD TO THIS WHEN DOING SPRINT 2 (Might cause bugs without it)
 #ifdef CU_TOUCH_SCREEN
     _keyDebug = false;
     _keyReset = false;
@@ -337,6 +347,7 @@ void InputController::mouseDragCB(const cugl::MouseEvent& event, const cugl::Vec
     if (event.buttons.hasLeft()) {
         float dist = std::abs((event.position - _mouseDragStart).length());
         _mouseDragging = dist >= EVENT_DRAG_LENGTH;
+        _mousePos = event.position;
     }
 }
 
@@ -371,7 +382,8 @@ void InputController::touchBeginCB(const cugl::TouchEvent &event, bool focus) {
         _touchDown = true;
         _currentTouch = event.touch;
         _touchPos = event.position;
-        _touchDragStart = event.position;
+        _touchStartPos = event.position;
+        _touchTime = 0;
     }
 }
 
@@ -384,7 +396,7 @@ void InputController::touchMotionCB(const cugl::TouchEvent &event, const cugl::V
     if (_touchDown && event.touch == _currentTouch) {
         _touchPos = event.position;
 
-        float dist = std::abs((event.position - _touchDragStart).length());
+        float dist = std::abs((event.position - _touchStartPos).length());
         _touchDragging = dist >= EVENT_DRAG_LENGTH;
     }
 }
@@ -398,7 +410,7 @@ void InputController::touchEndCB(const cugl::TouchEvent &event, bool focus) {
     if (_touchDown && event.touch == _currentTouch) {
         _touchDown = false;
         if (_touchDragging) {
-            _touchDragEnd = event.position;
+            _touchEndPos = event.position;
             _touchDragging = false;
         }
     }

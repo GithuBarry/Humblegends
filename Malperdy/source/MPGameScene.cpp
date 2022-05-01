@@ -181,9 +181,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _worldnode->setPosition(offset);
 
-    //_debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
-    //_debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
-    //_debugnode->setPosition(offset / _scale);
+    _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
+    _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
+    _debugnode->setPosition(offset / _scale);
     setDebug(false);
 
     _winNode = scene2::Label::allocWithText("VICTORY!", _assets->get<Font>(PRIMARY_FONT));
@@ -195,7 +195,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     setComplete(false);
 
     addChild(_worldnode);
-    //addChild(_debugnode);
+    addChild(_debugnode);
     addChild(_winNode);
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
@@ -219,7 +219,7 @@ void GameScene::dispose() {
         _input.dispose();
         _world = nullptr;
         _worldnode = nullptr;
-        //_debugnode = nullptr;
+        _debugnode = nullptr;
         _winNode = nullptr;
         _complete = false;
         _debug = false;
@@ -243,7 +243,7 @@ void GameScene::reset() {
     _envController = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
-    //_debugnode->removeAllChildren();
+    _debugnode->removeAllChildren();
     _gamestate.reset();
     _enemies = nullptr;
     setComplete(false);
@@ -280,7 +280,7 @@ void GameScene::populate() {
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
-        //(*itr)->setDebugScene(_debugnode);
+        (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
         //CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
@@ -333,7 +333,7 @@ void GameScene::populate() {
 void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
         const std::shared_ptr<scene2::SceneNode> &node) {
     _world->addObstacle(obj);
-    //obj->setDebugScene(_debugnode);
+    obj->setDebugScene(_debugnode);
     obj->setDebugColor(Color4::RED);
 
     // Position the scene graph node (enough for static objects)
@@ -366,7 +366,7 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
  */
 void GameScene::update(float dt) {
     _input.update(dt);
-
+    Vec2 inputPos = inputToGameCoords(_input.getPosition());
 
     // Process the toggled key commands
     if (_input.didDebug()) {
@@ -388,16 +388,30 @@ void GameScene::update(float dt) {
         return;
     }
 
-    // Room swap initiated
-    if (_input.didRelease() && !_gamestate.zoomed_in()) {
-        // Scale tap/click location by camera pan
-        Vec2 pos = _input.getPosition() - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0,_worldnode->getPaneTransform().getTranslation().y)*2);
-        //CULog("Touch_x: %f Scene_pos_x: %f",_input.getPosition().x ,pos.x);
-        bool hasSwapped = false;
+    // Variables to indicate which forms of room swap are being used
+    bool usingClick = true;
+    bool usingDrag = true;
+
+    bool hasSwapped = false;
+    Vec2 progressCoords = Vec2(-1, -1);
+    // Room swap by click
+    if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
-            bool check = _envController->swapWithSelected(pos, _reynardController, _enemies);
+            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
         } else {
-            hasSwapped = _envController->selectRoom(pos, _reynardController, _enemies);
+            _envController->selectRoom(inputPos, _reynardController, _enemies);
+        }
+    }
+    // Room swap by drag
+    if (usingDrag && !_gamestate.zoomed_in()) {
+        if (_input.didPress() && !hasSwapped) {
+            _envController->selectRoom(inputPos, _reynardController, _enemies);
+        }
+        else if (_input.didEndDrag() && _envController->hasSelected()) {
+            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+        }
+        if (_input.isDragging() && _envController->hasSelected()) {
+            progressCoords = inputPos;
         }
     }
 
@@ -416,6 +430,7 @@ void GameScene::update(float dt) {
     // When zooming out
     if (_input.didZoomOut()) {
         _gamestate.zoom_out();
+        _envController->deselectRoom();
     }
 
     // When dashing right
@@ -457,10 +472,10 @@ void GameScene::update(float dt) {
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
-    /*_debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
+    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
     _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
     _debugnode->applyZoom(1 / _debugnode->getZoom());
-    _debugnode->applyZoom(_worldnode->getZoom());*/
+    _debugnode->applyZoom(_worldnode->getZoom());
 
     // Update all enemies
     vector<std::shared_ptr<EnemyController>>::iterator itr;
@@ -468,7 +483,7 @@ void GameScene::update(float dt) {
         (*itr)->update(dt);
     }
 
-    _envController->update(_reynardController);
+    _envController->update(progressCoords, _reynardController, _enemies);
 }
 
 #pragma mark -
@@ -885,4 +900,9 @@ Size GameScene::computeActiveSize() const {
  */
 void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
     Scene2::render(batch);
+}
+
+/* Converts input coordinates to coordinates in the game world */
+Vec2 GameScene::inputToGameCoords(Vec2 inputCoords) {
+    return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }
