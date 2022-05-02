@@ -366,6 +366,7 @@ void GameScene::populateChars(){
                 
                 // initialize it
                 _enemies->push_back(EnemyController::alloc(enemypos * Vec2(12,8), _scale, rabbit_animations));
+//                _enemies->push_back(EnemyController::alloc(Vec2(32,18), _scale, rabbit_animations));
             }
         }
     }
