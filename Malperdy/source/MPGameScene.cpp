@@ -327,9 +327,51 @@ void GameScene::populateChars(){
     // Give all enemies a reference to Reynard's controller to handle detection
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
-
+    // get Level data from the JSON
+    shared_ptr<JsonValue> levelJSON = _assets->get<JsonValue>("level");
+    // get the layer containing entities
+    shared_ptr<JsonValue> entityLayer;
+    for(int i = 0; i < levelJSON->get("layers")->size(); i++){
+        if(levelJSON->get("layers")->get(i)->get("name")->asString() == "entities"){
+            entityLayer =levelJSON->get("layers")->get(i);
+        }
+    }
+    // get the entity tileset offset from levelJSON
+    int entity_offset;
+    for(int i=0; i< levelJSON->get("tilesets")->size(); i++){
+        if( levelJSON->get("tilesets")->get(i)->get("source")->asString().find("entities") != string::npos){
+            entity_offset = levelJSON->get("tilesets")->get(i)->get("firstgid")->asInt();
+        }
+    }
+    
+    // For each tile in the entity layer,
+    for(int i = 0; i < entityLayer->get("data")->size(); i++){
+        
+        // if there is something in the tile
+        if(entityLayer->get("data")->get(i)->asInt() != 0){
+            int tile = entityLayer->get("data")->get(i)->asInt() - entity_offset;
+            
+            // determine if the entity corresponds to an enemy
+            shared_ptr<JsonValue> temp1 =_assets->get<JsonValue>("tileset_entities")->get("tiles");
+            string temp =temp1->get(tile - temp1->get(0)->get("id")->asInt())->get("image")->asString();
+            
+            // if it is an enemy...
+            if(temp.find("enemy") != string::npos){
+                
+                //HARDCODED
+                int room = i / 8/ 12;
+                int x = room % (levelJSON->get("width")->asInt() / 12);
+                int y = room / (levelJSON->get("width")->asInt() / 12);
+                Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() /8 -1 -y);
+                
+                // initialize it
+                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(12,8), _scale, rabbit_animations));
+            }
+        }
+    }
+    
     // Initialize EnemyController with the final animation map and store in vector of enemies
-    _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
+    //_enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
     for(shared_ptr<EnemyController> enemy : *_enemies){
         enemy->setObstacleWorld(_world);
