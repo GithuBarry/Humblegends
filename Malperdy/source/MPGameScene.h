@@ -80,6 +80,13 @@ protected:
     /** Whether or not debug mode is active */
     bool _debug;
 
+    /** checkpoint for swap history length*/
+    int _checkpointSwapLen = 0;
+    vector<Vec2> _checkpointEnemyPos;
+    Vec2 _checkpointReynardPos;
+
+
+
 #pragma mark Internal Object Management
 
     /**
@@ -303,6 +310,11 @@ public:
      * Resets the status of the game so that we can play again.
      */
     void reset();
+
+    /**
+     * Resets the status of the game so that we can play again.
+     */
+    void revert(bool totalReset);
 
 
 #pragma mark -

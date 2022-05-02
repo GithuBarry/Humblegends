@@ -107,7 +107,7 @@ public:
      * 
      * @return  Position of character's center in world space
      */
-    Vec2 getPosition() {
+    Vec2 getScenePosition() {
         return _character->getPosition().scale(_character->_drawScale);
     }
 

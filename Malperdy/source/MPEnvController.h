@@ -34,6 +34,8 @@ private:
 
     /* History of room swaps as a list of pairs of rooms that have been swapped */
     vector<vector<Vec2>> _swapHistory;
+public:
+    const vector<vector<Vec2>> &getSwapHistory() const;
 
 public:
     /* Creates an envrionment controller and initializes its grid and rooms */
@@ -126,6 +128,10 @@ public:
             _grid->swapRooms(room1, room2);
         }
         _swapHistory = vector<vector<Vec2>>();
+    }
+    
+    void swapRoomOnGrid (Vec2 room1,Vec2  room2){
+        _grid->swapRooms(room1, room2);
     }
 
     virtual ~EnvController();

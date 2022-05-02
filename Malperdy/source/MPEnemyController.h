@@ -98,7 +98,7 @@ private:
      * @return  The squared distance in world units between this enemy and Reynard
      */
     float distSquaredToReynard() {
-        return getPosition().distanceSquared(_reynard->getPosition());
+        return getScenePosition().distanceSquared(_reynard->getScenePosition());
     }
 
     /**

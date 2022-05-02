@@ -237,6 +237,11 @@ void GameScene::dispose() {
  * This method disposes of the world and creates a new one.
  */
 void GameScene::reset() {
+    revert(true);
+}
+
+void GameScene::revert(bool totalReset){
+    vector<vector<Vec2>> swapHistory = _envController->getSwapHistory();
 
     _reynardController = nullptr;
     _grid = nullptr;
@@ -247,7 +252,21 @@ void GameScene::reset() {
     _gamestate.reset();
     _enemies = nullptr;
     setComplete(false);
-    populate();
+    if (totalReset){
+        populate();
+    }else{
+        populateEnv();
+        for (int i = 0; i<_checkpointSwapLen; i++) {
+            _envController->swapRoomOnGrid(swapHistory[i][0],swapHistory[i][1]);
+        }
+        populateChars();
+        _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
+        for (int i = 0; i < _enemies->size(); i++){
+            (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
+        }
+    }
+
+
 }
 
 /**
@@ -318,6 +337,11 @@ void GameScene::populateChars(){
         addObstacle(enemy->getCharacter(), enemy->getSceneNode()); // Put
     }
 
+    _checkpointEnemyPos = vector<Vec2>();
+    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+    for (auto enemy: *_enemies){
+        _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
+    }
 
 
 }
@@ -390,7 +414,7 @@ void GameScene::update(float dt) {
     }
 
     if (_reynardController->getCharacter()->getHearts()<=0){
-        reset();
+        revert(false);
         return;
     }
 
@@ -769,6 +793,12 @@ void GameScene::beginContact(b2Contact *contact) {
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 setComplete(true);
+                _checkpointSwapLen =  _envController->getSwapHistory().size();
+                _checkpointEnemyPos = vector<Vec2>();
+                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                for (auto enemy: *_enemies){
+                    _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
+                }
             }
             else if (isThisAReynardWallContact(contact, reynardIsRight)) {
                 resolveReynardWallOnContact();
