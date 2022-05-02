@@ -482,12 +482,10 @@ void GameScene::update(float dt) {
 
     //TODO debugging area. Disable for releases
     if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0 && (_reynardController->getCharacter()->getHearts()>=0)){
-        //assert (0==1);
-        CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+        //CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
     }
     if ( _reynardController->getCharacter()->isJumping()  && abs(_reynardController->getCharacter()->getLinearVelocity().x)<7){
-        //assert (0==1);
-        CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
+        //CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
     }
 
 
@@ -761,7 +759,9 @@ void GameScene::resolveWallJumpOntoTrap(float reynardVY) {
 }
 
 void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy) {
-    enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
+    enemy->getCharacter()->setHearts(enemy->getCharacter()->getHearts() - SPIKE_DAMAGE);
+    enemy->jump();
+    //enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
 }
 
 void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyController> enemy) {
@@ -796,8 +796,8 @@ void GameScene::beginContact(b2Contact *contact) {
                 _checkpointSwapLen =  _envController->getSwapHistory().size();
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                for (auto enemy: *_enemies){
-                    _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
+                for (auto thisEnemy: *_enemies){
+                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
             }
             else if (isThisAReynardWallContact(contact, reynardIsRight)) {

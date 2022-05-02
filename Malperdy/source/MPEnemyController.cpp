@@ -102,9 +102,13 @@ void EnemyController::update(float delta) {
                 return;
             }
             Vec2 dir = _target->getPosition() - _character->getPosition();
+            
+            /*
             if ((dir.x < 0 && _character->isFacingRight()) ||
                     (dir.x > 0 && !_character->isFacingRight()))
                 _character->flipDirection();
+            */
+             
             // TODO: if target is within attack range, attack
 
             // For now, if target is too close, stop
@@ -209,10 +213,14 @@ void EnemyController::reyCast() {
     //bool wallInFront = false;
     _obstacleWorld->rayCast(
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
-                updateLine(getScenePosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
+                //updateLine(getScenePosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
                 if ((!_character->isJumping())
                         && _character->isGrounded()
                         && (!_reynard->isMyBody(fixture->GetBody()))
+                        && (
+                                    abs(_reynard->getCharacter()->getLinearVelocity().y) <= 1
+                                || (_character->isOnWall() && _reynard->getCharacter()->getPosition().y > _character->getPosition().y)
+                )
                         )
                     jump();
                 return fraction;
