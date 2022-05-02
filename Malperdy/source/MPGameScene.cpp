@@ -874,10 +874,10 @@ void GameScene::endContact(b2Contact *contact) {
             }
         }
     }
-    if (isReynardCollision(contact)&&isTrapDoorCollision(contact)) {
-
-        //TODO: Write Code to disable said trapdoor
-    }
+//    if (isReynardCollision(contact)&&isTrapDoorCollision(contact)) {
+//
+//        //TODO: Write Code to disable said trapdoor
+//    }
 
 }
 
