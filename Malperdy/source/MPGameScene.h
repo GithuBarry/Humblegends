@@ -51,9 +51,6 @@ protected:
     /** Reference to the physics root of the scene graph */
     std::shared_ptr<cugl::scene2::ScrollPane> _worldnode;
 
-    /** Reference to the win screen root of the scene graph */
-    std::shared_ptr<cugl::scene2::Label> _winNode;
-
     /** Reference to the UI root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _UINode;
 
