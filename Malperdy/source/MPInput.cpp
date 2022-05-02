@@ -23,7 +23,7 @@ using namespace cugl;
 /** How far we must move for a drag */
 #define EVENT_DRAG_LENGTH  100
 /** How far we must swipe left, right, up or down for a gesture */
-#define EVENT_SWIPE_LENGTH  100
+#define EVENT_SWIPE_LENGTH  200
 /** How fast we must swipe left or right for a gesture (in milliseconds) */
 #define EVENT_SWIPE_TIME   1000
 /** How far we must pinch or zoom for a gesture */
@@ -264,7 +264,6 @@ void InputController::update(float dt) {
 
 #else
     _currDown = _touchDown && !_inMulti;
-    _jumpPressed = _touchDown;
     _currPos = _touchPos;
 
     _zoomOutPressed = _pinchGesture;
@@ -280,11 +279,23 @@ void InputController::update(float dt) {
         _touchTime += dt;
     }
     bool couldBeDash = didRelease() && _touchTime <= EVENT_SWIPE_TIME;
-    float xDist = (_touchEndPos - _touchStartPos).x;
-    _dashLeftPressed = couldBeDash && xDist >= EVENT_SWIPE_LENGTH;
-    if (_dashLeftPressed) CULog("MPInput dashed left");
-    _dashRightPressed = couldBeDash && xDist <= -EVENT_SWIPE_LENGTH;
-    if (_dashRightPressed) CULog("MPInput dashed right");
+    float xDist = (_currPos - _touchStartPos).x;
+    _dashLeftPressed = couldBeDash && xDist <= (-1) * EVENT_SWIPE_LENGTH;
+    if (_dashLeftPressed){
+        //CULog("MPInput dashed left");
+        
+    }
+    _dashRightPressed = couldBeDash && xDist >= EVENT_SWIPE_LENGTH;
+    if (_dashRightPressed){
+        
+     //CULog("MPInput dashed right");
+}
+    
+    _jumpPressed = didRelease() && !_dashLeftPressed && !_dashRightPressed;
+    if (_jumpPressed){
+        
+     //CULog("MPInput jumped");
+}
 
 #endif
 
