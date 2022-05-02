@@ -1,33 +1,33 @@
 //
-//  MPTrapDoorModel.hpp
-//  Malperdy
+//  MPSapTrap.hpp
+//  RocketDemo
 //
+//  Created by Spencer Hurst on 4/24/22.
 //  Owner: Spencer Hurst
 //  Contributors: Evan Azari, Abu Qader
-//  Version: 3/10/22
-// 
-//  Copyright (c) 2022 Humblegends. All rights reserved.
+//  Copyright © 2022 Cornell Game Design Initiative. All rights reserved.
 //
 
-#ifndef MPTrapDoorModel_hpp
-#define MPTrapDoorModel_hpp
+#ifndef MPSapTrap_hpp
+#define MPSapTrap_hpp
+
+#include <stdio.h>
 
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUBoxObstacle.h>
 #include <cugl/physics2/CUCapsuleObstacle.h>
 #include <cugl/scene2/graph/CUWireNode.h>
-
 #include "MPTrapModel.hpp"
 #include "MPRoomModel.h"
 
-#include <stdio.h>
 using namespace cugl;
 
+
 #pragma mark -
-#pragma mark SpikeTrap
+#pragma mark SapTrap
 
 
-class TrapDoor : public TrapModel{
+class SapTrap : public TrapModel{
 
 public:
 
@@ -40,19 +40,10 @@ public:
      *
      * @return  true if the trap is initialized properly, false otherwise.
      */
-    bool init(float roomWidth, float roomHeight);
+    bool init();
 
-    
-    /**
-     * Change the traps animation/image when you run into it. I need a way to do this
-     *.
-     *
-     */
-    void changeTexture(){
-        
-    }
 
 };
 
 
-#endif /* MPTrapDoorModel_hpp */
+#endif /* MPSapTrap_hpp */

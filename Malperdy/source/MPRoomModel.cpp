@@ -5,20 +5,20 @@
 //  This class encapsulates all of the information for a single room, including
 //  its geometry for both drawing and physics. Locations of everything within a
 //  a room are stored relative to the room's origin, which is the lower left corner.
-// 
+//
 //  Room geometries are read from a JSON and stored in a static lookup table shared
 //  among all instances of RoomModel.
-// 
+//
 //  Geometry within a room is defined as a percentage of the room's actual width/
 //  height. Changing the macros for default room width/height in the headerfile will
 //  scale the rooms accordingly. Rooms are not locked, meaning they can be swapped,
 //  by default upon creation.
-// 
+//
 //  Room is a subclass of SceneNode, and so all of SceneNode's methods can be used
 //  with it. This allows individual rooms and their contents to be scaled properly
 //  when zooming in and out. Each element of room geometry is then stored as a child
 //  scene graph node of the room.
-// 
+//
 //  In theory, all the rooms in a level can be made children of a SceneNode for the
 //  whole level grid. Transforming the grid should then allow for easy transformation
 //  of all the room, and calling render() on the level grid SceneNode should draw all
@@ -27,7 +27,7 @@
 //  Owner: Kristina Gu
 //  Contributors: Kristina Gu, Jordan Selin
 //  Version: 4/16/22
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
@@ -64,13 +64,13 @@ float BOUND[] = {				 0,						  0,
 /**
  * Creates all the polygons for any geometry for the room type with the given ID.
  * If no room ID is given, then it defaults to a room with only floor.
- * 
+ *
  * This is a private helper function that is only used within the class.
- * 
+ *
  * @param roomID	ID of room type with the desired geometry
  */
 void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
-    
+
 //    string roomID = "";
 //
 //	// Get data for the room with the corresponding ID
@@ -88,10 +88,10 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
 
     // get the geometry data from the JSON
     vector<int> data= roomJSON->get("layers")->get(0)->get("data")->asIntArray();
-    
+
     // The tile in the top left corner (indicates geometry to be created)
     int tile = data.at(0);
-    
+
     // room size
     int width = roomJSON->get("width")->asInt();
     int height = roomJSON->get("height")->asInt();
@@ -100,19 +100,19 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
 
     // for each tile,
     for(int i =  0; i < data.size(); i++){
-        
+
         // get the current tile and its position within the room
         int current_tile = data.at(i);
         int curr_row = (height-1) - (i / width);
         int curr_col = i % width;
-        
+
         // if the tile at this location should be created...
         if(current_tile == tile){
-            
+
             // make a square in its position
             p = pf.makeRect(float(curr_col)/float(width), float(curr_row)/float(height), 1.0/float(width), 1.0/float(height));
             p *= ROOM_SCALE;
-            
+
             // Convert polygon into a scene graph node and add as a child to the room node
             shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
             polyNode->setPolygon(p);
@@ -122,13 +122,13 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
             // Set position of polygon node accordingly
             addChild(polyNode);
             _geometry->push_back(polyNode);
-            
+
             // Generate PolygonObstacle and set the corresponding properties for level geometry
             shared_ptr<physics2::PolygonObstacle> physPoly = physics2::PolygonObstacle::alloc(p, Vec2::ZERO);
             physPoly->setBodyType(b2_staticBody);
             // Store as part of the physics geometry
             _physicsGeometry->push_back(physPoly);
-            
+
         }
     }
 
@@ -138,7 +138,7 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
 #pragma mark Constructors
 /**
  * Initializes a room with the given geometry at the given location.
- * 
+ *
  * The geometry corresponding to the room type given by the room ID is
  * taken from the JSON file of rooms.
  *
@@ -169,7 +169,7 @@ bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_pt
 	boundNode->setColor(Color4(Vec4(0.65, 0.65, 0.65, 0.5)));
 	boundNode->setClosed(true);
 	addChild(boundNode);
-    
+
     //Fog of war
 	setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
 
@@ -181,26 +181,33 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
     if (type == TrapModel::TrapType::SPIKE) {
         shared_ptr<SpikeTrap> trap = make_shared<SpikeTrap>();
         trap->init();
-        
+
         _trap = trap;
-        
+
         addChild(_trap);
     }
     else if (type == TrapModel::TrapType::TRAPDOOR) {
         shared_ptr<TrapDoor> trap = make_shared<TrapDoor>();
         trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
-        
+
         _trap = trap;
-        
+
         addChild(_trap);
     }
-    else if (type == TrapModel::TrapType::CHECKPOINT) {
-        shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
-        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+		else if (type == TrapModel::TrapType::SAP){
+				shared_ptr<SapTrap> trap = make_shared<SapTrap>();
+				trap->init();
 
-        _trap = trap;
+				_trap = trap;
 
-        addChild(_trap);
+				addChild(_trap);
+		}
+		else if (type == TrapModel::TrapType::CHECKPOINT) {
+				shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
+				trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+
+				_trap = trap;
+				addChild(_trap);
     }
     else{
         return false;

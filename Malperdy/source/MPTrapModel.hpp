@@ -14,9 +14,8 @@
 
 #include <stdio.h>
 #include <cugl/cugl.h>
-
-#pragma mark -
-#pragma mark Size Constants
+#include <cugl/physics2/CUCapsuleObstacle.h>
+#include <map>
 
 using namespace cugl;
 
@@ -28,6 +27,7 @@ public:
     
     /** The potential activation states of the trap. */
     enum class TrapState : int{
+        SPAWN,
         ACTIVATED,
         DEACTIVATED
     };
@@ -40,6 +40,36 @@ public:
         BRAZIER,
         CHECKPOINT
     };
+    
+    /** Class representing an animation */
+    class Animation{
+    public:
+        // The sprite sheet
+        shared_ptr<Texture> _frames;
+        
+        // Frame data
+        int _size;
+        int _cols;
+        int _rows;
+        bool _loop = false;
+        
+        // Empty constructor, must initialize to usse
+        Animation(){};
+        
+        // Sets all attributes
+        bool init(shared_ptr<Texture> frames, int size, int cols, string loop){
+            // Frame data
+            _frames = frames;
+            _size = size;
+            _cols = cols;
+            // Calculate the number of rows from size & cols
+            _rows = (_size-1) / _cols + 1;
+            if (loop == "true") _loop = true;
+            
+            // return false if spritesheet is null or the size is nonpositive
+            return frames && size > 0;
+        }
+    };
 
 protected:
 #pragma mark -
@@ -47,7 +77,12 @@ protected:
 
     /** The texture for the TRAP   */
     const string TRAP_TEXTURE;
+    
+    /** The amount of time in between each frame update */
+    const float FRAME_TIME = 0.03;
 
+
+    
     
 #pragma mark Attributes
 
@@ -58,13 +93,26 @@ protected:
     TrapType _type;
 
     /** The current activation state of the trap. */
-    TrapState _trapState;
+    TrapState _trapState = TrapState::SPAWN;
         
     /** The obstacle representing the physical entity for the trap */
     shared_ptr<cugl::physics2::PolygonObstacle> _obstacle;
     
     /** The polynode (alternative for) representing the physical entity for the trap */
-    shared_ptr<cugl::scene2::PolygonNode> _polyNode;
+    shared_ptr<cugl::scene2::SpriteNode> _sceneNode;
+    
+    // ANIMATION RELATED ATTRIBUTES
+    /** The amount of time since last frame update */
+    float _elapsed = 0;
+
+    /** represents the actual frame of animation, invariant to texture flips */
+    int _currFrame = 0;
+
+    /** The dictionary of all character animations */
+    shared_ptr<map<string, Animation>> _animations;
+    
+    /** The frame data the current animation */
+    Animation _currAnimation;
 
     
 
@@ -145,14 +193,13 @@ public:
      * @return      Whether the change happened successfully
      */
     Poly2 getImageBody(){
-        return _polyNode->getPolygon();
+        return _sceneNode->getPolygon();
         
     }
     
     shared_ptr<scene2::PolygonNode> getPolyNode(){
-        return _polyNode;
+        return _sceneNode;
     }
-
     
     // Trap State Section
     /**
@@ -170,15 +217,25 @@ public:
      * @param state The new state the trap should be in
      * @return      Whether the change happened successfully
      */
-    virtual void setTrapState(TrapState newState){
-        _trapState = newState;
-    }
+    virtual void setTrapState(TrapState newState);
+    
     
     TrapType getType() {
         return _type;
     }
     
-        
+#pragma mark -
+#pragma mark ANIMATION Methods
+
+    /**
+     * Replaces the node with the specified animation
+     *
+     * @param tex is the key representing an animation in _animations
+     *
+     * @returns whether or not the animation was uplaoded
+     */
+    bool uploadTrapTexture(string tex);
+    
     
 #pragma mark -
 #pragma mark Physics Methods
@@ -202,15 +259,16 @@ public:
      */
     virtual void releaseFixtures();
 
-//    /**
-//     * Updates the object's physics state (NOT GAME LOGIC).
-//     *
-//     * We use this method to reset cooldowns.
-//     *
-//     * @param delta Number of seconds since last animation frame
-//     */
-//    virtual void update(float dt);
+    /**
+     * Updates the object's physics state (NOT GAME LOGIC).
+     *
+     * We use this method to reset cooldowns.
+     *
+     * @param delta Number of seconds since last animation frame
+     */
+    void update(float dt);
 
+    bool uploadTexture(string tex); 
     
 #pragma mark Destructors
     /**
@@ -228,9 +286,9 @@ public:
         removeAllChildren();
         _obstacle = nullptr;
     };
-
-
 };
+
+
 
 
 #endif /* MPTrapModel_hpp */

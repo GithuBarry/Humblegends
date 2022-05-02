@@ -321,9 +321,9 @@ void GameScene::populateChars(){
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
-    
+
     shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
-    
+
     // Give all enemies a reference to Reynard's controller to handle detection
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
@@ -477,6 +477,7 @@ void GameScene::update(float dt) {
 
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
+    //TODO: Why does both these updates exist you only need the _world one
     _reynardController->update(scaled_dt);
     _world->update(scaled_dt);
 
@@ -873,6 +874,11 @@ void GameScene::endContact(b2Contact *contact) {
             }
         }
     }
+    if (isReynardCollision(contact)&&isTrapDoorCollision(contact)) {
+
+        //TODO: Write Code to disable said trapdoor
+    }
+
 }
 
 
