@@ -40,7 +40,7 @@ shared_ptr<ReynardController> EnemyController::_reynard = nullptr;
  *
  * @return  true if the character is initialized properly, false otherwise.
  */
-bool EnemyController::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
+bool EnemyController::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation) {
     // If initialization of parent class failed, return immediately
     if (!(CharacterController::init(pos, drawScale, animation))) return false;
     else return true;
@@ -102,13 +102,13 @@ void EnemyController::update(float delta) {
                 return;
             }
             Vec2 dir = _target->getPosition() - _character->getPosition();
-            
+
             /*
             if ((dir.x < 0 && _character->isFacingRight()) ||
                     (dir.x > 0 && !_character->isFacingRight()))
                 _character->flipDirection();
             */
-             
+
             // TODO: if target is within attack range, attack
 
             // For now, if target is too close, stop
@@ -218,7 +218,7 @@ void EnemyController::reyCast() {
                         && _character->isGrounded()
                         && (!_reynard->isMyBody(fixture->GetBody()))
                         && (
-                                    abs(_reynard->getCharacter()->getLinearVelocity().y) <= 1
+                        abs(_reynard->getCharacter()->getLinearVelocity().y) <= 1
                                 || (_character->isOnWall() && _reynard->getCharacter()->getPosition().y > _character->getPosition().y)
                 )
                         )

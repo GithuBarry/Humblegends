@@ -65,20 +65,20 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
+bool EnemyModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation) {
     // If initialization of parent class failed, return immediately
     if (!(CharacterModel::init(pos, drawScale, animation))) return false;
 
     // Have enemies be stopped by default
     _moveState = MovementState::STOPPED;
-	_currAnimation = "run";
+    _currAnimation = "run";
     // Also have enemies be patrolling by default
     _behaveState = BehaviorState::PATROLLING;
 
-	// Set this enemy's max health according to the constant
-	_maxHearts = DEFAULT_ENEMY_MAX_HEARTS;
-	// Reset this enemy's health to full
-	_hearts = _maxHearts;
+    // Set this enemy's max health according to the constant
+    _maxHearts = DEFAULT_ENEMY_MAX_HEARTS;
+    // Reset this enemy's health to full
+    _hearts = _maxHearts;
 
     return true;
 }
@@ -91,27 +91,27 @@ bool EnemyModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animati
  * @param delta Number of seconds since last animation frame
  */
 void EnemyModel::update(float dt) {
-	// Update location of detection radius
-	/*Vec2 enemyLoc = getPosition() * _drawScale;
-	_detectionArea.m_p.Set(enemyLoc.x, enemyLoc.y);*/
+    // Update location of detection radius
+    /*Vec2 enemyLoc = getPosition() * _drawScale;
+    _detectionArea.m_p.Set(enemyLoc.x, enemyLoc.y);*/
 
-	// Handle the enemy's physics depending on their current behavior state
-	switch (_behaveState) {
-	case (EnemyModel::BehaviorState::PATROLLING):
-		// TODO: an actual patrol pattern
-		setMoveState(MovementState::STOPPED);
-		break;
-	case (EnemyModel::BehaviorState::REALIZING):
-		// Stop while realizing
-		setMoveState(MovementState::STOPPED);
-		break;
-	case (EnemyModel::BehaviorState::CHASING):
-		break;
-	case (EnemyModel::BehaviorState::SEARCHING):
-		break;
-	case (EnemyModel::BehaviorState::RETURNING):
-		break;
-	}
+    // Handle the enemy's physics depending on their current behavior state
+    switch (_behaveState) {
+        case (EnemyModel::BehaviorState::PATROLLING):
+            // TODO: an actual patrol pattern
+            setMoveState(MovementState::STOPPED);
+            break;
+        case (EnemyModel::BehaviorState::REALIZING):
+            // Stop while realizing
+            setMoveState(MovementState::STOPPED);
+            break;
+        case (EnemyModel::BehaviorState::CHASING):
+            break;
+        case (EnemyModel::BehaviorState::SEARCHING):
+            break;
+        case (EnemyModel::BehaviorState::RETURNING):
+            break;
+    }
 
     // Call parent method at end
     CharacterModel::update(dt);
@@ -119,6 +119,7 @@ void EnemyModel::update(float dt) {
 
 #pragma mark -
 #pragma mark Physics Methods
+
 /**
  * Create new fixtures for this body, defining the shape
  *
@@ -128,25 +129,25 @@ void EnemyModel::update(float dt) {
  * fixture to act as their detection radius, which is also added here.
  */
 void EnemyModel::createFixtures() {
-	// Check if there is a body
-	if (_body == nullptr) {
-		return;
-	}
+    // Check if there is a body
+    if (_body == nullptr) {
+        return;
+    }
 
-	// Call parent method to get feet/face fixtures
-	CharacterModel::createFixtures();
+    // Call parent method to get feet/face fixtures
+    CharacterModel::createFixtures();
 
-	// Now add a fixture/sensor around the enemy to act as a detection radius
-	/*b2CircleShape circle = b2CircleShape();
-	circle.m_p = b2Vec2(getWidth() / 2.0f, getHeight() / 2.0f);
-	circle.m_radius = _detectionRadius;
+    // Now add a fixture/sensor around the enemy to act as a detection radius
+    /*b2CircleShape circle = b2CircleShape();
+    circle.m_p = b2Vec2(getWidth() / 2.0f, getHeight() / 2.0f);
+    circle.m_radius = _detectionRadius;
 
-	b2FixtureDef sensorDef;
-	sensorDef.isSensor = true;
-	sensorDef.shape = &circle;
-	sensorDef.density = 1.0f;
-	sensorDef.userData.pointer = DETECTION_SENSOR_NAME;
-	_detectFixture = _body->CreateFixture(&sensorDef);*/
+    b2FixtureDef sensorDef;
+    sensorDef.isSensor = true;
+    sensorDef.shape = &circle;
+    sensorDef.density = 1.0f;
+    sensorDef.userData.pointer = DETECTION_SENSOR_NAME;
+    _detectFixture = _body->CreateFixture(&sensorDef);*/
 }
 
 /**
@@ -155,14 +156,14 @@ void EnemyModel::createFixtures() {
  * This is the primary method to override for custom physics objects.
  */
 void EnemyModel::releaseFixtures() {
-	if (_body != nullptr) {
-		return;
-	}
+    if (_body != nullptr) {
+        return;
+    }
 
-	CharacterModel::releaseFixtures();
+    CharacterModel::releaseFixtures();
 
-	if (_detectFixture != nullptr) {
-		_body->DestroyFixture(_detectFixture);
-		_detectFixture = nullptr;
-	}
+    if (_detectFixture != nullptr) {
+        _body->DestroyFixture(_detectFixture);
+        _detectFixture = nullptr;
+    }
 }
