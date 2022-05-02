@@ -237,6 +237,11 @@ void GameScene::dispose() {
  * This method disposes of the world and creates a new one.
  */
 void GameScene::reset() {
+    revert(true);
+}
+
+void GameScene::revert(bool totalReset){
+    vector<vector<Vec2>> swapHistory = _envController->getSwapHistory();
 
     _reynardController = nullptr;
     _grid = nullptr;
@@ -247,7 +252,21 @@ void GameScene::reset() {
     _gamestate.reset();
     _enemies = nullptr;
     setComplete(false);
-    populate();
+    if (totalReset){
+        populate();
+    }else{
+        populateEnv();
+        for (int i = 0; i<_checkpointSwapLen; i++) {
+            _envController->swapRoomOnGrid(swapHistory[i][0],swapHistory[i][1]);
+        }
+        populateChars();
+        _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
+        for (int i = 0; i < _enemies->size(); i++){
+            (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
+        }
+    }
+
+
 }
 
 /**
@@ -262,7 +281,11 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
-    
+    populateEnv();
+    populateChars();
+}
+
+void GameScene::populateEnv() {
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     /////////////////////////////////////
@@ -284,7 +307,9 @@ void GameScene::populate() {
         (*itr)->setDebugColor(Color4::RED);
         //CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
+}
 
+void GameScene::populateChars(){
 #pragma mark Reynard
     Vec2 pos = Vec2(4, 3);
 
@@ -312,6 +337,11 @@ void GameScene::populate() {
         addObstacle(enemy->getCharacter(), enemy->getSceneNode()); // Put
     }
 
+    _checkpointEnemyPos = vector<Vec2>();
+    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+    for (auto enemy: *_enemies){
+        _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
+    }
 
 
 }
@@ -384,7 +414,7 @@ void GameScene::update(float dt) {
     }
 
     if (_reynardController->getCharacter()->getHearts()<=0){
-        reset();
+        revert(false);
         return;
     }
 
@@ -455,9 +485,9 @@ void GameScene::update(float dt) {
         //assert (0==1);
         CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
     }
-    if ( _reynardController->getCharacter()->isJumping()  && _reynardController->getCharacter()->getLinearVelocity().x<7){
+    if ( _reynardController->getCharacter()->isJumping()  && abs(_reynardController->getCharacter()->getLinearVelocity().x)<7){
         //assert (0==1);
-        //CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
+        CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
     }
 
 
@@ -742,7 +772,6 @@ void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyCont
 
 void GameScene::beginContact(b2Contact *contact) {
     // TODO: all of these collisions need to apply for every character, not just Reynard
-
     // Try to get the character, assuming it's a character-on-object collision
     b2Body* charInCharOnObject = getCharacterBodyInObjectCollision(contact);
     // If it is a character-on-object collision
@@ -764,6 +793,12 @@ void GameScene::beginContact(b2Contact *contact) {
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 setComplete(true);
+                _checkpointSwapLen =  _envController->getSwapHistory().size();
+                _checkpointEnemyPos = vector<Vec2>();
+                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                for (auto enemy: *_enemies){
+                    _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
+                }
             }
             else if (isThisAReynardWallContact(contact, reynardIsRight)) {
                 resolveReynardWallOnContact();

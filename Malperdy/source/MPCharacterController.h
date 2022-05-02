@@ -107,7 +107,7 @@ public:
      * 
      * @return  Position of character's center in world space
      */
-    Vec2 getPosition() {
+    Vec2 getScenePosition() {
         return _character->getPosition().scale(_character->_drawScale);
     }
 
@@ -186,7 +186,7 @@ public:
      * @return  Whether the character jumped successfully
      */
     bool jump() {
-        return (!_character->isJumping()) && _character->setMoveState(CharacterModel::MovementState::JUMPING);
+        return  _character->setMoveState(CharacterModel::MovementState::JUMPING);
     }
     
     /**
