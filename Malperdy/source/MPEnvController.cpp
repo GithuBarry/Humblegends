@@ -25,7 +25,7 @@ EnvController::EnvController() {
 
 /* Updates the environment */
 void EnvController::update(Vec2 dragCoords, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
-    Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getPosition());
+    Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getScenePosition());
     // Defog rooms
     if (!_reyRoom.equals(newReyRoom)) {
         _reyRoom = newReyRoom;
@@ -36,7 +36,7 @@ void EnvController::update(Vec2 dragCoords, const shared_ptr<ReynardController>&
     }
     // Apply fog to external objects
     for (auto i = enemies->begin(); i != enemies->end(); i++) {
-        Vec2 pos = (*i)->getPosition();
+        Vec2 pos = (*i)->getScenePosition();
         bool isFogged = _grid->isRoomFogged(_grid->worldSpaceToRoom(pos));
         if (isFogged) (*i)->getSceneNode()->setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
         else (*i)->getSceneNode()->setColor(Color4::WHITE);
@@ -132,6 +132,8 @@ bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& 
     // check if the room number is valid
     if (room.x == -1 || room.y == -1) return false;
     if (_grid->getRoom(room) == nullptr) return false;
+    // check if the room is permalocked
+    if (_grid->getRoom(room)->permlocked) return false;
     // check if the room is fogged
     if (_grid->isRoomFogged(room)) return false;
     // check if the room is occupied
@@ -154,7 +156,7 @@ bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& 
 * @return true if Reynard is inside the given room
 */
 bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardController> &reynard) {
-    Vec2 pos = reynard->getPosition(); //reynard's center
+    Vec2 pos = reynard->getScenePosition(); //reynard's center
     Vec2 cRoom = _grid->worldSpaceToRoom(pos);
     return room.equals(cRoom);
 }
@@ -170,7 +172,7 @@ bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardControlle
 bool EnvController::containsEnemies(Vec2 room, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
     bool isTrue = false;
     for (auto i = enemies->begin(); i != enemies->end(); i++) {
-        Vec2 pos = (*i)->getPosition();
+        Vec2 pos = (*i)->getScenePosition();
         Vec2 cRoom = _grid->worldSpaceToRoom(pos);
         isTrue = isTrue || room.equals(cRoom);
     }
@@ -235,4 +237,8 @@ void EnvController::lookUnfogged(Vec2 room) {
 
 EnvController::~EnvController() {
     _grid = nullptr;
+}
+
+const vector<vector<Vec2>> &EnvController::getSwapHistory() const {
+    return _swapHistory;
 }

@@ -48,7 +48,7 @@ void ReynardController::update(float delta) {
 	// Call parent method at the end
 	CharacterController::update(delta);
     if (lastCheckPointPosition == Vec2(-1,-1)){
-        lastCheckPointPosition = getPosition();
+        lastCheckPointPosition = getScenePosition();
     }
 }
 

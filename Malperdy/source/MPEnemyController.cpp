@@ -181,7 +181,7 @@ void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string n
  */
 void EnemyController::reyCast() {
     // Draw line from enemy to Reynard
-    updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard");
+    //updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard", Color4::RED);
 
     // Raycast to Reynard's location
     // Note that the raycast will detect all fixtures in its path, and it will not necessarily
@@ -194,7 +194,7 @@ void EnemyController::reyCast() {
             // any fraction, it clips the ray at that point.
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
                 // Draw line from enemy to point of impact
-                updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4(0,0,0,0), 5.0f);
+                //updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
 
                 // If Reynard is a fixture in the path, then set the point to start going to
                 // Otherwise, set the point as a "null" value
@@ -209,12 +209,15 @@ void EnemyController::reyCast() {
     //bool wallInFront = false;
     _obstacleWorld->rayCast(
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
-                updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
-                if ((!_character->isJumping()) && _character->isGrounded() && (!_reynard->isMyBody(fixture->GetBody())) )
+                updateLine(getScenePosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
+                if ((!_character->isJumping())
+                        && _character->isGrounded()
+                        && (!_reynard->isMyBody(fixture->GetBody()))
+                        )
                     jump();
                 return fraction;
             },
-            _character->getPosition(), _character->getPosition() + Vec2(5 * (_character->isFacingRight() ? 1 : -1), -0.5));
+            _character->getPosition(), _character->getPosition() + Vec2(5 * (_character->isFacingRight() ? 1 : -1), -0.3));
 
     // If the closest hit fixture really was Reynard, then set this enemy's target accordingly and set new target location
     if (_raycastCache != Vec2(-1, -1)) {
