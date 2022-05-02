@@ -83,10 +83,23 @@ protected:
 #pragma mark Internal Object Management
 
     /**
-     * Lays out the game geography.
+     * Lays out the game geography and characters
      *
      */
     void populate();
+
+    /**
+     * Lays out the game geography.Part of populate()
+     *
+     */
+    void populateEnv();
+
+    /**
+     * Lays out the game characters. Part of populate()
+     *
+     */
+    void populateChars();
+
 
     /**
      Revert the game state to the last state

@@ -262,7 +262,11 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
-    
+    populateEnv();
+    populateChars();
+}
+
+void GameScene::populateEnv() {
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     /////////////////////////////////////
@@ -284,7 +288,9 @@ void GameScene::populate() {
         (*itr)->setDebugColor(Color4::RED);
         //CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
+}
 
+void GameScene::populateChars(){
 #pragma mark Reynard
     Vec2 pos = Vec2(4, 3);
 
