@@ -365,8 +365,9 @@ void GameScene::populateChars(){
                 Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() /8 -1 -y);
                 
                 // initialize it
-                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(12,8), _scale, rabbit_animations));
-//                _enemies->push_back(EnemyController::alloc(Vec2(32,18), _scale, rabbit_animations));
+//                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(12,8), _scale, rabbit_animations));
+                _enemies->push_back(EnemyController::alloc(Vec2::ZERO, _scale, rabbit_animations));
+                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1,1)) * Vec2(5,5));
             }
         }
     }
