@@ -122,19 +122,13 @@ private:
     cugl::TouchID _currentTouch;
     /* The position of the current touch (for touch-based interfaces) */
     cugl::Vec2 _touchPos;
-    /* Whether the touch is currently dragging */
+
+    /* Whether the mouse is currently dragging */
     bool _touchDragging;
-    /*  
-    * The start position of the current touch
-    * 
-    * Used as the start of the current or last drag
-    * Also used to determine if a swipe occurred
-    */
-    cugl::Vec2 _touchStartPos;
+    /* The start position of the current drag, or the last drag */
+    cugl::Vec2 _touchDragStart;
     /* The end position of the last drag */
-    cugl::Vec2 _touchEndPos;
-    /* The length (in time) of the current touch */
-    float _touchTime;
+    cugl::Vec2 _touchDragEnd;
 
     // MULTITOUCH SUPPORT
     /* The key for multitouch listeners */
