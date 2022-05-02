@@ -132,6 +132,8 @@ bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& 
     // check if the room number is valid
     if (room.x == -1 || room.y == -1) return false;
     if (_grid->getRoom(room) == nullptr) return false;
+    // check if the room is permalocked
+    if (_grid->getRoom(room)->permlocked) return false;
     // check if the room is fogged
     if (_grid->isRoomFogged(room)) return false;
     // check if the room is occupied
