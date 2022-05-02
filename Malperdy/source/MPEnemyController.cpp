@@ -60,7 +60,6 @@ bool EnemyController::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<An
 void EnemyController::update(float delta) {
     // Call parent method first
     CharacterController::update(delta);
-    //CULog("EnemyController%f %f",_cha);
 
     // Don't update any behavior if the enemy doesn't have a reference to Reynard or the ObstacleWorld yet
     if (_reynard == nullptr || _obstacleWorld == nullptr) {
