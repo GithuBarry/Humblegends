@@ -32,7 +32,7 @@ bool SapTrap::init(){
     _sceneNode->setAnchor(Vec2::ZERO);
     _sceneNode->setScale(720.0 / _sceneNode->getPolygon().getBounds().getMaxX());
     _sceneNode->setAbsolute(true);
-    _sceneNode->setColor(cugl::Color4f::YELLOW);
+    _sceneNode->setColor(cugl::Color4f::ORANGE);
 //    _sceneNode->Color4("YELLOW");
 
     return this->TrapModel::init();
