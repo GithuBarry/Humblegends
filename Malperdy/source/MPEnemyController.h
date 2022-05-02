@@ -44,6 +44,14 @@ protected:
     /** How long Reynard has been in the enemy's detection radius so far */
     float _detectTime = 0.0f;
 
+
+    bool _debug = false;
+public:
+    bool isDebug() const;
+
+    void setDebug(bool debug);
+
+
 public:
 
     /**

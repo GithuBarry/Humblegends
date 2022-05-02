@@ -60,6 +60,7 @@ bool EnemyController::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<An
 void EnemyController::update(float delta) {
     // Call parent method first
     CharacterController::update(delta);
+    //CULog("EnemyController%f %f",_cha);
 
     // Don't update any behavior if the enemy doesn't have a reference to Reynard or the ObstacleWorld yet
     if (_reynard == nullptr || _obstacleWorld == nullptr) {
@@ -198,7 +199,8 @@ void EnemyController::reyCast() {
             // any fraction, it clips the ray at that point.
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
                 // Draw line from enemy to point of impact
-                //updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
+                if(_debug)
+                    updateLine(getScenePosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
 
                 // If Reynard is a fixture in the path, then set the point to start going to
                 // Otherwise, set the point as a "null" value
@@ -213,7 +215,8 @@ void EnemyController::reyCast() {
     //bool wallInFront = false;
     _obstacleWorld->rayCast(
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
-                //updateLine(getScenePosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
+                if(_debug)
+                    updateLine(getScenePosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
                 if ((!_character->isJumping())
                         && _character->isGrounded()
                         && (!_reynard->isMyBody(fixture->GetBody()))
@@ -240,3 +243,13 @@ void EnemyController::reyCast() {
     // Reset raycast cache for next raycast
     _raycastCache = Vec2(-1, -1);
 }
+
+bool EnemyController::isDebug() const {
+    return _debug;
+}
+
+void EnemyController::setDebug(bool debug) {
+    _debug = debug;
+}
+
+

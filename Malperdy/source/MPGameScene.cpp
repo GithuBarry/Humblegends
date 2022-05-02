@@ -402,6 +402,10 @@ void GameScene::update(float dt) {
     if (_input.didDebug()) {
         setDebug(!isDebug());
         //_worldnode->setVisible(!_worldnode->isVisible());
+        vector<std::shared_ptr<EnemyController>>::iterator itr;
+        for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+            (*itr)->setDebug(true);
+        }
     }
 
 
