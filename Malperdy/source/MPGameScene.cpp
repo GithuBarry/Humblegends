@@ -181,10 +181,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _worldnode->setPosition(offset);
 
-    //_debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
-    //_debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
-    //_debugnode->setPosition(offset / _scale);
-
+    _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
+    _debugnode->setScale(_scale); // Debug node draws in PHYSICS coordinates
+    _debugnode->setPosition(offset / _scale);
     setDebug(false);
 
     _winNode = scene2::Label::allocWithText("VICTORY!", _assets->get<Font>(PRIMARY_FONT));
@@ -196,9 +195,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     setComplete(false);
 
     addChild(_worldnode);
-
-    //addChild(_debugnode);
-
+    addChild(_debugnode);
     addChild(_winNode);
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
@@ -222,9 +219,7 @@ void GameScene::dispose() {
         _input.dispose();
         _world = nullptr;
         _worldnode = nullptr;
-
-        //_debugnode = nullptr;
-
+        _debugnode = nullptr;
         _winNode = nullptr;
         _complete = false;
         _debug = false;
@@ -242,18 +237,37 @@ void GameScene::dispose() {
  * This method disposes of the world and creates a new one.
  */
 void GameScene::reset() {
+    revert(true);
+}
+
+void GameScene::revert(bool totalReset){
+    vector<vector<Vec2>> swapHistory = _envController->getSwapHistory();
 
     _reynardController = nullptr;
     _grid = nullptr;
     _envController = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
-    //_debugnode->removeAllChildren();
+    _debugnode->removeAllChildren();
     _gamestate.reset();
 
 
     setComplete(false);
-    populate();
+    if (totalReset){
+        populate();
+    }else{
+        populateEnv();
+        for (int i = 0; i<_checkpointSwapLen; i++) {
+            _envController->swapRoomOnGrid(swapHistory[i][0],swapHistory[i][1]);
+        }
+        populateChars();
+        _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
+        for (int i = 0; i < _enemies->size(); i++){
+            (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
+        }
+    }
+
+
 }
 
 /**
@@ -268,7 +282,11 @@ void GameScene::reset() {
  * with your serialization loader, which would process a level file.
  */
 void GameScene::populate() {
-    
+    populateEnv();
+    populateChars();
+}
+
+void GameScene::populateEnv() {
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     /////////////////////////////////////
@@ -286,11 +304,13 @@ void GameScene::populate() {
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> physics_objects = _grid->getPhysicsObjects();
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = physics_objects->begin(); itr != physics_objects->end(); ++itr) {
         _world->addObstacle(*itr);
-        //(*itr)->setDebugScene(_debugnode);
+        (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
         //CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
+}
 
+void GameScene::populateChars(){
 #pragma mark Reynard
     Vec2 pos = Vec2(4, 3);
 
@@ -302,9 +322,9 @@ void GameScene::populate() {
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
-    
+
     shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
-    
+
     // Give all enemies a reference to Reynard's controller to handle detection
 
     EnemyController::setReynardController(_reynardController);
@@ -332,12 +352,22 @@ void GameScene::populate() {
     }
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
+
     // Initialize EnemyController with the final animation map and store in vector of enemies
     _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
-    // Add first enemy to physics world
-    addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put
-#pragma mark Sound
+    for(shared_ptr<EnemyController> enemy : *_enemies){
+        enemy->setObstacleWorld(_world);
+        enemy->setReynardController(_reynardController);
+        addObstacle(enemy->getCharacter(), enemy->getSceneNode()); // Put
+    }
+
+    _checkpointEnemyPos = vector<Vec2>();
+    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+    for (auto enemy: *_enemies){
+        _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
+    }
+    #pragma mark Sound
     MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
 }
 
@@ -358,7 +388,7 @@ void GameScene::populate() {
 void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
         const std::shared_ptr<scene2::SceneNode> &node) {
     _world->addObstacle(obj);
-    //obj->setDebugScene(_debugnode);
+    obj->setDebugScene(_debugnode);
     obj->setDebugColor(Color4::RED);
 
     // Position the scene graph node (enough for static objects)
@@ -391,7 +421,7 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
  */
 void GameScene::update(float dt) {
     _input.update(dt);
-
+    Vec2 inputPos = inputToGameCoords(_input.getPosition());
 
 
 
@@ -399,6 +429,10 @@ void GameScene::update(float dt) {
     if (_input.didDebug()) {
         setDebug(!isDebug());
         //_worldnode->setVisible(!_worldnode->isVisible());
+        vector<std::shared_ptr<EnemyController>>::iterator itr;
+        for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+            (*itr)->setDebug(true);
+        }
     }
 
 
@@ -411,20 +445,34 @@ void GameScene::update(float dt) {
     }
 
     if (_reynardController->getCharacter()->getHearts()<=0){
-        reset();
+        revert(false);
         return;
     }
 
-    // Room swap initiated
-    if (_input.didRelease() && !_gamestate.zoomed_in()) {
-        // Scale tap/click location by camera pan
-        Vec2 pos = _input.getPosition() - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0,_worldnode->getPaneTransform().getTranslation().y)*2);
-        //CULog("Touch_x: %f Scene_pos_x: %f",_input.getPosition().x ,pos.x);
-        bool hasSwapped = false;
+    // Variables to indicate which forms of room swap are being used
+    bool usingClick = true;
+    bool usingDrag = true;
+
+    bool hasSwapped = false;
+    Vec2 progressCoords = Vec2(-1, -1);
+    // Room swap by click
+    if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
-            bool check = _envController->swapWithSelected(pos, _reynardController, _enemies);
+            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
         } else {
-            hasSwapped = _envController->selectRoom(pos, _reynardController, _enemies);
+            _envController->selectRoom(inputPos, _reynardController, _enemies);
+        }
+    }
+    // Room swap by drag
+    if (usingDrag && !_gamestate.zoomed_in()) {
+        if (_input.didPress() && !hasSwapped) {
+            _envController->selectRoom(inputPos, _reynardController, _enemies);
+        }
+        else if (_input.didEndDrag() && _envController->hasSelected()) {
+            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+        }
+        if (_input.isDragging() && _envController->hasSelected()) {
+            progressCoords = inputPos;
         }
     }
 
@@ -432,6 +480,20 @@ void GameScene::update(float dt) {
     if (_input.didJump() && _gamestate.zoomed_in()) {
         _reynardController->jump();
         //cout << "Press Jump Button" << endl;
+        //CULog("jumpin");
+    }
+    // When dashing right
+    else if (_input.didDashRight()) {
+        //TODO: make dash less buggy and uncomment
+        _reynardController->dashRight();
+        //CULog("dashin");
+    }
+
+    // When dashing left
+    else if (_input.didDashLeft()) {
+        //TODO: make dash less buggy and uncomment
+        _reynardController->dashLeft();
+        //CULog("dashin");
     }
 
     if (_input.didZoomIn()) {
@@ -443,32 +505,21 @@ void GameScene::update(float dt) {
     // When zooming out
     if (_input.didZoomOut()) {
         _gamestate.zoom_out();
+        _envController->deselectRoom();
     }
 
-    // When dashing right
-    if (_input.didDashRight()) {
-        //TODO: make dash less buggy and uncomment
-        //_reynardController->dashRight();
-    }
 
-    // When dashing left
-    if (_input.didDashLeft()) {
-        //TODO: make dash less buggy and uncomment
-        //_reynardController->dashLeft();
-    }
 
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
     _reynardController->update(scaled_dt);
     _world->update(scaled_dt);
 
-    // TODO debug purposes
-    if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0){
-        //assert (0==1);
-        CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+    //TODO debugging area. Disable for releases
+    if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0 && (_reynardController->getCharacter()->getHearts()>=0)){
+        //CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
     }
-    if ( _reynardController->getCharacter()->isJumping()  && _reynardController->getCharacter()->getLinearVelocity().x<7){
-        //assert (0==1);
+    if ( _reynardController->getCharacter()->isJumping()  && abs(_reynardController->getCharacter()->getLinearVelocity().x)<7){
         //CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
     }
 
@@ -478,15 +529,16 @@ void GameScene::update(float dt) {
     Vec2 reynardScreenPosition = _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition());
 
     bool faceRight = _reynardController->getCharacter()->isFacingRight();
+    Vec2 reynardVelocity = _reynardController->getCharacter()->getLinearVelocity();
 
-    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(), faceRight));
+    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(), faceRight,reynardVelocity));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
-    /*_debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
+    _debugnode->applyPan(-_debugnode->getPaneTransform().transform(Vec2()));
     _debugnode->applyPan(_worldnode->getPaneTransform().transform(Vec2()) / _scale);
     _debugnode->applyZoom(1 / _debugnode->getZoom());
-    _debugnode->applyZoom(_worldnode->getZoom());*/
+    _debugnode->applyZoom(_worldnode->getZoom());
 
     // Update all enemies
     vector<std::shared_ptr<EnemyController>>::iterator itr;
@@ -494,7 +546,7 @@ void GameScene::update(float dt) {
         (*itr)->update(dt);
     }
 
-    _envController->update(_reynardController);
+    _envController->update(progressCoords, _reynardController, _enemies);
 }
 
 #pragma mark -
@@ -742,7 +794,9 @@ void GameScene::resolveWallJumpOntoTrap(float reynardVY) {
 }
 
 void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy) {
-    enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
+    enemy->getCharacter()->setHearts(enemy->getCharacter()->getHearts() - SPIKE_DAMAGE);
+    enemy->jump();
+    //enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
 }
 
 void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyController> enemy) {
@@ -753,7 +807,6 @@ void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyCont
 
 void GameScene::beginContact(b2Contact *contact) {
     // TODO: all of these collisions need to apply for every character, not just Reynard
-
     // Try to get the character, assuming it's a character-on-object collision
     b2Body* charInCharOnObject = getCharacterBodyInObjectCollision(contact);
     // If it is a character-on-object collision
@@ -775,6 +828,12 @@ void GameScene::beginContact(b2Contact *contact) {
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 setComplete(true);
+                _checkpointSwapLen =  _envController->getSwapHistory().size();
+                _checkpointEnemyPos = vector<Vec2>();
+                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                for (auto thisEnemy: *_enemies){
+                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                }
             }
             else if (isThisAReynardWallContact(contact, reynardIsRight)) {
                 resolveReynardWallOnContact();
@@ -837,14 +896,14 @@ void GameScene::endContact(b2Contact *contact) {
         if (enemy == nullptr) {
             if (_reynardController != nullptr && isReynardCollision(contact)) {
                 if (isThisAReynardGroundContact(contact)) {
-                    CULog("Reynard is off the ground");
+                    //CULog("Reynard is off the ground");
                     resolveReynardGroundOffContact();
                 }
             }
         }
         else {
             if (isThisAEnemyGroundContact(contact, enemy)) {
-                    CULog("Reynard is off the ground");
+                    //CULog("Reynard is off the ground");
                     resolveEnemyGroundOffContact(enemy);
             }
         }
@@ -911,4 +970,9 @@ Size GameScene::computeActiveSize() const {
  */
 void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
     Scene2::render(batch);
+}
+
+/* Converts input coordinates to coordinates in the game world */
+Vec2 GameScene::inputToGameCoords(Vec2 inputCoords) {
+    return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }

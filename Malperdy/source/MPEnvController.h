@@ -6,7 +6,7 @@
 //
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
-//  Version: 3/13/22
+//  Version: 4/23/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -34,6 +34,8 @@ private:
 
     /* History of room swaps as a list of pairs of rooms that have been swapped */
     vector<vector<Vec2>> _swapHistory;
+public:
+    const vector<vector<Vec2>> &getSwapHistory() const;
 
 public:
     /* Creates an envrionment controller and initializes its grid and rooms */
@@ -50,8 +52,17 @@ public:
 
     shared_ptr<GridModel> getGrid(){ return _grid; }
 
-    /* Updates the environment */
-    void update(const shared_ptr<ReynardController>& reynard);
+    /*  
+    * Updates the environment
+    * 
+    * Defogs rooms, applies fog to moving (non-Reynard) objects entering fogged rooms
+    * Updates the animations for an in-progress drag
+    * 
+    * @param dragCoords     the coordinates of the in-progress drag, or (-1, -1) if there is none
+    * @param reynard        Reynard's controller
+    * @param enemies        the enemies' controllers
+    */
+    void update(Vec2 dragCoords, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
 
     /*
     * Selects the room at the given location
@@ -118,6 +129,12 @@ public:
         }
         _swapHistory = vector<vector<Vec2>>();
     }
+    
+    void swapRoomOnGrid (Vec2 room1,Vec2  room2){
+        _grid->swapRooms(room1, room2);
+    }
+
+    virtual ~EnvController();
 
 
 private:
@@ -164,6 +181,9 @@ private:
 
 #pragma mark Appearance Setters
 
+    /* Animates a room swap */
+    void animateSwap(Vec2 room1, Vec2 room2);
+    
     /* Sets the room to look selected */
     void lookSelected(Vec2 room);
 

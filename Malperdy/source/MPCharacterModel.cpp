@@ -108,44 +108,44 @@ bool CharacterModel::setMoveState(MovementState newState) {
 
     // Do what needs to be done when leaving the old state
     switch (_moveState) {
-        case MovementState::STOPPED:
-            break;
-        case MovementState::RUNNING:
-            break;
-        case MovementState::JUMPING:
-            break;
-        case MovementState::FALLING:
-            // Ignore attempts to get on wall if character is falling
-            //if (newState == MovementState::ONWALL) return false;
-            break;
-        case MovementState::ONWALL:
-            // Reset gravity to normal
-            setGravityScale(1.0f);
-            break;
-        case MovementState::DASHING:
-            // Reset gravity to normal
-            setVX((_faceRight ? 1 : -1) * RUN_SPEED);
-            setGravityScale(1.0f);
-            break;
+//        case MovementState::STOPPED:
+//            break;
+//        case MovementState::RUNNING:
+//            break;
+//        case MovementState::JUMPING:
+//            //Nothing should happen
+//            return false;
+//            break;
+//        case MovementState::FALLING:
+//            // Ignore attempts to get on wall if character is falling
+//            //if (newState == MovementState::ONWALL) return false;
+//            break;
+//        case MovementState::ONWALL:
+//            // Reset gravity to normal
+//            setGravityScale(1.0f);
+//            break;
+//        case MovementState::DASHING:
+//            // Reset gravity to normal
+//            //setVX((_faceRight ? 1 : -1) * RUN_SPEED);
+//            setGravityScale(1.0f);
+//            break;
         case MovementState::DEAD:
             // TODO: any changes for swapping from DEAD state, if any
+            //Nothing should happen
+            return false;
             break;
     }
 
     // Do what needs to be done when switching into the new state
     switch (newState) {
         case MovementState::STOPPED:
-
             setAnimation("idle");
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
             setVX((_faceRight ? 1 : -1) * _speed);
             _hasDashed = false;
-
-            
             setAnimation("run");
-
             break;
         case MovementState::JUMPING:
             // Disable double jump (jumping/falling to jumping)
@@ -154,8 +154,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVY(JUMP_SPEED);
             setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
             // If character is on a wall, then also give a horizontal velocity away
-            if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
-            
+            //if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
             setAnimation("jump");
             
             break;
@@ -163,7 +162,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             break;
         case MovementState::ONWALL:
             // Reduce gravity so that character "sticks" to wall
-            setGravityScale(WALL_SLIDE_GRAV_SCALE);
+
             // Stop moving temporarily as character sticks
             _currAnimation = "";
             setVX(0);
@@ -299,38 +298,8 @@ void CharacterModel::dispose() {
  * @param delta Number of seconds since last animation frame
  */
 void CharacterModel::update(float dt) {
-    // Apply cooldowns
-    //if (_moveState == MovementState::FALLING || _moveState == MovementState::JUMPING) {
-    //    _jumpCooldown = JUMP_COOLDOWN;
-    //} else {
-    //    // Only cooldown while grounded
-    //    _jumpCooldown = (_jumpCooldown > 0 ? _jumpCooldown-1 : 0);
-    //
-    //}
 
-    //if (isDashing()) {
-    //    _dashCooldown = DASH_COOLDOWN;
-    //} else {
-    //    // Only cooldown while grounded
-    //    _dashCooldown = (_dashCooldown > 0 ? _dashCooldown-1 : 0);
-    //}
-
-    // Check to make sure Reynard can still continue wall sliding, if he already is
-    //if (_moveState == MovementState::ONWALL) {
-    //    // If Reynard is out of time
-    //    if (_wallSlideDuration >= WALL_SLIDE_DURATION) {
-    //        setOnWall(false);
-    //        setGrounded(false);
-    //        _wallSlideDuration = 0;
-    //        _isFallingOffWall = true;
-    //    }
-    //    // Otherwise, just increment duration
-    //    else {
-    //        _wallSlideDuration += dt;
-    //    }
-    //}
-    //else _wallSlideDuration = 0;
-
+    setGravityScale(1.00f);
     // Handle any necessary behavior for the current move state
     switch (_moveState) {
         case MovementState::STOPPED:
@@ -346,6 +315,7 @@ void CharacterModel::update(float dt) {
         case MovementState::FALLING:
             break;
         case MovementState::ONWALL:
+            setGravityScale(WALL_SLIDE_GRAV_SCALE);
             break;
         case MovementState::DASHING:
             if (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION) {
@@ -357,6 +327,7 @@ void CharacterModel::update(float dt) {
             }
         case MovementState::DEAD:
             // TODO: any updates for when in DEAD state
+            setBodyType(b2_staticBody);
             break;
     }
 

@@ -7,13 +7,14 @@
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
 //  Copyright (c) 2022 Humblegends. All rights reserved.
-//  Version: 3/28/22
+//  Version: 4/23/22
 //
 
 #include "MPEnvController.h"
 #include "MPReynardModel.h"
 #include "MPEnemyController.h"
 #include "MPTrapModel.hpp"
+#include <cugl/cugl.h>
 
 /* Creates an envrionment controller and initializes its grid and rooms */
 EnvController::EnvController() {
@@ -23,11 +24,22 @@ EnvController::EnvController() {
 }
 
 /* Updates the environment */
-void EnvController::update(const shared_ptr<ReynardController>& reynard) {
-    Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getPosition());
+void EnvController::update(Vec2 dragCoords, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+    Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getScenePosition());
+    // Defog rooms
     if (!_reyRoom.equals(newReyRoom)) {
         _reyRoom = newReyRoom;
         defogSurrounding(_reyRoom);
+    }
+    if (!isSwappable(_toSwap, reynard, enemies)) {
+        deselectRoom();
+    }
+    // Apply fog to external objects
+    for (auto i = enemies->begin(); i != enemies->end(); i++) {
+        Vec2 pos = (*i)->getScenePosition();
+        bool isFogged = _grid->isRoomFogged(_grid->worldSpaceToRoom(pos));
+        if (isFogged) (*i)->getSceneNode()->setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
+        else (*i)->getSceneNode()->setColor(Color4::WHITE);
     }
 }
 
@@ -120,6 +132,8 @@ bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& 
     // check if the room number is valid
     if (room.x == -1 || room.y == -1) return false;
     if (_grid->getRoom(room) == nullptr) return false;
+    // check if the room is permalocked
+    if (_grid->getRoom(room)->permlocked) return false;
     // check if the room is fogged
     if (_grid->isRoomFogged(room)) return false;
     // check if the room is occupied
@@ -142,22 +156,7 @@ bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& 
 * @return true if Reynard is inside the given room
 */
 bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardController> &reynard) {
-    Vec2 pos = reynard->getPosition(); //reynard's center
-
-    // TODO: fix the code below to lock a room when any part of Reynard is in it
-    // character->getSize() returns the wrong size
-    //float width = reynard->getSize().width;
-    //float height = reynard->getSize().height;
-    //for (float x = -0.5f; x <= 0.5f; x++) {
-        //for (float y = -0.5f; y <= 0.5f; y++) {
-            //Vec2 corner = pos + Vec2(width * x, height * y);
-            //Vec2 cRoom = _grid->worldSpaceToRoom(corner);
-            //CULog("corner: (%f, %f)", corner.x, corner.y);
-            //CULog("in room: (%f, %f)", cRoom.x, cRoom.y);
-            //if (room.equals(cRoom)) return true;
-        //}
-    //}
-
+    Vec2 pos = reynard->getScenePosition(); //reynard's center
     Vec2 cRoom = _grid->worldSpaceToRoom(pos);
     return room.equals(cRoom);
 }
@@ -173,7 +172,7 @@ bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardControlle
 bool EnvController::containsEnemies(Vec2 room, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
     bool isTrue = false;
     for (auto i = enemies->begin(); i != enemies->end(); i++) {
-        Vec2 pos = (*i)->getPosition();
+        Vec2 pos = (*i)->getScenePosition();
         Vec2 cRoom = _grid->worldSpaceToRoom(pos);
         isTrue = isTrue || room.equals(cRoom);
     }
@@ -196,6 +195,16 @@ void EnvController::defogSurrounding(Vec2 room) {
             lookUnfogged(newRoom);
         }
     }
+}
+
+#pragma mark Appearance Setters
+
+/* Animates a room swap */
+void EnvController::animateSwap(Vec2 vec1, Vec2 vec2) {
+    //shared_ptr<Scene2::MoveTo> move1;
+    //move1.alloc();
+    //shared_ptr<RoomModel> room1 = _grid->getRoom(vec1);
+    //shared_ptr<RoomModel> room2 = _grid->getRoom(vec2);
 }
 
 /* Sets the room to look selected */
@@ -224,4 +233,12 @@ void EnvController::lookUnfogged(Vec2 room) {
     if (_grid->getRoom(room)) {
         _grid->getRoom(room)->setColor(Color4::WHITE);
     }
+}
+
+EnvController::~EnvController() {
+    _grid = nullptr;
+}
+
+const vector<vector<Vec2>> &EnvController::getSwapHistory() const {
+    return _swapHistory;
 }

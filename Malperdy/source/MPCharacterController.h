@@ -107,7 +107,7 @@ public:
      * 
      * @return  Position of character's center in world space
      */
-    Vec2 getPosition() {
+    Vec2 getScenePosition() {
         return _character->getPosition().scale(_character->_drawScale);
     }
 
@@ -186,7 +186,7 @@ public:
      * @return  Whether the character jumped successfully
      */
     bool jump() {
-        return (!_character->isJumping()) && _character->setMoveState(CharacterModel::MovementState::JUMPING);
+        return  _character->setMoveState(CharacterModel::MovementState::JUMPING);
     }
     
     /**
@@ -357,6 +357,9 @@ public:
      * @param delta The amount of time that has passed since the last frame
      */
     virtual void update(float delta) {
+        if (_character->getHearts()<=0){
+            _character->setMoveState(CharacterModel::MovementState::DEAD);
+        }
         // Update model
         _character->update(delta);
     }

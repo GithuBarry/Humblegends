@@ -40,7 +40,7 @@ shared_ptr<ReynardController> EnemyController::_reynard = nullptr;
  *
  * @return  true if the character is initialized properly, false otherwise.
  */
-bool EnemyController::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
+bool EnemyController::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation) {
     // If initialization of parent class failed, return immediately
     if (!(CharacterController::init(pos, drawScale, animation))) return false;
     else return true;
@@ -63,7 +63,7 @@ void EnemyController::update(float delta) {
 
     // Don't update any behavior if the enemy doesn't have a reference to Reynard or the ObstacleWorld yet
     if (_reynard == nullptr || _obstacleWorld == nullptr) {
-        CULog("ERROR: set Reynard and ObstacleWorld for EnemyController before creating enemies");
+        CULog("EnemyController: ERROR: set Reynard and ObstacleWorld for EnemyController before creating enemies");
         return;
     }
 
@@ -102,9 +102,13 @@ void EnemyController::update(float delta) {
                 return;
             }
             Vec2 dir = _target->getPosition() - _character->getPosition();
+
+            /*
             if ((dir.x < 0 && _character->isFacingRight()) ||
                     (dir.x > 0 && !_character->isFacingRight()))
                 _character->flipDirection();
+            */
+
             // TODO: if target is within attack range, attack
 
             // For now, if target is too close, stop
@@ -181,7 +185,7 @@ void updateLine(Vec2 p1, Vec2 p2, shared_ptr<scene2::SceneNode> parent, string n
  */
 void EnemyController::reyCast() {
     // Draw line from enemy to Reynard
-    //updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard");
+    //updateLine(getPosition(), _reynard->getPosition(), _character->_node, "toReynard", Color4::RED);
 
     // Raycast to Reynard's location
     // Note that the raycast will detect all fixtures in its path, and it will not necessarily
@@ -194,7 +198,8 @@ void EnemyController::reyCast() {
             // any fraction, it clips the ray at that point.
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
                 // Draw line from enemy to point of impact
-                //updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4(0,0,0,0), 5.0f);
+                if(_debug)
+                    updateLine(getScenePosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
 
                 // If Reynard is a fixture in the path, then set the point to start going to
                 // Otherwise, set the point as a "null" value
@@ -209,12 +214,20 @@ void EnemyController::reyCast() {
     //bool wallInFront = false;
     _obstacleWorld->rayCast(
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
-                updateLine(getPosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
-                if ((!_character->isJumping()) && _character->isGrounded() && (!_reynard->isMyBody(fixture->GetBody())) )
+                if(_debug)
+                    updateLine(getScenePosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
+                if ((!_character->isJumping())
+                        && _character->isGrounded()
+                        && (!_reynard->isMyBody(fixture->GetBody()))
+                        && (
+                        abs(_reynard->getCharacter()->getLinearVelocity().y) <= 1
+                                || (_character->isOnWall() && _reynard->getCharacter()->getPosition().y > _character->getPosition().y)
+                )
+                        )
                     jump();
                 return fraction;
             },
-            _character->getPosition(), _character->getPosition() + Vec2(5 * (_character->isFacingRight() ? 1 : -1), -0.5));
+            _character->getPosition(), _character->getPosition() + Vec2(5 * (_character->isFacingRight() ? 1 : -1), -0.3));
 
     // If the closest hit fixture really was Reynard, then set this enemy's target accordingly and set new target location
     if (_raycastCache != Vec2(-1, -1)) {
@@ -229,3 +242,13 @@ void EnemyController::reyCast() {
     // Reset raycast cache for next raycast
     _raycastCache = Vec2(-1, -1);
 }
+
+bool EnemyController::isDebug() const {
+    return _debug;
+}
+
+void EnemyController::setDebug(bool debug) {
+    _debug = debug;
+}
+
+
