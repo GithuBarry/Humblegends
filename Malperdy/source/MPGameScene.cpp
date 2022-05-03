@@ -43,7 +43,7 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 #define DEFAULT_GRAVITY -22.0f
 
 /** The default value of Spike damage */
-#define SPIKE_DAMAGE    100.0f
+#define SPIKE_DAMAGE    1.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -745,7 +745,6 @@ void GameScene::resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy) {
     enemy->hitGround();
 }
 
-
 void GameScene::resolveReynardGroundOffContact() {
     _reynardController->offGround();
 }
@@ -758,7 +757,9 @@ void GameScene::resolveTrapOnContact() {
 
 void GameScene::resolveWallJumpOntoTrap(float reynardVY) {
     // We expect reynardVY to be a negative value
-    _reynardController->getCharacter()->setVY(-1 * reynardVY);
+    // KNOCKBACK
+    _reynardController->getCharacter()->setVY(5);
+//    _reynardController->getCharacter()->setVY(-1 * reynardVY);
 }
 
 void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy) {
@@ -767,7 +768,9 @@ void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy) {
 
 void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyController> enemy) {
     // We expect reynardVY to be a negative value
-    enemy->getCharacter()->setVY(-1 * enemyVY);
+    //TODO: Spencer--thats me--changed this for game feel to make spikes no longer feel like trampoleens
+    enemy->getCharacter()->setVY(5);
+//    enemy->getCharacter()->setVY(-1 * enemyVY);
 }
 
 
@@ -786,15 +789,18 @@ void GameScene::beginContact(b2Contact *contact) {
             if (trapType == TrapModel::TrapType::SPIKE) {
                 float reynardVY = _reynardController->getCharacter()->getVY();
                 if (reynardVY < 0) {
+                    resolveTrapOnContact();
                     resolveWallJumpOntoTrap(reynardVY);
                 }
-                else {
-                    resolveTrapOnContact();
-                }
+            }
+            else if (trapType == TrapModel::TrapType::SAP) {
+                //This line of code is sufficient to slow Reynard
+                //No helper is used because the abstraction is unnecessary
+                _reynardController->getCharacter()->slowCharacter();
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 setComplete(true);
-                _checkpointSwapLen =  _envController->getSwapHistory().size();
+                _checkpointSwapLen = _envController->getSwapHistory().size();
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
                 for (auto enemy: *_enemies){
@@ -821,11 +827,14 @@ void GameScene::beginContact(b2Contact *contact) {
             if (trapType == TrapModel::TrapType::SPIKE) {
                 float enemyVY = enemy->getCharacter()->getVY();
                 if (enemyVY < 0) {
+                    resolveEnemyTrapOnContact(enemy);
                     resolveEnemyWallJumpOntoTrap(enemyVY, enemy);
                 }
-                else {
-                    resolveEnemyTrapOnContact(enemy);
-                }
+            }
+            else if (trapType == TrapModel::TrapType::SAP) {
+                    //This line of code is sufficient to slow Reynard
+                    //No helper is used because the abstraction is unnecessary
+                enemy->getCharacter()->slowCharacter();
             }
             else if (isThisAEnemyWallContact(contact, enemyIsRight, enemy)) {
                 resolveEnemyWallOnContact(enemy);
@@ -862,15 +871,25 @@ void GameScene::endContact(b2Contact *contact) {
         if (enemy == nullptr) {
             if (_reynardController != nullptr && isReynardCollision(contact)) {
                 if (isThisAReynardGroundContact(contact)) {
-                    //CULog("Reynard is off the ground");
                     resolveReynardGroundOffContact();
                 }
             }
+//            TrapModel::TrapType trapType = isTrapCollision(contact);
+//            if (trapType == TrapModel::TrapType::SAP) {
+//                //This line of code is sufficient to slow Reynard
+//                //No helper is used because the abstraction is unnecessary
+//                _reynardController->getCharacter()->restoreSpeed();
+//            }
         }
         else {
+            TrapModel::TrapType trapType = isTrapCollision(contact);
+//            if (trapType == TrapModel::TrapType::SAP) {
+//                //This line of code is sufficient to slow Reynard
+//                //No helper is used because the abstraction is unnecessary
+//                enemy->getCharacter()->restoreSpeed();
+//            }
             if (isThisAEnemyGroundContact(contact, enemy)) {
-                    //CULog("Reynard is off the ground");
-                    resolveEnemyGroundOffContact(enemy);
+                resolveEnemyGroundOffContact(enemy);
             }
         }
     }

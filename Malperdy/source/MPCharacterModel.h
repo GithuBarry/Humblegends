@@ -37,7 +37,7 @@ using namespace cugl;
 /** The default speed at which this character runs */
 #define RUN_SPEED 3.7f
 /** The default speed at which this character runs */
-#define DELAY_SPEED 2.0f
+#define DELAY_SPEED 1.0f
 /** The speed at which this character jumps */
 #define JUMP_SPEED 10.5f
 

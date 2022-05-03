@@ -34,6 +34,7 @@ bool SpikeTrap::init(){
 
     _sceneNode->setAnchor(Vec2::ZERO);
     _sceneNode->setScale(720.0 / _sceneNode->getPolygon().getBounds().getMaxX());
+    _sceneNode->setScale(_sceneNode->getScale() * Vec2(1,0.5));
     _sceneNode->setAbsolute(true);
 
     return this->TrapModel::init();
