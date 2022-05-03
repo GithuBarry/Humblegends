@@ -180,7 +180,7 @@ bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_pt
 bool RoomModel::initTrap(TrapModel::TrapType type) {
     if (type == TrapModel::TrapType::SPIKE) {
         shared_ptr<SpikeTrap> trap = make_shared<SpikeTrap>();
-        trap->init();
+        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
 
         _trap = trap;
 
@@ -194,20 +194,20 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
 
         addChild(_trap);
     }
-		else if (type == TrapModel::TrapType::SAP){
-				shared_ptr<SapTrap> trap = make_shared<SapTrap>();
-				trap->init();
+    else if (type == TrapModel::TrapType::SAP){
+        shared_ptr<SapTrap> trap = make_shared<SapTrap>();
+        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
 
-				_trap = trap;
+        _trap = trap;
 
-				addChild(_trap);
-		}
-		else if (type == TrapModel::TrapType::CHECKPOINT) {
-				shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
-				trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+        addChild(_trap);
+    }
+    else if (type == TrapModel::TrapType::CHECKPOINT) {
+        shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
+        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
 
-				_trap = trap;
-				addChild(_trap);
+        _trap = trap;
+        addChild(_trap);
     }
     else{
         return false;

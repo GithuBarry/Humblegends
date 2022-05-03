@@ -15,10 +15,12 @@
 #include "MPTrapModel.hpp"
 #include "MPSpikeTrap.hpp"
 
+
 using namespace cugl;
 
 #pragma mark -
 #pragma mark Constructors
+
 
 /**
  * Initializes a new trap at the given position
@@ -27,14 +29,14 @@ using namespace cugl;
  *
  * @return  true if the trap is initialized properly, false otherwise.
  */
-bool SpikeTrap::init(){
+bool SpikeTrap::init(float roomWidth, float roomHeight){
     _sceneNode = make_shared<scene2::SpriteNode>();
     _sceneNode->initWithFile("textures/spikes.png");
     _type = TrapType::SPIKE;
 
     _sceneNode->setAnchor(Vec2::ZERO);
-    _sceneNode->setScale(720.0 / _sceneNode->getPolygon().getBounds().getMaxX());
-    _sceneNode->setScale(_sceneNode->getScale() * Vec2(1,0.5));
+    _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX());
+    _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y);
     _sceneNode->setAbsolute(true);
 
     return this->TrapModel::init();

@@ -543,7 +543,8 @@ b2Fixture *GameScene::getReynardFixture(b2Contact *contact) {
     //assert(isReynardCollision(contact))
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    if (body1 == _reynardController->getCharacter()->getBody()) {
+    if (body1 == _reynardController->getCharacter()->getBody() ||
+        body2 ==_reynardController->getCharacter()->getBody()) {
         return contact->GetFixtureA();
     } else {
         return contact->GetFixtureB();
@@ -554,7 +555,8 @@ b2Fixture *GameScene::getEnemyFixture(b2Contact *contact) {
     // TODO this function is not right. Also what if both are enemies?
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    if (body1 == _reynardController->getCharacter()->getBody()) {
+    if (body1 == _reynardController->getCharacter()->getBody() ||
+        body2 == _reynardController->getCharacter()->getBody()) {
         return contact->GetFixtureA();
     } else {
         return contact->GetFixtureB();
@@ -828,7 +830,9 @@ void GameScene::beginContact(b2Contact *contact) {
                 float enemyVY = enemy->getCharacter()->getVY();
                 if (enemyVY < 0) {
                     resolveEnemyTrapOnContact(enemy);
-                    resolveEnemyWallJumpOntoTrap(enemyVY, enemy);
+                    if(!enemy->getCharacter()->isDead()){
+                        resolveEnemyWallJumpOntoTrap(enemyVY, enemy);
+                    }
                 }
             }
             else if (trapType == TrapModel::TrapType::SAP) {
@@ -874,20 +878,22 @@ void GameScene::endContact(b2Contact *contact) {
                     resolveReynardGroundOffContact();
                 }
             }
-//            TrapModel::TrapType trapType = isTrapCollision(contact);
-//            if (trapType == TrapModel::TrapType::SAP) {
-//                //This line of code is sufficient to slow Reynard
-//                //No helper is used because the abstraction is unnecessary
-//                _reynardController->getCharacter()->restoreSpeed();
-//            }
+            TrapModel::TrapType trapType = isTrapCollision(contact);
+            if (trapType == TrapModel::TrapType::SAP) {
+                //This line of code is sufficient to slow Reynard
+                //No helper is used because the abstraction is unnecessary
+                //RESTORE REYNARDS NORMAL RUNNING SPEED THROUGH THIS LINE
+                _reynardController->getCharacter()->restoreSpeed();
+            }
         }
         else {
             TrapModel::TrapType trapType = isTrapCollision(contact);
-//            if (trapType == TrapModel::TrapType::SAP) {
-//                //This line of code is sufficient to slow Reynard
-//                //No helper is used because the abstraction is unnecessary
-//                enemy->getCharacter()->restoreSpeed();
-//            }
+            if (trapType == TrapModel::TrapType::SAP) {
+                //This line of code is sufficient to slow Reynard
+                //No helper is used because the abstraction is unnecessary
+                //RESTORE ENEMY NORMAL RUNNING SPEED THROUGH THIS LINE
+                enemy->getCharacter()->restoreSpeed();
+            }
             if (isThisAEnemyGroundContact(contact, enemy)) {
                 resolveEnemyGroundOffContact(enemy);
             }

@@ -191,7 +191,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
         int top_row = _size.y - 1;
         int left_col = _size.x - 1;
         _grid->at(top_row)->at(left_col)->initTrap(TrapModel::TrapType::CHECKPOINT);
-        _grid->at(0)->at(2)->initTrap(TrapModel::TrapType::SAP);
+        _grid->at(0)->at(0)->initTrap(TrapModel::TrapType::SAP);
         // TEMP CODE END
     return this->scene2::SceneNode::init();
 };
