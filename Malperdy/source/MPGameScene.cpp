@@ -462,15 +462,21 @@ void GameScene::update(float dt) {
     }
     // When dashing right
     else if (_input.didDashRight()) {
-        //TODO: make dash less buggy and uncomment
+        if(!_reynardController->getCharacter()->isFacingRight()){
+            _reynardController->getCharacter()->flipDirection();
+        }
         _reynardController->dashRight();
+        //_reynardController->dashRight();
         //CULog("dashin");
     }
 
     // When dashing left
     else if (_input.didDashLeft()) {
-        //TODO: make dash less buggy and uncomment
+        if(_reynardController->getCharacter()->isFacingRight()){
+            _reynardController->getCharacter()->flipDirection();
+        }
         _reynardController->dashLeft();
+        //_reynardController->dashLeft();
         //CULog("dashin");
     }
 
@@ -484,7 +490,7 @@ void GameScene::update(float dt) {
         _envController->deselectRoom();
     }
     
-    if (_reynardController->getCharacter()->getHearts()<=0){
+    if (_reynardController->getCharacter()->getHearts()<=0 ){
         revert(false);
         return;
     }
@@ -499,9 +505,9 @@ void GameScene::update(float dt) {
         _envController->deselectRoom();
     }
 
-    if (_gamestate.isPaused()){
-        return;
-    }
+    //if (_gamestate.isPaused()){
+    //    return;
+    //}
 
 
 
@@ -511,8 +517,9 @@ void GameScene::update(float dt) {
     _world->update(scaled_dt);
 
     //TODO debugging area. Disable for releases
-    if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0 && (_reynardController->getCharacter()->getHearts()>=0)){
-        //CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+    if ((!_reynardController->getCharacter()->isOnWall() ) && abs(_reynardController->getCharacter()->getLinearVelocity().x) <= 0.5 ){
+        CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+        _reynardController->getCharacter()->setLinearVelocity((4*(_reynardController->getCharacter()->isFacingRight()?1:-1)),4);
     }
     if ( _reynardController->getCharacter()->isJumping()  && abs(_reynardController->getCharacter()->getLinearVelocity().x)<7){
         //CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");

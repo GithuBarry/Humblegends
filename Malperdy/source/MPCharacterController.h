@@ -199,7 +199,9 @@ public:
             if (!_character->isFacingRight()){
                 _character->flipDirection();
             }
-            return _character->setMoveState(CharacterModel::MovementState::DASHING);
+            _character->_speed = RUN_SPEED*3;
+            return true;
+            //return _character->setMoveState(CharacterModel::MovementState::DASHING);
         }
         return false;
     }
@@ -214,7 +216,9 @@ public:
             if (_character->isFacingRight()){
                 _character->flipDirection();
             }
-            return _character->setMoveState(CharacterModel::MovementState::DASHING);
+            _character->_speed = RUN_SPEED*3;
+            return true;
+            //return _character->setMoveState(CharacterModel::MovementState::DASHING);
         }
         return false;
     }

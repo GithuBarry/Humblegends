@@ -135,7 +135,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             return false;
             break;
     }
-
+    
     // Do what needs to be done when switching into the new state
     switch (newState) {
         case MovementState::STOPPED:
@@ -143,7 +143,8 @@ bool CharacterModel::setMoveState(MovementState newState) {
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
-            setVX((_faceRight ? 1 : -1) * _speed);
+            
+            setVX((_faceRight ? 1 : -1) * RUN_SPEED);
             _hasDashed = false;
             setAnimation("run");
             break;
@@ -152,11 +153,14 @@ bool CharacterModel::setMoveState(MovementState newState) {
             if (_moveState == MovementState::JUMPING || _moveState == MovementState::FALLING) return false;
             // Jump up
             setVY(JUMP_SPEED);
-            setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
+            
+            
+           
+            
+            
             // If character is on a wall, then also give a horizontal velocity away
             //if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
             setAnimation("jump");
-            
             break;
         case MovementState::FALLING:
             break;
@@ -300,16 +304,26 @@ void CharacterModel::dispose() {
 void CharacterModel::update(float dt) {
 
     setGravityScale(1.00f);
+    float jump_x = JUMP_SPEED/1.5 ;
     // Handle any necessary behavior for the current move state
     switch (_moveState) {
         case MovementState::STOPPED:
             break;
         case MovementState::RUNNING:
             // Continue moving if in the run state
+            if (_speed>RUN_SPEED){
+                _speed -= 0.1;
+            }
             if (isRunning()) setVX((_faceRight ? 1 : -1) * _speed);
             break;
         case MovementState::JUMPING:
             // If vertical velocity becomes negative, transition to Falling
+            
+            if (_speed>JUMP_SPEED/1.5){
+                _speed -= 0.1;
+                jump_x = _speed;
+            }
+            setVX((_faceRight ? 1 : -1) * jump_x);
             if (getVY() <= 0) setMoveState(MovementState::FALLING);
             break;
         case MovementState::FALLING:

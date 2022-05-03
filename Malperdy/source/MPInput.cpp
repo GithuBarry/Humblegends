@@ -293,8 +293,7 @@ void InputController::update(float dt) {
     
     _jumpPressed = didRelease() && !_dashLeftPressed && !_dashRightPressed;
     if (_jumpPressed){
-        
-     //CULog("MPInput jumped");
+        CULog("MPInput jumped");
 }
 
 #endif
