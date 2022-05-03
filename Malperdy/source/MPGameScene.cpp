@@ -43,7 +43,7 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 #define DEFAULT_GRAVITY -22.0f
 
 /** The default value of Spike damage */
-#define SPIKE_DAMAGE    100.0f
+#define SPIKE_DAMAGE    1.0f
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -321,9 +321,9 @@ void GameScene::populateChars(){
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
 
 #pragma mark Enemies
-    
+
     shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
-    
+
     // Give all enemies a reference to Reynard's controller to handle detection
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
@@ -485,6 +485,7 @@ void GameScene::update(float dt) {
 
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
+    //TODO: Why does both these updates exist you only need the _world one
     _reynardController->update(scaled_dt);
     _world->update(scaled_dt);
 
@@ -548,7 +549,8 @@ b2Fixture *GameScene::getReynardFixture(b2Contact *contact) {
     //assert(isReynardCollision(contact))
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    if (body1 == _reynardController->getCharacter()->getBody()) {
+    if (body1 == _reynardController->getCharacter()->getBody() ||
+        body2 ==_reynardController->getCharacter()->getBody()) {
         return contact->GetFixtureA();
     } else {
         return contact->GetFixtureB();
@@ -559,7 +561,8 @@ b2Fixture *GameScene::getEnemyFixture(b2Contact *contact) {
     // TODO this function is not right. Also what if both are enemies?
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    if (body1 == _reynardController->getCharacter()->getBody()) {
+    if (body1 == _reynardController->getCharacter()->getBody() ||
+        body2 == _reynardController->getCharacter()->getBody()) {
         return contact->GetFixtureA();
     } else {
         return contact->GetFixtureB();
@@ -750,7 +753,6 @@ void GameScene::resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy) {
     enemy->hitGround();
 }
 
-
 void GameScene::resolveReynardGroundOffContact() {
     _reynardController->offGround();
 }
@@ -763,7 +765,9 @@ void GameScene::resolveTrapOnContact() {
 
 void GameScene::resolveWallJumpOntoTrap(float reynardVY) {
     // We expect reynardVY to be a negative value
-    _reynardController->getCharacter()->setVY(-1 * reynardVY);
+    // KNOCKBACK
+    _reynardController->getCharacter()->setVY(5);
+//    _reynardController->getCharacter()->setVY(-1 * reynardVY);
 }
 
 void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy) {
@@ -774,7 +778,9 @@ void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy) {
 
 void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyController> enemy) {
     // We expect reynardVY to be a negative value
-    enemy->getCharacter()->setVY(-1 * enemyVY);
+    //TODO: Spencer--thats me--changed this for game feel to make spikes no longer feel like trampoleens
+    enemy->getCharacter()->setVY(5);
+//    enemy->getCharacter()->setVY(-1 * enemyVY);
 }
 
 
@@ -793,15 +799,18 @@ void GameScene::beginContact(b2Contact *contact) {
             if (trapType == TrapModel::TrapType::SPIKE) {
                 float reynardVY = _reynardController->getCharacter()->getVY();
                 if (reynardVY < 0) {
+                    resolveTrapOnContact();
                     resolveWallJumpOntoTrap(reynardVY);
                 }
-                else {
-                    resolveTrapOnContact();
-                }
+            }
+            else if (trapType == TrapModel::TrapType::SAP) {
+                //This line of code is sufficient to slow Reynard
+                //No helper is used because the abstraction is unnecessary
+                _reynardController->getCharacter()->slowCharacter();
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 setComplete(true);
-                _checkpointSwapLen =  _envController->getSwapHistory().size();
+                _checkpointSwapLen = _envController->getSwapHistory().size();
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
                 for (auto thisEnemy: *_enemies){
@@ -828,11 +837,16 @@ void GameScene::beginContact(b2Contact *contact) {
             if (trapType == TrapModel::TrapType::SPIKE) {
                 float enemyVY = enemy->getCharacter()->getVY();
                 if (enemyVY < 0) {
-                    resolveEnemyWallJumpOntoTrap(enemyVY, enemy);
-                }
-                else {
                     resolveEnemyTrapOnContact(enemy);
+                    if(!enemy->getCharacter()->isDead()){
+                        resolveEnemyWallJumpOntoTrap(enemyVY, enemy);
+                    }
                 }
+            }
+            else if (trapType == TrapModel::TrapType::SAP) {
+                    //This line of code is sufficient to slow Reynard
+                    //No helper is used because the abstraction is unnecessary
+                enemy->getCharacter()->slowCharacter();
             }
             else if (isThisAEnemyWallContact(contact, enemyIsRight, enemy)) {
                 resolveEnemyWallOnContact(enemy);
@@ -869,18 +883,35 @@ void GameScene::endContact(b2Contact *contact) {
         if (enemy == nullptr) {
             if (_reynardController != nullptr && isReynardCollision(contact)) {
                 if (isThisAReynardGroundContact(contact)) {
-                    //CULog("Reynard is off the ground");
                     resolveReynardGroundOffContact();
                 }
             }
+            TrapModel::TrapType trapType = isTrapCollision(contact);
+            if (trapType == TrapModel::TrapType::SAP) {
+                //This line of code is sufficient to slow Reynard
+                //No helper is used because the abstraction is unnecessary
+                //RESTORE REYNARDS NORMAL RUNNING SPEED THROUGH THIS LINE
+                _reynardController->getCharacter()->restoreSpeed();
+            }
         }
         else {
+            TrapModel::TrapType trapType = isTrapCollision(contact);
+            if (trapType == TrapModel::TrapType::SAP) {
+                //This line of code is sufficient to slow Reynard
+                //No helper is used because the abstraction is unnecessary
+                //RESTORE ENEMY NORMAL RUNNING SPEED THROUGH THIS LINE
+                enemy->getCharacter()->restoreSpeed();
+            }
             if (isThisAEnemyGroundContact(contact, enemy)) {
-                    //CULog("Reynard is off the ground");
-                    resolveEnemyGroundOffContact(enemy);
+                resolveEnemyGroundOffContact(enemy);
             }
         }
     }
+//    if (isReynardCollision(contact)&&isTrapDoorCollision(contact)) {
+//
+//        //TODO: Write Code to disable said trapdoor
+//    }
+
 }
 
 

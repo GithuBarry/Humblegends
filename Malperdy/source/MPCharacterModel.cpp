@@ -45,6 +45,7 @@ using namespace cugl;
 #pragma mark -
 #pragma mark Constructors
 
+//TODO: Refactor this naming convention.
 /**
  * Initializes a new dude at the given position.
  *
@@ -67,7 +68,7 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Ani
     // create initial scene node with running animation
 
     setSceneNode(scene2::SpriteNode::alloc(_animation->getSheet(), _animation->getRows(), _animation->getCols()));
-    
+
     _node->setScale(Vec2(-0.2,0.2));
 
     Size nsize = _animation->getSheet()->getSize() / drawScale / Vec2(_animation->getCols(), _animation->getRows());
@@ -75,7 +76,7 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Ani
 
     nsize = nsize *DUDE_WIDTH/nsize.width; //!! drawScale is effective ignored!
     _drawScale = drawScale;
-    
+
     setAnimation("run");
 
     // Create physics
@@ -156,7 +157,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             // If character is on a wall, then also give a horizontal velocity away
             //if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
             setAnimation("jump");
-            
+
             break;
         case MovementState::FALLING:
             break;
@@ -179,9 +180,9 @@ bool CharacterModel::setMoveState(MovementState newState) {
             // TODO: any changes for swapping into DEAD state
             setVX(0);
             setVY(0);
-            
+
             setAnimation("dead");
-            
+
             break;
     }
 
@@ -340,12 +341,12 @@ void CharacterModel::update(float dt) {
     }
 
     // UPDATE THE ANIMATION
-    
+
     // update time since last frame update
     _elapsed += dt;
-    
+
     //if (true && (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING)) {
-        
+
         // if it is time to update the frame...
         float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
         if (_elapsed > frame_time ) {
@@ -353,7 +354,7 @@ void CharacterModel::update(float dt) {
             // if on the last frame
             if ((_animation->isReversed() ? _currFrame <= _startframe : _currFrame >= _lastframe)){
                 // loop the animation if needed
-            
+
                 if(_loop){
                     _currFrame = (_animation->isReversed()  ? _lastframe : _startframe);
                 }
