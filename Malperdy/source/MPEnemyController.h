@@ -44,6 +44,14 @@ protected:
     /** How long Reynard has been in the enemy's detection radius so far */
     float _detectTime = 0.0f;
 
+
+    bool _debug = false;
+public:
+    bool isDebug() const;
+
+    void setDebug(bool debug);
+
+
 public:
 
     /**
@@ -62,7 +70,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation);
+    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation);
 
     /**
      * This method handles anything about the character that needs to change over time.
@@ -77,7 +85,9 @@ public:
      *
      * @param world The ObstacleWorld that the enemies should use for raycasting
      */
-    static void setObstacleWorld(shared_ptr<physics2::ObstacleWorld> world) { _obstacleWorld = world; }
+    static void setObstacleWorld(shared_ptr<physics2::ObstacleWorld> world) {
+        _obstacleWorld = world;
+    }
 
     /**
      * Sets a reference to the controller for Reynard, the player character. Should be called
@@ -85,7 +95,9 @@ public:
      * 
      * @param reynard   The controller for Reynard, the player character
      */
-    static void setReynardController(shared_ptr<ReynardController> reynard) { _reynard = reynard; }
+    static void setReynardController(shared_ptr<ReynardController> reynard) {
+        _reynard = reynard;
+    }
 
 #pragma mark -
 #pragma mark Behavior Methods

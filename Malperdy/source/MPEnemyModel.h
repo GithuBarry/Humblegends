@@ -61,7 +61,7 @@ protected:
     /** How close to Reynard the enemy must be to start to notice him */
     float _detectionRadius = 4.0f;
     /** The fixture for the enemy's detection radius */
-    b2Fixture* _detectFixture;
+    b2Fixture *_detectFixture;
 
     /** How long until the enemy drops off a wall */
     float _wallSlideDuration;
@@ -76,6 +76,7 @@ protected:
 public:
 
 #pragma mark Hidden Constructors
+
     /**
      * Initializes the enemy at the given position.
      *
@@ -96,21 +97,27 @@ public:
 
 #pragma mark -
 #pragma mark Attribute Methods
+
     /**
      * Returns this enemy's current behavior state.
      * 
      * @return  This enemy's current behavior state.
      */
-    BehaviorState getBehaveState() { return _behaveState; }
+    BehaviorState getBehaveState() {
+        return _behaveState;
+    }
 
     /**
      * Sets this enemy's current behavior state to the given state.
      *
      * @param state The behavior state to set this enemy to
      */
-    void setBehaveState(BehaviorState state) { _behaveState = state; }
+    void setBehaveState(BehaviorState state) {
+        _behaveState = state;
+    }
 
 #pragma mark Update
+
     /**
      * Updates the enemy's physics state (NOT GAME LOGIC).
      *
@@ -122,6 +129,7 @@ public:
 
 #pragma mark -
 #pragma mark Physics Methods
+
     /**
      * Create new fixtures for this body, defining the shape
      *

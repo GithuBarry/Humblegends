@@ -93,6 +93,7 @@ protected:
 
     /** The duration in milliseconds of a dash */
     const Uint64 DASH_DURATION = 200;
+    const Uint64 DASH_COOLDOWN = 800;
 
 #pragma mark Attributes
 
@@ -271,7 +272,7 @@ public:
 
     /** whether or not the character can dash */
     bool canDash() {
-        return (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION) && !_hasDashed;
+        return (Timestamp().ellapsedMillis(_dashStart) > DASH_COOLDOWN);
     }
 
     /**

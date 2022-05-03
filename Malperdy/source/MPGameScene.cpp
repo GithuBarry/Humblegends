@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 4/16/22
+//  Version: 5/02/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -194,9 +194,16 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _winNode->setPadding(dimen.width / 2, dimen.height / 2, dimen.width / 2, dimen.height / 2);
     setComplete(false);
 
+    _health = scene2::PolygonNode::allocWithFile("textures/Health_Bar_Full.png");
+    _health->setAnchor(Vec2::ANCHOR_TOP_LEFT);
+    Vec2 padding = Vec2(30, -20);
+    _health->setPosition(offset + Vec2(0, getSize().height) + padding);
+    _health->setScale(1.5);
+
     addChild(_worldnode);
     addChild(_debugnode);
     addChild(_winNode);
+    addChild(_health);
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
@@ -221,6 +228,7 @@ void GameScene::dispose() {
         _worldnode = nullptr;
         _debugnode = nullptr;
         _winNode = nullptr;
+        _health = nullptr;
         _complete = false;
         _debug = false;
         Scene2::dispose();
@@ -402,6 +410,10 @@ void GameScene::update(float dt) {
     if (_input.didDebug()) {
         setDebug(!isDebug());
         //_worldnode->setVisible(!_worldnode->isVisible());
+        vector<std::shared_ptr<EnemyController>>::iterator itr;
+        for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
+            (*itr)->setDebug(true);
+        }
     }
 
 
@@ -449,6 +461,20 @@ void GameScene::update(float dt) {
     if (_input.didJump() && _gamestate.zoomed_in()) {
         _reynardController->jump();
         //cout << "Press Jump Button" << endl;
+        //CULog("jumpin");
+    }
+    // When dashing right
+    else if (_input.didDashRight()) {
+        //TODO: make dash less buggy and uncomment
+        _reynardController->dashRight();
+        //CULog("dashin");
+    }
+
+    // When dashing left
+    else if (_input.didDashLeft()) {
+        //TODO: make dash less buggy and uncomment
+        _reynardController->dashLeft();
+        //CULog("dashin");
     }
 
     if (_input.didZoomIn()) {
@@ -463,17 +489,7 @@ void GameScene::update(float dt) {
         _envController->deselectRoom();
     }
 
-    // When dashing right
-    if (_input.didDashRight()) {
-        //TODO: make dash less buggy and uncomment
-        //_reynardController->dashRight();
-    }
 
-    // When dashing left
-    if (_input.didDashLeft()) {
-        //TODO: make dash less buggy and uncomment
-        //_reynardController->dashLeft();
-    }
 
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
@@ -483,12 +499,10 @@ void GameScene::update(float dt) {
 
     //TODO debugging area. Disable for releases
     if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0 && (_reynardController->getCharacter()->getHearts()>=0)){
-        //assert (0==1);
-        CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+        //CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
     }
     if ( _reynardController->getCharacter()->isJumping()  && abs(_reynardController->getCharacter()->getLinearVelocity().x)<7){
-        //assert (0==1);
-        CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
+        //CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
     }
 
 
@@ -514,7 +528,19 @@ void GameScene::update(float dt) {
         (*itr)->update(dt);
     }
 
+    // Update the environment
     _envController->update(progressCoords, _reynardController, _enemies);
+
+    // Update the UI
+    if (_reynardController->getCharacter()->getHearts() >= 3) {
+        _health->setTexture("textures/Health_Bar_Full.png");
+    }else if (_reynardController->getCharacter()->getHearts() == 2) {
+        _health->setTexture("textures/Health_Bar_Two_Third.png");
+    }else if (_reynardController->getCharacter()->getHearts() == 1) {
+        _health->setTexture("textures/Health_Bar_One_Third.png");
+    }else if (_reynardController->getCharacter()->getHearts() <= 0) {
+        _health->setTexture("textures/Health_Bar_None.png");
+    }
 }
 
 #pragma mark -
@@ -765,7 +791,9 @@ void GameScene::resolveWallJumpOntoTrap(float reynardVY) {
 }
 
 void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy) {
-    enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
+    enemy->getCharacter()->setHearts(enemy->getCharacter()->getHearts() - SPIKE_DAMAGE);
+    enemy->jump();
+    //enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
 }
 
 void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyController> enemy) {
@@ -805,8 +833,8 @@ void GameScene::beginContact(b2Contact *contact) {
                 _checkpointSwapLen = _envController->getSwapHistory().size();
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                for (auto enemy: *_enemies){
-                    _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
+                for (auto thisEnemy: *_enemies){
+                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
             }
             else if (isThisAReynardWallContact(contact, reynardIsRight)) {

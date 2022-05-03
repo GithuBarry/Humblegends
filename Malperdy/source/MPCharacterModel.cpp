@@ -328,6 +328,7 @@ void CharacterModel::update(float dt) {
             }
         case MovementState::DEAD:
             // TODO: any updates for when in DEAD state
+            setBodyType(b2_staticBody);
             break;
     }
 
