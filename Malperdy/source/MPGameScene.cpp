@@ -425,10 +425,7 @@ void GameScene::update(float dt) {
         Application::get()->quit();
     }
 
-    if (_reynardController->getCharacter()->getHearts()<=0){
-        revert(false);
-        return;
-    }
+    
 
     // Variables to indicate which forms of room swap are being used
     bool usingClick = true;
@@ -479,14 +476,31 @@ void GameScene::update(float dt) {
 
     if (_input.didZoomIn()) {
         _gamestate.zoom_in();
+        if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
+            CULog("(Zoomed, <#args...#>)");
+            //_gamestate.pauseSwitch();
+        }
         // Deselect any selected rooms
         _envController->deselectRoom();
     }
+    
+    if (_reynardController->getCharacter()->getHearts()<=0){
+        revert(false);
+        return;
+    }
+    
 
     // When zooming out
-    if (_input.didZoomOut()) {
+    else if (_input.didZoomOut()) {
+        if (!_gamestate.zoomed_in() && _gamestate.finishedZooming(_worldnode->getZoom())){
+            revert(true);
+        }
         _gamestate.zoom_out();
         _envController->deselectRoom();
+    }
+
+    if (_gamestate.isPaused()){
+        return;
     }
 
 
