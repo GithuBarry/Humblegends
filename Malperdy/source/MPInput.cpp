@@ -393,7 +393,10 @@ void InputController::touchBeginCB(const cugl::TouchEvent &event, bool focus) {
         _currentTouch = event.touch;
         _touchPos = event.position;
         _touchStartPos = event.position;
-        _touchTime = 0;
+        if ((std::chrono::system_clock::now()-_lastTouchBegan).count() <0.2){
+            doubleTap = true;
+        }
+        _lastTouchBegan = std::chrono::system_clock::now();
     }
 }
 
