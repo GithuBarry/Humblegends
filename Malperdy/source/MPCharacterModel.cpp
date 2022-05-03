@@ -305,6 +305,7 @@ void CharacterModel::update(float dt) {
 
     setGravityScale(1.00f);
     float jump_x = JUMP_SPEED/1.5 ;
+    
     // Handle any necessary behavior for the current move state
     switch (_moveState) {
         case MovementState::STOPPED:
@@ -327,6 +328,11 @@ void CharacterModel::update(float dt) {
             if (getVY() <= 0) setMoveState(MovementState::FALLING);
             break;
         case MovementState::FALLING:
+            if (_speed>JUMP_SPEED/1.5){
+                _speed -= 0.1;
+                jump_x = _speed;
+            }
+            setVX((_faceRight ? 1 : -1) * jump_x);
             break;
         case MovementState::ONWALL:
             setGravityScale(WALL_SLIDE_GRAV_SCALE);
