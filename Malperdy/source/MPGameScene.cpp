@@ -43,7 +43,7 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 #define DEFAULT_GRAVITY -22.0f
 
 /** The default value of Spike damage */
-#define SPIKE_DAMAGE    100.0f
+#define SPIKE_DAMAGE    1
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
