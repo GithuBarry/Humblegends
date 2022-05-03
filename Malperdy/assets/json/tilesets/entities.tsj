@@ -30,6 +30,7 @@
          "imageheight":10,
          "imagewidth":10
         }],
+        
  "tilewidth":10,
  "type":"tileset",
  "version":"1.8"

@@ -43,6 +43,7 @@
 #include "MPRoomLoader.h"
 #include "MPTrapModel.hpp"
 #include "MPSpikeTrap.hpp"
+#include "MPFallingTrap.h"
 #include "MPTrapDoorModel.hpp"
 
 using namespace cugl;

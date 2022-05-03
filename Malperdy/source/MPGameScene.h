@@ -26,6 +26,7 @@
 #include "MPRoomModel.h"
 #include "MPGridModel.h"
 #include "MPEnvController.h"
+#include "MPFallingTrap.h"
 
 /**
  * This class is the primary gameplay constroller for the demo.
@@ -64,6 +65,8 @@ protected:
 
     /** Reference to the Reynard controller */
     std::shared_ptr<ReynardController> _reynardController;
+    /** Reference to Falling trap */
+    std::shared_ptr<FallingTrap> _fallingTrap;
     std::shared_ptr<GridModel> _grid;
     std::shared_ptr<EnvController> _envController;
     /** Mark set to handle more sophisticated collision callbacks */

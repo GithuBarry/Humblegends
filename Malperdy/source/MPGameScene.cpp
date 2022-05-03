@@ -241,6 +241,7 @@ void GameScene::reset() {
     _reynardController = nullptr;
     _grid = nullptr;
     _envController = nullptr;
+    _fallingTrap = nullptr;
     _world->clear();
     _worldnode->removeAllChildren();
     //_debugnode->removeAllChildren();
@@ -305,8 +306,23 @@ void GameScene::populate() {
     // Initialize EnemyController with the final animation map and store in vector of enemies
     _enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
+<<<<<<< Updated upstream
     // Add first enemy to physics world
     addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode()); // Put
+=======
+    for(shared_ptr<EnemyController> enemy : *_enemies){
+        enemy->setObstacleWorld(_world);
+        enemy->setReynardController(_reynardController);
+        addObstacle(enemy->getCharacter(), enemy->getSceneNode()); // Put
+    }
+
+    _checkpointEnemyPos = vector<Vec2>();
+    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+    for (auto enemy: *_enemies){
+        _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
+    }
+
+>>>>>>> Stashed changes
 }
 
 
@@ -423,7 +439,6 @@ void GameScene::update(float dt) {
         //_reynardController->dashLeft();
     }
 
-
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
     _reynardController->update(scaled_dt);
     _world->update(scaled_dt);
@@ -454,6 +469,9 @@ void GameScene::update(float dt) {
     _debugnode->applyZoom(1 / _debugnode->getZoom());
     _debugnode->applyZoom(_worldnode->getZoom());*/
 
+    // Falling trap code
+    _fallingTrap->update(_reynardController);
+    
     // Update all enemies
     vector<std::shared_ptr<EnemyController>>::iterator itr;
     for (itr = _enemies->begin(); itr != _enemies->end(); ++itr) {

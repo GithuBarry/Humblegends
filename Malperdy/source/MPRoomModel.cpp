@@ -202,6 +202,14 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
 
         addChild(_trap);
     }
+    else if (type == TrapModel::TrapType::FALLING) {
+        shared_ptr<FallingTrap> trap = make_shared<FallingTrap>();
+        trap->init();
+        
+        _trap = trap;
+        
+        addChild(_trap);
+    }
     else{
         return false;
     }

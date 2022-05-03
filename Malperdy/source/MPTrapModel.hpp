@@ -38,7 +38,8 @@ public:
         TRAPDOOR,
         SAP,
         BRAZIER,
-        CHECKPOINT
+        CHECKPOINT,
+        FALLING
     };
 
 protected:

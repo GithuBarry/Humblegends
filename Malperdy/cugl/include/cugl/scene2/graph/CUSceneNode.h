@@ -644,7 +644,9 @@ public:
      *
      * @param position  The position of the node in its parent's coordinate system.
      */
-    void setPosition(const Vec2 &position) { setPosition(position.x,position.y); }
+    void setPosition(const Vec2 &position) {
+        setPosition(position.x,position.y); }
+    
     
     /**
      * Sets the position of the node in its parent's coordinate system.
