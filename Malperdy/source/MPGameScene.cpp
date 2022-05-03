@@ -598,6 +598,7 @@ b2Fixture *GameScene::getEnemyFixture(b2Contact *contact) {
         or UNTYPED if neither body is a trap
 */
 TrapModel::TrapType GameScene::isTrapCollision(b2Contact* contact) {
+    if (_grid == nullptr) return TrapModel::TrapType::UNTYPED;
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
     for (int row = 0; row < _grid->getWidth(); row++) {
