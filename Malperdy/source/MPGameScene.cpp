@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 4/16/22
+//  Version: 5/02/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -43,7 +43,7 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 #define DEFAULT_GRAVITY -22.0f
 
 /** The default value of Spike damage */
-#define SPIKE_DAMAGE    100.0f
+#define SPIKE_DAMAGE    1
 
 /** To automate the loading of crate files */
 #define NUM_CRATES 2
@@ -194,9 +194,16 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _winNode->setPadding(dimen.width / 2, dimen.height / 2, dimen.width / 2, dimen.height / 2);
     setComplete(false);
 
+    _health = scene2::PolygonNode::allocWithFile("textures/Health_Bar_Full.png");
+    _health->setAnchor(Vec2::ANCHOR_TOP_LEFT);
+    Vec2 padding = Vec2(30, -20);
+    _health->setPosition(offset + Vec2(0, getSize().height) + padding);
+    _health->setScale(1.5);
+
     addChild(_worldnode);
     addChild(_debugnode);
     addChild(_winNode);
+    addChild(_health);
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
@@ -221,6 +228,7 @@ void GameScene::dispose() {
         _worldnode = nullptr;
         _debugnode = nullptr;
         _winNode = nullptr;
+        _health = nullptr;
         _complete = false;
         _debug = false;
         Scene2::dispose();
@@ -519,7 +527,19 @@ void GameScene::update(float dt) {
         (*itr)->update(dt);
     }
 
+    // Update the environment
     _envController->update(progressCoords, _reynardController, _enemies);
+
+    // Update the UI
+    if (_reynardController->getCharacter()->getHearts() >= 3) {
+        _health->setTexture("textures/Health_Bar_Full.png");
+    }else if (_reynardController->getCharacter()->getHearts() == 2) {
+        _health->setTexture("textures/Health_Bar_Two_Third.png");
+    }else if (_reynardController->getCharacter()->getHearts() == 1) {
+        _health->setTexture("textures/Health_Bar_One_Third.png");
+    }else if (_reynardController->getCharacter()->getHearts() <= 0) {
+        _health->setTexture("textures/Health_Bar_None.png");
+    }
 }
 
 #pragma mark -
