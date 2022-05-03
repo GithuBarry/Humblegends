@@ -457,6 +457,20 @@ void GameScene::update(float dt) {
     if (_input.didJump() && _gamestate.zoomed_in()) {
         _reynardController->jump();
         //cout << "Press Jump Button" << endl;
+        //CULog("jumpin");
+    }
+    // When dashing right
+    else if (_input.didDashRight()) {
+        //TODO: make dash less buggy and uncomment
+        _reynardController->dashRight();
+        //CULog("dashin");
+    }
+
+    // When dashing left
+    else if (_input.didDashLeft()) {
+        //TODO: make dash less buggy and uncomment
+        _reynardController->dashLeft();
+        //CULog("dashin");
     }
 
     if (_input.didZoomIn()) {
@@ -471,17 +485,7 @@ void GameScene::update(float dt) {
         _envController->deselectRoom();
     }
 
-    // When dashing right
-    if (_input.didDashRight()) {
-        //TODO: make dash less buggy and uncomment
-        _reynardController->dashRight();
-    }
 
-    // When dashing left
-    if (_input.didDashLeft()) {
-        //TODO: make dash less buggy and uncomment
-        _reynardController->dashLeft();
-    }
 
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
