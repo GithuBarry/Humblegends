@@ -122,11 +122,19 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
 //                int y = object->get("y")->asInt() / tileSize / room_height - 1;
 //                y = (_size.y - 1) - y;
 
-                
+
                 string im = rooms_tileset->get("tiles")->get(room_id - room_offset)->get("image")->asString();
-                int p = im.rfind("room");
-                string name = im.substr(p);
-                name = name.substr(0,name.length()-4);
+                
+                string name;
+                if(im.rfind("solid") != string::npos){
+                    name = "room_solid";
+                }
+                else{
+                    int p = im.rfind("room");
+                    name = im.substr(p);
+                    name = name.substr(0,name.length()-4);
+                }
+                
                 cout << name;
                 
                 // get the room type
