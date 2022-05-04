@@ -103,11 +103,11 @@ void EnemyController::update(float delta) {
             }
             Vec2 dir = _target->getPosition() - _character->getPosition();
 
-            /*
+
             if ((dir.x < 0 && _character->isFacingRight()) ||
                     (dir.x > 0 && !_character->isFacingRight()))
                 _character->flipDirection();
-            */
+
 
             // TODO: if target is within attack range, attack
 

@@ -263,6 +263,7 @@ void GameScene::revert(bool totalReset){
     _enemies = nullptr;
     setComplete(false);
     if (totalReset){
+        _checkpointReynardPos = reynardDefault;
         populate();
     }else{
         populateEnv();

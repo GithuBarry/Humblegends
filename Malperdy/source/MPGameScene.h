@@ -89,7 +89,8 @@ protected:
     /** checkpoint for swap history length*/
     int _checkpointSwapLen = 0;
     vector<Vec2> _checkpointEnemyPos;
-    Vec2 _checkpointReynardPos = Vec2(4,3);
+    Vec2 reynardDefault = Vec2(4,3);
+    Vec2 _checkpointReynardPos = reynardDefault;
 
     /**Workaround for wall jump corner stuck*/
     int corner_num_frames_workaround = 0;

@@ -39,7 +39,7 @@ using namespace cugl;
 /** The default speed at which this character runs */
 #define DELAY_SPEED 1.0f
 /** The speed at which this character jumps */
-#define JUMP_SPEED 10.5f
+#define JUMP_SPEED 12.5f
 
 class CharacterModel : public cugl::physics2::CapsuleObstacle {
 public:

@@ -154,7 +154,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             setVY(JUMP_SPEED);
 
             // If character is on a wall, then also give a horizontal velocity away
-            //if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
+            //if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.8);
             setAnimation("jump");
 
             break;
@@ -300,7 +300,7 @@ void CharacterModel::dispose() {
 void CharacterModel::update(float dt) {
 
     setGravityScale(1.00f);
-    float jump_x = JUMP_SPEED/1.5 ;
+    float jump_x = JUMP_SPEED/1.8 ;
 
     // Handle any necessary behavior for the current move state
     switch (_moveState) {
@@ -316,7 +316,7 @@ void CharacterModel::update(float dt) {
         case MovementState::JUMPING:
             // If vertical velocity becomes negative, transition to Falling
 
-            if (_speed>JUMP_SPEED/1.5){
+            if (_speed>JUMP_SPEED/1.8){
                 _speed -= 0.1;
                 jump_x = _speed;
             }
@@ -324,7 +324,7 @@ void CharacterModel::update(float dt) {
             if (getVY() <= -0.2) setMoveState(MovementState::FALLING);
             break;
         case MovementState::FALLING:
-            if (_speed>JUMP_SPEED/1.5){
+            if (_speed>JUMP_SPEED/1.8){
                 _speed -= 0.1;
                 jump_x = _speed;
             }
