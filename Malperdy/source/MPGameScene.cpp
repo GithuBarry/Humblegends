@@ -898,8 +898,8 @@ void GameScene::beginContact(b2Contact *contact) {
         if (isReynardCollision(contact) && enemy != nullptr) {
             // Collision between Reynard and an enemy
             CULog("Enemy makes contact with Reynard");
-            if ((std::chrono::system_clock::now()-_lastHurt).count()>3){
-
+            std::chrono::duration<float> diff = std::chrono::system_clock::now()-_lastHurt;
+            if (diff.count()>3){
                 _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
                 _lastHurt = std::chrono::system_clock::now();
             }
