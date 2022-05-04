@@ -41,6 +41,15 @@ void EnvController::update(Vec2 dragCoords, const shared_ptr<ReynardController>&
         if (isFogged) (*i)->getSceneNode()->setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
         else (*i)->getSceneNode()->setColor(Color4::WHITE);
     }
+    if (swapIndex <_swapHistory.size()){
+        for (int i = swapIndex; i < _swapHistory.size(); ++i) {
+            bool a = _grid->getRoom(_swapHistory[i][0])->update();
+            bool b = _grid->getRoom(_swapHistory[i][1])->update();
+            if (a && b){
+                swapIndex = i+1;
+            }
+        }
+    }
 }
 
 /*

@@ -313,11 +313,11 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2,bool forced) {
     // Store Room2 at Room1's old location
     setRoom(room1, getRoom(room2));
     // Update Room2's location accordingly
-    getRoom(room2)->setPosition(room1);
+    getRoom(room2)->setPosition(room1,!forced);
     // Store Room1 at Room2's old location
     setRoom(room2, temp);
     // Update Room1's location accordingly
-    temp->setPosition(room2);
+    temp->setPosition(room2,!forced);
 
     // For each obstacle in room1
     for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = _physicsGeometry.at(room1.y).at(room1.x).begin(); itr != _physicsGeometry.at(room1.y).at(room1.x).end(); ++itr) {
