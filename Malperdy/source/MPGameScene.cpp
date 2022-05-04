@@ -497,7 +497,7 @@ void GameScene::update(float dt) {
     _world->update(scaled_dt);
 
     //TODO debugging area. Disable for releases
-    if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0 && (_reynardController->getCharacter()->getHearts()>=0)){
+    if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0 && (_reynardController->getCharacter()->getHearts()>0)){
         //CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
     }
     if ( _reynardController->getCharacter()->isJumping()  && abs(_reynardController->getCharacter()->getLinearVelocity().x)<7){
