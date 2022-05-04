@@ -264,10 +264,10 @@ void GameScene::revert(bool totalReset){
         populate();
     }else{
         populateEnv();
-        for (int i = 0; i<_checkpointSwapLen; i++) {
-            _envController->swapRoomOnGrid(swapHistory[i][0],swapHistory[i][1]);
-        }
         populateChars();
+        for (int i = 0; i<_checkpointSwapLen; i++) {
+            _envController->swapRoomOnGrid(swapHistory[i][0],swapHistory[i][1],true);
+        }
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
         for (int i = 0; i < _enemies->size(); i++){
             (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
@@ -319,14 +319,17 @@ void GameScene::populateEnv() {
 
 void GameScene::populateChars(){
 #pragma mark Reynard
-    Vec2 pos = Vec2(4, 3);
+    Vec2 pos = _checkpointReynardPos;
 
     shared_ptr<Animation> reynard_animations = make_shared<Animation>(_assets->get<Texture>("reynard_all"), _assets->get<JsonValue>("framedata2")->get("reynard"));
     // initialize reynardController with the final animation map
     _reynardController = ReynardController::alloc(pos, _scale, reynard_animations);
 
     // Add Reynard to physics world
+    Vec2 pos_temp = _reynardController->getCharacter()->getPosition();
+    _reynardController->getCharacter()->setPosition(Vec2(4,3));
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
+    _reynardController->getCharacter()->setPosition(pos_temp);
 
 #pragma mark Enemies
 
@@ -904,7 +907,7 @@ void GameScene::beginContact(b2Contact *contact) {
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 //setComplete(true);
-                _checkpointSwapLen = _envController->getSwapHistory().size();
+                _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
                 for (auto thisEnemy: *_enemies){

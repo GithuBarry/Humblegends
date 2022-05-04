@@ -94,17 +94,19 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
         return false;
     }
 
-    bool success = _grid->swapRooms(_toSwap, room2);
+    bool success = _grid->swapRooms(_toSwap, room2,false);
     if (success) {
-        //Sloppy code, fix when refactoring UI updates
-        _toSwap = room2;
-        deselectRoom();
-        
         // Record the room swapping
         vector<Vec2> l;
         l.push_back(room2);
         l.push_back(_toSwap);
         _swapHistory.push_back(l);
+
+        //Sloppy code, fix when refactoring UI updates
+        _toSwap = room2;
+        deselectRoom();
+        
+
     }
     return success;
 }

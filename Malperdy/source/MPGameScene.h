@@ -88,7 +88,7 @@ protected:
     /** checkpoint for swap history length*/
     int _checkpointSwapLen = 0;
     vector<Vec2> _checkpointEnemyPos;
-    Vec2 _checkpointReynardPos;
+    Vec2 _checkpointReynardPos = Vec2(4,3);
 
     /**
      * Last time reynard hurt

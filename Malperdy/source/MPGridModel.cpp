@@ -305,9 +305,9 @@ bool GridModel::setRoom(int x, int y, shared_ptr<RoomModel> room) {
  * @param room2 The coordinates of the second room to swap in (column, row) form
  * @return      Whether the swap was performed successfully
  */
-bool GridModel::swapRooms(Vec2 room1, Vec2 room2) {
+bool GridModel::swapRooms(Vec2 room1, Vec2 room2,bool forced) {
     // Don't swap if not allowed
-    if (!canSwap(room1, room2)) return false;
+    if (!forced && !canSwap(room1, room2)) return false;
 
     shared_ptr<RoomModel> temp = getRoom(room1);
     // Store Room2 at Room1's old location
