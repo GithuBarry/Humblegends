@@ -406,7 +406,7 @@ public:
      * @return  trap type if one body is a trap
                 or UNTYPED if neither body is a trap
      */
-    TrapModel::TrapType isTrapCollision(b2Contact* contact);
+    shared_ptr<TrapModel> isTrapCollision(b2Contact* contact);
 
     /**
      * Helper function that checks if a contact event includes Reynard

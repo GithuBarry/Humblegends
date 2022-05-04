@@ -674,8 +674,8 @@ b2Fixture *GameScene::getEnemyFixture(b2Contact *contact) {
 * @return  trap type if one body is a trap
         or UNTYPED if neither body is a trap
 */
-TrapModel::TrapType GameScene::isTrapCollision(b2Contact* contact) {
-    if (_grid == nullptr) return TrapModel::TrapType::UNTYPED;
+shared_ptr<TrapModel> GameScene::isTrapCollision(b2Contact* contact) {
+    if (_grid == nullptr) return nullptr;
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
     for (int row = 0; row < _grid->getWidth(); row++) {
@@ -684,11 +684,11 @@ TrapModel::TrapType GameScene::isTrapCollision(b2Contact* contact) {
                 shared_ptr<TrapModel> _trap = _grid->getRoom(row, col)->getTrap();
                 b2Body* body = _trap->getObstacle()->getBody();
                 bool isCollision = body == body1 || body == body2;
-                if (isCollision) return _trap->getType();
+                if (isCollision) return _trap;
             }
         }
     }
-    return TrapModel::TrapType::UNTYPED;
+    return nullptr;
 }
 
 bool GameScene::isReynardCollision(b2Contact *contact) {
@@ -896,7 +896,11 @@ void GameScene::beginContact(b2Contact *contact) {
         // If it's nullptr, then it's Reynard, and handle all that accordingly
         if (enemy == nullptr) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
-            TrapModel::TrapType trapType = isTrapCollision(contact);
+            shared_ptr<TrapModel> trap = isTrapCollision(contact);
+            TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
+            if (trap != nullptr){
+                trapType = trap->getType();
+            }
             if (trapType == TrapModel::TrapType::SPIKE) {
                 float reynardVY = _reynardController->getCharacter()->getVY();
                 if (reynardVY < 0) {
@@ -917,6 +921,7 @@ void GameScene::beginContact(b2Contact *contact) {
                 for (auto thisEnemy: *_enemies){
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
+                trap->getPolyNode()->setColor(Color4::GREEN);
             }
             else if (isThisAReynardWallContact(contact, reynardIsRight)) {
                 resolveReynardWallOnContact();
@@ -934,7 +939,11 @@ void GameScene::beginContact(b2Contact *contact) {
         // Otherwise it's an enemy-on-object collision, and handle that accordingly
         else {
             bool enemyIsRight = enemy->getCharacter()->isFacingRight();
-            TrapModel::TrapType trapType = isTrapCollision(contact);
+            shared_ptr<TrapModel> trap = isTrapCollision(contact);
+            TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
+            if (trap != nullptr){
+                trapType = trap->getType();
+            }
             if (trapType == TrapModel::TrapType::SPIKE) {
                 float enemyVY = enemy->getCharacter()->getVY();
                 if (enemyVY < 0) {
@@ -992,7 +1001,11 @@ void GameScene::endContact(b2Contact *contact) {
                     resolveReynardGroundOffContact();
                 }
             }
-            TrapModel::TrapType trapType = isTrapCollision(contact);
+            shared_ptr<TrapModel> trap = isTrapCollision(contact);
+            TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
+            if (trap != nullptr){
+                trapType = trap->getType();
+            }
             if (trapType == TrapModel::TrapType::SAP) {
                 //This line of code is sufficient to slow Reynard
                 //No helper is used because the abstraction is unnecessary
@@ -1001,7 +1014,11 @@ void GameScene::endContact(b2Contact *contact) {
             }
         }
         else {
-            TrapModel::TrapType trapType = isTrapCollision(contact);
+            shared_ptr<TrapModel> trap = isTrapCollision(contact);
+            TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
+            if (trap != nullptr){
+                trapType = trap->getType();
+            }
             if (trapType == TrapModel::TrapType::SAP) {
                 //This line of code is sufficient to slow Reynard
                 //No helper is used because the abstraction is unnecessary
