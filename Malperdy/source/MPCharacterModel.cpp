@@ -142,7 +142,6 @@ bool CharacterModel::setMoveState(MovementState newState) {
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
-            _speed = JUMP_SPEED;
             setVX((_faceRight ? 1 : -1) * RUN_SPEED);
             _hasDashed = false;
             setAnimation("run");
@@ -151,6 +150,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             // Disable double jump (jumping/falling to jumping)
             if (_moveState == MovementState::JUMPING || _moveState == MovementState::FALLING) return false;
             // Jump up
+            _speed = JUMP_SPEED/1.8;
             setVY(JUMP_SPEED);
 
             // If character is on a wall, then also give a horizontal velocity away
