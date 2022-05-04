@@ -923,6 +923,10 @@ void GameScene::beginContact(b2Contact *contact) {
                 }
                 trap->getPolyNode()->setColor(Color4::GREEN);
             }
+            else if (trapType == TrapModel::TrapType::TRAPDOOR) {
+                Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
+                _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
+            }
             else if (isThisAReynardWallContact(contact, reynardIsRight)) {
                 resolveReynardWallOnContact();
             }
@@ -957,6 +961,10 @@ void GameScene::beginContact(b2Contact *contact) {
                     //This line of code is sufficient to slow Reynard
                     //No helper is used because the abstraction is unnecessary
                 enemy->getCharacter()->slowCharacter();
+            }
+            else if (trapType == TrapModel::TrapType::TRAPDOOR) {
+                Vec2 v = enemy->getCharacter()->getLinearVelocity();
+                enemy->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
             }
             else if (isThisAEnemyWallContact(contact, enemyIsRight, enemy)) {
                 resolveEnemyWallOnContact(enemy);
