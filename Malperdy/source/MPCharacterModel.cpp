@@ -142,7 +142,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
-
+            _speed = JUMP_SPEED;
             setVX((_faceRight ? 1 : -1) * RUN_SPEED);
             _hasDashed = false;
             setAnimation("run");
@@ -162,7 +162,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
             break;
         case MovementState::ONWALL:
             // Reduce gravity so that character "sticks" to wall
-
+            _speed = JUMP_SPEED;
             // Stop moving temporarily as character sticks
             _currAnimation = "";
             setVX(0);
@@ -321,7 +321,8 @@ void CharacterModel::update(float dt) {
                 jump_x = _speed;
             }
             setVX((_faceRight ? 1 : -1) * jump_x);
-            if (getVY() <= -0.2) setMoveState(MovementState::FALLING);
+            if (getVY() <= -0.2)
+                setMoveState(MovementState::FALLING);
             break;
         case MovementState::FALLING:
             if (_speed>JUMP_SPEED/1.8){

@@ -327,7 +327,7 @@ public:
         // character is still on ground
         if (_character->_groundedCounter > 0) return;
         // If the character didn't choose to jump, then they must be falling
-        if (!(_character->isJumping())) fall();
+        //if (!(_character->isJumping())) fall();
     }
 
     /**
