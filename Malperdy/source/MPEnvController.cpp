@@ -41,6 +41,15 @@ void EnvController::update(Vec2 dragCoords, const shared_ptr<ReynardController>&
         if (isFogged) (*i)->getSceneNode()->setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
         else (*i)->getSceneNode()->setColor(Color4::WHITE);
     }
+    if (swapIndex <_swapHistory.size()){
+        for (int i = swapIndex; i < _swapHistory.size(); ++i) {
+            bool a = _grid->getRoom(_swapHistory[i][0])->update();
+            bool b = _grid->getRoom(_swapHistory[i][1])->update();
+            if (a && b){
+                swapIndex = i+1;
+            }
+        }
+    }
 }
 
 /*
@@ -87,24 +96,26 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
     Vec2 room2 = _grid->screenSpaceToRoom(coords);
     bool invalid = !isSwappable(room2, reynard, enemies);
     invalid = invalid || !isSwappable(_toSwap, reynard, enemies);
-    invalid = invalid || room2.x == _toSwap.x && room2.y == _toSwap.y; // can't be the sam room
+    invalid = invalid || (room2.x == _toSwap.x && room2.y == _toSwap.y); // can't be the sam room
 
     if (invalid) {
         deselectRoom();
         return false;
     }
 
-    bool success = _grid->swapRooms(_toSwap, room2);
+    bool success = _grid->swapRooms(_toSwap, room2,false);
     if (success) {
-        //Sloppy code, fix when refactoring UI updates
-        _toSwap = room2;
-        deselectRoom();
-        
         // Record the room swapping
         vector<Vec2> l;
         l.push_back(room2);
         l.push_back(_toSwap);
         _swapHistory.push_back(l);
+
+        //Sloppy code, fix when refactoring UI updates
+        _toSwap = room2;
+        deselectRoom();
+        
+
     }
     return success;
 }

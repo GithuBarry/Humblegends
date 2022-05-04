@@ -34,6 +34,11 @@ private:
 
     /* History of room swaps as a list of pairs of rooms that have been swapped */
     vector<vector<Vec2>> _swapHistory;
+
+    /**
+     * how many pairs of rooms finished swapping
+     */
+     int swapIndex = 0;
 public:
     const vector<vector<Vec2>> &getSwapHistory() const;
 
@@ -125,13 +130,13 @@ public:
             vector<Vec2> roomPair = _swapHistory[i];
             Vec2 room1 =roomPair[0];
             Vec2 room2 =roomPair[1];
-            _grid->swapRooms(room1, room2);
+            _grid->swapRooms(room1, room2,true);
         }
         _swapHistory = vector<vector<Vec2>>();
     }
     
-    void swapRoomOnGrid (Vec2 room1,Vec2  room2){
-        _grid->swapRooms(room1, room2);
+    void swapRoomOnGrid (Vec2 room1,Vec2  room2, bool forced){
+        _grid->swapRooms(room1, room2, forced);
     }
 
     virtual ~EnvController();

@@ -36,8 +36,10 @@ using namespace cugl;
 #pragma Movement Constants
 /** The default speed at which this character runs */
 #define RUN_SPEED 3.7f
+/** The default speed at which this character runs */
+#define DELAY_SPEED 1.0f
 /** The speed at which this character jumps */
-#define JUMP_SPEED 10.5f
+#define JUMP_SPEED 12.5f
 
 class CharacterModel : public cugl::physics2::CapsuleObstacle {
 public:
@@ -97,7 +99,7 @@ protected:
 
     /** The dictionary of all character animations */
     shared_ptr<Animation> _animation;
-    
+
     /** The frame data the current animation */
     string _currAnimation;
     int _startframe;
@@ -107,8 +109,7 @@ protected:
 
 #pragma mark Attributes
 
-    /** The character's current run speed */
-    float _speed = RUN_SPEED;
+
     /** Which direction is the character facing */
     bool _faceRight = true;
     /** The current movement state of the character. */
@@ -132,6 +133,8 @@ protected:
     virtual void resetDebug() override;
 
 public:
+    /** The character's current run speed */
+    float _speed = RUN_SPEED;
 #pragma mark -
 #pragma mark Hidden Constructors
 
@@ -141,8 +144,7 @@ public:
      * This constructor does not initialize any of the character values beyond
      * the defaults. To use a CharacterModel, you must call init().
      */
-    CharacterModel() : CapsuleObstacle(), _sensorName(SENSOR_NAME) {
-    }
+    CharacterModel() : CapsuleObstacle(), _sensorName(SENSOR_NAME) {}
 
     /**
      * Destroys this CharacterModel, releasing all resources.
@@ -227,23 +229,23 @@ public:
         _node = node;
         _node->setPosition(getPosition() * _drawScale);
     }
-    
+
     /** Sets the animation to the string specified, and changes the relevant frame data
      * returns whether the animation was swapped successsfully
      */
     bool setAnimation(string anim){
-        
+
         // return false if the animation doesn't exist, or we are already on the animation
         if (!_animation->hasKey(anim)) return false;
         if (_currAnimation == anim) return false;
-        
+
 
         // change frame data
         _currAnimation = anim;
         _startframe = _animation->getStart(anim);
         _lastframe = _animation->getLast(anim);
         _loop = _animation->isLoop(anim);
-        
+
         // flip the animation if we need to
         _node->setVisible(false);
         if (_flip ^ _animation->isFlip(anim)){
@@ -252,13 +254,22 @@ public:
         _node->setFrame(_currFrame);
         _node->setVisible(true);
         _flip = _animation->isFlip(anim);
-        
+
         _currFrame = _animation->isReversed() ? _lastframe : _startframe;
         return true;
     }
 
 #pragma mark -
 #pragma mark Attribute Properties
+
+
+    void slowCharacter() {
+        _speed = DELAY_SPEED;
+    }
+
+    void restoreSpeed() {
+        _speed = RUN_SPEED;
+    }
 
     /** whether or not the character can dash */
     bool canDash() {
@@ -287,6 +298,8 @@ public:
      */
     void flipDirection() {
         _faceRight = !_faceRight;
+        int sign = _faceRight?1:-1;
+        setLinearVelocity(sign*abs(getLinearVelocity().x), getLinearVelocity().y);
         _node->setScale(_node->getScale()*Vec2(-1,1));
     }
 
@@ -342,6 +355,10 @@ public:
      */
     bool isDashing() const {
         return (_moveState == MovementState::DASHING);
+    }
+    
+    bool isDead() const {
+        return (_moveState == MovementState::DEAD);
     }
 
     /**

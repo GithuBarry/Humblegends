@@ -8,79 +8,73 @@
  "margin":0,
  "name":"rooms",
  "spacing":0,
- "tilecount":12,
- "tiledversion":"1.8.4",
+ "tilecount":11,
+ "tiledversion":"1.8.2",
  "tileheight":80,
  "tiles":[
         {
          "id":0,
-         "image":"..\/images\/room_downleft.png",
+         "image":"..\/room_images\/room_downleft.png",
          "imageheight":80,
          "imagewidth":120
         }, 
         {
          "id":1,
-         "image":"..\/images\/room_downleftright.png",
+         "image":"..\/room_images\/room_downleftright.png",
          "imageheight":80,
          "imagewidth":120
         }, 
         {
          "id":2,
-         "image":"..\/images\/room_downright.png",
+         "image":"..\/room_images\/room_downright.png",
          "imageheight":80,
          "imagewidth":120
         }, 
         {
          "id":3,
-         "image":"..\/images\/room_leftright.bmp",
+         "image":"..\/room_images\/room_leftright.bmp",
          "imageheight":80,
          "imagewidth":120
         }, 
         {
          "id":4,
-         "image":"..\/images\/room_updown.png",
+         "image":"..\/room_images\/room_updown.png",
          "imageheight":80,
          "imagewidth":120
         }, 
         {
          "id":5,
-         "image":"..\/images\/room_updownleft.png",
+         "image":"..\/room_images\/room_updownleft.png",
          "imageheight":80,
          "imagewidth":120
         }, 
         {
          "id":6,
-         "image":"..\/images\/room_updownleftright.bmp",
+         "image":"..\/room_images\/room_updownleftright.bmp",
          "imageheight":80,
          "imagewidth":120
         }, 
         {
          "id":7,
-         "image":"..\/images\/room_updownright.png",
+         "image":"..\/room_images\/room_updownright.png",
          "imageheight":80,
          "imagewidth":120
         }, 
         {
          "id":8,
-         "image":"..\/images\/room_upleft.png",
+         "image":"..\/room_images\/room_upleft.png",
          "imageheight":80,
          "imagewidth":120
         }, 
         {
          "id":9,
-         "image":"..\/images\/room_upleftright.png",
+         "image":"..\/room_images\/room_upleftright.png",
          "imageheight":80,
          "imagewidth":120
         }, 
         {
          "id":10,
-         "image":"..\/images\/room_upright.png",
-         "imageheight":80,
-         "imagewidth":120
-        }, 
-        {
-         "id":11,
-         "image":"..\/images\/solid.png",
+         "image":"..\/room_images\/room_upright.png",
          "imageheight":80,
          "imagewidth":120
         }],
