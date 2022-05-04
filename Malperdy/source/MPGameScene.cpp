@@ -533,7 +533,6 @@ void GameScene::update(float dt) {
     if (_input.didZoomIn()) {
         _gamestate.zoom_in();
         if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
-            CULog("(Zoomed, <#args...#>)");
             //_gamestate.pauseSwitch();
         }
         // Deselect any selected rooms
