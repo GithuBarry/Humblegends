@@ -520,22 +520,12 @@ void GameScene::update(float dt) {
     }
     // When dashing right
     else if (_input.didDashRight()) {
-        if(!_reynardController->getCharacter()->isFacingRight()){
-            _reynardController->getCharacter()->flipDirection();
-        }
         _reynardController->dashRight();
-        //_reynardController->dashRight();
-        //CULog("dashin");
     }
 
     // When dashing left
     else if (_input.didDashLeft()) {
-        if(_reynardController->getCharacter()->isFacingRight()){
-            _reynardController->getCharacter()->flipDirection();
-        }
         _reynardController->dashLeft();
-        //_reynardController->dashLeft();
-        //CULog("dashin");
     }
 
     if (_input.didZoomIn()) {
