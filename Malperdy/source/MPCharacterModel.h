@@ -109,8 +109,7 @@ protected:
 
 #pragma mark Attributes
 
-    /** The character's current run speed */
-    float _speed = RUN_SPEED;
+
     /** Which direction is the character facing */
     bool _faceRight = true;
     /** The current movement state of the character. */
@@ -134,6 +133,8 @@ protected:
     virtual void resetDebug() override;
 
 public:
+    /** The character's current run speed */
+    float _speed = RUN_SPEED;
 #pragma mark -
 #pragma mark Hidden Constructors
 
@@ -297,6 +298,8 @@ public:
      */
     void flipDirection() {
         _faceRight = !_faceRight;
+        int sign = _faceRight?1:-1;
+        setLinearVelocity(sign*abs(getLinearVelocity().x), getLinearVelocity().y);
         _node->setScale(_node->getScale()*Vec2(-1,1));
     }
 

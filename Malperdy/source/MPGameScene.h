@@ -90,6 +90,11 @@ protected:
     vector<Vec2> _checkpointEnemyPos;
     Vec2 _checkpointReynardPos;
 
+    /**
+     * Last time reynard hurt
+     */
+     std::chrono::time_point<std::chrono::system_clock> _lastHurt = std::chrono::system_clock::now();
+
 
 
 #pragma mark Internal Object Management
@@ -438,7 +443,7 @@ public:
      * @param body  The body of the character to get the controller for
      * @return      Pointer to the enemy controller if it's in the collision, or nullptr otherwise
      */
-    shared_ptr<EnemyController> getEnemyControllerInCollision(b2Body* body);
+    shared_ptr<EnemyController> getEnemyControllerInCollision(b2Contact* contact);
 
     /**
      * Helper function that checks if a contact event is a Reynard <> Wall contact

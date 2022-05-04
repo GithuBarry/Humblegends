@@ -425,10 +425,7 @@ void GameScene::update(float dt) {
         Application::get()->quit();
     }
 
-    if (_reynardController->getCharacter()->getHearts()<=0){
-        revert(false);
-        return;
-    }
+
 
     // Variables to indicate which forms of room swap are being used
     bool usingClick = true;
@@ -465,29 +462,52 @@ void GameScene::update(float dt) {
     }
     // When dashing right
     else if (_input.didDashRight()) {
-        //TODO: make dash less buggy and uncomment
+        if(!_reynardController->getCharacter()->isFacingRight()){
+            _reynardController->getCharacter()->flipDirection();
+        }
         _reynardController->dashRight();
+        //_reynardController->dashRight();
         //CULog("dashin");
     }
 
     // When dashing left
     else if (_input.didDashLeft()) {
-        //TODO: make dash less buggy and uncomment
+        if(_reynardController->getCharacter()->isFacingRight()){
+            _reynardController->getCharacter()->flipDirection();
+        }
         _reynardController->dashLeft();
+        //_reynardController->dashLeft();
         //CULog("dashin");
     }
 
     if (_input.didZoomIn()) {
         _gamestate.zoom_in();
+        if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
+            CULog("(Zoomed, <#args...#>)");
+            //_gamestate.pauseSwitch();
+        }
         // Deselect any selected rooms
         _envController->deselectRoom();
     }
 
+    if (_reynardController->getCharacter()->getHearts()<=0 ){
+        revert(false);
+        return;
+    }
+
+
     // When zooming out
-    if (_input.didZoomOut()) {
+    else if (_input.didZoomOut()) {
+        if (!_gamestate.zoomed_in() && _gamestate.finishedZooming(_worldnode->getZoom())){
+            revert(true);
+        }
         _gamestate.zoom_out();
         _envController->deselectRoom();
     }
+
+    //if (_gamestate.isPaused()){
+    //    return;
+    //}
 
 
 
@@ -498,8 +518,9 @@ void GameScene::update(float dt) {
     _world->update(scaled_dt);
 
     //TODO debugging area. Disable for releases
-    if ((!_reynardController->getCharacter()->isOnWall() ) && _reynardController->getCharacter()->getLinearVelocity().x == 0 && (_reynardController->getCharacter()->getHearts()>=0)){
-        //CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+    if ((!_reynardController->getCharacter()->isOnWall() ) && abs(_reynardController->getCharacter()->getLinearVelocity().x) <= 0.5 ){
+        CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+        _reynardController->getCharacter()->setLinearVelocity((4*(_reynardController->getCharacter()->isFacingRight()?1:-1)),4);
     }
     if ( _reynardController->getCharacter()->isJumping()  && abs(_reynardController->getCharacter()->getLinearVelocity().x)<7){
         //CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");
@@ -675,7 +696,7 @@ b2Body* GameScene::getCharacterBodyInObjectCollision(b2Contact* contact) {
  * @param body  The body of the character to get the controller for
  * @return      Pointer to Reynard's controller if he's in the collision, or nullptr otherwise
  */
-shared_ptr<EnemyController> GameScene::getEnemyControllerInCollision(b2Body* body) {
+shared_ptr<EnemyController> GameScene::getEnemyControllerInCollision(b2Contact *contact) {
     //// Get body user data and convert to BodyData
     //CharacterController<EnemyModel, EnemyController>::BodyData* bodyData =
     //    static_cast<CharacterController<EnemyModel, EnemyController>::BodyData*>
@@ -691,8 +712,10 @@ shared_ptr<EnemyController> GameScene::getEnemyControllerInCollision(b2Body* bod
     //return make_shared<EnemyController>(*enemyPtr);
 
     // Check body against all enemies in level
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
     for (auto itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
-        if ((*itr)->getCharacter()->getBody() == body) return (*itr);
+        if (((*itr)->getCharacter()->getBody() == body1) || ((*itr)->getCharacter()->getBody() == body2))return (*itr);
     }
 
     // If not an enemy, return nullptr
@@ -781,6 +804,7 @@ void GameScene::resolveReynardGroundOffContact() {
 void GameScene::resolveTrapOnContact() {
     if (_reynardController->canBeHit()) {
         _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
+        _lastHurt = std::chrono::system_clock::now();
     }
 }
 
@@ -812,7 +836,7 @@ void GameScene::beginContact(b2Contact *contact) {
     // If it is a character-on-object collision
     if (charInCharOnObject != 0) {
         // Now try to get if it's an enemy-on-object collision
-        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
+        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         // If it's nullptr, then it's Reynard, and handle all that accordingly
         if (enemy == nullptr) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
@@ -883,13 +907,18 @@ void GameScene::beginContact(b2Contact *contact) {
             }
         }
     }
-    // Reynard-on-enemy collision
+        // Reynard-on-enemy collision
     else {
-        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
+        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         if (isReynardCollision(contact) && enemy != nullptr) {
             // Collision between Reynard and an enemy
             CULog("Enemy makes contact with Reynard");
-            _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
+            std::chrono::duration<float> diff = std::chrono::system_clock::now()-_lastHurt;
+            if (diff.count()>3){
+                _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
+                _lastHurt = std::chrono::system_clock::now();
+            }
+
         }
     }
 }
@@ -899,7 +928,7 @@ void GameScene::endContact(b2Contact *contact) {
     b2Body* charInCharOnObject = getCharacterBodyInObjectCollision(contact);
     if (charInCharOnObject != 0) {
         // Now try to get if it's an enemy-on-object collision
-        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
+        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         // If it's nullptr, then it's Reynard, and handle all that accordingly
         if (enemy == nullptr) {
             if (_reynardController != nullptr && isReynardCollision(contact)) {

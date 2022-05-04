@@ -72,6 +72,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Anima
     // Have Reynard be running by default
     _moveState = MovementState::RUNNING;
     // Set his health to full
+    _maxHearts = REYNARD_MAX_HEARTS;
     _hearts = _maxHearts;
 
     return true;

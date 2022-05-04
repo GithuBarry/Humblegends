@@ -20,7 +20,10 @@
 class GameStateController {
 private:
     bool _zoomed_in;
+    bool paused = false;
     int SLOW_MO_SCALAR;
+    float maxZoom = 2.4;
+    float minZoom = 1;
 public:
     /**
      * Change parameter as you need
@@ -63,11 +66,37 @@ public:
         _zoomed_in = !_zoomed_in;
     }
 
+    void pause(){
+        paused = true;
+    }
+
+    void unpause(){
+        paused = false;
+    }
+
+    void pauseSwitch(){
+        paused = !paused;
+    }
+
+    bool isPaused(){
+        return paused;
+    }
+    
+    bool finishedZooming(float currentScale){
+    
+        return abs(currentScale - maxZoom)<0.05 || abs(currentScale - minZoom)<0.05;
+    }
+
+
+
     /**
      * @param dt the actual time past
      * @return the time for the physics simulation, based on the state of the game
      */
     float getScaledDtForPhysics(float dt) {
+        if (paused){
+            return 0;
+        }
         if (_zoomed_in) {
             return dt;
         } else {
@@ -81,8 +110,10 @@ public:
      * @return zoom to be applied for this frame
      */
     float getZoom(float currentZoom) {
-        float maxZoom = 2.4;
-        float minZoom = 1;
+        if (paused){
+            return 1;
+        }
+        
         float result;
         if (_zoomed_in && currentZoom < maxZoom) {
             result = 1.0f + 0.02f * (maxZoom - currentZoom) * (maxZoom - currentZoom);
@@ -105,6 +136,9 @@ public:
      * @return Pan to be applied to nodes
      */
     Vec2 getPan(Vec2 currentTranslation, Vec2 reynardScreenPosition, float scale, Size screenSize, bool faceRight, Vec2 reynardVelocity) {
+        if (paused){
+            return Vec2();
+        }
         Vec2 result;
         Vec2 target;
         target = reynardScreenPosition;

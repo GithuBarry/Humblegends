@@ -23,6 +23,8 @@
 
 using namespace cugl;
 
+#define REYNARD_MAX_HEARTS 3
+
 #pragma mark -
 #pragma mark Reynard Model
 

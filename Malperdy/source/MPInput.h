@@ -16,7 +16,7 @@
 #define __MP_INPUT_H__
 
 #include <cugl/cugl.h>
-
+static bool doubleTap = false;
 /* This class represents player input in Malperdy. */
 class InputController {
 // Common fields are protected
@@ -135,6 +135,10 @@ private:
     cugl::Vec2 _touchEndPos;
     /* The length (in time) of the current touch */
     float _touchTime;
+    /* The beginning timestamp of the last touch */
+    std::chrono::time_point<std::chrono::system_clock> _lastTouchBegan = std::chrono::system_clock::now();
+    
+    
 
     // MULTITOUCH SUPPORT
     /* The key for multitouch listeners */
@@ -315,7 +319,11 @@ public:
      * @return true if the jump button was pressed.
      */
     bool didJump() const {
-        return _jumpPressed;
+        if (doubleTap){
+            doubleTap = false;
+            return true;
+        }
+        return _jumpPressed ;
     }
 
     /**

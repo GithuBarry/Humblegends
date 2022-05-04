@@ -87,7 +87,7 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
     Vec2 room2 = _grid->screenSpaceToRoom(coords);
     bool invalid = !isSwappable(room2, reynard, enemies);
     invalid = invalid || !isSwappable(_toSwap, reynard, enemies);
-    invalid = invalid || room2.x == _toSwap.x && room2.y == _toSwap.y; // can't be the sam room
+    invalid = invalid || (room2.x == _toSwap.x && room2.y == _toSwap.y); // can't be the sam room
 
     if (invalid) {
         deselectRoom();
