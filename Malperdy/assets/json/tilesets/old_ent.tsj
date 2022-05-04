@@ -8,37 +8,25 @@
  "margin":0,
  "name":"entities",
  "spacing":0,
- "tilecount":5,
+ "tilecount":3,
  "tiledversion":"1.8.2",
  "tileheight":10,
  "tiles":[
         {
          "id":1,
-         "image":"..\/images\/reynard.png",
+         "image":"..\/..\/..\/Downloads\/reynard.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":2,
-         "image":"..\/images\/spike.png",
+         "image":"..\/..\/..\/Downloads\/spike.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":3,
-         "image":"..\/images\/trapdoor.png",
-         "imageheight":10,
-         "imagewidth":10
-        }, 
-        {
-         "id":4,
-         "image":"..\/images\/enemy.png",
-         "imageheight":10,
-         "imagewidth":10
-        }, 
-        {
-         "id":5,
-         "image":"..\/images\/checkpoint.png",
+         "image":"..\/..\/..\/Downloads\/trapdoor.png",
          "imageheight":10,
          "imagewidth":10
         }],
