@@ -904,7 +904,7 @@ void GameScene::beginContact(b2Contact *contact) {
                 _reynardController->getCharacter()->slowCharacter();
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
-                setComplete(true);
+                //setComplete(true);
                 _checkpointSwapLen = _envController->getSwapHistory().size();
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
