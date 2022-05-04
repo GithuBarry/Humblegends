@@ -110,9 +110,7 @@ bool CharacterModel::setMoveState(MovementState newState) {
     // Do what needs to be done when leaving the old state
     switch (_moveState) {
 //        case MovementState::STOPPED:
-//            break;
 //        case MovementState::RUNNING:
-//            break;
 //        case MovementState::JUMPING:
 //            //Nothing should happen
 //            return false;
@@ -154,10 +152,6 @@ bool CharacterModel::setMoveState(MovementState newState) {
             if (_moveState == MovementState::JUMPING || _moveState == MovementState::FALLING) return false;
             // Jump up
             setVY(JUMP_SPEED);
-
-
-
-
 
             // If character is on a wall, then also give a horizontal velocity away
             //if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.5);
