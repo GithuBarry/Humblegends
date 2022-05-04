@@ -29,7 +29,7 @@ using namespace cugl;
 /** How close to a future move location an enemy has to be to be considered arrived */
 #define FUTURE_MOVE_ERROR_SQUARED 0.04f
 /** Default max number of hearts an enemy will have */
-#define DEFAULT_ENEMY_MAX_HEARTS 1
+#define DEFAULT_ENEMY_MAX_HEARTS 3
 
 #pragma mark -
 #pragma mark Enemy Model

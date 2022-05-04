@@ -692,7 +692,7 @@ b2Body* GameScene::getCharacterBodyInObjectCollision(b2Contact* contact) {
  * @param body  The body of the character to get the controller for
  * @return      Pointer to Reynard's controller if he's in the collision, or nullptr otherwise
  */
-shared_ptr<EnemyController> GameScene::getEnemyControllerInCollision(b2Body* body) {
+shared_ptr<EnemyController> GameScene::getEnemyControllerInCollision(b2Contact *contact) {
     //// Get body user data and convert to BodyData
     //CharacterController<EnemyModel, EnemyController>::BodyData* bodyData =
     //    static_cast<CharacterController<EnemyModel, EnemyController>::BodyData*>
@@ -708,8 +708,10 @@ shared_ptr<EnemyController> GameScene::getEnemyControllerInCollision(b2Body* bod
     //return make_shared<EnemyController>(*enemyPtr);
 
     // Check body against all enemies in level
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
     for (auto itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
-        if ((*itr)->getCharacter()->getBody() == body) return (*itr);
+        if (((*itr)->getCharacter()->getBody() == body1) || ((*itr)->getCharacter()->getBody() == body2))return (*itr);
     }
 
     // If not an enemy, return nullptr
@@ -799,6 +801,7 @@ void GameScene::resolveReynardGroundOffContact() {
 void GameScene::resolveTrapOnContact() {
     if (_reynardController->canBeHit()) {
         _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
+        _lastHurt = std::chrono::system_clock::now();
     }
 }
 
@@ -826,7 +829,7 @@ void GameScene::beginContact(b2Contact *contact) {
     // If it is a character-on-object collision
     if (charInCharOnObject != 0) {
         // Now try to get if it's an enemy-on-object collision
-        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
+        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         // If it's nullptr, then it's Reynard, and handle all that accordingly
         if (enemy == nullptr) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
@@ -889,13 +892,18 @@ void GameScene::beginContact(b2Contact *contact) {
             }
         }
     }
-    // Reynard-on-enemy collision
+        // Reynard-on-enemy collision
     else {
-        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
+        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         if (isReynardCollision(contact) && enemy != nullptr) {
             // Collision between Reynard and an enemy
             CULog("Enemy makes contact with Reynard");
-            _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
+            if ((std::chrono::system_clock::now()-_lastHurt).count()>3){
+
+                _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
+                _lastHurt = std::chrono::system_clock::now();
+            }
+
         }
     }
 }
@@ -905,7 +913,7 @@ void GameScene::endContact(b2Contact *contact) {
     b2Body* charInCharOnObject = getCharacterBodyInObjectCollision(contact);
     if (charInCharOnObject != 0) {
         // Now try to get if it's an enemy-on-object collision
-        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(charInCharOnObject);
+        shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         // If it's nullptr, then it's Reynard, and handle all that accordingly
         if (enemy == nullptr) {
             if (_reynardController != nullptr && isReynardCollision(contact)) {
