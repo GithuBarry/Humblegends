@@ -199,7 +199,7 @@ public:
             if (!_character->isFacingRight()){
                 _character->flipDirection();
             }
-            _character->_speed = RUN_SPEED*3;
+            _character->_speed = RUN_SPEED*4;
             return true;
             //return _character->setMoveState(CharacterModel::MovementState::DASHING);
         }
@@ -216,7 +216,7 @@ public:
             if (_character->isFacingRight()){
                 _character->flipDirection();
             }
-            _character->_speed = RUN_SPEED*3;
+            _character->_speed = RUN_SPEED*4;
             return true;
             //return _character->setMoveState(CharacterModel::MovementState::DASHING);
         }

@@ -91,6 +91,9 @@ protected:
     vector<Vec2> _checkpointEnemyPos;
     Vec2 _checkpointReynardPos = Vec2(4,3);
 
+    /**Workaround for wall jump corner stuck*/
+    int corner_num_frames_workaround = 0;
+
     /**
      * Last time reynard hurt
      */

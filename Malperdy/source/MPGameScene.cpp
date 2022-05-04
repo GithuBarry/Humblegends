@@ -513,6 +513,7 @@ void GameScene::update(float dt) {
     // Only allow jumping while zoomed in
     if (_input.didJump() && _gamestate.zoomed_in()) {
         _reynardController->jump();
+        corner_num_frames_workaround = 0;
         //cout << "Press Jump Button" << endl;
         //CULog("jumpin");
     }
@@ -575,7 +576,16 @@ void GameScene::update(float dt) {
     //TODO debugging area. Disable for releases
     if ((!_reynardController->getCharacter()->isOnWall() ) && abs(_reynardController->getCharacter()->getLinearVelocity().x) <= 0.5 ){
         CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
-        _reynardController->getCharacter()->setLinearVelocity((4*(_reynardController->getCharacter()->isFacingRight()?1:-1)),4);
+        _reynardController->getCharacter()->setLinearVelocity((3.7*(_reynardController->getCharacter()->isFacingRight()?1:-1)),0.1);
+
+    }
+    else if(abs(_reynardController->getCharacter()->getLinearVelocity().x) + abs(_reynardController->getCharacter()->getLinearVelocity().y)==0){
+        corner_num_frames_workaround +=1;
+        if (corner_num_frames_workaround>2){
+            _reynardController->getCharacter()->setLinearVelocity((3.7*(_reynardController->getCharacter()->isFacingRight()?1:-1)),0);
+            corner_num_frames_workaround = 0;
+        }
+
     }
     if ( _reynardController->getCharacter()->isJumping()  && abs(_reynardController->getCharacter()->getLinearVelocity().x)<7){
         //CULog("likely Error 02: Reynard jumping slow. See MPGameScene.c update() and breakpoint here");

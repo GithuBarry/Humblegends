@@ -321,7 +321,7 @@ void CharacterModel::update(float dt) {
                 jump_x = _speed;
             }
             setVX((_faceRight ? 1 : -1) * jump_x);
-            if (getVY() <= 0) setMoveState(MovementState::FALLING);
+            if (getVY() <= -0.2) setMoveState(MovementState::FALLING);
             break;
         case MovementState::FALLING:
             if (_speed>JUMP_SPEED/1.5){
@@ -335,11 +335,8 @@ void CharacterModel::update(float dt) {
             break;
         case MovementState::DASHING:
             if (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION) {
-                if (_groundedCounter <= 0) {
-                    setMoveState(MovementState::FALLING);
-                } else {
-                    setMoveState(MovementState::RUNNING);
-                }
+
+                setMoveState(MovementState::RUNNING);
             }
         case MovementState::DEAD:
             // TODO: any updates for when in DEAD state
