@@ -483,6 +483,16 @@ void GameScene::update(float dt) {
     }
 
 
+    // reynard red when hurt/dealt damage
+    if(keepRedFrames>0){
+        //keep time (frame)
+        keepRedFrames-=1;
+    }else{
+        //restore
+        _reynardController->getSceneNode()->setColor(Color4::WHITE);
+    }
+    
+    
 
     // Variables to indicate which forms of room swap are being used
     bool usingClick = true;
@@ -859,8 +869,7 @@ void GameScene::resolveReynardGroundOffContact() {
 
 void GameScene::resolveTrapOnContact() {
     if (_reynardController->canBeHit()) {
-        _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
-        _lastHurt = std::chrono::system_clock::now();
+        dealReynardDamage();
     }
 }
 
@@ -986,11 +995,7 @@ void GameScene::beginContact(b2Contact *contact) {
         if (isReynardCollision(contact) && enemy != nullptr) {
             // Collision between Reynard and an enemy
             CULog("Enemy makes contact with Reynard");
-            std::chrono::duration<float> diff = std::chrono::system_clock::now()-_lastHurt;
-            if (diff.count()>3){
-                _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - 1);
-                _lastHurt = std::chrono::system_clock::now();
-            }
+            dealReynardDamage();
 
         }
     }
@@ -1095,6 +1100,16 @@ Size GameScene::computeActiveSize() const {
 //    }
     dimen *= SCENE_HEIGHT / dimen.height;
     return dimen;
+}
+
+void GameScene::dealReynardDamage(){
+    std::chrono::duration<float> diff = std::chrono::system_clock::now()-_lastHurt;
+    if (diff.count()>3){
+        _reynardController->getCharacter()->setHearts(_reynardController->getCharacter()->getHearts() - SPIKE_DAMAGE);
+        _lastHurt = std::chrono::system_clock::now();
+        _reynardController->getSceneNode()->setColor(Color4(255,80,80,255));
+        keepRedFrames = 5;
+    }
 }
 
 /**

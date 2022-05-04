@@ -94,6 +94,8 @@ protected:
 
     /**Workaround for wall jump corner stuck*/
     int corner_num_frames_workaround = 0;
+    
+    int keepRedFrames = 0;
 
     /**
      * Last time reynard hurt
@@ -545,6 +547,8 @@ public:
     bool isThisAEnemyGroundContact(b2Contact *contact, shared_ptr<EnemyController> enemy);
 
     void resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy);
+    
+    void dealReynardDamage();
 
 #pragma mark Helper Functions
     /* Converts input coordinates to coordinates in the game world */
