@@ -33,6 +33,8 @@ using namespace std;
 #define SCENE_WIDTH 1024
 #define SCENE_HEIGHT 576
 
+#define LEVEL_MUSIC "level_music"
+
 /** Width of the game world in Box2d units */
 #define DEFAULT_WIDTH   32.0f
 
@@ -294,6 +296,7 @@ void GameScene::populate() {
 }
 
 void GameScene::populateEnv() {
+    MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     /////////////////////////////////////
