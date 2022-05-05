@@ -300,11 +300,8 @@ void GameScene::populateEnv() {
     MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
-    /////////////////////////////////////
-    // DEBUG: add room to scene graph
-    /////////////////////////////////////
     _grid = _envController->getGrid();
-    _grid->init(_assets, _scale, _assets->get<Texture>("overgrowth1"));
+    _grid->init(_assets, _scale, _assets->get<Texture>("bg-r1-1"));
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.4);

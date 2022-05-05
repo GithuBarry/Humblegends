@@ -22,7 +22,7 @@
      "room_upright" : "json/rooms/room_upright.tmj",
      "room_solid"  : "json/rooms/solid.json"
   },
-  
+
   "textures": {
     "earth": {
       "file": "textures/earthtile.png",
@@ -68,14 +68,20 @@
     "flames-left": {
       "file": "textures/flames-left.png"
     },
-    "overgrowth1": {
-      "file": "textures/environment/b_overgrowth1_1.png"
+    "bg-r1-1": {
+      "file": "textures/environment/BG_R1_1.png"
+    },
+    "bg-r1-2": {
+      "file": "textures/environment/BG_R1_2.png"
+    },
+    "bg-r1-3": {
+      "file": "textures/environment/BG_R1_3.png"
     },
     "reynard_all": {
-        "file": "textures/reynard_all.png"
+      "file": "textures/reynard_all.png"
     },
     "rabbit_all": {
-        "file": "textures/rabbit_all.png"
+      "file": "textures/rabbit_all.png"
     }
   },
     "sounds": {
