@@ -210,7 +210,7 @@ public:
     /** Swaps two rooms given two room coordinates.
      * room = (i,j) meaning the room at row i, col j
      * returns true if the swap occurs successfully, returns false if rooms cannot be swapped */
-    bool swapRooms(Vec2 room1, Vec2 room2);
+    bool swapRooms(Vec2 room1, Vec2 room2,bool forced);
 
     /*
     * Sets the fog of war for the room at the given coordinates.

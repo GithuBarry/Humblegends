@@ -196,10 +196,14 @@ public:
      */
     bool dashRight(){
         if (_character->canDash()){
+            _character->_speed = RUN_SPEED*4;
             if (!_character->isFacingRight()){
                 _character->flipDirection();
+                _character->_speed = RUN_SPEED*2;
             }
-            return _character->setMoveState(CharacterModel::MovementState::DASHING);
+
+            return true;
+            //return _character->setMoveState(CharacterModel::MovementState::DASHING);
         }
         return false;
     }
@@ -211,10 +215,14 @@ public:
      */
     bool dashLeft(){
         if (_character->canDash()){
+            _character->_speed = RUN_SPEED*4;
             if (_character->isFacingRight()){
                 _character->flipDirection();
+                _character->_speed = RUN_SPEED*2;
             }
-            return _character->setMoveState(CharacterModel::MovementState::DASHING);
+
+            return true;
+            //return _character->setMoveState(CharacterModel::MovementState::DASHING);
         }
         return false;
     }
@@ -319,7 +327,7 @@ public:
         // character is still on ground
         if (_character->_groundedCounter > 0) return;
         // If the character didn't choose to jump, then they must be falling
-        if (!(_character->isJumping())) fall();
+        //if (!(_character->isJumping())) fall();
     }
 
     /**

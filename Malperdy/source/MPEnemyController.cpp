@@ -103,11 +103,11 @@ void EnemyController::update(float delta) {
             }
             Vec2 dir = _target->getPosition() - _character->getPosition();
 
-            /*
+
             if ((dir.x < 0 && _character->isFacingRight()) ||
                     (dir.x > 0 && !_character->isFacingRight()))
                 _character->flipDirection();
-            */
+
 
             // TODO: if target is within attack range, attack
 
@@ -198,7 +198,7 @@ void EnemyController::reyCast() {
             // any fraction, it clips the ray at that point.
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
                 // Draw line from enemy to point of impact
-                if(_debug)
+                if (_debug)
                     updateLine(getScenePosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
 
                 // If Reynard is a fixture in the path, then set the point to start going to
@@ -209,12 +209,14 @@ void EnemyController::reyCast() {
             },
             _character->getPosition(), _reynard->getCharacter()->getPosition());
 
+
+    float cast_horizon = static_cast<float>(5 * (_character->isFacingRight() ? 1 : -1) * (_character->getBehaveState() == EnemyModel::BehaviorState::PATROLLING ? 0.2 : 1));
     // TODO: move this somewhere more appropriate
     // Wall jump if there's a wall in front
     //bool wallInFront = false;
     _obstacleWorld->rayCast(
             [this](b2Fixture *fixture, const Vec2 point, const Vec2 normal, float fraction) -> float {
-                if(_debug)
+                if (_debug)
                     updateLine(getScenePosition(), point * _character->_drawScale, _character->_node, "cast", Color4::RED, 5.0f);
                 if ((!_character->isJumping())
                         && _character->isGrounded()
@@ -224,10 +226,15 @@ void EnemyController::reyCast() {
                                 || (_character->isOnWall() && _reynard->getCharacter()->getPosition().y > _character->getPosition().y)
                 )
                         )
-                    jump();
+                    if (_character->getBehaveState() == EnemyModel::BehaviorState::CHASING) {
+                        jump();
+                    } else if (_character->getBehaveState() == EnemyModel::BehaviorState::PATROLLING) {
+                        _character->flipDirection();
+                    }
+
                 return fraction;
             },
-            _character->getPosition(), _character->getPosition() + Vec2(5 * (_character->isFacingRight() ? 1 : -1), -0.3));
+            _character->getPosition(), _character->getPosition()+ Vec2(cast_horizon, -0.3));
 
     // If the closest hit fixture really was Reynard, then set this enemy's target accordingly and set new target location
     if (_raycastCache != Vec2(-1, -1)) {

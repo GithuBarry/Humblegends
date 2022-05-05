@@ -3,10 +3,11 @@
      "framedata" : "json/framedata.json",
      "framedata2" : "json/framedatanew.json",
      
-     "level" : "json/levels/biglevel.json",
+     "level" : "json/levels/new_level.json",
      
      "tileset_geometry" : "json/tilesets/geometry.tsj",
      "tileset_entities" : "json/tilesets/entities.tsj",
+     "tileset_rooms" : "json/tilesets/rooms.tsj",
      
      "room_downleft" : "json/rooms/room_downleft.tmj",
      "room_downleftright" : "json/rooms/room_downleftright.tmj",
@@ -78,27 +79,37 @@
     }
   },
     "sounds": {
-        "bump": {
-            "type":     "sample",
-            "file":     "sounds/bump.wav",
-            "volume":   0.5
-        },
-        "burn": {
-            "type":     "sample",
-            "file":     "sounds/afterburner.wav",
-            "volume":   0.8
-        },
-        "right-burn": {
-            "type":     "sample",
-            "file":     "sounds/sideburner-right.wav",
-            "volume":   0.5
-        },
-        "left-burn": {
-            "type":     "sample",
-            "file":     "sounds/sideburner-left.wav",
-            "volume":   0.5
-        }
+
+    "jump": {
+      "type": "sample",
+      "file": "sounds/jump.wav",
+      "volume": 0.5
     },
+
+    "land": {
+      "type": "sample",
+      "file": "sounds/land.wav",
+      "volume": 0.5
+    },
+
+    "step": {
+      "type": "sample",
+      "file": "sounds/step.wav",
+      "volume": 0.5
+    },
+
+    "swap_room": {
+      "type": "sample",
+      "file": "sounds/swap_room.wav",
+      "volume": 0.5
+    },
+
+    "level_music": {
+      "type": "sample",
+      "file": "sounds/levelmusic.ogg",
+      "volume": 0.3
+    }
+  },
 
 	"fonts": {
 		"retro": {
