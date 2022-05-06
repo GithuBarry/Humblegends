@@ -4,7 +4,7 @@
 //
 //  Owner: Spencer Hurst
 //  Contributors: Evan Azari, Abu Qader, Jordan Selin
-//  Version: 4/19/22
+//  Version: 5/6/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -38,7 +38,8 @@ public:
         TRAPDOOR,
         SAP,
         BRAZIER,
-        CHECKPOINT
+        CHECKPOINT,
+        GOAL
     };
     
     /** Class representing an animation */
