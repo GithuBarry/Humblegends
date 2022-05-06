@@ -498,19 +498,20 @@ void GameScene::update(float dt) {
     bool usingClick = true;
     bool usingDrag = true;
 
-    bool hasSwapped = false;
+    bool triedSwap = false;
     Vec2 progressCoords = Vec2(-1, -1);
     // Room swap by click
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
-            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+            triedSwap = true;
+            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
         } else {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
     }
     // Room swap by drag
     if (usingDrag && !_gamestate.zoomed_in()) {
-        if (_input.didPress() && !hasSwapped) {
+        if (_input.didPress() && !triedSwap) {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
         else if (_input.didEndDrag() && _envController->hasSelected()) {
@@ -529,12 +530,12 @@ void GameScene::update(float dt) {
         //CULog("jumpin");
     }
     // When dashing right
-    else if (_input.didDashRight()) {
+    else if (_input.didDashRight() && _gamestate.zoomed_in()) {
         _reynardController->dashRight();
     }
 
     // When dashing left
-    else if (_input.didDashLeft()) {
+    else if (_input.didDashLeft() && _gamestate.zoomed_in()) {
         _reynardController->dashLeft();
     }
 
