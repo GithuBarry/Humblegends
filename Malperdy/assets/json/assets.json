@@ -77,6 +77,18 @@
     "bg-r1-3": {
       "file": "textures/environment/BG_R1_3.png"
     },
+    "bg-r2-1": {
+      "file": "textures/environment/BG_R2_1.jpg"
+    },
+    "bg-r2-2": {
+      "file": "textures/environment/BG_R2_2.jpg"
+    },
+    "bg-r2-3": {
+      "file": "textures/environment/BG_R2_3.jpg"
+    },
+    "bg-r2-4": {
+      "file": "textures/environment/BG_R2_4.jpg"
+    },
     "reynard_all": {
       "file": "textures/reynard_all.png"
     },

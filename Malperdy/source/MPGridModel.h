@@ -19,6 +19,9 @@
 #include "MPRoomModel.h"
 #include "MPGridLoader.h"
 
+#define r1_bgs {"bg-r1-1", "bg-r1-2", "bg-r1-3"}
+#define r2_bgs {"bg-r2-1", "bg-r2-2", "bg-r2-3", "bg-r2-4"}
+
 using namespace cugl;
 
 class GridModel : public cugl::scene2::SceneNode {
@@ -52,6 +55,9 @@ private:
      */
     vector<vector<vector<shared_ptr<physics2::PolygonObstacle>>>> _physicsGeometry;
 
+    /** All the background textures for all the regions */
+    shared_ptr<vector<shared_ptr<vector<shared_ptr<Texture>>>>> _backgrounds;
+
 public:
 #pragma mark Constructors
 
@@ -76,7 +82,7 @@ public:
      * @param json - whether to use json loader or not
      * @return a grid with 3x3 rooms, each room the default
      */
-    bool init(shared_ptr<AssetManager> assets, float scale = 1,  shared_ptr<Texture> bg = nullptr);
+    bool init(shared_ptr<AssetManager> assets, float scale = 1);
 
 #pragma mark Destructors
     /**
@@ -94,6 +100,19 @@ public:
 
 #pragma mark -
 #pragma mark Accessors
+
+    /**
+     * Returns a random background in the given region.
+     * 
+     * @param regNum    Number of the region the background should be for
+     * @return          Shared pointer to the texture for a background in the given region
+     */
+    shared_ptr<Texture> getRandBG(int regNum) {
+        // Get index from 0
+        regNum--;
+        // Return random background from the ones available
+        return _backgrounds->at(regNum)->at(rand() % _backgrounds->at(regNum)->size());
+    }
 
     /** Getter for grid width */
     int getWidth() const {

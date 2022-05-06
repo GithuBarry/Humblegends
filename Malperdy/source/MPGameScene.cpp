@@ -301,7 +301,7 @@ void GameScene::populateEnv() {
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     _grid = _envController->getGrid();
-    _grid->init(_assets, _scale, _assets->get<Texture>("bg-r1-1"));
+    _grid->init(_assets, _scale);
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.4);
