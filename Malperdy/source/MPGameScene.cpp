@@ -530,12 +530,12 @@ void GameScene::update(float dt) {
         //CULog("jumpin");
     }
     // When dashing right
-    else if (_input.didDashRight()) {
+    else if (_input.didDashRight() && _gamestate.zoomed_in()) {
         _reynardController->dashRight();
     }
 
     // When dashing left
-    else if (_input.didDashLeft()) {
+    else if (_input.didDashLeft() && _gamestate.zoomed_in()) {
         _reynardController->dashLeft();
     }
 
