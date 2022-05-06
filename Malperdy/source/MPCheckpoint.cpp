@@ -4,7 +4,7 @@
 //
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin
-//  Version: 4/19/22
+//  Version: 5/6/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -25,10 +25,11 @@ using namespace cugl;
 *
 * @return  true if the trap is initialized properly, false otherwise.
 */
-bool Checkpoint::init(float roomWidth, float roomHeight) {
+bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal) {
     _sceneNode = make_shared<scene2::SpriteNode>();
     _sceneNode->initWithFile("textures/checkpoint.png");
-    _type = TrapType::CHECKPOINT;
+    if (isFinal) _type = TrapType::GOAL;
+    else _type = TrapType::CHECKPOINT;
 
     _sceneNode->setAnchor(Vec2::ZERO);
     _sceneNode->setScale((roomWidth / 4) / _sceneNode->getPolygon().getBounds().getMaxX());

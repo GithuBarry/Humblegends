@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 5/02/22
+//  Version: 5/06/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -204,8 +204,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     addChild(_worldnode);
     addChild(_debugnode);
-    addChild(_winNode);
     addChild(_health);
+    addChild(_winNode);
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
@@ -923,7 +923,6 @@ void GameScene::beginContact(b2Contact *contact) {
                 _reynardController->getCharacter()->slowCharacter();
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
-                //setComplete(true);
                 _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
@@ -931,6 +930,9 @@ void GameScene::beginContact(b2Contact *contact) {
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
                 trap->getPolyNode()->setColor(Color4::GREEN);
+            }
+            else if (trapType == TrapModel::TrapType::GOAL) {
+                setComplete(true);
             }
             else if (trapType == TrapModel::TrapType::TRAPDOOR) {
                 Vec2 v = _reynardController->getCharacter()->getLinearVelocity();

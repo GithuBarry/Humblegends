@@ -204,7 +204,7 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
     }
     else if (type == TrapModel::TrapType::CHECKPOINT) {
         shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
-        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT, false);
 
         _trap = trap;
         addChild(_trap);
