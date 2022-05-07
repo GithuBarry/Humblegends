@@ -24,19 +24,8 @@
   },
   
   "textures": {
-    "earth": {
-      "file": "textures/earthtile.png",
-      "wrapS": "repeat",
-      "wrapT": "repeat"
-    },
     "goal": {
       "file": "textures/goaldoor.png"
-    },
-    "crate01": {
-      "file": "textures/crate01.png"
-    },
-    "crate02": {
-      "file": "textures/crate02.png"
     },
     "reynard": {
       "file": "textures/reynard.png"
@@ -58,15 +47,6 @@
     },
     "rabbit_idle": {
       "file": "textures/rabbit_idling.png"
-    },
-    "flames": {
-      "file": "textures/flames.png"
-    },
-    "flames-right": {
-      "file": "textures/flames-right.png"
-    },
-    "flames-left": {
-      "file": "textures/flames-left.png"
     },
     "overgrowth1": {
       "file": "textures/environment/b_overgrowth1_1.png"
