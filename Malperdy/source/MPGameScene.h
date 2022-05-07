@@ -61,6 +61,9 @@ protected:
 
     /** Reference to the health bar scene node */
     std::shared_ptr<cugl::scene2::PolygonNode> _health;
+    
+    /** Reference to the pause button */
+    std::shared_ptr<cugl::scene2::PolygonNode> _pause;
 
     /** Reference to the pause button scene node */
     std::shared_ptr<cugl::scene2::PolygonNode> _pauseButton;
