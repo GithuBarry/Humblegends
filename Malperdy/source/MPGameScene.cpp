@@ -1136,3 +1136,5 @@ void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
 Vec2 GameScene::inputToGameCoords(Vec2 inputCoords) {
     return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }
+
+
