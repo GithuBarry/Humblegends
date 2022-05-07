@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 5/02/22
+//  Version: 5/06/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -26,6 +26,7 @@
 #include "MPRoomModel.h"
 #include "MPGridModel.h"
 #include "MPEnvController.h"
+#include "MPAudioController.h"
 
 
 /**
@@ -88,7 +89,18 @@ protected:
     /** checkpoint for swap history length*/
     int _checkpointSwapLen = 0;
     vector<Vec2> _checkpointEnemyPos;
-    Vec2 _checkpointReynardPos;
+    Vec2 reynardDefault = Vec2(4,3);
+    Vec2 _checkpointReynardPos = reynardDefault;
+
+    /**Workaround for wall jump corner stuck*/
+    int corner_num_frames_workaround = 0;
+    
+    int keepRedFrames = 0;
+
+    /**
+     * Last time reynard hurt
+     */
+     std::chrono::time_point<std::chrono::system_clock> _lastHurt = std::chrono::system_clock::now();
 
 
 
@@ -280,6 +292,7 @@ public:
     void setComplete(bool value) {
         _complete = value;
         _winNode->setVisible(value);
+        //_health->setVisible(!value);
     }
 
 
@@ -396,7 +409,7 @@ public:
      * @return  trap type if one body is a trap
                 or UNTYPED if neither body is a trap
      */
-    TrapModel::TrapType isTrapCollision(b2Contact* contact);
+    shared_ptr<TrapModel> isTrapCollision(b2Contact* contact);
 
     /**
      * Helper function that checks if a contact event includes Reynard
@@ -438,7 +451,7 @@ public:
      * @param body  The body of the character to get the controller for
      * @return      Pointer to the enemy controller if it's in the collision, or nullptr otherwise
      */
-    shared_ptr<EnemyController> getEnemyControllerInCollision(b2Body* body);
+    shared_ptr<EnemyController> getEnemyControllerInCollision(b2Contact* contact);
 
     /**
      * Helper function that checks if a contact event is a Reynard <> Wall contact
@@ -535,6 +548,8 @@ public:
     bool isThisAEnemyGroundContact(b2Contact *contact, shared_ptr<EnemyController> enemy);
 
     void resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy);
+    
+    void dealReynardDamage();
 
 #pragma mark Helper Functions
     /* Converts input coordinates to coordinates in the game world */

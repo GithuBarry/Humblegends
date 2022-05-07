@@ -4,7 +4,7 @@
 //
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin
-//  Version: 4/19/22
+//  Version: 5/6/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -28,7 +28,7 @@ public:
      *
      * @return  true if the trap is initialized properly, false otherwise.
      */
-    bool init(float roomWidth, float roomHeight);
+    bool init(float roomWidth, float roomHeight, bool isFinal);
 
 };
 
