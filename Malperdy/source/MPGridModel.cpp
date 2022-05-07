@@ -37,6 +37,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
     _horizontal_gap = 0;
     _vertical_gap = 0;
     _physics_scale = scale;
+    _trapList = make_shared<vector<std::shared_ptr<TrapModel>>>();
 
     // get JsonValues representing the level, and an arbitrary room
     shared_ptr<JsonValue> levelJSON = assets->get<JsonValue>("level");
@@ -149,11 +150,9 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
                 }
                 addChild(_grid->at(y)->at(x));
             }
-            break;
         }
     }
     
-
     
     // create a map that maps values in data[] to entity names
     map<int, string> tile_to_traps = map<int,string>();
@@ -217,11 +216,27 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
     // TEMP CODE TO BE DELETED ONCE CHECKPOINTS ARE IN JSON
 //    int top_row = _size.y - 1;
 //    int left_col = _size.x - 1;
-//    _grid->at(top_row)->at(left_col)->initTrap(TrapModel::TrapType::CHECKPOINT);
-    // TEMP CODE END
+    _grid->at(1)->at(0)->initTrap(TrapModel::TrapType::SAP);
+//    shared_ptr<Trap> sTrap = make_shared<StatueTrap>();
+    _grid->at(0)->at(3)->initTrap(TrapModel::TrapType::STATUE);
+
+    
+    //Once all the traps are instantiated you put them all in this list.
+    makeTrapList();
 
     return this->scene2::SceneNode::init();
 };
+
+void GridModel::makeTrapList(){
+    for(int i = 0; i<_grid->size(); i++){
+        for(int j = 0; j<_grid->at(i)->size(); j++){
+            if(_grid->at(i)->at(j)->getTrap()!=nullptr){
+                _trapList->push_back(_grid->at(i)->at(j)->getTrap());
+            }
+        }
+    }
+}
+
 
 #pragma mark Destructors
 
@@ -488,6 +503,12 @@ void GridModel::calculatePhysicsGeometry() {
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
                 _grid->at(row)->at(col)->getTrap()->initObstacle(obstacle);
                 if (_grid->at(row)->at(col)->getTrap()->getType() == TrapModel::TrapType::TRAPDOOR) {
+                    _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
+                }
+                if (_grid->at(row)->at(col)->getTrap()->getType() == TrapModel::TrapType::SAP) {
+                    _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
+                }
+                if (_grid->at(row)->at(col)->getTrap()->getType() == TrapModel::TrapType::STATUE) {
                     _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
                 }
                 if (_grid->at(row)->at(col)->getTrap()->getType() == TrapModel::TrapType::CHECKPOINT) {

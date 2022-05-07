@@ -202,6 +202,14 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
 
         addChild(_trap);
     }
+    if (type == TrapModel::TrapType::STATUE) {
+        shared_ptr<StatueTrap> trap = make_shared<StatueTrap>();
+        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+
+        _trap = trap;
+
+        addChild(_trap);
+    }
     else if (type == TrapModel::TrapType::CHECKPOINT) {
         shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
         trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT, false);
@@ -209,6 +217,7 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
         _trap = trap;
         addChild(_trap);
     }
+    
     else{
         return false;
     }

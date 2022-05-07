@@ -30,15 +30,17 @@ using namespace cugl;
  */
 bool StatueTrap::init(float roomWidth, float roomHeight){
     _sceneNode = make_shared<scene2::SpriteNode>();
-    _sceneNode->initWithFile("textures/spikes.png");
-    _type = TrapType::SAP;
+    _sceneNode->initWithFile("textures/StatueTrap.png");
+    _type = TrapType::STATUE;
     
     _sceneNode->setAnchor(Vec2::ZERO);
-    _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX());
-    _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y + (roomHeight/8));
+    _sceneNode->setScale(.5,.5);
+//    _sceneNode->setScale(10,10);
+//    _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX());
+    _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/3), _sceneNode->getPosition().y + (roomHeight/8));
     _sceneNode->setAbsolute(true);
     _sceneNode->setColor(cugl::Color4f::GREEN);
-//    _sceneNode->Color4("YELLOW");
 
+    
     return this->TrapModel::init();
 }

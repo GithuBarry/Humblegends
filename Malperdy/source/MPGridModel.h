@@ -27,6 +27,10 @@ private:
     // GRID LOADING
     /** Loads in grid format  from a JSON and is used to look up roomIDs for rooms */
     static shared_ptr<GridLoader> _gridLoader;
+    
+    /** List of All Traps in the game */
+    std::shared_ptr<vector<std::shared_ptr<TrapModel>>> _trapList;
+
 
     /** Horizontal gap between rooms in SCREEN SPACE  */
     float _horizontal_gap;
@@ -51,6 +55,8 @@ private:
      * Holds all the physics objects of the grid
      */
     vector<vector<vector<shared_ptr<physics2::PolygonObstacle>>>> _physicsGeometry;
+    
+    
 
 public:
 #pragma mark Constructors
@@ -94,7 +100,11 @@ public:
 
 #pragma mark -
 #pragma mark Accessors
-
+    
+private:
+    void makeTrapList();
+    
+public:
     /** Getter for grid width */
     int getWidth() const {
         return _size.x;
@@ -107,6 +117,10 @@ public:
 
     /** Returns a 1-D vector of all the rooms */
     vector<shared_ptr<RoomModel>> getRooms();
+    
+    std::shared_ptr<vector<std::shared_ptr<TrapModel>>> getTrapList(){
+        return _trapList;
+    }
 
     /**
      * Returns the ptr to the room located at the given coordinate,

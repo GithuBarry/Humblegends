@@ -213,6 +213,22 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     populate();
     _active = true;
     _complete = false;
+    
+    
+    _trapList = _grid->getTrapList();
+    
+
+////    INITARROW CODE
+//    for(shared_ptr<TrapModel> trap : *_trapList){
+//        if(trap->getType()==TrapModel::TrapType::STATUE){
+//            bool right = true;
+//            if(_reynardController->getCharacter()->getPosition().x < trap->getPosition().x){
+//                right = false;
+//            }
+//            createArrow(trap->getPosition(), right);
+//        }
+//    }
+
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::BLACK);
@@ -262,6 +278,7 @@ void GameScene::revert(bool totalReset){
     _gamestate.reset();
     _enemies = nullptr;
     setComplete(false);
+
     if (totalReset){
         _checkpointReynardPos = reynardDefault;
         populate();
@@ -335,6 +352,38 @@ void GameScene::populateChars(){
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
     _reynardController->getCharacter()->setPosition(pos_temp);
 
+#pragma mark ArrowTest
+    
+    //Arrows instantiation
+    //Populate requries it to literally exist in screen area when called
+    _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
+    shared_ptr<Arrow> arrow = make_shared<Arrow>();
+    Vec2 arrowPos = Vec2(30, pos.y);
+    arrow->init(arrowPos, 5, false);
+    
+    //Node Textures
+    std::shared_ptr<Texture> arrowImage = _assets->get<Texture>("Arrow");
+    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(arrowImage);
+    arrow->setSceneNode(sprite);
+    (arrow->getRight()) ? arrow->getSceneNode()->setScale(.25) : arrow->getSceneNode()->setScale(-.25);
+    arrow->getRight();
+//    cout<<endl;
+//    cout<<"MY ARROW NOW EXISTS"<<endl;
+    _arrows->push_back(arrow);
+    addObstacle(arrow, arrow->getSceneNode());
+    
+    
+    
+//    Remove From OBtacleWorld
+//    Remove from DebugWorld
+//    Remove from SceneNode
+//    Remove from List
+    
+    
+    
+    
+    
+    
 #pragma mark Enemies
 
     shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
@@ -392,6 +441,7 @@ void GameScene::populateChars(){
             }
         }
     }
+    //INITIALIZE AN ARROR TO TEST IT
 
     // Initialize EnemyController with the final animation map and store in vector of enemies
     //_enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
@@ -410,6 +460,26 @@ void GameScene::populateChars(){
 
 
 }
+
+void GameScene::createArrow(Vec2 pos, bool right){
+    //Arrows instantiation
+    _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
+    shared_ptr<Arrow> arrow = make_shared<Arrow>();
+    arrow->init(pos, 5, right);
+    
+    //Node Textures
+    std::shared_ptr<Texture> arrowImage = _assets->get<Texture>("Arrow");
+    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(arrowImage);
+    arrow->setSceneNode(sprite);
+    (arrow->getRight()) ? arrow->getSceneNode()->setScale(.25) : arrow->getSceneNode()->setScale(-.25);
+    arrow->getRight();
+//    cout<<endl;
+//    cout<<"MY ARROW NOW EXISTS"<<endl;
+    _arrows->push_back(arrow);
+    addObstacle(arrow, arrow->getSceneNode());
+
+}
+
 
 
 
@@ -911,6 +981,7 @@ void GameScene::beginContact(b2Contact *contact) {
             if (trap != nullptr){
                 trapType = trap->getType();
             }
+            // Spike trap collision code
             if (trapType == TrapModel::TrapType::SPIKE) {
                 float reynardVY = _reynardController->getCharacter()->getVY();
                 if (reynardVY < 0) {
@@ -918,6 +989,7 @@ void GameScene::beginContact(b2Contact *contact) {
                     resolveWallJumpOntoTrap(reynardVY);
                 }
             }
+            // Sap Trap Collision Code
             else if (trapType == TrapModel::TrapType::SAP) {
                 //This line of code is sufficient to slow Reynard
                 //No helper is used because the abstraction is unnecessary
@@ -932,9 +1004,13 @@ void GameScene::beginContact(b2Contact *contact) {
                 }
                 trap->getPolyNode()->setColor(Color4::GREEN);
             }
+            else if (trapType == TrapModel::TrapType::STATUE){
+                //Nothing needs be written in here I just need to pre-empt some later logic
+            }
             else if (trapType == TrapModel::TrapType::GOAL) {
                 setComplete(true);
             }
+            // Trapdoor collision code
             else if (trapType == TrapModel::TrapType::TRAPDOOR) {
                 Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
                 _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
@@ -992,7 +1068,7 @@ void GameScene::beginContact(b2Contact *contact) {
             }
         }
     }
-        // Reynard-on-enemy collision
+    // Reynard-on-enemy collision
     else {
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         if (isReynardCollision(contact) && enemy != nullptr) {
@@ -1026,6 +1102,7 @@ void GameScene::endContact(b2Contact *contact) {
                 //This line of code is sufficient to slow Reynard
                 //No helper is used because the abstraction is unnecessary
                 //RESTORE REYNARDS NORMAL RUNNING SPEED THROUGH THIS LINE
+                cout<<"I AM CALLED"<<endl;
                 _reynardController->getCharacter()->restoreSpeed();
             }
         }
@@ -1129,3 +1206,5 @@ void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
 Vec2 GameScene::inputToGameCoords(Vec2 inputCoords) {
     return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }
+
+

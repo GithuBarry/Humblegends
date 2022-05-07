@@ -371,7 +371,7 @@ public:
      * Adds the given vector to this one in place.
      *
      * @param v The vector to add
-     *
+     * *
      * @return A reference to this (modified) Vec2 for chaining.
      */
     Vec2& add(const Vec2 v) {

@@ -11,8 +11,6 @@
 
 #include <stdio.h>
 
-#include <stdio.h>
-
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUBoxObstacle.h>
 #include <cugl/physics2/CUCapsuleObstacle.h>

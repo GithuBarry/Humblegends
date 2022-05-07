@@ -41,6 +41,9 @@
     "reynard": {
       "file": "textures/reynard.png"
     },
+    "Arrow": {
+      "file": "textures/Arrow.png"
+    },
     "reynard_run": {
       "file": "textures/reynard_run.png"
     },

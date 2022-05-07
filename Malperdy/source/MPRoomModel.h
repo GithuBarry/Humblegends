@@ -45,6 +45,7 @@
 #include "MPSpikeTrap.hpp"
 #include "MPTrapDoorModel.hpp"
 #include "MPSapTrap.hpp"
+#include "MPStatueTrapModel.hpp"
 
 using namespace cugl;
 

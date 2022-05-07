@@ -38,6 +38,7 @@ public:
         TRAPDOOR,
         SAP,
         BRAZIER,
+        STATUE,
         CHECKPOINT,
         GOAL
     };
