@@ -338,18 +338,23 @@ void GameScene::populateChars(){
 
 #pragma mark ArrowTest
     
-    
+    //Arrows instantiation
+    _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
     shared_ptr<Arrow> arrow = make_shared<Arrow>();
     arrow->init(pos, 5, true);
-    //IMAGES
+    
+    //Node Textures
     std::shared_ptr<Texture> arrowImage = _assets->get<Texture>("Arrow");
     std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(arrowImage);
     arrow->setSceneNode(sprite);
     (arrow->getRight()) ? arrow->getSceneNode()->setScale(.25) : arrow->getSceneNode()->setScale(-.25);
     arrow->getRight();
-    cout<<endl;
-    cout<<"MY ARROW NOW EXISTS"<<endl;
+//    cout<<endl;
+//    cout<<"MY ARROW NOW EXISTS"<<endl;
+    _arrows->push_back(arrow);
     addObstacle(arrow, arrow->getSceneNode());
+    
+    
     
 //    Remove From OBtacleWorld
 //    Remove from DebugWorld

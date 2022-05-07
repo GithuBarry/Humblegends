@@ -81,6 +81,9 @@ protected:
 
     /** References to all the enemy controllers */
     std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies;
+    
+    /** References to all the Arrows on the map */
+    std::shared_ptr<vector<std::shared_ptr<Arrow>>> _arrows;
 
     /** Whether we have completed this "game" */
     bool _complete;
