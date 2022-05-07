@@ -19,8 +19,9 @@
 #include "MPRoomModel.h"
 #include "MPGridLoader.h"
 
-#define r1_bgs {"bg-r1-1", "bg-r1-2", "bg-r1-3"}
-#define r2_bgs {"bg-r2-1", "bg-r2-2", "bg-r2-3", "bg-r2-4"}
+#define r1_bgs {"bg-r1-1", "bg-r1-2", "bg-r1-3", "", "", "", ""}
+#define r2_bgs {"bg-r2-1", "bg-r2-2", "bg-r2-3", "bg-r2-4", "", "", ""}
+#define r3_bgs {"bg-r3-1", "bg-r3-2", "bg-r3-3", "bg-r3-4", "bg-r3-5", "bg-r3-6", "bg-r3-7"}
 
 using namespace cugl;
 
@@ -34,7 +35,7 @@ private:
     /** Horizontal gap between rooms in SCREEN SPACE  */
     float _horizontal_gap;
 
-    /** Verticle gap between rooms in SCREEN SPACE  */
+    /** Vertical gap between rooms in SCREEN SPACE  */
     float _vertical_gap;
 
     /**
@@ -54,6 +55,9 @@ private:
      * Holds all the physics objects of the grid
      */
     vector<vector<vector<shared_ptr<physics2::PolygonObstacle>>>> _physicsGeometry;
+
+    /** Names of all the background textures for all the regions */
+    string bgNames[3][7] = {r1_bgs, r2_bgs, r3_bgs};
 
     /** All the background textures for all the regions */
     shared_ptr<vector<shared_ptr<vector<shared_ptr<Texture>>>>> _backgrounds;

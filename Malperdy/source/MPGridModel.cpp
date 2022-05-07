@@ -101,14 +101,11 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
 
     // Store all the possible background textures, indexed by region
     _backgrounds = make_shared<vector<shared_ptr<vector<shared_ptr<Texture>>>>>();
-    for (int k = 0; k < 3; k++) _backgrounds->push_back(make_shared<vector<shared_ptr<Texture>>>());
-    // Region 1
-    for (string name : r1_bgs) {
-        _backgrounds->at(0)->push_back(assets->get<Texture>(name));
-    }
-    // Region 2
-    for (string name : r2_bgs) {
-        _backgrounds->at(1)->push_back(assets->get<Texture>(name));
+    for (int k = 0; k < 3; k++) {
+        _backgrounds->push_back(make_shared<vector<shared_ptr<Texture>>>());
+        for (string name : bgNames[k]) {
+            if (name != "") _backgrounds->at(k)->push_back(assets->get<Texture>(name));
+        }
     }
     
     // INSTANTIATING ROOMS
@@ -154,7 +151,8 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
                 
                 // instantiate the room and add it as a child
                 y =height -1- y;
-                _grid->at(y)->at(x)->init(x, y, roomJSON, getRandBG(2));
+                // TODO: replace with proper retrieval of correct region based on level
+                _grid->at(y)->at(x)->init(x, y, roomJSON, getRandBG(3 - (y % 3)));
                 if (name == "room_solid"){
                     _grid->at(y)->at(x)->permlocked = true;
                 }
