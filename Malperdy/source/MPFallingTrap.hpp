@@ -36,16 +36,22 @@ public:
 
 #pragma mark Constructor
 
-    /**
-     * Initializes a new trap at the given position
-     *
-     * Currently hard coded spawn in across bottom of the room.
-     *
-     * @return  true if the trap is initialized properly, false otherwise.
-     */
+    FallingTrap() : TrapModel() { }
+    
+    virtual ~FallingTrap(void) { dispose(); }
+    
+    void dispose();
+    
+    static std::shared_ptr<FallingTrap> alloc(const cugl::Vec2& pos) {
+        std::shared_ptr<FallingTrap> result = std::make_shared<FallingTrap>();
+        return (result->init(pos) ? result : nullptr);
+    }
+    
+    virtual bool init(const cugl::Vec2 &pos);
+    
     bool init(float roomWidth, float roomHeight);
 
-    void update(const shared_ptr<ReynardController>& reynard);
+    void update(const shared_ptr<ReynardController>& reynard, float dt);
 
     void fall();
 };

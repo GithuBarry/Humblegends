@@ -28,43 +28,52 @@ using namespace cugl;
  */
 
 bool FallingTrap::init(float roomWidth, float roomHeight){
-    CULog("INIT CALLED");
-    _obstacle = make_shared<cugl::physics2::PolygonObstacle>();
     _sceneNode = make_shared<scene2::SpriteNode>();
-    _sceneNode->initWithFile("textures/spikes.png");
+    _sceneNode->initWithFile("textures/falling.png");
     _type = TrapType::FALL;
-
     _sceneNode->setAnchor(Vec2::ZERO);
     _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX());
     _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y);
     _sceneNode->setAbsolute(true);
     _sceneNode->setColor(cugl::Color4f::BLUE);
-    
-    _obstacle->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y);
-    _obstacle->setVY(0);
-    _obstacle->setVX(0);
-    this->TrapModel::init();
-    return this->TrapModel::initObstacle(_obstacle);
+    return this->TrapModel::init();
 }
 
+bool FallingTrap::init(const cugl::Vec2 &pos){
+    CULog("POS %f %f", pos.x, pos.y);
+    _sceneNode = make_shared<scene2::SpriteNode>();
+    _sceneNode->initWithFile("textures/falling.png");
+    _type = TrapType::FALL;
+    _sceneNode->setAnchor(Vec2::ZERO);
+    _sceneNode->setPosition(pos);
+    _sceneNode->setAbsolute(true);
+    _sceneNode->setColor(cugl::Color4f::BLUE);
+    return this->TrapModel::init();
+}
 
 void FallingTrap::fall() {
-    CULog("ASDCAVCKLADSJFCKLAS");
+    CULog("[MPFallingTrap] Reynard detected");
     Vec2 obPos = _obstacle->getPosition();
-    CULog("OBSTACLE: X %f Y %f", obPos.x, obPos.y);
-    _obstacle->setVY(-10);
-    CULog("OBSTACLE: X %f Y %f", obPos.x, obPos.y);
+    _obstacle->PolygonObstacle::setBodyType(b2_dynamicBody);
+    _obstacle->setVY(-1);
 }
 
-void FallingTrap::update(const shared_ptr<ReynardController>& reynard) {
+void FallingTrap::update(const shared_ptr<ReynardController>& reynard, float dt) {
     Vec2 _reyPos = reynard->getScenePosition();
     Vec2 _trapPos = _sceneNode->getWorldPosition();
-    CULog("TRAP: X %f", _trapPos.x);
-    CULog("TRAP: Y %f", _trapPos.y);
-    CULog("REY: X %f", _reyPos.x);
     if (roundf(_reyPos.x) == roundf(_trapPos.x)) {
         fall();
         fallen = true;
     }
+    _obstacle->PolygonObstacle::update(dt);
     
+    // if (_sceneNode != nullptr) {
+    //    _sceneNode->setPosition(_obstacle->getPosition());
+    //    _sceneNode->setAngle(getAngle());
+    // }
+
 }
+
+void FallingTrap::dispose(){
+    _sceneNode = nullptr;
+};
