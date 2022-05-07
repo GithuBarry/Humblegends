@@ -13,7 +13,9 @@
 #include <map>
 
 #define ARROW_SPEED   20.0f
-#define ARROW_OFFSET  10.0f
+#define ARROW_OFFSET_X  10.0f
+#define ARROW_OFFSET_Y  5.0f
+
 
 using namespace cugl;
 
@@ -23,10 +25,18 @@ using namespace cugl;
 bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
     if(!(BoxObstacle::init(pos, Size(10,5)))) return false;
     setGravityScale(0);
-    float offset = (right ? ARROW_OFFSET : -ARROW_OFFSET);
-    setPosition(pos.x + ARROW_OFFSET, pos.y);
+    float offset = (right ? ARROW_OFFSET_X : -ARROW_OFFSET_X);
+    setPosition(pos.x + offset, pos.y +ARROW_OFFSET_Y);
     float speed  = (right ? ARROW_SPEED : -ARROW_SPEED);
     setVX(speed);
+    
+//  TODO: GIVE THE ARROW A GODDAMN TEXTURE
+
+    
+//    std::shared_ptr<Texture> image = _assets->get<Texture>("Arrow");
+//    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(image);
+//    bullet->setSceneNode(sprite);
+
 
     return true;
 };
