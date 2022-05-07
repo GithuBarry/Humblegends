@@ -24,7 +24,7 @@ bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
     if(!(BoxObstacle::init(pos, Size(10,5)))) return false;
     setGravityScale(0);
     float offset = (right ? ARROW_OFFSET : -ARROW_OFFSET);
-    setPosition(pos.x + ARROW_OFFSET, pos.y)
+    setPosition(pos.x + ARROW_OFFSET, pos.y);
     float speed  = (right ? ARROW_SPEED : -ARROW_SPEED);
     setVX(speed);
 
