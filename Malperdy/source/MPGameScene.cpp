@@ -262,6 +262,7 @@ void GameScene::revert(bool totalReset){
     _gamestate.reset();
     _enemies = nullptr;
     setComplete(false);
+
     if (totalReset){
         _checkpointReynardPos = reynardDefault;
         populate();
@@ -338,9 +339,15 @@ void GameScene::populateChars(){
 #pragma mark ArrowTest
     
     
-//    shared_ptr<Arrow> arrow = make_shared<Arrow>();
-//    arrow->init();
-//    addObstacle(arrow, arrow->getNode())
+    shared_ptr<Arrow> arrow = make_shared<Arrow>();
+    arrow->init(pos, 5, true);
+    std::shared_ptr<Texture> arrowImage = _assets->get<Texture>("Arrow");
+    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(arrowImage);
+    arrow->setSceneNode(sprite);
+    arrow->getSceneNode()->setScale(12);
+    cout<<endl;
+    cout<<"MY ARROW NOW EXISTS"<<endl;
+    addObstacle(arrow, arrow->getSceneNode());
     
 //    Remove From OBtacleWorld
 //    Remove from DebugWorld

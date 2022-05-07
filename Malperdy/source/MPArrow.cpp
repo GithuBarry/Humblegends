@@ -13,8 +13,8 @@
 #include <map>
 
 #define ARROW_SPEED   20.0f
-#define ARROW_OFFSET_X  10.0f
-#define ARROW_OFFSET_Y  5.0f
+#define ARROW_OFFSET_X  3.f
+#define ARROW_OFFSET_Y  1.0f
 
 
 using namespace cugl;
@@ -23,15 +23,13 @@ using namespace cugl;
 #pragma mark Constructors
 
 bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
-    if(!(BoxObstacle::init(pos, Size(10,5)))) return false;
+    if(!(BoxObstacle::init(pos, Size(2,1)))) return false;
     setGravityScale(0);
     float offset = (right ? ARROW_OFFSET_X : -ARROW_OFFSET_X);
     setPosition(pos.x + offset, pos.y +ARROW_OFFSET_Y);
     float speed  = (right ? ARROW_SPEED : -ARROW_SPEED);
     setVX(speed);
-    _node->initWithFile("Arrow.png");
-    
-
+//    _node->initWithFile("arrow_trap.png");
 
     return true;
 };

@@ -16,20 +16,19 @@
 #include <cugl/physics2/CUCapsuleObstacle.h>
 #include <cugl/scene2/graph/CUWireNode.h>
 #include <map>
-#include "MPAnimation.h"
 
 using namespace cugl;
 
 class Arrow : public cugl::physics2::BoxObstacle {
     
-public:
+protected:
     
     /** The scene graph node for the Bullet. */
-    std::shared_ptr<cugl::scene2::SpriteNode> _node;
+    std::shared_ptr<cugl::scene2::SceneNode> _node;
     /*How long has this arrow existed for*/
     int _time = 0;
     
-    
+public:
 #pragma mark -
 #pragma mark Hidden Constructors
 
@@ -119,6 +118,20 @@ public:
      * @return the scene graph node representing this Bullet.
      */
     const std::shared_ptr<cugl::scene2::SceneNode>& getSceneNode() const { return _node; }
+
+    /**
+     * Sets the scene graph node representing this Bullet.
+     *
+     * @param node  The scene graph node representing this Bullet, which has
+     *              been added to the world node already.
+     */
+    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode>& node) {
+        _node = node;
+    }
+    
+//    int getPos(){
+//        return Obstacle::getPosition();
+//    }
 
 
 };
