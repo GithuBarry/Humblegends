@@ -341,10 +341,12 @@ void GameScene::populateChars(){
     
     shared_ptr<Arrow> arrow = make_shared<Arrow>();
     arrow->init(pos, 5, true);
+    //IMAGES
     std::shared_ptr<Texture> arrowImage = _assets->get<Texture>("Arrow");
     std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(arrowImage);
     arrow->setSceneNode(sprite);
-    arrow->getSceneNode()->setScale(.25);
+    (arrow->getRight()) ? arrow->getSceneNode()->setScale(.25) : arrow->getSceneNode()->setScale(-.25);
+    arrow->getRight();
     cout<<endl;
     cout<<"MY ARROW NOW EXISTS"<<endl;
     addObstacle(arrow, arrow->getSceneNode());

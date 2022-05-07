@@ -29,6 +29,7 @@ bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
     setPosition(pos.x + offset, pos.y +ARROW_OFFSET_Y);
     float speed  = (right ? ARROW_SPEED : -ARROW_SPEED);
     setVX(speed);
+    _right = right;
 //    _node->initWithFile("arrow_trap.png");
 
     return true;

@@ -23,6 +23,7 @@ class Arrow : public cugl::physics2::BoxObstacle {
     
 protected:
     
+    bool _right;
     /** The scene graph node for the Bullet. */
     std::shared_ptr<cugl::scene2::SceneNode> _node;
     /*How long has this arrow existed for*/
@@ -129,6 +130,9 @@ public:
         _node = node;
     }
     
+    bool getRight(){
+        return _right;
+    }
 //    int getPos(){
 //        return Obstacle::getPosition();
 //    }
