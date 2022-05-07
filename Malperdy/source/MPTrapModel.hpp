@@ -37,6 +37,7 @@ public:
         SPIKE,
         TRAPDOOR,
         SAP,
+        FALL,
         BRAZIER,
         CHECKPOINT,
         GOAL
@@ -152,7 +153,6 @@ public:
         _obstacle->createFixtures();
         return true;
     }
-    
     
     
 #pragma mark -
