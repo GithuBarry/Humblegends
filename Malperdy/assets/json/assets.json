@@ -80,6 +80,12 @@
   },
     "sounds": {
 
+      "bump": {
+        "type": "sample",
+        "file": "sounds/jump.wav",
+        "volume": 0.5
+      },
+
     "jump": {
       "type": "sample",
       "file": "sounds/jump.wav",

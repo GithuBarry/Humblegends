@@ -60,13 +60,18 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 /** Opacity of the physics outlines {@example} */
 #define SOME_COLOR   Color4::YELLOW
 
-/** The key for collisions sounds {@example} */
-
-#define SOME_SOUND     "somesoundname"
-
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
 
+/* Sound */
+/* Play these with MPAudioController::playAudio(_assets, XYZ_SOUND_GOES_HERE, false, 1, false); */
+#define BUMP_SOUND "bump"
+#define JUMP_SOUND "jump"
+#define LAND_SOUND "land"
+#define SWAP_SOUND "swap_room"
+
+/* Play these with MPAudioController::playAudio(_assets, XYZ_MUSIC_GOES_HERE, false, 1, true); */
+#define LEVEL_MUSIC "level_music"
 
 float REYNARD_POS[] = {30, 10};
 
