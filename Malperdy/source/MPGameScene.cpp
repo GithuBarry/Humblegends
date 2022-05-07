@@ -518,21 +518,35 @@ void GameScene::update(float dt) {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
     }
-    if (_input.didPress()){
+    if (_input.didPress() &&(_gamestate.secondsAfterPause()>3)){
         Vec2 node_coord = _pause->screenToNodeCoords(_input.getPosition());
         if ((node_coord - Vec2(123,123)).length()<150){
             _gamestate.pauseSwitch();
             if (_gamestate.isPaused()){
                 _pause->setTexture("textures/PauseScreen/Play_Button.png");
             }
-            else{
-                _pause->setTexture("textures/PauseScreen/Pause_Button.png");
-            }
             return;
         }
-        
-
     }
+    if (_gamestate.secondsAfterPause()<1){
+        _pause->setTexture("textures/PauseScreen/Pause_Count_Down_3.png");
+        return;
+    }
+    if (_gamestate.secondsAfterPause()<2){
+        _pause->setTexture("textures/PauseScreen/Pause_Count_Down_2.png");
+        return;
+    }
+    if (_gamestate.secondsAfterPause()<3){
+        _pause->setTexture("textures/PauseScreen/Pause_Count_Down_1.png");
+        return;
+    }
+    if(_gamestate.secondsAfterPause()<4){
+        _pause->setTexture("textures/PauseScreen/Pause_Button.png");
+    }
+    
+        
+        
+    
     // Room swap by drag
     if (usingDrag && !_gamestate.zoomed_in()) {
         if (_input.didPress() && !hasSwapped) {
