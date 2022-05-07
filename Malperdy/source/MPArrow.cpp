@@ -12,41 +12,30 @@
 #include <cugl/assets/CUAssetManager.h>
 #include <map>
 
+#define ARROW_SPEED   20.0f
+#define ARROW_OFFSET  10.0f
 
 using namespace cugl;
 
 #pragma mark -
 #pragma mark Constructors
 
-//BoxObstacle b = new BoxObstacle();
+bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
+    if(!(BoxObstacle::init(pos, Size(10,5)))) return false;
+    setGravityScale(0);
+    float offset = (right ? ARROW_OFFSET : -ARROW_OFFSET);
+    setPosition(pos.x + ARROW_OFFSET, pos.y)
+    float speed  = (right ? ARROW_SPEED : -ARROW_SPEED);
+    setVX(speed);
 
-//bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
-//    CapsuleObstacle::init(pos, Size(drawScale,drawScale));
-    
-    
-//        _spriteNode = initWithFile("textures/Sap_Trap.png");
-
-    
-    
-//    if(!(CapsuleObstacle::init(pos, drawScale,  "Box"))){
-//
-//    }
-    
-    
-//    BoxObstacle::init(pos, 10);
-//
-//    BoxObstacle::init(pos, 10);
-
-//    if(!(BoxObstacle::init(pos, 10));
-    
-//    if(!(BoxObstacle::init(pos, drawScale))) return false;
-    
-//    Wait so am I already a Boxobstacle or do I need to be declared to be one
-//    _spriteNode
-    
-    
-    
     return true;
 };
+
+
+void Arrow::dispose(){
+    _node = nullptr;
+};
+    
+    
 
 
