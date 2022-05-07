@@ -37,6 +37,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
     _horizontal_gap = 0;
     _vertical_gap = 0;
     _physics_scale = scale;
+    _trapList = make_shared<vector<std::shared_ptr<TrapModel>>>();
 
     // get JsonValues representing the level, and an arbitrary room
     shared_ptr<JsonValue> levelJSON = assets->get<JsonValue>("level");
@@ -149,11 +150,9 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
                 }
                 addChild(_grid->at(y)->at(x));
             }
-            break;
         }
     }
     
-
     
     // create a map that maps values in data[] to entity names
     map<int, string> tile_to_traps = map<int,string>();
@@ -218,11 +217,29 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
 //    int top_row = _size.y - 1;
 //    int left_col = _size.x - 1;
     _grid->at(1)->at(0)->initTrap(TrapModel::TrapType::SAP);
+//    shared_ptr<Trap> sTrap = make_shared<StatueTrap>();
+//    sTrap->init(pos, 5, true);
+//  TODO: Think of this as a way to access a specific room. And then call a function on it.
     _grid->at(0)->at(3)->initTrap(TrapModel::TrapType::STATUE);
+//    _trapList
     // TEMP CODE END
+    
+    makeTrapList();
 
     return this->scene2::SceneNode::init();
 };
+
+void GridModel::makeTrapList(){
+    for(int i = 0; i<_grid->size(); i++){
+        for(int j = 0; j<_grid->at(i)->size(); j++){
+            if(_grid->at(i)->at(j)->getTrap()!=nullptr){
+                _trapList->push_back(_grid->at(i)->at(j)->getTrap());
+                cout<<"I'M IN BOYS"<<endl;
+            }
+        }
+    }
+}
+
 
 #pragma mark Destructors
 
