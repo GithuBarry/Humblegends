@@ -20,16 +20,13 @@ using namespace cugl;
 
 //BoxObstacle b = new BoxObstacle();
 
-bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
-//    CapsuleObstacle::init(pos, drawScale);
+//bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
+//    CapsuleObstacle::init(pos, Size(drawScale,drawScale));
     
     
-        _spriteNode = initWithFile("textures/Sap_Trap.png");
+//        _spriteNode = initWithFile("textures/Sap_Trap.png");
 
     
-        return true;
-    }
-
     
 //    if(!(CapsuleObstacle::init(pos, drawScale,  "Box"))){
 //
@@ -50,6 +47,6 @@ bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
     
     
     return true;
-}
+};
 
 
