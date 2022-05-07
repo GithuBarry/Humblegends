@@ -23,7 +23,7 @@ using namespace cugl;
 #pragma mark Constructors
 
 bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
-    if(!(BoxObstacle::init(pos, Size(2,1)))) return false;
+    if(!(BoxObstacle::init(pos, Size(1.5,.5)))) return false;
     setGravityScale(0);
     float offset = (right ? ARROW_OFFSET_X : -ARROW_OFFSET_X);
     setPosition(pos.x + offset, pos.y +ARROW_OFFSET_Y);
