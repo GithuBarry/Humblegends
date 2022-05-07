@@ -27,6 +27,7 @@
 #include "MPGridModel.h"
 #include "MPEnvController.h"
 #include "MPAudioController.h"
+#include "MPArrow.hpp"
 
 
 /**

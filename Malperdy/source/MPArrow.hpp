@@ -25,11 +25,9 @@ class Arrow : public cugl::physics2::BoxObstacle {
 public:
     
     /** The scene graph node for the Bullet. */
-    std::shared_ptr<cugl::scene2::SceneNode> _node;
+    std::shared_ptr<cugl::scene2::SpriteNode> _node;
     /*How long has this arrow existed for*/
     int _time = 0;
-//    /*Direction of the arrow*/
-//    bool _right;
     
     
 #pragma mark -

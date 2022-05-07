@@ -29,13 +29,8 @@ bool Arrow::init(const cugl::Vec2 &pos, float drawScale, bool right){
     setPosition(pos.x + offset, pos.y +ARROW_OFFSET_Y);
     float speed  = (right ? ARROW_SPEED : -ARROW_SPEED);
     setVX(speed);
+    _node->initWithFile("Arrow.png");
     
-//  TODO: GIVE THE ARROW A GODDAMN TEXTURE
-
-    
-//    std::shared_ptr<Texture> image = _assets->get<Texture>("Arrow");
-//    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(image);
-//    bullet->setSceneNode(sprite);
 
 
     return true;

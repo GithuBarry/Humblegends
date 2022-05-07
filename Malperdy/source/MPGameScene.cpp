@@ -335,6 +335,23 @@ void GameScene::populateChars(){
     addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
     _reynardController->getCharacter()->setPosition(pos_temp);
 
+#pragma mark ArrowTest
+    
+    
+//    shared_ptr<Arrow> arrow = make_shared<Arrow>();
+//    arrow->init();
+//    addObstacle(arrow, arrow->getNode())
+    
+//    Remove From OBtacleWorld
+//    Remove from DebugWorld
+//    Remove from SceneNode
+//    Remove from List
+    
+    
+    
+    
+    
+    
 #pragma mark Enemies
 
     shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
@@ -392,6 +409,7 @@ void GameScene::populateChars(){
             }
         }
     }
+    //INITIALIZE AN ARROR TO TEST IT
 
     // Initialize EnemyController with the final animation map and store in vector of enemies
     //_enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
