@@ -33,9 +33,9 @@ bool SapTrap::init(float roomWidth, float roomHeight){
     
     _sceneNode->setAnchor(Vec2::ZERO);
     _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX());
-    _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y + (roomHeight/8));
+    _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y);
     _sceneNode->setAbsolute(true);
-    _sceneNode->setColor(cugl::Color4f::ORANGE);
+//    _sceneNode->setColor(cugl::Color4f::ORANGE);
 //    _sceneNode->Color4("YELLOW");
 
     return this->TrapModel::init();
