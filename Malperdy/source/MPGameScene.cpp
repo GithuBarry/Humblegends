@@ -911,6 +911,7 @@ void GameScene::beginContact(b2Contact *contact) {
             if (trap != nullptr){
                 trapType = trap->getType();
             }
+            // Spike trap collision code
             if (trapType == TrapModel::TrapType::SPIKE) {
                 float reynardVY = _reynardController->getCharacter()->getVY();
                 if (reynardVY < 0) {
@@ -918,6 +919,7 @@ void GameScene::beginContact(b2Contact *contact) {
                     resolveWallJumpOntoTrap(reynardVY);
                 }
             }
+            // Sap Trap Collision Code
             else if (trapType == TrapModel::TrapType::SAP) {
                 //This line of code is sufficient to slow Reynard
                 //No helper is used because the abstraction is unnecessary
@@ -932,9 +934,13 @@ void GameScene::beginContact(b2Contact *contact) {
                 }
                 trap->getPolyNode()->setColor(Color4::GREEN);
             }
+            else if (trapType == TrapModel::TrapType::STATUE){
+                //Nothing needs be written in here I just need to pre-empt some later logic
+            }
             else if (trapType == TrapModel::TrapType::GOAL) {
                 setComplete(true);
             }
+            // Trapdoor collision code
             else if (trapType == TrapModel::TrapType::TRAPDOOR) {
                 Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
                 _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
@@ -992,7 +998,7 @@ void GameScene::beginContact(b2Contact *contact) {
             }
         }
     }
-        // Reynard-on-enemy collision
+    // Reynard-on-enemy collision
     else {
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         if (isReynardCollision(contact) && enemy != nullptr) {
@@ -1026,6 +1032,7 @@ void GameScene::endContact(b2Contact *contact) {
                 //This line of code is sufficient to slow Reynard
                 //No helper is used because the abstraction is unnecessary
                 //RESTORE REYNARDS NORMAL RUNNING SPEED THROUGH THIS LINE
+                cout<<"I AM CALLED"<<endl;
                 _reynardController->getCharacter()->restoreSpeed();
             }
         }

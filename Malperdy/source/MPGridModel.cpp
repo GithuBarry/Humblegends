@@ -218,6 +218,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
 //    int top_row = _size.y - 1;
 //    int left_col = _size.x - 1;
     _grid->at(1)->at(0)->initTrap(TrapModel::TrapType::SAP);
+    _grid->at(0)->at(3)->initTrap(TrapModel::TrapType::STATUE);
     // TEMP CODE END
 
     return this->scene2::SceneNode::init();
@@ -488,6 +489,12 @@ void GridModel::calculatePhysicsGeometry() {
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
                 _grid->at(row)->at(col)->getTrap()->initObstacle(obstacle);
                 if (_grid->at(row)->at(col)->getTrap()->getType() == TrapModel::TrapType::TRAPDOOR) {
+                    _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
+                }
+                if (_grid->at(row)->at(col)->getTrap()->getType() == TrapModel::TrapType::SAP) {
+                    _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
+                }
+                if (_grid->at(row)->at(col)->getTrap()->getType() == TrapModel::TrapType::STATUE) {
                     _grid->at(row)->at(col)->getTrap()->getObstacle()->setSensor(true);
                 }
                 if (_grid->at(row)->at(col)->getTrap()->getType() == TrapModel::TrapType::CHECKPOINT) {
