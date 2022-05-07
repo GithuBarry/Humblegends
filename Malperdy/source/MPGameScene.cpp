@@ -213,6 +213,22 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     populate();
     _active = true;
     _complete = false;
+    
+    
+    _trapList = _grid->getTrapList();
+    
+
+////    INITARROW CODE
+//    for(shared_ptr<TrapModel> trap : *_trapList){
+//        if(trap->getType()==TrapModel::TrapType::STATUE){
+//            bool right = true;
+//            if(_reynardController->getCharacter()->getPosition().x < trap->getPosition().x){
+//                right = false;
+//            }
+//            createArrow(trap->getPosition(), right);
+//        }
+//    }
+
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::BLACK);
@@ -339,9 +355,11 @@ void GameScene::populateChars(){
 #pragma mark ArrowTest
     
     //Arrows instantiation
+    //Populate requries it to literally exist in screen area when called
     _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
     shared_ptr<Arrow> arrow = make_shared<Arrow>();
-    arrow->init(pos, 5, true);
+    Vec2 arrowPos = Vec2(30, pos.y);
+    arrow->init(arrowPos, 5, false);
     
     //Node Textures
     std::shared_ptr<Texture> arrowImage = _assets->get<Texture>("Arrow");
@@ -442,6 +460,26 @@ void GameScene::populateChars(){
 
 
 }
+
+void GameScene::createArrow(Vec2 pos, bool right){
+    //Arrows instantiation
+    _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
+    shared_ptr<Arrow> arrow = make_shared<Arrow>();
+    arrow->init(pos, 5, right);
+    
+    //Node Textures
+    std::shared_ptr<Texture> arrowImage = _assets->get<Texture>("Arrow");
+    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(arrowImage);
+    arrow->setSceneNode(sprite);
+    (arrow->getRight()) ? arrow->getSceneNode()->setScale(.25) : arrow->getSceneNode()->setScale(-.25);
+    arrow->getRight();
+//    cout<<endl;
+//    cout<<"MY ARROW NOW EXISTS"<<endl;
+    _arrows->push_back(arrow);
+    addObstacle(arrow, arrow->getSceneNode());
+
+}
+
 
 
 

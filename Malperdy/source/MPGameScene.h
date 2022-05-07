@@ -82,6 +82,9 @@ protected:
     /** References to all the enemy controllers */
     std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies;
     
+    /** References to all the traps in a game */
+    std::shared_ptr<vector<std::shared_ptr<TrapModel>>> _trapList;
+    
     /** References to all the Arrows on the map */
     std::shared_ptr<vector<std::shared_ptr<Arrow>>> _arrows;
 
@@ -127,6 +130,12 @@ protected:
      *
      */
     void populateChars();
+    
+    /**
+     * The function required ()
+     *
+     */
+    void createArrow(Vec2 pos, bool right);
 
 
     /**

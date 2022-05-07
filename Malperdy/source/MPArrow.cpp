@@ -13,8 +13,8 @@
 #include <map>
 
 #define ARROW_SPEED   20.0f
-#define ARROW_OFFSET_X  3.f
-#define ARROW_OFFSET_Y  1.0f
+#define ARROW_OFFSET_X  0.f
+#define ARROW_OFFSET_Y  0.00f
 
 
 using namespace cugl;

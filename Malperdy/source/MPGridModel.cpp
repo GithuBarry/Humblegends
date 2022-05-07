@@ -218,12 +218,10 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
 //    int left_col = _size.x - 1;
     _grid->at(1)->at(0)->initTrap(TrapModel::TrapType::SAP);
 //    shared_ptr<Trap> sTrap = make_shared<StatueTrap>();
-//    sTrap->init(pos, 5, true);
-//  TODO: Think of this as a way to access a specific room. And then call a function on it.
     _grid->at(0)->at(3)->initTrap(TrapModel::TrapType::STATUE);
-//    _trapList
-    // TEMP CODE END
+
     
+    //Once all the traps are instantiated you put them all in this list.
     makeTrapList();
 
     return this->scene2::SceneNode::init();
@@ -234,7 +232,6 @@ void GridModel::makeTrapList(){
         for(int j = 0; j<_grid->at(i)->size(); j++){
             if(_grid->at(i)->at(j)->getTrap()!=nullptr){
                 _trapList->push_back(_grid->at(i)->at(j)->getTrap());
-                cout<<"I'M IN BOYS"<<endl;
             }
         }
     }
