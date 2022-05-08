@@ -48,15 +48,6 @@
     "rabbit_idle": {
       "file": "textures/rabbit_idling.png"
     },
-    "flames": {
-      "file": "textures/flames.png"
-    },
-    "flames-right": {
-      "file": "textures/flames-right.png"
-    },
-    "flames-left": {
-      "file": "textures/flames-left.png"
-    },
     "bg-r1-1": {
       "file": "textures/environment/BG_R1_1.png"
     },
