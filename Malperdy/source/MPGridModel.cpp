@@ -219,6 +219,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
     _grid->at(1)->at(0)->initTrap(TrapModel::TrapType::SAP);
 //    shared_ptr<Trap> sTrap = make_shared<StatueTrap>();
     _grid->at(0)->at(3)->initTrap(TrapModel::TrapType::STATUE);
+    _grid->at(1)->at(1)->initTrap(TrapModel::TrapType::STATUE);
 
     
     //Once all the traps are instantiated you put them all in this list.

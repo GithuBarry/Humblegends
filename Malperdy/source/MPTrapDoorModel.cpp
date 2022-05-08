@@ -40,7 +40,6 @@ bool TrapDoor::init(float roomWidth, float roomHeight){
     
     _sceneNode->setAnchor(Vec2::ZERO);
     _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX());
-//    _sceneNode->setScale(Vec2(.1,.5));
     _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y + (roomHeight/16));
     _sceneNode->setAbsolute(true);
     

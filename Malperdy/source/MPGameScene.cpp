@@ -354,7 +354,10 @@ void GameScene::populateArrows() {
                 cout<<trap->getObstacle()->getPosition().x<<endl;
                 cout<<trap->getObstacle()->getPosition().y<<endl;
 
-                createArrow(trap->getObstacle()->getPosition(), right);
+                
+                Vec2 trapPos = trap->getObstacle()->getPosition();
+                Vec2 trapPosPrime = Vec2(trapPos.x, trapPos.y + ((rand()/RAND_MAX)*3));
+                createArrow(Vec2(trapPos.x, trapPos.y + ((rand()/RAND_MAX)*3)), right);
 //                createArrow(trap->getPosition(), right);
             }
         }
@@ -1178,6 +1181,7 @@ void GameScene::beginContact(b2Contact *contact) {
 
         }
     }
+#pragma mark ARROW DELETED IF COLLIDES WITH ANOTHER ENTITY
     shared_ptr<Arrow> arrow = isArrowCollision(contact);
     if (arrow != nullptr){
         removeArrow(arrow);
