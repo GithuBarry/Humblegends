@@ -1012,6 +1012,9 @@ void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy) {
     enemy->jump();
     //enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
 }
+void GameScene::resolveEnemyArrowOnContact(shared_ptr<EnemyController> enemy) {
+    enemy->getCharacter()->setHearts(enemy->getCharacter()->getHearts() - SPIKE_DAMAGE);
+}
 
 void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyController> enemy) {
     // We expect reynardVY to be a negative value
@@ -1104,10 +1107,20 @@ void GameScene::beginContact(b2Contact *contact) {
             
         }
         // Otherwise it's an enemy-on-object collision, and handle that accordingly
+        
+#pragma mark ENEMY COLLISIONS
         else {
             bool enemyIsRight = enemy->getCharacter()->isFacingRight();
             shared_ptr<TrapModel> trap = isTrapCollision(contact);
             TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
+            
+            shared_ptr<Arrow> arrow = isArrowCollision(contact);
+            if (arrow != nullptr){
+                resolveEnemyTrapOnContact(enemy);
+                removeArrow(arrow);
+                cout<<"YOU HIT AN ARROW"<<endl;
+            }
+
             if (trap != nullptr){
                 trapType = trap->getType();
             }
@@ -1152,6 +1165,11 @@ void GameScene::beginContact(b2Contact *contact) {
             dealReynardDamage();
 
         }
+    }
+    shared_ptr<Arrow> arrow = isArrowCollision(contact);
+    if (arrow != nullptr){
+        removeArrow(arrow);
+        cout<<"ARROW Collided with entity"<<endl;
     }
     
 }
@@ -1198,6 +1216,7 @@ void GameScene::endContact(b2Contact *contact) {
             }
         }
     }
+
 //    if (isReynardCollision(contact)&&isTrapDoorCollision(contact)) {
 //
 //        //TODO: Write Code to disable said trapdoor
@@ -1235,7 +1254,6 @@ void GameScene::beforeSolve(b2Contact *contact, const b2Manifold *oldManifold) {
             speed = b2Dot(dv, worldManifold.normal);
         }
     }
-
 }
 
 /**

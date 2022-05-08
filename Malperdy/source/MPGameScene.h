@@ -150,8 +150,6 @@ protected:
      */
     void removeArrow(shared_ptr<Arrow> arrow);
 
-
-
     /**
      Revert the game state to the last state
      */
@@ -581,6 +579,8 @@ public:
 
     void resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy);
 
+    void resolveEnemyArrowOnContact(shared_ptr<EnemyController> enemy);
+    
     void resolveEnemyWallOnContact(shared_ptr<EnemyController> enemy);
 
     bool isThisAEnemyWallContact(b2Contact *contact, bool enemyIsRight, shared_ptr<EnemyController> enemy);
