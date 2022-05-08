@@ -224,7 +224,6 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _active = true;
     _complete = false;
 
-
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::BLACK);
     return true;
@@ -507,11 +506,24 @@ void GameScene::createArrow(Vec2 pos, bool right){
     cout<<"Arrow s now equals: ";
     cout<<_arrows->size()<<endl;
     addObstacle(arrow, arrow->getSceneNode());
+//    _arrows->erase(arrow);
 }
 
 void GameScene::removeArrow(shared_ptr<Arrow> arrow){
     if (arrow->isRemoved()){
         return;
+    }
+    auto it = _arrows->begin();
+    while (it != _arrows->end())
+    {
+        if ((*it) == arrow)
+        {
+            cout<<"I'M IN DELETTION CODE" <<endl;
+            it = _arrows->erase(it);
+        }
+        else {
+            ++it;
+        }
     }
     _worldnode->removeChild(arrow->getSceneNode());
     arrow->setDebugScene(nullptr);
