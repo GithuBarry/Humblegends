@@ -24,6 +24,7 @@ private:
     int SLOW_MO_SCALAR;
     float maxZoom = 2.4;
     float minZoom = 1;
+    std::chrono::time_point<std::chrono::system_clock> sinceResume = std::chrono::system_clock::now();
 public:
     /**
      * Change parameter as you need
@@ -72,10 +73,15 @@ public:
 
     void unpause(){
         paused = false;
+        sinceResume = std::chrono::system_clock::now();
     }
 
     void pauseSwitch(){
-        paused = !paused;
+        if (paused){
+            unpause();
+        }else{
+            pause();
+        }
     }
 
     bool isPaused(){
@@ -83,8 +89,12 @@ public:
     }
     
     bool finishedZooming(float currentScale){
-    
         return abs(currentScale - maxZoom)<0.05 || abs(currentScale - minZoom)<0.05;
+    }
+    
+    float secondsAfterPause(){
+        std::chrono::duration<float> diff = std::chrono::system_clock::now() - sinceResume;
+        return diff.count();
     }
 
 
