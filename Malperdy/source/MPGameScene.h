@@ -88,6 +88,7 @@ protected:
     /** References to all the Arrows on the map */
     std::shared_ptr<vector<std::shared_ptr<Arrow>>> _arrows;
 
+
     /** Whether we have completed this "game" */
     bool _complete;
     /** Whether or not debug mode is active */

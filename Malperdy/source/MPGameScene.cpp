@@ -70,6 +70,9 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 
 float REYNARD_POS[] = {30, 10};
 
+
+
+
 #pragma mark Physics Constants
 
 
@@ -269,6 +272,7 @@ void GameScene::revert(bool totalReset){
     _debugnode->removeAllChildren();
     _gamestate.reset();
     _enemies = nullptr;
+    _arrows = nullptr;
     setComplete(false);
 
     if (totalReset){
@@ -337,6 +341,7 @@ void GameScene::populateEnv() {
 
 void GameScene::populateArrows() {
 ////    INITARROW CODE
+    _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
     for(shared_ptr<TrapModel> trap : *_trapList){
         if(trap!=nullptr){
 //            cout<<"We're in"<<endl;
@@ -489,7 +494,7 @@ void GameScene::populateChars(){
 
 void GameScene::createArrow(Vec2 pos, bool right){
     //Arrows instantiation
-    _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
+//    _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
     shared_ptr<Arrow> arrow = make_shared<Arrow>();
     arrow->init(pos, 5, right);
     
