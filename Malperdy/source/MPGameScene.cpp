@@ -1046,7 +1046,7 @@ void GameScene::beginContact(b2Contact *contact) {
 //            removeArrow(<#Arrow *arrow#>);
 //            removeArrow((Arrow *) arrow);
 //            removeArrow(arrow.pointer);
-            Arrow arrowDirectObj = *arrow;
+//            Arrow arrowDirectObj = *arrow;
 //            removeArrow(arrowDirectObj);
             cout<<"YOU HIT AN ARROW"<<endl;
         }
