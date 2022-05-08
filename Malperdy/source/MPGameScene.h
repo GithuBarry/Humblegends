@@ -131,6 +131,8 @@ protected:
      */
     void populateChars();
     
+    void populateArrows();
+    
     /**
      * The function required ()
      *

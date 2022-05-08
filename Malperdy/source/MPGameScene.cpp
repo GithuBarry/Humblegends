@@ -144,6 +144,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
  */
 bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rect, const Vec2 gravity) {
     Size dimen = computeActiveSize();
+    //Here is where the traplist is declared
 
     if (assets == nullptr) {
         return false;
@@ -210,24 +211,15 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
 
+    // TODO: Make populate more clear about what it does and what it sets
+    // Populate actually contains populate enviorment which SETS _grid to not be null.
+    // Well now its where the _TRAPLIST is declared
     populate();
+
+    
+    
     _active = true;
     _complete = false;
-    
-    
-    _trapList = _grid->getTrapList();
-    
-
-////    INITARROW CODE
-//    for(shared_ptr<TrapModel> trap : *_trapList){
-//        if(trap->getType()==TrapModel::TrapType::STATUE){
-//            bool right = true;
-//            if(_reynardController->getCharacter()->getPosition().x < trap->getPosition().x){
-//                right = false;
-//            }
-//            createArrow(trap->getPosition(), right);
-//        }
-//    }
 
 
     // XNA nostalgia
@@ -285,6 +277,8 @@ void GameScene::revert(bool totalReset){
     }else{
         populateEnv();
         populateChars();
+        //TODO: Check this doesn't break anything
+        populateArrows();
         for (int i = 0; i<_checkpointSwapLen; i++) {
             _envController->swapRoomOnGrid(swapHistory[i][0],swapHistory[i][1],true);
         }
@@ -311,7 +305,9 @@ void GameScene::revert(bool totalReset){
 void GameScene::populate() {
     populateEnv();
     populateChars();
+    populateArrows();
 }
+
 
 void GameScene::populateEnv() {
     MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
@@ -325,6 +321,7 @@ void GameScene::populateEnv() {
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.4);
+    _trapList = _grid->getTrapList();
 
     //_grid->setPosition(0,-240);
 
@@ -335,6 +332,22 @@ void GameScene::populateEnv() {
         (*itr)->setDebugScene(_debugnode);
         (*itr)->setDebugColor(Color4::RED);
         //CULog("populate: %f %f ", (*itr)->getPosition().x);
+    }
+}
+
+void GameScene::populateArrows() {
+////    INITARROW CODE
+    for(shared_ptr<TrapModel> trap : *_trapList){
+//        if(trap!=nullptr){
+            cout<<"We're in"<<endl;
+            if(trap->getType()==TrapModel::TrapType::STATUE){
+                bool right = true;
+                if(_reynardController->getCharacter()->getPosition().x < trap->getPosition().x){
+                    right = false;
+                }
+                createArrow(trap->getPosition(), right);
+//            }
+        }
     }
 }
 
