@@ -2,13 +2,13 @@
   "jsons" : {
      "framedata" : "json/framedata.json",
      "framedata2" : "json/framedatanew.json",
-     
+
      "level" : "json/levels/new_level.json",
-     
+
      "tileset_geometry" : "json/tilesets/geometry.tsj",
      "tileset_entities" : "json/tilesets/entities.tsj",
      "tileset_rooms" : "json/tilesets/rooms.tsj",
-     
+
      "room_downleft" : "json/rooms/room_downleft.tmj",
      "room_downleftright" : "json/rooms/room_downleftright.tmj",
      "room_downright" : "json/rooms/room_downright.tmj",
@@ -24,19 +24,8 @@
   },
 
   "textures": {
-    "earth": {
-      "file": "textures/earthtile.png",
-      "wrapS": "repeat",
-      "wrapT": "repeat"
-    },
     "goal": {
       "file": "textures/goaldoor.png"
-    },
-    "crate01": {
-      "file": "textures/crate01.png"
-    },
-    "crate02": {
-      "file": "textures/crate02.png"
     },
     "reynard": {
       "file": "textures/reynard.png"
