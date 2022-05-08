@@ -516,20 +516,6 @@ void GameScene::removeArrow(shared_ptr<Arrow> arrow){
     _worldnode->removeChild(arrow->getSceneNode());
     arrow->setDebugScene(nullptr);
     arrow->markRemoved(true);
-//    _world->removeObstacle();
-    
-//    physics2::Obstacle* arrowptr = reinterpret_cast<physics2::Obstacle*>(arrow);
-
-
-    //IDEAL SOLUTIONS: But it takes the wrong thing in
-//    _world->removeObstacle(arrow);
-    
-    //POTENTIAL OTHER SOLUTIONS: (both these crash the game or dont work
-    //    arrow->deactivatePhysics(*_world);
-    //    arrow->setEnabled(false);
-
-    
-    //    _world->removeObstacle(&(*_world->getObstacles()));
 
 }
 
@@ -613,8 +599,7 @@ void GameScene::update(float dt) {
         //restore
         _reynardController->getSceneNode()->setColor(Color4::WHITE);
     }
-
-
+    
 
     // Variables to indicate which forms of room swap are being used
     bool usingClick = true;
@@ -696,6 +681,9 @@ void GameScene::update(float dt) {
     //TODO: Why does both these updates exist you only need the _world one
     _reynardController->update(scaled_dt);
     _world->update(scaled_dt);
+    
+    // Since items may be deleted, garbage collect
+    _world->garbageCollect();
 
     //TODO debugging area. Disable for releases
     if ((!_reynardController->getCharacter()->isOnWall() ) && abs(_reynardController->getCharacter()->getLinearVelocity().x) <= 0.5 ){
@@ -1050,10 +1038,8 @@ void GameScene::beginContact(b2Contact *contact) {
         
         
         shared_ptr<Arrow> arrow = isArrowCollision(contact);
-//        if (arrow == nullptr){
-//            cout<<"ARROW IS NULLPTR YOU BUM"<<endl;
-//        }
         if (arrow != nullptr){
+            dealReynardDamage();
             removeArrow(arrow);
             cout<<"YOU HIT AN ARROW"<<endl;
         }
