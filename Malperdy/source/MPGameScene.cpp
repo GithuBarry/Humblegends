@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 5/02/22
+//  Version: 5/06/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -204,8 +204,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     addChild(_worldnode);
     addChild(_debugnode);
-    addChild(_winNode);
     addChild(_health);
+    addChild(_winNode);
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
@@ -495,19 +495,20 @@ void GameScene::update(float dt) {
     bool usingClick = true;
     bool usingDrag = true;
 
-    bool hasSwapped = false;
+    bool triedSwap = false;
     Vec2 progressCoords = Vec2(-1, -1);
     // Room swap by click
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
-            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+            triedSwap = true;
+            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
         } else {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
     }
     // Room swap by drag
     if (usingDrag && !_gamestate.zoomed_in()) {
-        if (_input.didPress() && !hasSwapped) {
+        if (_input.didPress() && !triedSwap) {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
         else if (_input.didEndDrag() && _envController->hasSelected()) {
@@ -526,12 +527,12 @@ void GameScene::update(float dt) {
         //CULog("jumpin");
     }
     // When dashing right
-    else if (_input.didDashRight()) {
+    else if (_input.didDashRight() && _gamestate.zoomed_in()) {
         _reynardController->dashRight();
     }
 
     // When dashing left
-    else if (_input.didDashLeft()) {
+    else if (_input.didDashLeft() && _gamestate.zoomed_in()) {
         _reynardController->dashLeft();
     }
 
@@ -920,7 +921,6 @@ void GameScene::beginContact(b2Contact *contact) {
                 _reynardController->getCharacter()->slowCharacter();
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
-                //setComplete(true);
                 _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
@@ -928,6 +928,9 @@ void GameScene::beginContact(b2Contact *contact) {
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
                 trap->getPolyNode()->setColor(Color4::GREEN);
+            }
+            else if (trapType == TrapModel::TrapType::GOAL) {
+                setComplete(true);
             }
             else if (trapType == TrapModel::TrapType::TRAPDOOR) {
                 Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
