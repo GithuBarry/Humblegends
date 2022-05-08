@@ -204,7 +204,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     _pause = scene2::PolygonNode::allocWithFile("textures/PauseScreen/Pause_Button.png");
     _pause->setAnchor(Vec2::ANCHOR_TOP_LEFT);
-    padding = Vec2(Application::get()->getDisplaySize().width-100, -10);
+    padding = Vec2(computeActiveSize().width-100, -10);
     _pause->setPosition(offset + Vec2(0, getSize().height) + padding);
     _pause->setScale(0.3);
 
