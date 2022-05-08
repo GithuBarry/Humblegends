@@ -494,7 +494,6 @@ void GameScene::populateChars(){
 
 void GameScene::createArrow(Vec2 pos, bool right){
     //Arrows instantiation
-//    _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
     shared_ptr<Arrow> arrow = make_shared<Arrow>();
     arrow->init(pos, 5, right);
     
@@ -508,9 +507,18 @@ void GameScene::createArrow(Vec2 pos, bool right){
     cout<<"Arrow s now equals: ";
     cout<<_arrows->size()<<endl;
     addObstacle(arrow, arrow->getSceneNode());
-
+//    _world->removeObstacle(arrow);
 }
 
+void GameScene::removeArrow(Arrow* arrow){
+    if (arrow->isRemoved()){
+        return;
+    }
+    _worldnode->removeChild(arrow->getSceneNode());
+    arrow->setDebugScene(nullptr);
+    arrow->markRemoved(true);
+    
+}
 
 
 
@@ -1034,6 +1042,12 @@ void GameScene::beginContact(b2Contact *contact) {
 //        }
         if (arrow != nullptr){
             //TODO: Despawn the arrow
+//            Arrow arrowObj = *arrow;
+//            removeArrow(<#Arrow *arrow#>);
+//            removeArrow((Arrow *) arrow);
+//            removeArrow(arrow.pointer);
+            Arrow arrowDirectObj = *arrow;
+//            removeArrow(arrowDirectObj);
             cout<<"YOU HIT AN ARROW"<<endl;
         }
             

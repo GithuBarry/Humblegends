@@ -132,13 +132,24 @@ protected:
      */
     void populateChars();
     
+    /**
+     * Adds in all initial arrows (Useful for testing). Part of populate()
+     *
+     */
     void populateArrows();
     
     /**
-     * The function required ()
+     * The function required to make more arrows ()
      *
      */
     void createArrow(Vec2 pos, bool right);
+    
+    /**
+     * The function required to get rid of arrows in world space()
+     *
+     */
+    void removeArrow(Arrow* arrow);
+
 
 
     /**
