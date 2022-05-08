@@ -148,7 +148,7 @@ protected:
      * The function required to get rid of arrows in world space()
      *
      */
-    void removeArrow(Arrow* arrow);
+    void removeArrow(shared_ptr<Arrow> arrow);
 
 
 

@@ -507,17 +507,30 @@ void GameScene::createArrow(Vec2 pos, bool right){
     cout<<"Arrow s now equals: ";
     cout<<_arrows->size()<<endl;
     addObstacle(arrow, arrow->getSceneNode());
-//    _world->removeObstacle(arrow);
 }
 
-void GameScene::removeArrow(Arrow* arrow){
+void GameScene::removeArrow(shared_ptr<Arrow> arrow){
     if (arrow->isRemoved()){
         return;
     }
     _worldnode->removeChild(arrow->getSceneNode());
     arrow->setDebugScene(nullptr);
     arrow->markRemoved(true);
+//    _world->removeObstacle();
     
+//    physics2::Obstacle* arrowptr = reinterpret_cast<physics2::Obstacle*>(arrow);
+
+
+    //IDEAL SOLUTIONS: But it takes the wrong thing in
+//    _world->removeObstacle(arrow);
+    
+    //POTENTIAL OTHER SOLUTIONS: (both these crash the game or dont work
+    //    arrow->deactivatePhysics(*_world);
+    //    arrow->setEnabled(false);
+
+    
+    //    _world->removeObstacle(&(*_world->getObstacles()));
+
 }
 
 
@@ -1041,13 +1054,7 @@ void GameScene::beginContact(b2Contact *contact) {
 //            cout<<"ARROW IS NULLPTR YOU BUM"<<endl;
 //        }
         if (arrow != nullptr){
-            //TODO: Despawn the arrow
-//            Arrow arrowObj = *arrow;
-//            removeArrow(<#Arrow *arrow#>);
-//            removeArrow((Arrow *) arrow);
-//            removeArrow(arrow.pointer);
-//            Arrow arrowDirectObj = *arrow;
-//            removeArrow(arrowDirectObj);
+            removeArrow(arrow);
             cout<<"YOU HIT AN ARROW"<<endl;
         }
             
