@@ -417,7 +417,7 @@ public:
     b2Fixture *getEnemyFixture(b2Contact *contact);
 
     /**
-     * Detects if a collision includes a trap object, and if so returns the trap type
+     * Detects if a collision includes a trap object, and if so returns the trap
      *
      * @param  contact  The two bodies that collided
      *
@@ -425,6 +425,19 @@ public:
                 or UNTYPED if neither body is a trap
      */
     shared_ptr<TrapModel> isTrapCollision(b2Contact* contact);
+    
+    
+    
+    /**
+     * Detects if a collision includes an arrow object, and if so returns the Arrow Object
+     *
+     * @param  contact  The two bodies that collided
+     *
+     * @return  trap type if one body is a trap
+                or UNTYPED if neither body is a trap
+     */
+    shared_ptr<Arrow> isArrowCollision(b2Contact* contact);
+
 
     /**
      * Helper function that checks if a contact event includes Reynard

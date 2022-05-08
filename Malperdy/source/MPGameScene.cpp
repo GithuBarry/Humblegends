@@ -338,17 +338,28 @@ void GameScene::populateEnv() {
 void GameScene::populateArrows() {
 ////    INITARROW CODE
     for(shared_ptr<TrapModel> trap : *_trapList){
-//        if(trap!=nullptr){
-            cout<<"We're in"<<endl;
+        if(trap!=nullptr){
+//            cout<<"We're in"<<endl;
             if(trap->getType()==TrapModel::TrapType::STATUE){
+//                cout<<"We're in!"<<endl;
                 bool right = true;
                 if(_reynardController->getCharacter()->getPosition().x < trap->getPosition().x){
                     right = false;
                 }
-                createArrow(trap->getPosition(), right);
-//            }
+                cout<<""<<endl;
+                cout<<trap->getObstacle()->getPosition().x<<endl;
+                cout<<trap->getObstacle()->getPosition().y<<endl;
+
+                createArrow(trap->getObstacle()->getPosition(), right);
+//                createArrow(trap->getPosition(), right);
+            }
         }
     }
+    Vec2 pos = _reynardController->getCharacter()->getPosition();
+    Vec2 pos2 = Vec2(pos.x+10, pos.y-2);
+    createArrow(_reynardController->getCharacter()->getPosition(), true);
+    createArrow(pos2, false);
+
 }
 
 void GameScene::populateChars(){
@@ -367,23 +378,25 @@ void GameScene::populateChars(){
 
 #pragma mark ArrowTest
     
-    //Arrows instantiation
-    //Populate requries it to literally exist in screen area when called
-    _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
-    shared_ptr<Arrow> arrow = make_shared<Arrow>();
-    Vec2 arrowPos = Vec2(30, pos.y);
-    arrow->init(arrowPos, 5, false);
-    
-    //Node Textures
-    std::shared_ptr<Texture> arrowImage = _assets->get<Texture>("Arrow");
-    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(arrowImage);
-    arrow->setSceneNode(sprite);
-    (arrow->getRight()) ? arrow->getSceneNode()->setScale(.25) : arrow->getSceneNode()->setScale(-.25);
-    arrow->getRight();
-//    cout<<endl;
-//    cout<<"MY ARROW NOW EXISTS"<<endl;
-    _arrows->push_back(arrow);
-    addObstacle(arrow, arrow->getSceneNode());
+//    //Arrows instantiation
+//    //Populate requries it to literally exist in screen area when called
+//    _arrows = make_shared<vector<std::shared_ptr<Arrow>>>();
+//    shared_ptr<Arrow> arrow = make_shared<Arrow>();
+//    Vec2 arrowPos = Vec2(30, pos.y);
+//    arrow->init(arrowPos, 5, false);
+//
+//    //Node Textures
+//    std::shared_ptr<Texture> arrowImage = _assets->get<Texture>("Arrow");
+//    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(arrowImage);
+//    arrow->setSceneNode(sprite);
+//    (arrow->getRight()) ? arrow->getSceneNode()->setScale(.25) : arrow->getSceneNode()->setScale(-.25);
+//    arrow->getRight();
+////    cout<<endl;
+//
+//    _arrows->push_back(arrow);
+//    cout<<"Arrow Size now equals: ";
+//    cout<<_arrows->size()<<endl;
+//    addObstacle(arrow, arrow->getSceneNode());
     
     
     
@@ -486,9 +499,9 @@ void GameScene::createArrow(Vec2 pos, bool right){
     arrow->setSceneNode(sprite);
     (arrow->getRight()) ? arrow->getSceneNode()->setScale(.25) : arrow->getSceneNode()->setScale(-.25);
     arrow->getRight();
-//    cout<<endl;
-//    cout<<"MY ARROW NOW EXISTS"<<endl;
     _arrows->push_back(arrow);
+    cout<<"Arrow s now equals: ";
+    cout<<_arrows->size()<<endl;
     addObstacle(arrow, arrow->getSceneNode());
 
 }
@@ -785,6 +798,28 @@ shared_ptr<TrapModel> GameScene::isTrapCollision(b2Contact* contact) {
     return nullptr;
 }
 
+//Is Arrow Collision
+shared_ptr<Arrow> GameScene::isArrowCollision(b2Contact* contact) {
+//    if (_grid == nullptr) return nullptr;
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+//    for (int row = 0; row < _grid->getWidth(); row++) {
+//        for (int col = 0; col < _grid->getHeight(); col++) {
+    cout<<endl;
+    cout<<_arrows->size()<<endl;
+    for(int i = 0; i < _arrows->size(); i++){
+        
+        if(_arrows->at(i) != nullptr){
+//            cout<<"IN Arrows->at(i)"<<endl;
+            b2Body* body = _arrows->at(i)->getBody();
+            bool isCollision = body == body1 || body == body2;
+            if (isCollision) return _arrows->at(i);
+        }
+    }
+    return nullptr;
+}
+
+
 bool GameScene::isReynardCollision(b2Contact *contact) {
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
@@ -825,11 +860,6 @@ b2Body* GameScene::getCharacterBodyInObjectCollision(b2Contact* contact) {
     //// Only characters have their body user data set to something nonzero
     //// Thus, it's a character-on-object collision if only one of these bodies has nonzero user data
     //// Return nullptr if it's not character-on-object
-    //if (!((body1->GetUserData().pointer == 0 && body2->GetUserData().pointer != 0) ||
-    //    (body1->GetUserData().pointer != 0 && body2->GetUserData().pointer == 0))) return nullptr;
-
-    //// Return whichever body is the character involved in the collision
-    //return body1->GetUserData().pointer == 0 ? body2 : body1;
 
     // Return nullptr if it's not character-on-object
     if ((isCharacterBody(body1) && isCharacterBody(body2)) || (!isCharacterBody(body1) && !isCharacterBody(body2)))
@@ -839,6 +869,17 @@ b2Body* GameScene::getCharacterBodyInObjectCollision(b2Contact* contact) {
     return isCharacterBody(body1) ? body1 : body2;
 }
 
+///**
+// * Returns a pointer to the character's body if the collision involved a character
+// * and a non-character object.
+// *
+// * @param contact   Contact event generated by beginContact / endContact callbacks
+// * @return          Pointer to the character's body, or nullptr if collision isn't character-on-object
+// */
+//b2Body* GameScene::getArrowBodyInObjectCollision(b2Contact* contact) {
+
+
+
 /**
  * Returns a pointer to Reynard's controller if he is involved in the collision; otherwise
  * returns nullptr.
@@ -847,30 +888,18 @@ b2Body* GameScene::getCharacterBodyInObjectCollision(b2Contact* contact) {
  * @return      Pointer to Reynard's controller if he's in the collision, or nullptr otherwise
  */
 shared_ptr<EnemyController> GameScene::getEnemyControllerInCollision(b2Contact *contact) {
-    //// Get body user data and convert to BodyData
-    //CharacterController<EnemyModel, EnemyController>::BodyData* bodyData =
-    //    static_cast<CharacterController<EnemyModel, EnemyController>::BodyData*>
-    //    ((void*)body->GetUserData().pointer);
-
-    //// Return nullptr now if it's not for an enemy
-    //if (bodyData->_type != CharacterController<EnemyModel, EnemyController>::CharacterType::ENEMY)
-    //    return nullptr;
-
-    //// Otherwise, cast the given pointer to an EnemyController pointer and return
-    //EnemyController* enemyPtr = static_cast<EnemyController*>(bodyData->_controller);
-
-    //return make_shared<EnemyController>(*enemyPtr);
-
     // Check body against all enemies in level
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
     for (auto itr = _enemies->begin(); itr != _enemies->end(); ++itr) {
-        if (((*itr)->getCharacter()->getBody() == body1) || ((*itr)->getCharacter()->getBody() == body2))return (*itr);
+        if (((*itr)->getCharacter()->getBody() == body1) || ((*itr)->getCharacter()->getBody() == body2)) return (*itr);
     }
 
     // If not an enemy, return nullptr
     return nullptr;
 }
+
+
 
 
 bool GameScene::isThisAReynardWallContact(b2Contact *contact, bool reynardIsRight) {
@@ -984,11 +1013,27 @@ void GameScene::beginContact(b2Contact *contact) {
     b2Body* charInCharOnObject = getCharacterBodyInObjectCollision(contact);
     // If it is a character-on-object collision
     if (charInCharOnObject != 0) {
+#pragma mark Check Reynard didn't hit an enemy
         // Now try to get if it's an enemy-on-object collision
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         // If it's nullptr, then it's Reynard, and handle all that accordingly
         if (enemy == nullptr) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
+            
+#pragma mark Check for Arrow Collisions
+        
+        
+        shared_ptr<Arrow> arrow = isArrowCollision(contact);
+//        if (arrow == nullptr){
+//            cout<<"ARROW IS NULLPTR YOU BUM"<<endl;
+//        }
+        if (arrow != nullptr){
+            //TODO: Despawn the arrow
+            cout<<"YOU HIT AN ARROW"<<endl;
+        }
+            
+            
+#pragma mark Check for Trap Collisions
             shared_ptr<TrapModel> trap = isTrapCollision(contact);
             TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
             if (trap != nullptr){
@@ -1008,6 +1053,7 @@ void GameScene::beginContact(b2Contact *contact) {
                 //No helper is used because the abstraction is unnecessary
                 _reynardController->getCharacter()->slowCharacter();
             }
+            // Checkpoint Collision Code
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                 _checkpointEnemyPos = vector<Vec2>();
@@ -1017,9 +1063,11 @@ void GameScene::beginContact(b2Contact *contact) {
                 }
                 trap->getPolyNode()->setColor(Color4::GREEN);
             }
+            // Statue Collision Code
             else if (trapType == TrapModel::TrapType::STATUE){
                 //Nothing needs be written in here I just need to pre-empt some later logic
             }
+            // Goal Collision Code
             else if (trapType == TrapModel::TrapType::GOAL) {
                 setComplete(true);
             }
@@ -1028,6 +1076,7 @@ void GameScene::beginContact(b2Contact *contact) {
                 Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
                 _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
             }
+#pragma mark Check for all other types of collisions with Reynard
             else if (isThisAReynardWallContact(contact, reynardIsRight)) {
                 resolveReynardWallOnContact();
             }
@@ -1040,6 +1089,7 @@ void GameScene::beginContact(b2Contact *contact) {
             else {
                 //CULog("Non-checked contact occured with Reynard");
             }
+            
         }
         // Otherwise it's an enemy-on-object collision, and handle that accordingly
         else {
@@ -1091,6 +1141,7 @@ void GameScene::beginContact(b2Contact *contact) {
 
         }
     }
+    
 }
 
 
@@ -1115,7 +1166,6 @@ void GameScene::endContact(b2Contact *contact) {
                 //This line of code is sufficient to slow Reynard
                 //No helper is used because the abstraction is unnecessary
                 //RESTORE REYNARDS NORMAL RUNNING SPEED THROUGH THIS LINE
-                cout<<"I AM CALLED"<<endl;
                 _reynardController->getCharacter()->restoreSpeed();
             }
         }

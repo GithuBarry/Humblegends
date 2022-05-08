@@ -12,7 +12,7 @@
 #include <cugl/assets/CUAssetManager.h>
 #include <map>
 
-#define ARROW_SPEED   20.0f
+#define ARROW_SPEED   5.0f
 #define ARROW_OFFSET_X  0.f
 #define ARROW_OFFSET_Y  0.00f
 
