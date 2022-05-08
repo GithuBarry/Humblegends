@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 5/02/22
+//  Version: 5/06/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -201,7 +201,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     Vec2 padding = Vec2(30, -20);
     _health->setPosition(offset + Vec2(0, getSize().height) + padding);
     _health->setScale(1.5);
-    
+
     _pause = scene2::PolygonNode::allocWithFile("textures/PauseScreen/Pause_Button.png");
     _pause->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     padding = Vec2(Application::get()->getDisplaySize().width-100, -10);
@@ -210,9 +210,12 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     addChild(_worldnode);
     addChild(_debugnode);
-    addChild(_winNode);
     addChild(_health);
+
     addChild(_pause);
+
+    addChild(_winNode);
+
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
@@ -444,7 +447,7 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
     _worldnode->addChild(node);
     CULog("GameScene %f %f ", (obj->getPosition() * _scale).x, (obj->getPosition() * _scale).y);
     node->setPosition(obj->getPosition() * _scale);
-    
+
     // Dynamic objects need constant updating
     if (obj->getBodyType() == b2_dynamicBody) {
         scene2::SceneNode *weak = node.get(); // No need for smart pointer in callback
@@ -508,12 +511,13 @@ void GameScene::update(float dt) {
     bool usingClick = true;
     bool usingDrag = true;
 
-    bool hasSwapped = false;
+    bool triedSwap = false;
     Vec2 progressCoords = Vec2(-1, -1);
     // Room swap by click
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
-            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+            triedSwap = true;
+            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
         } else {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
@@ -543,13 +547,13 @@ void GameScene::update(float dt) {
     if(_gamestate.secondsAfterPause()<4){
         _pause->setTexture("textures/PauseScreen/Pause_Button.png");
     }
-    
-        
-        
-    
+
+
+
+
     // Room swap by drag
     if (usingDrag && !_gamestate.zoomed_in()) {
-        if (_input.didPress() && !hasSwapped) {
+        if (_input.didPress() && !triedSwap) {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
         else if (_input.didEndDrag() && _envController->hasSelected()) {
@@ -568,12 +572,12 @@ void GameScene::update(float dt) {
         //CULog("jumpin");
     }
     // When dashing right
-    else if (_input.didDashRight()) {
+    else if (_input.didDashRight() && _gamestate.zoomed_in()) {
         _reynardController->dashRight();
     }
 
     // When dashing left
-    else if (_input.didDashLeft()) {
+    else if (_input.didDashLeft() && _gamestate.zoomed_in()) {
         _reynardController->dashLeft();
     }
 
@@ -658,24 +662,24 @@ void GameScene::update(float dt) {
             _health->setTexture("textures/Health_Bar_Full.png");
             _health->setName("3");
         }
-        
+
     }else if (_reynardController->getCharacter()->getHearts() == 2) {
         if (_health->getName() != "2"){
             _health->setTexture("textures/Health_Bar_Two_Third.png");
             _health->setName("2");
-            
+
         }
     }else if (_reynardController->getCharacter()->getHearts() == 1) {
         if (_health->getName() != "1"){
             _health->setTexture("textures/Health_Bar_One_Third.png");
             _health->setName("1");
-            
+
         }
     }else if (_reynardController->getCharacter()->getHearts() <= 0) {
         if (_health->getName() != "0"){
             _health->setTexture("textures/Health_Bar_None.png");
             _health->setName("0");
-            
+
         }
     }
 }
@@ -973,7 +977,6 @@ void GameScene::beginContact(b2Contact *contact) {
                 _reynardController->getCharacter()->slowCharacter();
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
-                //setComplete(true);
                 _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
@@ -981,6 +984,9 @@ void GameScene::beginContact(b2Contact *contact) {
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
                 trap->getPolyNode()->setColor(Color4::GREEN);
+            }
+            else if (trapType == TrapModel::TrapType::GOAL) {
+                setComplete(true);
             }
             else if (trapType == TrapModel::TrapType::TRAPDOOR) {
                 Vec2 v = _reynardController->getCharacter()->getLinearVelocity();

@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 5/02/22
+//  Version: 5/06/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -295,6 +295,7 @@ public:
     void setComplete(bool value) {
         _complete = value;
         _winNode->setVisible(value);
+        //_health->setVisible(!value);
     }
 
 
