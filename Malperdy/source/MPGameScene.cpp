@@ -341,7 +341,7 @@ void GameScene::populateChars(){
     Vec2 pos_temp = _reynardController->getCharacter()->getPosition();
     _reynardController->getCharacter()->setPosition(Vec2(4,3));
 
-    addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
+    addObstacle(_reynardController->getCharacter(), _reynardController->getCharacter()->_node); // Put this at the very front
     _reynardController->getCharacter()->setPosition(pos_temp);
 
 #pragma mark Enemies
@@ -394,7 +394,7 @@ void GameScene::populateChars(){
 
                 _enemies->back()->setObstacleWorld(_world);
                 _enemies->back()->setReynardController(_reynardController);
-                addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode());
+                addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
 
                 _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1,1)) * Vec2(5,5));
@@ -408,7 +408,7 @@ void GameScene::populateChars(){
 //    for(shared_ptr<EnemyController> enemy : *_enemies){
 //        enemy->setObstacleWorld(_world);
 //        enemy->setReynardController(_reynardController);
-//        addObstacle(enemy->getCharacter(), enemy->getSceneNode()); // Put
+//        addObstacle(enemy->getCharacter(), enemy->getCharacter()->_node); // Put
 //    }
 
     _checkpointEnemyPos = vector<Vec2>();

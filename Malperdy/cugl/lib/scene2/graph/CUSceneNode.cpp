@@ -594,9 +594,7 @@ std::shared_ptr<SceneNode> SceneNode::getChildByName(const std::string name) con
  * @param child A child node.
  */
 void SceneNode::addChild(const std::shared_ptr<SceneNode>& child) {
-
-    int cdo = child->_childOffset;
-    CUAssertLog(cdo == -1, "The child is already in a scene graph");
+    CUAssertLog(child->_childOffset == -1, "The child is already in a scene graph");
     CUAssertLog(child->_graph == nullptr,  "The child is already in a scene graph");
     child->_childOffset = (unsigned int)_children.size();
     
