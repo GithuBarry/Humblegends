@@ -442,7 +442,6 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
 
     // Position the scene graph node (enough for static objects)
     _worldnode->addChild(node);
-    CULog("GameScene %f %f ", (obj->getPosition() * _scale).x, (obj->getPosition() * _scale).y);
     node->setPosition(obj->getPosition() * _scale);
 
     // Dynamic objects need constant updating
