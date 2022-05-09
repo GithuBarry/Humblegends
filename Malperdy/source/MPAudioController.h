@@ -13,7 +13,7 @@ public:
 
 	static void playAudio(std::shared_ptr<cugl::AssetManager>& assets, string sound, bool loop, float vol, bool isMusic);
 
-	static bool isPlaying(string sound);
+	static bool isPlaying(string sound, bool isMusic);
 
 	static void stopAudio(std::shared_ptr<cugl::AssetManager>& assets, string sound, bool isMusic, float fadeAmount);
 

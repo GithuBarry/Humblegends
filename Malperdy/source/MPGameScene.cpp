@@ -532,6 +532,7 @@ void GameScene::update(float dt) {
         corner_num_frames_workaround = 0;
         //cout << "Press Jump Button" << endl;
         //CULog("jumpin");
+        MPAudioController::playAudio(_assets, JUMP_SOUND, false, 1, false);
     }
     // When dashing right
     else if (_input.didDashRight()) {

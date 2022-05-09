@@ -28,13 +28,20 @@ using namespace cugl;
 		}
 		else
 		{
-			AudioEngine::get()->play(sound, source, loop, vol);
+			AudioEngine::get()->play(sound, source, loop, vol, true);
 		}
 	}
 
-	bool MPAudioController::isPlaying(string sound)
+	bool MPAudioController::isPlaying(string sound, bool isMusic)
 	{
-		return AudioEngine::get()->isActive(sound);
+		if (isMusic)
+		{
+			return (AudioEngine::get()->getMusicQueue()->current() == sound);
+		}
+		else
+		{
+			return AudioEngine::get()->isActive(sound);
+		}
 	}
 
 	void MPAudioController::stopAudio(std::shared_ptr<cugl::AssetManager>& assets, string sound, bool isMusic, float fadeAmount)
