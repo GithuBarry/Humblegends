@@ -580,7 +580,6 @@ void GameScene::update(float dt) {
 
     if (_input.didZoomIn()) {
         _gamestate.zoom_in();
-        // Deselect any selected rooms
         _envController->deselectRoom();
     }
 
@@ -651,7 +650,7 @@ void GameScene::update(float dt) {
     }
 
     // Update the environment
-    _envController->update(progressCoords, _reynardController, _enemies);
+    _envController->update(progressCoords, !_gamestate.zoomed_in(), _reynardController, _enemies);
 
     // Update the UI
     if (_reynardController->getCharacter()->getHearts() >= 3) {

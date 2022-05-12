@@ -26,7 +26,7 @@
 //
 //  Owner: Kristina Gu
 //  Contributors: Kristina Gu, Jordan Selin
-//  Version: 4/16/22
+//  Version: 5/12/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -78,6 +78,9 @@ private:
     static const Vec2 ROOM_SCALE;
 
     shared_ptr<TrapModel> _trap  = nullptr;
+
+    /** Reference to the scene node for the lock */
+    std::shared_ptr<cugl::scene2::PolygonNode> _lockIcon;
 
     Vec2 destination;
 
@@ -242,6 +245,12 @@ public:
      */
     void setPosition(float x, float y) { this->SceneNode::setPosition(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT); }
 
+    /**
+    * Sets whether the room's lock icon is visible
+    * 
+    * @param isVisible  true if the lock icon should be visible
+    */
+    void setLockIcon(bool isVisible) { _lockIcon->setVisible(isVisible); }
 
     /**
      * Change position gradually
