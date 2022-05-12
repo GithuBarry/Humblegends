@@ -56,6 +56,10 @@ using namespace cugl;
 #define DEFAULT_ROOM_ID "leftrightupdown"
 
 class RoomModel : public cugl::scene2::SceneNode {
+public:
+    /** Pointer to the node that displays the room background */
+    shared_ptr<scene2::PolygonNode> _bgNode;
+
 private:
     // ROOM LOADING
     /** Loads in room formats from a JSON and is used to look up geometries for rooms */
@@ -66,7 +70,8 @@ private:
     bool locked = false;
     /* Whether this room's contents are currently hidden. False by default */
     bool fogged = true;
-
+    /** The number of the region that this room belongs to, from 1-3 */
+    int _region = 1;
 
 
     // GEOMETRY
@@ -112,11 +117,12 @@ public:
      *
      * @param x         The column of the room in grid space
      * @param y         The row of the room in parent space
+     * @param region    The number of the region this room belongs to, from 1-3
      * @param roomID    ID of room type with the desired geometry
      * @param bg		Background texture to apply to the room
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg = nullptr);
+    bool init(float x, float y, int region, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg = nullptr);
 
     /** */
     bool initTrap(TrapModel::TrapType type);
@@ -136,13 +142,14 @@ public:
      *
      * @param x         The column of the room in grid space
      * @param y         The row of the room in grid space
+     * @param region    The number of the region this room belongs to, from 1-3
      * @param roomID    ID of room type with the desired geometry
      * @param bg		Background texture to apply to the room
      * @return          A newly-allocated RoomModel
      */
-    static std::shared_ptr<RoomModel> alloc(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {
+    static std::shared_ptr<RoomModel> alloc(float x, float y, int region, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {
         std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init(x, y, roomJSON, bg) ? result : nullptr);
+        return (result->init(x, y, region, roomJSON, bg) ? result : nullptr);
     }
 
 #pragma mark Destructors

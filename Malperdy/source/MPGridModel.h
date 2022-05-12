@@ -18,7 +18,9 @@
 #include <cugl/cugl.h>
 #include "MPRoomModel.h"
 #include "MPGridLoader.h"
+#include "MPCheckpoint.h"
 
+#define clear_bgs {"bg-r1c-1", "bg-r1c-1", "bg-r1c-1"}
 #define r1_bgs {"bg-r1-1", "bg-r1-2", "bg-r1-3", "", "", "", ""}
 #define r2_bgs {"bg-r2-1", "bg-r2-2", "bg-r2-3", "bg-r2-4", "", "", ""}
 #define r3_bgs {"bg-r3-1", "bg-r3-2", "bg-r3-3", "bg-r3-4", "bg-r3-5", "bg-r3-6", "bg-r3-7"}
@@ -62,6 +64,9 @@ private:
     /** All the background textures for all the regions */
     shared_ptr<vector<shared_ptr<vector<shared_ptr<Texture>>>>> _backgrounds;
 
+    /** All the cleared background textures for each region */
+    shared_ptr<vector<shared_ptr<Texture>>> _bgsCleared = make_shared<vector<shared_ptr<Texture>>>();
+
 public:
 #pragma mark Constructors
 
@@ -87,6 +92,14 @@ public:
      * @return a grid with 3x3 rooms, each room the default
      */
     bool init(shared_ptr<AssetManager> assets, float scale = 1);
+
+    /**
+     * Helper function that links all the rooms associated with the checkpoint to the
+     * checkpoint itself.
+     *
+     * @param cp    The checkpoint to link rooms to
+     */
+    void linkRoomsToCheckpoint(Checkpoint* cp);
 
 #pragma mark Destructors
     /**

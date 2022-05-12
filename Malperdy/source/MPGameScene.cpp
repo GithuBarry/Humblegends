@@ -973,6 +973,7 @@ void GameScene::beginContact(b2Contact *contact) {
                 //No helper is used because the abstraction is unnecessary
                 _reynardController->getCharacter()->slowCharacter();
             }
+            // COLLISION: Checkpoint vs. Reynard
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                 _checkpointEnemyPos = vector<Vec2>();
@@ -980,7 +981,11 @@ void GameScene::beginContact(b2Contact *contact) {
                 for (auto thisEnemy: *_enemies){
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
+                // Handle what to do when the checkpoint is hit
+                // Turn it green
                 trap->getPolyNode()->setColor(Color4::GREEN);
+                // Clear all the associated rooms
+                dynamic_cast<Checkpoint*>(&(*trap))->clearCheckpoint();
             }
             else if (trapType == TrapModel::TrapType::GOAL) {
                 setComplete(true);

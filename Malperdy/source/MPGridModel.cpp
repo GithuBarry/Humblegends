@@ -107,6 +107,13 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
             if (name != "") _backgrounds->at(k)->push_back(assets->get<Texture>(name));
         }
     }
+    // Store all the cleared backgrounds for each region
+    for (string name : clear_bgs) {
+        _bgsCleared->push_back(assets->get<Texture>(name));
+    }
+    // Now give a static reference to them to Checkpoint so that the checkpoints can clear
+    // their own areas
+    Checkpoint::setClearedBackgrounds(_bgsCleared);
     
     // INSTANTIATING ROOMS
     // Go through each layer to find the object layer
@@ -152,7 +159,8 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
                 // instantiate the room and add it as a child
                 y =height -1- y;
                 // TODO: replace with proper retrieval of correct region based on level
-                _grid->at(y)->at(x)->init(x, y, roomJSON, getRandBG(3 - (y % 3)));
+                int regionNum = 3 - (y % 3);
+                _grid->at(y)->at(x)->init(x, y, regionNum, roomJSON, getRandBG(regionNum));
                 if (name == "room_solid"){
                     _grid->at(y)->at(x)->permlocked = true;
                 }
@@ -218,6 +226,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
                     }
                     else if (tile_to_traps[data.at(j)] == "checkpoint") {
                         _grid->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::CHECKPOINT);
+                        linkRoomsToCheckpoint(dynamic_cast<Checkpoint*>(&(*(_grid->at(curr_row)->at(curr_col)->getTrap()))));
                     }
                 }
             }
@@ -231,6 +240,23 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
 
     return this->scene2::SceneNode::init();
 };
+
+/**
+ * Helper function that links all the rooms associated with the checkpoint to the
+ * checkpoint itself.
+ * 
+ * @param cp    The checkpoint to link rooms to
+ */
+void GridModel::linkRoomsToCheckpoint(Checkpoint * cp) {
+    // TODO: make this not trash
+
+    // For now, link every room to every checkpoint
+    for (shared_ptr<vector<shared_ptr<RoomModel>>> row : *_grid) {
+        for (shared_ptr<RoomModel> room : *row) {
+            cp->linkRoom(room);
+        }
+    }
+}
 
 #pragma mark Destructors
 

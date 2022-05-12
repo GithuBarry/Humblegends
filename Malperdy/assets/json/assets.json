@@ -57,6 +57,9 @@
     "bg-r1-3": {
       "file": "textures/environment/BG_R1_3.png"
     },
+    "bg-r1c-1": {
+      "file": "textures/environment/BG_R1C_1.jpg"
+    },
     "bg-r2-1": {
       "file": "textures/environment/BG_R2_1.jpg"
     },
