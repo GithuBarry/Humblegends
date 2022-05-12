@@ -581,7 +581,6 @@ void GameScene::update(float dt) {
     if (_input.didZoomIn()) {
         _gamestate.zoom_in();
         _envController->deselectRoom();
-        _envController->setLockVisibility(false, _reynardController, _enemies);
     }
 
     if (_reynardController->getCharacter()->getHearts()<=0 ){
@@ -597,7 +596,6 @@ void GameScene::update(float dt) {
         }
         _gamestate.zoom_out();
         _envController->deselectRoom();
-        _envController->setLockVisibility(true, _reynardController, _enemies);
     }
 
 
@@ -652,7 +650,7 @@ void GameScene::update(float dt) {
     }
 
     // Update the environment
-    _envController->update(progressCoords, _reynardController, _enemies);
+    _envController->update(progressCoords, !_gamestate.zoomed_in(), _reynardController, _enemies);
 
     // Update the UI
     if (_reynardController->getCharacter()->getHearts() >= 3) {
