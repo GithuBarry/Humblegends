@@ -128,6 +128,20 @@ void EnvController::deselectRoom() {
     _toSwap = Vec2(-1, -1);
 }
 
+/*
+* Shows or hides the lock icons on locked rooms
+* To be called when zooming out or in
+*
+* @param isVisible  true if the locks should be visible
+*/
+void EnvController::setLockVisibility(bool isVisible, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+    for (int x = 0; x < _grid->getWidth(); x++) {
+        for (int y = 0; y < _grid->getHeight(); y++) {
+            _grid->getRoom(Vec2(x, y))->setLockIcon(isVisible && !isSwappable(Vec2(x, y), reynard, enemies));
+        }
+    }
+}
+
 #pragma mark Helper Functions
 
 /*

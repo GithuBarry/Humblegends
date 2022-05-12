@@ -139,6 +139,14 @@ public:
         _grid->swapRooms(room1, room2, forced);
     }
 
+    /*
+    * Shows or hides the lock icons on locked rooms
+    * To be called when zooming out or in
+    * 
+    * @param isVisible  true if the locks should be visible
+    */
+    void setLockVisibility(bool isVisible, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+
     virtual ~EnvController();
 
 
