@@ -2,13 +2,13 @@
   "jsons" : {
      "framedata" : "json/framedata.json",
      "framedata2" : "json/framedatanew.json",
-     
+
      "level" : "json/levels/new_level.json",
-     
+
      "tileset_geometry" : "json/tilesets/geometry.tsj",
      "tileset_entities" : "json/tilesets/entities.tsj",
      "tileset_rooms" : "json/tilesets/rooms.tsj",
-     
+
      "room_downleft" : "json/rooms/room_downleft.tmj",
      "room_downleftright" : "json/rooms/room_downleftright.tmj",
      "room_downright" : "json/rooms/room_downright.tmj",
@@ -22,21 +22,10 @@
      "room_upright" : "json/rooms/room_upright.tmj",
      "room_solid"  : "json/rooms/solid.json"
   },
-  
+
   "textures": {
-    "earth": {
-      "file": "textures/earthtile.png",
-      "wrapS": "repeat",
-      "wrapT": "repeat"
-    },
     "goal": {
       "file": "textures/goaldoor.png"
-    },
-    "crate01": {
-      "file": "textures/crate01.png"
-    },
-    "crate02": {
-      "file": "textures/crate02.png"
     },
     "reynard": {
       "file": "textures/reynard.png"
@@ -59,23 +48,53 @@
     "rabbit_idle": {
       "file": "textures/rabbit_idling.png"
     },
-    "flames": {
-      "file": "textures/flames.png"
+    "bg-r1-1": {
+      "file": "textures/environment/BG_R1_1.png"
     },
-    "flames-right": {
-      "file": "textures/flames-right.png"
+    "bg-r1-2": {
+      "file": "textures/environment/BG_R1_2.png"
     },
-    "flames-left": {
-      "file": "textures/flames-left.png"
+    "bg-r1-3": {
+      "file": "textures/environment/BG_R1_3.png"
     },
-    "overgrowth1": {
-      "file": "textures/environment/b_overgrowth1_1.png"
+    "bg-r2-1": {
+      "file": "textures/environment/BG_R2_1.jpg"
+    },
+    "bg-r2-2": {
+      "file": "textures/environment/BG_R2_2.jpg"
+    },
+    "bg-r2-3": {
+      "file": "textures/environment/BG_R2_3.jpg"
+    },
+    "bg-r2-4": {
+      "file": "textures/environment/BG_R2_4.jpg"
+    },
+    "bg-r3-1": {
+      "file": "textures/environment/BG_R3_1.jpg"
+    },
+    "bg-r3-2": {
+      "file": "textures/environment/BG_R3_2.jpg"
+    },
+    "bg-r3-3": {
+      "file": "textures/environment/BG_R3_3.jpg"
+    },
+    "bg-r3-4": {
+      "file": "textures/environment/BG_R3_4.jpg"
+    },
+    "bg-r3-5": {
+      "file": "textures/environment/BG_R3_5.jpg"
+    },
+    "bg-r3-6": {
+      "file": "textures/environment/BG_R3_6.jpg"
+    },
+    "bg-r3-7": {
+      "file": "textures/environment/BG_R3_7.jpg"
     },
     "reynard_all": {
-        "file": "textures/reynard_all.png"
+      "file": "textures/reynard_all.png"
     },
     "rabbit_all": {
-        "file": "textures/rabbit_all.png"
+      "file": "textures/rabbit_all.png"
     }
   },
     "sounds": {

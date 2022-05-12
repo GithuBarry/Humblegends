@@ -155,7 +155,9 @@ public:
      *
      * @return the scene graph node representing the owned CharacterModel.
      */
+    [[deprecated("Use getCharacter()->_node instead.")]]
     const std::shared_ptr<cugl::scene2::SceneNode>& getSceneNode() const {
+        //CULog("Char Controller: BUGGY!! Use getCharacter()->_node if problemetic");
         return _character->_node;
     }
 

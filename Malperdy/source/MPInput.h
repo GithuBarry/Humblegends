@@ -319,11 +319,15 @@ public:
      * @return true if the jump button was pressed.
      */
     bool didJump() const {
+        return _jumpPressed ;
+    }
+    
+    bool didDoubleTap() const{
         if (doubleTap){
             doubleTap = false;
             return true;
         }
-        return _jumpPressed ;
+        return false;
     }
 
     /**
