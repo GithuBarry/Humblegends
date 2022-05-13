@@ -263,6 +263,7 @@ void GameScene::reset() {
 
 void GameScene::revert(bool totalReset){
     vector<vector<Vec2>> swapHistory = _envController->getSwapHistory();
+    scrollingOffset = Vec2();
 
     _reynardController = nullptr;
     _grid = nullptr;
@@ -560,6 +561,13 @@ void GameScene::update(float dt) {
             progressCoords = inputPos;
         }
     }
+    if (_input.isScrolling() && !_gamestate.zoomed_in()) {
+        scrollingOffset = scrollingOffset + Vec2(_input.scrollOffset().x, 0);
+        scrollingOffset = scrollingOffset + Vec2(0, -_input.scrollOffset().y);
+    }
+    if (_gamestate.zoomed_in()){
+        scrollingOffset = Vec2();
+    }
 
     // Only allow jumping while zoomed in
     if (_input.didJump() && _gamestate.zoomed_in()) {
@@ -634,7 +642,8 @@ void GameScene::update(float dt) {
     bool faceRight = _reynardController->getCharacter()->isFacingRight();
     Vec2 reynardVelocity = _reynardController->getCharacter()->getLinearVelocity();
 
-    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(), faceRight,reynardVelocity));
+
+    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition-scrollingOffset/10, _scale, getSize(), faceRight,reynardVelocity));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform

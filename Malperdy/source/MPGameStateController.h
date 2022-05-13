@@ -140,19 +140,17 @@ public:
     /**
      *
      * @param currentTranslation Current global translation of the scrollpane.
-     * @param reynardScreenPosition location of reynard to follow, on screen
+     * @param target location of reynard to follow, on screen
      * @param scale scale between drawing world and physics world
      * @param screenSize screen size
      * @param faceRight whether reynard is facing right.
      * @return Pan to be applied to nodes
      */
-    Vec2 getPan(Vec2 currentTranslation, Vec2 reynardScreenPosition, float scale, Size screenSize, bool faceRight, Vec2 reynardVelocity) {
+    Vec2 getPan(Vec2 currentTranslation, Vec2 target, float scale, Size screenSize, bool faceRight, Vec2 reynardVelocity) {
         if (paused){
             return Vec2();
         }
         Vec2 result;
-        Vec2 target;
-        target = reynardScreenPosition;
         int thr = 8;
         if (reynardVelocity.y<-thr){
             target = target + Vec2(0,(reynardVelocity.y+thr)*15);
