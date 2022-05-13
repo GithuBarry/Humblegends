@@ -600,7 +600,7 @@ void GameScene::update(float dt) {
     // When zooming out
     else if (_input.didZoomOut()) {
         if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
-            _gamestate.pauseSwitch();
+            //_gamestate.pauseSwitch();
         }
         _gamestate.zoom_out();
         _envController->deselectRoom();
