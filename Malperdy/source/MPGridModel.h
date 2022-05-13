@@ -23,6 +23,8 @@
 #define r2_bgs {"bg-r2-1", "bg-r2-2", "bg-r2-3", "bg-r2-4", "", "", ""}
 #define r3_bgs {"bg-r3-1", "bg-r3-2", "bg-r3-3", "bg-r3-4", "bg-r3-5", "bg-r3-6", "bg-r3-7"}
 
+#define DEFAULT_REGION 1
+
 using namespace cugl;
 
 class GridModel : public cugl::scene2::SceneNode {
