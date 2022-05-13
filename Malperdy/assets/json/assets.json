@@ -3,7 +3,7 @@
      "framedata" : "json/framedata.json",
      "framedata2" : "json/framedatanew.json",
      
-     "level" : "json/levels/new_level.json",
+     "level" : "json/levels/lucas_level.tmj",
      
      "tileset_geometry" : "json/tilesets/geometry.tsj",
      "tileset_entities" : "json/tilesets/entities.tsj",
@@ -78,13 +78,13 @@
         "file": "textures/rabbit_all.png"
     }
   },
-    "sounds": {
+  "sounds": {
 
-      "bump": {
-        "type": "sample",
-        "file": "sounds/jump.wav",
-        "volume": 0.5
-      },
+    "bump": {
+      "type": "sample",
+      "file": "sounds/jump.wav",
+      "volume": 0.5
+    },
 
     "jump": {
       "type": "sample",
@@ -110,11 +110,23 @@
       "volume": 0.5
     },
 
+    "noswap": {
+      "type": "sample",
+      "file": "sounds/noswap.wav",
+      "volume": 0.5
+    },
+
+    "checkpoint": {
+      "type": "sample",
+      "file": "sounds/checkpoint.wav",
+      "volume": 0.5
+    },
+
     "level_music": {
       "type": "sample",
       "file": "sounds/levelmusic.ogg",
-      "volume" : 0.3,
-      "stream" : true
+      "volume": 0.3,
+      "stream": true
     }
   },
 

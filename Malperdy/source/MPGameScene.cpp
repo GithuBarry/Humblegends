@@ -69,7 +69,8 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 #define JUMP_SOUND "jump"
 #define LAND_SOUND "land"
 #define SWAP_SOUND "swap_room"
-
+#define NOSWAP_SOUND "noswap"
+#define CHECKPOINT_SOUND "checkpoint"
 /* Play these with MPAudioController::playAudio(_assets, XYZ_MUSIC_GOES_HERE, false, 1, true); */
 #define LEVEL_MUSIC "level_music"
 
@@ -509,6 +510,15 @@ void GameScene::update(float dt) {
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
             hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+
+            if (hasSwapped)
+            {
+                MPAudioController::playAudio(_assets, SWAP_SOUND, false, 1, false);
+            }
+            else
+            {
+                MPAudioController::playAudio(_assets, NOSWAP_SOUND, false, 1, false);
+            }
         } else {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
@@ -519,7 +529,15 @@ void GameScene::update(float dt) {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
         else if (_input.didEndDrag() && _envController->hasSelected()) {
-            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+            if (hasSwapped)
+            {
+                MPAudioController::playAudio(_assets, SWAP_SOUND, false, 1, false);
+            }
+            else
+            {
+                MPAudioController::playAudio(_assets, NOSWAP_SOUND, false, 1, false);
+            }
         }
         if (_input.isDragging() && _envController->hasSelected()) {
             progressCoords = inputPos;
@@ -528,11 +546,21 @@ void GameScene::update(float dt) {
 
     // Only allow jumping while zoomed in
     if (_input.didJump() && _gamestate.zoomed_in()) {
+        bool i = _reynardController->isGrounded();
+        bool j = _reynardController->getCharacter()->isOnWall();
+
+        if (i || j)
+        {
+            //TODO: DELETE THIS DEBUGGING STUFF
+            cout << "Grounded: %d" + i << endl;
+            cout << "Walled: %d" + j << endl;
+            MPAudioController::playAudio(_assets, JUMP_SOUND, false, 1, false);
+        }
+
         _reynardController->jump();
         corner_num_frames_workaround = 0;
         //cout << "Press Jump Button" << endl;
         //CULog("jumpin");
-        MPAudioController::playAudio(_assets, JUMP_SOUND, false, 1, false);
     }
     // When dashing right
     else if (_input.didDashRight()) {
@@ -571,9 +599,6 @@ void GameScene::update(float dt) {
     //if (_gamestate.isPaused()){
     //    return;
     //}
-
-
-
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
     //TODO: Why does both these updates exist you only need the _world one
@@ -936,6 +961,11 @@ void GameScene::beginContact(b2Contact *contact) {
                 for (auto thisEnemy: *_enemies){
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
+
+                if (trap->getPolyNode()->getColor() != Color4::GREEN) {
+                    MPAudioController::playAudio(_assets, CHECKPOINT_SOUND, false, 1, false);
+                }
+
                 trap->getPolyNode()->setColor(Color4::GREEN);
             }
             else if (trapType == TrapModel::TrapType::TRAPDOOR) {
@@ -950,6 +980,7 @@ void GameScene::beginContact(b2Contact *contact) {
             }
             else if (isThisAReynardGroundContact(contact)) {
                 resolveReynardGroundOnContact();
+                //MPAudioController::playAudio(_assets, LAND_SOUND, false, 1, false);
             }
             else {
                 //CULog("Non-checked contact occured with Reynard");

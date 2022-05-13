@@ -8,6 +8,7 @@
 
 #include <cugl/cugl.h>
 #include "MPCharacterModel.h"
+#include "MPAudioController.h"
 #include <string>
 #include <map>
 
@@ -32,7 +33,6 @@ public:
         void* _controller;
     };
 
-protected:
     /** The model storing this character's data */
     shared_ptr<ModelType> _character;
 
