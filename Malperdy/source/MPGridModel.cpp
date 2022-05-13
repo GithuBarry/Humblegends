@@ -152,7 +152,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
                 // instantiate the room and add it as a child
                 y =height -1- y;
                 // TODO: replace with proper retrieval of correct region based on level
-                _grid->at(y)->at(x)->init(x, y, roomJSON, getRandBG(3 - (y % 3)));
+                _grid->at(y)->at(x)->init(x, y, roomJSON, getRandBG(DEFAULT_REGION));
                 if (name == "room_solid"){
                     _grid->at(y)->at(x)->permlocked = true;
                 }
