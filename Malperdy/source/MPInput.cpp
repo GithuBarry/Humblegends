@@ -13,6 +13,7 @@
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #include "MPInput.h"
+#include <cmath>
 
 using namespace cugl;
 
@@ -262,7 +263,7 @@ void InputController::update(float dt) {
     _zoomInPressed = _eDown;
     _zoomOutPressed = _qDown;
 
-#else
+//#else
     _currDown = _touchDown && !_inMulti;
     _currPos = _touchPos;
 
@@ -281,15 +282,16 @@ void InputController::update(float dt) {
     bool couldBeSwipe = didRelease() && _touchTime <= EVENT_SWIPE_TIME;
     float xDist = (_currPos - _touchStartPos).x;
     float yDist = (_currPos - _touchStartPos).y;
-    _dashLeftPressed = couldBeSwipe && xDist <= (-1) * EVENT_SWIPE_LENGTH;
+    bool vertical = abs(yDist) > abs(xDist);
+    _dashLeftPressed = couldBeSwipe && xDist <= -EVENT_SWIPE_LENGTH && !vertical;
     if (_dashLeftPressed){
         //CULog("MPInput dashed left");
     }
-    _dashRightPressed = couldBeSwipe && xDist >= EVENT_SWIPE_LENGTH;
+    _dashRightPressed = couldBeSwipe && xDist >= EVENT_SWIPE_LENGTH && !vertical;
     if (_dashRightPressed){
         //CULog("MPInput dashed right");
     }
-    _jumpPressed = couldBeSwipe && yDist <= -EVENT_SWIPE_LENGTH;
+    _jumpPressed = couldBeSwipe && yDist <= -EVENT_SWIPE_LENGTH && vertical;
     if (_jumpPressed){
         //CULog("MPInput jumped");
     }
