@@ -108,7 +108,21 @@ protected:
     /**Workaround for wall jump corner stuck*/
     int corner_num_frames_workaround = 0;
     
+    /*
+     Remaining number of frames to color reynard red
+     */
     int keepRedFrames = 0;
+
+    /*
+     Flag past from owner of this class to indicate whether to start a new game.
+     */
+    int _mode = 1;
+public:
+    void setMode(int mode){
+        _mode = mode;
+    }
+
+protected:
 
     /**
      * Last time reynard hurt
@@ -137,6 +151,7 @@ protected:
      */
     void populateChars();
 
+public:
     /**
      * Save all the states of the game to a file
      */
@@ -252,7 +267,7 @@ protected:
 
         return true;
     }
-
+protected:
     /**
      * Adds the physics object to the physics world and loosely couples it to the scene graph
      *
@@ -670,6 +685,7 @@ public:
     void resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy);
     
     void dealReynardDamage();
+    
 
 #pragma mark Helper Functions
     /* Converts input coordinates to coordinates in the game world */

@@ -210,9 +210,12 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
+    if (_mode == 1){
+        populate();
+    }else {
+        revert(false);
+    }
 
-    //populate();
-    revert(false);
     _active = true;
     _complete = false;
 

@@ -105,6 +105,7 @@ void Malperdy::onShutdown() {
  */
 void Malperdy::onSuspend() {
     AudioEngine::get()->pause();
+    _gameplay.rewriteSaveFile();
 }
 
 /**
@@ -143,6 +144,7 @@ void Malperdy::update(float timestep) {
         _loading.dispose(); // Disables the input listeners in this mode
         _gameplay.init(_assets);
         _loaded = true;
+        _gameplay.setMode(_loading.mode);
     } else {
         _gameplay.update(timestep);
     }

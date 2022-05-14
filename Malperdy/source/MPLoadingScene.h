@@ -27,6 +27,15 @@
  * this button will inform the application root to switch to the gameplay mode.
  */
 class LoadingScene : public cugl::Scene2 {
+    
+public:
+    /**
+     Mode: which mode does the user choose:
+     0: not yet chosen
+     1: Start a new game
+     2: Start from memory
+     */
+    int mode = 0;
 protected:
     /** The asset manager for loading. */
     std::shared_ptr<cugl::AssetManager> _assets;
@@ -53,6 +62,8 @@ protected:
     float _progress;
     /** Whether or not the player has pressed play to continue */
     bool  _completed;
+    
+    
     
     /**
      * Returns the active screen size of this scene.
