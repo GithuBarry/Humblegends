@@ -147,14 +147,11 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
  *
  * @param x         The x-coordinate of the room in parent space
  * @param y         The y-coordinate of the room in parent space
- * @param region    The number of the region this room belongs to, from 1-3
  * @param roomID    ID of room type with the desired geometry
  * @param bg		Background texture to apply to the room
  * @return          true if the room is initialized properly, false otherwise.
  */
-bool RoomModel::init(float x, float y, int region, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {
-    _region = region;
-    
+bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {
     // Add node for background texture if there is one
 	if (bg != nullptr) {
         // Set background node's texture
@@ -209,7 +206,7 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
     }
     else if (type == TrapModel::TrapType::CHECKPOINT) {
         shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
-        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT, false, _region);
+        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT, false);
 
         _trap = trap;
         addChild(_trap);

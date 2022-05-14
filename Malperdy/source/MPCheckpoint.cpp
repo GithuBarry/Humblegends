@@ -12,12 +12,11 @@
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUBoxObstacle.h>
 
-#include "MPTrapModel.hpp"
 #include "MPCheckpoint.h"
 
 using namespace cugl;
 
-shared_ptr<vector<shared_ptr<Texture>>> Checkpoint::_bgsCleared = make_shared<vector<shared_ptr<Texture>>>();
+int Checkpoint::ID_COUNTER = 0;
 
 #pragma mark -
 #pragma mark Constructors
@@ -28,11 +27,12 @@ shared_ptr<vector<shared_ptr<Texture>>> Checkpoint::_bgsCleared = make_shared<ve
  * @param roomWidth     The width of the room the checkpoint is in
  * @param roomHeight    The height of the room the checkpoint is in
  * @param isFinal       Whether this is a "final" checkpoint, meaning a goal
- * @param region        An integer from 1-3 indicating which region this checkpoint is in
  * @return  true if the trap is initialized properly, false otherwise.
  */
-bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal, int region) {
-    _region = region;
+bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal) {
+    // Give this checkpoint an ID number that is unique among all checkpoints
+    _id = ID_COUNTER;
+    ID_COUNTER++;
 
     _sceneNode = make_shared<scene2::SpriteNode>();
     _sceneNode->initWithFile("textures/checkpoint.png");
@@ -45,28 +45,4 @@ bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal, int regio
     _sceneNode->setAbsolute(true);
 
     return this->TrapModel::init();
-}
-
-/**
- * Clears all the rooms associated with this checkpoint (backgrounds are swapped to
- * the "cleared" option for the associated region).
- *
- * @return  Whether the checkpoint's associated rooms were cleared successfully
- */
-bool Checkpoint::clearCheckpoint() {
-    // Don't do anything if already cleared
-    if (_cleared) return false;
-
-    CULog("CHECKPOINT: cleared");
-
-    // Get the correct cleared background for this checkpoint's region
-    shared_ptr<Texture> bgCleared = _bgsCleared->at(_region - 1);
-
-    // For each room linked to this checkpoint, swap to the associated cleared background
-    for (vector<shared_ptr<RoomModel>>::iterator itr = _rooms->begin(); itr != _rooms->end(); ++itr) {
-        (*itr)->_bgNode->setTexture(bgCleared);
-    }
-
-    _cleared = true;
-    return true;
 }

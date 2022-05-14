@@ -985,7 +985,7 @@ void GameScene::beginContact(b2Contact *contact) {
                 // Turn it green
                 trap->getPolyNode()->setColor(Color4::GREEN);
                 // Clear all the associated rooms
-                dynamic_cast<Checkpoint*>(&(*trap))->clearCheckpoint();
+                _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
             }
             else if (trapType == TrapModel::TrapType::GOAL) {
                 setComplete(true);
