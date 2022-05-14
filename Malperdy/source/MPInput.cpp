@@ -7,7 +7,7 @@
 //  Additional reference was from the CS 4152 Geometry Lab by Walker White, 2022
 //
 //  Owner: Jordan Selin
-//  Contributors: Jordan Selin, Spencer Hurst
+//  Contributors: Jordan Selin, Spencer Hurst, Barry Wang
 //  Version: 3/07/2022
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
@@ -278,23 +278,21 @@ void InputController::update(float dt) {
     if (_currDown && _prevDown) {
         _touchTime += dt;
     }
-    bool couldBeDash = didRelease() && _touchTime <= EVENT_SWIPE_TIME;
+    bool couldBeSwipe = didRelease() && _touchTime <= EVENT_SWIPE_TIME;
     float xDist = (_currPos - _touchStartPos).x;
-    _dashLeftPressed = couldBeDash && xDist <= (-1) * EVENT_SWIPE_LENGTH;
+    float yDist = (_currPos - _touchStartPos).y;
+    _dashLeftPressed = couldBeSwipe && xDist <= (-1) * EVENT_SWIPE_LENGTH;
     if (_dashLeftPressed){
         //CULog("MPInput dashed left");
-        
     }
-    _dashRightPressed = couldBeDash && xDist >= EVENT_SWIPE_LENGTH;
+    _dashRightPressed = couldBeSwipe && xDist >= EVENT_SWIPE_LENGTH;
     if (_dashRightPressed){
-        
-     //CULog("MPInput dashed right");
-}
-    
-    _jumpPressed = didRelease() && !_dashLeftPressed && !_dashRightPressed;
-    //if (_jumpPressed){
+        //CULog("MPInput dashed right");
+    }
+    _jumpPressed = couldBeSwipe && yDist <= -EVENT_SWIPE_LENGTH;
+    if (_jumpPressed){
         //CULog("MPInput jumped");
-//}
+    }
 
 #endif
 
@@ -393,13 +391,8 @@ void InputController::touchBeginCB(const cugl::TouchEvent &event, bool focus) {
         _currentTouch = event.touch;
         _touchPos = event.position;
         _touchStartPos = event.position;
+        _touchTime = 0;
     }
-    std::chrono::duration<float> diff = std::chrono::system_clock::now() - _lastTouchBegan;
-    //CULog("%f",diff.count());
-    if (diff.count() <0.2){
-        doubleTap = true;
-    }
-    _lastTouchBegan = std::chrono::system_clock::now();
 }
 
 /*
