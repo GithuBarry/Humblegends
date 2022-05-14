@@ -6,7 +6,7 @@
      "level" : "json/levels/new_level.json",
 
      "tileset_geometry" : "json/tilesets/geometry.tsj",
-     "tileset_entities" : "json/tilesets/entities.tsj",
+     "tileset_entities" : "json/tilesets/entities.json",
      "tileset_rooms" : "json/tilesets/rooms.tsj",
 
      "room_downleft" : "json/rooms/room_downleft.tmj",

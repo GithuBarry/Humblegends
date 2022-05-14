@@ -8,7 +8,7 @@
  "margin":0,
  "name":"entities",
  "spacing":0,
- "tilecount":5,
+ "tilecount":9,
  "tiledversion":"1.8.2",
  "tileheight":10,
  "tiles":[
@@ -39,6 +39,30 @@
         {
          "id":5,
          "image":"..\/images\/checkpoint.png",
+         "imageheight":10,
+         "imagewidth":10
+        }, 
+        {
+         "id":6,
+         "image":"..\/images\/key.png",
+         "imageheight":10,
+         "imagewidth":10
+        }, 
+        {
+         "id":7,
+         "image":"..\/images\/keyenemy.png",
+         "imageheight":10,
+         "imagewidth":10
+        }, 
+        {
+         "id":8,
+         "image":"..\/images\/locked.png",
+         "imageheight":10,
+         "imagewidth":10
+        }, 
+        {
+         "id":9,
+         "image":"..\/images\/sap.png",
          "imageheight":10,
          "imagewidth":10
         }],
