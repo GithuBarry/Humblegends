@@ -141,7 +141,7 @@ protected:
     /**
      * Generates the individual tutorials that we put into the game
      */
-    void createTutorial(Vec2 pos, float width, float height, string TextureName);
+    void createTutorial(Vec2 pos, float width, float height, float scale, string TextureName);
 
 
     /**

@@ -425,15 +425,15 @@ void GameScene::populateChars(){
 void GameScene::populateTutorials(){
     _tutorials = make_shared<vector<std::shared_ptr<Tutorial>>>();
 
-    createTutorial(Vec2(1,4), 3, 3, "DashTutorial");
-    createTutorial(Vec2(4,4), 3, 3, "JumpTutorial");
-    createTutorial(Vec2(7,4), 3, 3, "SwapTutorial");
-    createTutorial(Vec2(10,4), 3, 3, "ZoomInTutorial");
-    createTutorial(Vec2(13,4), 3, 3, "ZoomOutTutorial");
+    createTutorial(Vec2(2,4), 3, 3, .1, "DashTutorial");
+    createTutorial(Vec2(5,4), 3, 3, .1, "JumpTutorial");
+    createTutorial(Vec2(10,4), 3, 3, .1, "SwapTutorial");
+    createTutorial(Vec2(13,4), 3, 3, .1, "ZoomInTutorial");
+    createTutorial(Vec2(16,4), 3, 3, .1, "ZoomOutTutorial");
 
 }
 
-void GameScene::createTutorial(Vec2 pos, float width, float height, string TextureName){
+void GameScene::createTutorial(Vec2 pos, float width, float height, float scale, string TextureName){
 
     shared_ptr<Tutorial> tutorial = make_shared<Tutorial>();
     tutorial->init(pos, width, height);
@@ -442,7 +442,7 @@ void GameScene::createTutorial(Vec2 pos, float width, float height, string Textu
     std::shared_ptr<Texture> tutImage = _assets->get<Texture>(TextureName);
     std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(tutImage);
     tutorial->setSceneNode(sprite);
-//    tutorial->getSceneNode()->setContentSize(100, 100);
+    tutorial->getSceneNode()->setScale(scale);
     if(_world->inBounds(&(*tutorial))){
         _tutorials->push_back(tutorial);
         addObstacle(tutorial, tutorial->getSceneNode());
