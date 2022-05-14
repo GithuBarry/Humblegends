@@ -259,7 +259,7 @@ void EnvController::animateSwap(Vec2 vec1, Vec2 vec2) {
 /* Sets the room to look selected */
 void EnvController::lookSelected(Vec2 room) {
     if (_grid->getRoom(room)) {
-        _grid->getRoom(room)->setColor(Color4::RED);
+        _grid->getRoom(room)->setColor(Color4::MAGENTA);
     }
 }
 

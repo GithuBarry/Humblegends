@@ -520,6 +520,7 @@ void GameScene::update(float dt) {
         Vec2 node_coord = _pause->screenToNodeCoords(_input.getPosition());
         if ((node_coord - Vec2(123,123)).length()<150){
             _gamestate.pauseSwitch();
+            AudioController::playSFX(PAUSE_UI_SOUND);
             if (_gamestate.isPaused()){
                 _pause->setTexture("textures/PauseScreen/Play_Button.png");
             }
@@ -590,7 +591,14 @@ void GameScene::update(float dt) {
     }
 
     if (_input.didZoomIn()) {
-        _gamestate.zoom_in();
+        if (!_gamestate.isPaused())
+        {
+            if (!_gamestate.zoomed_in())
+            {
+                AudioController::playSFX(ZOOMIN_SOUND);
+            }
+            _gamestate.zoom_in();
+        }
         _envController->deselectRoom();
     }
 
@@ -605,7 +613,15 @@ void GameScene::update(float dt) {
         if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
             _gamestate.pauseSwitch();
         }
-        _gamestate.zoom_out();
+
+        if (!_gamestate.isPaused())
+        {
+            if (_gamestate.zoomed_in())
+            {
+                AudioController::playSFX(ZOOMOUT_SOUND);
+            }
+            _gamestate.zoom_out();
+        }
         _envController->deselectRoom();
     }
 

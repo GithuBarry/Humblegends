@@ -13,6 +13,7 @@
 //
 
 #include "MPCharacterModel.h"
+#include "MPAudioController.h"
 #include <cugl/scene2/graph/CUPolygonNode.h>
 #include <cugl/scene2/graph/CUTexturedNode.h>
 #include <cugl/assets/CUAssetManager.h>
@@ -35,7 +36,9 @@
 /** Debug color for the sensor */
 #define DEBUG_COLOR     Color4::RED
 /** The multiplier for the character dash */
-#define DASH_MULTIPLIER 7
+#define DASH_MULTIPLIER 5
+
+/** The distance **/
 
 using namespace cugl;
 
@@ -130,8 +133,8 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             setGravityScale(1.0f);
             break;
         case MovementState::DASHING:
-            // Only allow breaking from dash if dash has ended or switching to wall slide
-            if (!param && newState != MovementState::ONWALL) return false;
+            // Only allow breaking from dash if dash has ended or switching to wall slide OR jump (jump cancel)
+            if (!param && newState != MovementState::ONWALL && newState != MovementState::JUMPING) return false;
             setGravityScale(1.0f);
             break;
         case MovementState::DEAD:
@@ -150,15 +153,22 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             // Set character moving in the given direction at the right speed
             //setVX(0);
             //setVX((_faceRight ? 1 : -1) * RUN_SPEED);
+
+            if (_moveState == MovementState::JUMPING || _moveState == MovementState::FALLING || _moveState == MovementState::ONWALL)
+            {
+                AudioController::playSFX(LAND_SOUND);
+            }
+
             _speed = RUN_SPEED;
             setAnimation("run");
             break;
         case MovementState::JUMPING:
             // Disable double jump (jumping/falling to jumping)
-            if (_moveState == MovementState::JUMPING || _moveState == MovementState::FALLING) return false;
+            if (_moveState == MovementState::FALLING) return false;
             // Jump up
-            _speed = JUMP_SPEED/1.8;
+            //setVX(JUMP_SPEED/1.8);
             setVY(JUMP_SPEED);
+            setPosition(getPosition() + Vec2(0, 0.1));
 
             // If character is on a wall, then also give a horizontal velocity away
             //if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.8);
@@ -180,6 +190,10 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             if (Timestamp().ellapsedMillis(_dashStart) <= DASH_COOLDOWN) {
                 return false;
             }
+
+            // Play dash sound since we can actually perform a dash.
+            //(this->getPosition() - _worldnode->getPaneTransform().transform(Vec2()) / _scale).norm()
+            AudioController::playSFX(DASH_SOUND);
 
             // Set to 0 in case of dashing in the air
             setVY(0);
@@ -375,7 +389,18 @@ void CharacterModel::update(float dt) {
     //if (true && (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING)) {
 
         // if it is time to update the frame...
-        float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
+        float frame_time = FRAME_TIME;
+
+        switch (_moveState)
+        {
+            case MovementState::JUMPING:
+                frame_time *= 2;
+                break;
+            case MovementState::DASHING:
+                frame_time *= 0.1;
+                break;
+        }
+
         if (_elapsed > frame_time ) {
 
             // if on the last frame
