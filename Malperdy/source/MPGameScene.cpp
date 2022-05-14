@@ -350,14 +350,17 @@ void GameScene::populateArrows() {
                 if(_reynardController->getCharacter()->getPosition().x < trap->getPosition().x){
                     right = false;
                 }
-                cout<<""<<endl;
-                cout<<trap->getObstacle()->getPosition().x<<endl;
-                cout<<trap->getObstacle()->getPosition().y<<endl;
-
+                Vec2 worldPos = trap->getParent()->getPosition() + trap->getPosition();
+                cout<<worldPos.x;
+                cout<<",";
+                cout<<worldPos.y<<endl;
                 
-                Vec2 trapPos = trap->getObstacle()->getPosition();
-                Vec2 trapPosPrime = Vec2(trapPos.x, trapPos.y + ((rand()/RAND_MAX)*3));
-                createArrow(Vec2(trapPos.x, trapPos.y + ((rand()/RAND_MAX)*3)), right);
+//                cout<<""<<endl;
+//                cout<<trap->getObstacle()->getPosition().x<<endl;
+//                cout<<trap->getObstacle()->getPosition().y<<endl;
+//
+//                createArrow2(trap->getPosition(), right, trap);
+                
 //                createArrow(trap->getPosition(), right);
             }
         }
@@ -494,6 +497,27 @@ void GameScene::populateChars(){
 
 }
 
+void GameScene::createArrow2(Vec2 pos, bool right, shared_ptr<TrapModel> trap){
+    //Arrows instantiation
+    shared_ptr<Arrow> arrow = make_shared<Arrow>();
+    arrow->init(pos, 5, right);
+
+    //Node Textures
+//    trap.addChild(arrow);
+    std::shared_ptr<Texture> arrowImage = _assets->get<Texture>("Arrow");
+    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(arrowImage);
+    arrow->setSceneNode(sprite);
+    trap->addChild(arrow->getSceneNode());
+    (arrow->getRight()) ? arrow->getSceneNode()->setScale(.25) : arrow->getSceneNode()->setScale(-.25);
+    arrow->getRight();
+    _arrows->push_back(arrow);
+    cout<<"Arrow s now equals: ";
+    cout<<_arrows->size()<<endl;
+    
+    addObstacle(arrow, arrow->getSceneNode());
+//    _arrows->erase(arrow);
+}
+
 void GameScene::createArrow(Vec2 pos, bool right){
     //Arrows instantiation
     shared_ptr<Arrow> arrow = make_shared<Arrow>();
@@ -505,12 +529,20 @@ void GameScene::createArrow(Vec2 pos, bool right){
     arrow->setSceneNode(sprite);
     (arrow->getRight()) ? arrow->getSceneNode()->setScale(.25) : arrow->getSceneNode()->setScale(-.25);
     arrow->getRight();
-    _arrows->push_back(arrow);
-    cout<<"Arrow s now equals: ";
-    cout<<_arrows->size()<<endl;
-    addObstacle(arrow, arrow->getSceneNode());
+//    _arrows->push_back(arrow);
+//    cout<<_arrows->size()<<endl;
+//    trap->addChild();
+    if(_world->inBounds(&(*arrow))){
+        _arrows->push_back(arrow);
+        addObstacle(arrow, arrow->getSceneNode());
+    }else{
+        cout<<"OUTSIDE"<<endl;
+    }
+    arrow->setPosition(Vec2(7, 3));
 //    _arrows->erase(arrow);
 }
+
+
 
 void GameScene::removeArrow(shared_ptr<Arrow> arrow){
     if (arrow->isRemoved()){
@@ -834,8 +866,6 @@ shared_ptr<Arrow> GameScene::isArrowCollision(b2Contact* contact) {
     b2Body *body2 = contact->GetFixtureB()->GetBody();
 //    for (int row = 0; row < _grid->getWidth(); row++) {
 //        for (int col = 0; col < _grid->getHeight(); col++) {
-    cout<<endl;
-    cout<<_arrows->size()<<endl;
     for(int i = 0; i < _arrows->size(); i++){
         
         if(_arrows->at(i) != nullptr){
@@ -1181,12 +1211,12 @@ void GameScene::beginContact(b2Contact *contact) {
 
         }
     }
-#pragma mark ARROW DELETED IF COLLIDES WITH ANOTHER ENTITY
-    shared_ptr<Arrow> arrow = isArrowCollision(contact);
-    if (arrow != nullptr){
-        removeArrow(arrow);
-        cout<<"ARROW Collided with entity"<<endl;
-    }
+//#pragma mark ARROW DELETED IF COLLIDES WITH ANOTHER ENTITY
+//    shared_ptr<Arrow> arrow = isArrowCollision(contact);
+//    if (arrow != nullptr){
+//        removeArrow(arrow);
+//        cout<<"ARROW Collided with entity"<<endl;
+//    }
     
 }
 

@@ -145,6 +145,12 @@ protected:
     void createArrow(Vec2 pos, bool right);
     
     /**
+     * The function required to make more arrows ()
+     *
+     */
+    void createArrow2(Vec2 pos, bool right, shared_ptr<TrapModel> trap);
+
+    /**
      * The function required to get rid of arrows in world space()
      *
      */
