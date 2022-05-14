@@ -974,6 +974,20 @@ void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyCont
 //    enemy->getCharacter()->setVY(-1 * enemyVY);
 }
 
+shared_ptr<Tutorial> GameScene::isTutorialCollision(b2Contact* contact) {
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    for(int i = 0; i < _tutorials->size(); i++){
+        if(_tutorials->at(i) != nullptr){
+            b2Body* body = _tutorials->at(i)->getBody();
+            bool isCollision = body == body1 || body == body2;
+            if (isCollision) return _tutorials->at(i);
+        }
+    }
+    return nullptr;
+}
+
+
 
 void GameScene::beginContact(b2Contact *contact) {
     // TODO: all of these collisions need to apply for every character, not just Reynard
@@ -988,7 +1002,7 @@ void GameScene::beginContact(b2Contact *contact) {
         if (enemy == nullptr) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
 #pragma mark TUTORIAL COLLISION CODE
-            
+        
 #pragma mark TRAP COLLISION CODE
             shared_ptr<TrapModel> trap = isTrapCollision(contact);
             TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;

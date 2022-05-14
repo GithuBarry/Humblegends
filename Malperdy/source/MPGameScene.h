@@ -431,6 +431,18 @@ public:
     shared_ptr<TrapModel> isTrapCollision(b2Contact* contact);
 
     /**
+     * Detects if a collision includes a tutorial object, and if so returns the tutorial's pointer
+     *
+     * @param  contact  The two bodies that collided
+     *
+     * @return  trap type if one body is a trap
+                or UNTYPED if neither body is a trap
+     */
+    shared_ptr<Tutorial> isTutorialCollision(b2Contact* contact);
+
+    
+    
+    /**
      * Helper function that checks if a contact event includes Reynard
      *
      * Neccesary to call this before calling getReynardFixture.
