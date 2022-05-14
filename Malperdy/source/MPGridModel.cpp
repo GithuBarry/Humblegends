@@ -124,6 +124,9 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
     // Room JSON cache
     shared_ptr<JsonValue> roomJSON;
 
+    // Initialize variables to determine sublevel bounds
+    int xMin, yMin, xMax, yMax;
+
     // Go through each layer to find the sublevel layers
     for (int i = 0; i < layers->size(); i++)
     {
@@ -132,8 +135,16 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
 
         // Parse each sublevel if the layer name contains "sublevel"
         if (layer->get("name")->asString().find("sublevel") != string::npos) {
+            // Set min coords to high values and max coords to low values
+            xMin = width;
+            yMin = height;
+            xMax = 0;
+            yMax = 0;
+
+            // For each room in the sublevel
             for (int j = 0; j < layer->get("data")->size() / _roomWidth / _roomHeight; j++) {
 
+                // These coordinates are from the UPPER left
                 int x = j % width;
                 int y = (j / width);
 
@@ -141,7 +152,15 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
                 int bottom_corner = x * _roomWidth + (y + 1) * _roomWidth * width * _roomHeight - _roomWidth * width;
                 int room_id = layer->get("data")->get(bottom_corner)->asInt();
 
-                string im = _roomsTileset->get("tiles")->get(room_id - room_offset)->get("image")->asString();
+                // If room ID = 0, there's no room there, so go on to the next room
+                if (!room_id) continue;
+
+                //string im = _roomsTileset->get("tiles")->get(room_id - room_offset)->get("image")->asString();
+                shared_ptr<JsonValue> json1 = _roomsTileset->get("tiles");
+                json1 = json1->get(room_id - room_offset);
+                json1 = json1->get("image");
+                string im = json1->asString();
+
 
                 string name;
                 if (im.rfind("solid") != string::npos)
@@ -157,29 +176,38 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
 
                 cout << name;
 
+                // Flip the y, so now the coordinates are from the lower left
+                y = height - 1 - y;
+
                 // get the room type
                 // string name = "room_" + object->get("name")->asString();
                 roomJSON = _assets->get<JsonValue>(name);
 
-                // instantiate the room and add it as a child
-                y = height - 1 - y;
+                // instantiate the room and add it as a child                
                 sublevel->at(y)->at(x)->init(x, y, roomJSON, RegionModel::getRandBG(regNum));
                 if (name == "room_solid")
                 {
                     sublevel->at(y)->at(x)->permlocked = true;
                 }
                 addChild(sublevel->at(y)->at(x));
+
+                // Update min/max bounds if needed
+                if (x <= xMin && y <= yMin) {
+                    xMin = x;
+                    yMin = y;
+                }
+                if (x >= xMax && y >= yMax) {
+                    xMax = x;
+                    yMax = y;
+                }
             }
             break;
         }
     }
 
-    // TODO: actually get the sublevel's origin
-    int sublevelOriginX = 0, sublevelOriginY = 0;
-    // TODO: actually get sublevel's width/height instead of using region's
-
     // Store the final sublevel in the region
-    region->addSublevel(sublevelOriginX, sublevelOriginY, width, height, sublevel);
+    // Sublevel origin is the min bound
+    region->addSublevel(xMin, yMin, xMax - xMin + 1, yMax - yMin + 1, sublevel);
 
     // TRAPS
 
