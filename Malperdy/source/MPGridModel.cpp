@@ -201,13 +201,11 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
                     yMax = y;
                 }
             }
-            break;
+            // Store the final sublevel in the region
+            // Sublevel origin is the min bound
+            region->addSublevel(xMin, yMin, xMax - xMin + 1, yMax - yMin + 1, sublevel);
         }
     }
-
-    // Store the final sublevel in the region
-    // Sublevel origin is the min bound
-    region->addSublevel(xMin, yMin, xMax - xMin + 1, yMax - yMin + 1, sublevel);
 
     // TRAPS
 
@@ -266,7 +264,7 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
         shared_ptr<JsonValue> layer = regionJSON->get("layers")->get(i);
 
         // if the layer is a tilelayer...
-        if (layer->get("type")->asString() == "tilelayer")
+        if (layer->get("name")->asString().find("entities") != string::npos)
         {
             vector<int> data = layer->get("data")->asIntArray();
 
@@ -613,6 +611,7 @@ void GridModel::calculatePhysicsGeometry()
         for (int col = 0; col < _size.x; col++)
         {
             _physicsGeometry.at(row).push_back(vector<shared_ptr<physics2::PolygonObstacle>>());
+
             // Get pointers to PolygonNodes with the room's geometry
             shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> geometry = getRoom(col, row)->getGeometry();
 

@@ -241,6 +241,13 @@ public:
 
 #pragma mark Getters
 	/**
+	 * Returns the number of sublevels in this region.
+	 * 
+	 * @return	The number of sublevels in this region
+	 */
+	int getNumSublevels() { return _sublevels->size(); }
+
+	/**
 	 * Returns the width of this region in rooms, which is
 	 * equivalent to the number of columns in this region.
 	 * 
