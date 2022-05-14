@@ -27,6 +27,7 @@
 #include "MPGridModel.h"
 #include "MPEnvController.h"
 #include "MPAudioController.h"
+#include "MPTutorial.hpp"
 
 
 /**
@@ -83,6 +84,10 @@ protected:
 
     /** References to all the enemy controllers */
     std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies;
+    
+    /** References to all the tutorials */
+    std::shared_ptr<vector<std::shared_ptr<Tutorial>>> _tutorials;
+
 
     /** Whether we have completed this "game" */
     bool _complete;
@@ -126,6 +131,17 @@ protected:
      *
      */
     void populateChars();
+
+    /**
+     * Lays out the game geography.Part of populate()
+     *
+     */
+    void populateTutorials();
+    
+    /**
+     * Generates the individual tutorials that we put into the game
+     */
+    void createTutorial(Vec2 pos, float width, float height, string TextureName);
 
 
     /**

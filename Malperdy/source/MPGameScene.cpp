@@ -272,6 +272,7 @@ void GameScene::revert(bool totalReset){
     _debugnode->removeAllChildren();
     _gamestate.reset();
     _enemies = nullptr;
+    _tutorials = nullptr;
     setComplete(false);
     if (totalReset){
         _checkpointReynardPos = reynardDefault;
@@ -417,7 +418,27 @@ void GameScene::populateChars(){
         _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
     }
 
+}
 
+void GameScene::populateTutorials(){
+    _tutorials = make_shared<vector<std::shared_ptr<Tutorial>>>();
+}
+
+void GameScene::createTutorial(Vec2 pos, float width, float height, string TextureName){
+
+    shared_ptr<Tutorial> tutorial = make_shared<Tutorial>();
+    tutorial->init(pos, width, height);
+
+    //Node Textures
+    std::shared_ptr<Texture> tutImage = _assets->get<Texture>(TextureName);
+    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(tutImage);
+    tutorial->setSceneNode(sprite);
+    if(_world->inBounds(&(*tutorial))){
+        _tutorials->push_back(tutorial);
+        addObstacle(tutorial, tutorial->getSceneNode());
+    }else{
+        cout<<"OUTSIDE"<<endl;
+    }
 }
 
 
