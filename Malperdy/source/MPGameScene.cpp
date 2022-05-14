@@ -562,12 +562,14 @@ void GameScene::update(float dt) {
             progressCoords = inputPos;
         }
     }
+
     if (_input.isScrolling() && !_gamestate.zoomed_in()) {
-        scrollingOffset = scrollingOffset + Vec2(_input.scrollOffset().x, 0);
-        scrollingOffset = scrollingOffset + Vec2(0, -_input.scrollOffset().y);
+        Vec2 incrementalOffset = _input.getPosition()- lastFramePos;
+        scrollingOffset = scrollingOffset + Vec2(incrementalOffset.x,-incrementalOffset.y);
     }
     if (_gamestate.zoomed_in()){
         scrollingOffset = Vec2();
+        lastFramePos = Vec2();
     }
 
     // Only allow jumping while zoomed in
@@ -644,7 +646,7 @@ void GameScene::update(float dt) {
     Vec2 reynardVelocity = _reynardController->getCharacter()->getLinearVelocity();
 
 
-    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition-scrollingOffset/10, _scale, getSize(), faceRight,reynardVelocity));
+    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition-scrollingOffset, _scale, getSize(), faceRight,reynardVelocity));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
@@ -688,6 +690,7 @@ void GameScene::update(float dt) {
 
         }
     }
+    lastFramePos = _input.getPosition();
 }
 
 #pragma mark -

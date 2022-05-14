@@ -47,7 +47,7 @@ protected:
     /** Controller for abstracting out input across multiple platforms */
     InputController _input;
     GameStateController _gamestate;
-
+    Vec2 lastFramePos = Vec2();
 
     // VIEW
     /** Reference to the physics root of the scene graph */
