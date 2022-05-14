@@ -263,7 +263,7 @@ void InputController::update(float dt) {
     _zoomInPressed = _eDown;
     _zoomOutPressed = _qDown;
 
-//#else
+#else
     _currDown = _touchDown && !_inMulti;
     _currPos = _touchPos;
 
