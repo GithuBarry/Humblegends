@@ -448,7 +448,7 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool fo
     }
     else if (event.type == CoreGestureType::PAN) {
         Vec2 scrollVec = event.currPosition - event.origPosition;
-        _panGesture = scrollVec.length() > EVENT_SWIPE_LENGTH;
+        _panGesture = true;
         if (_panGesture) {
             _panCurr = event.currPosition;
         }
