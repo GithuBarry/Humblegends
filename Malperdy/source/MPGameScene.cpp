@@ -424,7 +424,7 @@ void GameScene::populateChars(){
 
 void GameScene::populateTutorials(){
     _tutorials = make_shared<vector<std::shared_ptr<Tutorial>>>();
-    //TODO: LAST STEP IS TO FUCKING MAKE A REFERENCE IN ASSETS JSON
+
     createTutorial(Vec2(1,4), 3, 3, "DashTutorial");
     createTutorial(Vec2(4,4), 3, 3, "JumpTutorial");
     createTutorial(Vec2(7,4), 3, 3, "SwapTutorial");
@@ -442,6 +442,7 @@ void GameScene::createTutorial(Vec2 pos, float width, float height, string Textu
     std::shared_ptr<Texture> tutImage = _assets->get<Texture>(TextureName);
     std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(tutImage);
     tutorial->setSceneNode(sprite);
+//    tutorial->getSceneNode()->setContentSize(100, 100);
     if(_world->inBounds(&(*tutorial))){
         _tutorials->push_back(tutorial);
         addObstacle(tutorial, tutorial->getSceneNode());
