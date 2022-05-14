@@ -124,14 +124,14 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
     // Room JSON cache
     shared_ptr<JsonValue> roomJSON;
 
-    // Go through each layer to find the object layer
+    // Go through each layer to find the sublevel layers
     for (int i = 0; i < layers->size(); i++)
     {
 
         shared_ptr<JsonValue> layer = layers->get(i);
 
-        // Once the object layer is found, loop through all objects
-        if (layer->get("name")->asString() == "rooms") {
+        // Parse each sublevel if the layer name contains "sublevel"
+        if (layer->get("name")->asString().find("sublevel") != string::npos) {
             for (int j = 0; j < layer->get("data")->size() / _roomWidth / _roomHeight; j++) {
 
                 int x = j % width;
