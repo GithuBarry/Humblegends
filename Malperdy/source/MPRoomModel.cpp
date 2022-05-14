@@ -249,7 +249,7 @@ bool RoomModel::update() {
     float cur_y = SceneNode::getPosition().y;
     float diff_x = destination.x * DEFAULT_ROOM_WIDTH - cur_x;
 
-    float speed = 0.7; //0.5001-0.9999, lower the slower
+    float speed = 0.2; //0.5001-0.9999, lower the slower
 
 
     if (abs(destination.x * DEFAULT_ROOM_WIDTH - cur_x) < 5) {
