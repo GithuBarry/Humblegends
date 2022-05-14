@@ -61,8 +61,6 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         mode = 1;
         this->_active = down;
     });
-        this->_active = down;
-    });
     _load = assets->get<scene2::SceneNode>("load_loadGame");
     //_new = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new");
     
