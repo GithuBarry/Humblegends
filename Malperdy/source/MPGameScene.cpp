@@ -151,6 +151,9 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rect, const Vec2 gravity) {
     Size dimen = computeActiveSize();
 
+    // Initialize audio controller with assets
+    AudioController::init(_assets);
+
     if (assets == nullptr) {
         return false;
     } else if (!Scene2::init(dimen)) {
@@ -180,8 +183,6 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
     //Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
     Vec2 offset;
-
-
 
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
@@ -303,7 +304,7 @@ void GameScene::populate() {
 }
 
 void GameScene::populateEnv() {
-    MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
+    AudioController::playAudio(LEVEL_MUSIC, true, 1, true);
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     /////////////////////////////////////
@@ -513,11 +514,11 @@ void GameScene::update(float dt) {
 
             if (hasSwapped)
             {
-                MPAudioController::playAudio(_assets, SWAP_SOUND, false, 1, false);
+                AudioController::playAudio(SWAP_SOUND, false, 1, false);
             }
             else
             {
-                MPAudioController::playAudio(_assets, NOSWAP_SOUND, false, 1, false);
+                AudioController::playAudio(NOSWAP_SOUND, false, 1, false);
             }
         } else {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
@@ -532,11 +533,11 @@ void GameScene::update(float dt) {
             hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
             if (hasSwapped)
             {
-                MPAudioController::playAudio(_assets, SWAP_SOUND, false, 1, false);
+                AudioController::playAudio(SWAP_SOUND, false, 1, false);
             }
             else
             {
-                MPAudioController::playAudio(_assets, NOSWAP_SOUND, false, 1, false);
+                AudioController::playAudio(NOSWAP_SOUND, false, 1, false);
             }
         }
         if (_input.isDragging() && _envController->hasSelected()) {
@@ -554,7 +555,7 @@ void GameScene::update(float dt) {
             //TODO: DELETE THIS DEBUGGING STUFF
             cout << "Grounded: %d" + i << endl;
             cout << "Walled: %d" + j << endl;
-            MPAudioController::playAudio(_assets, JUMP_SOUND, false, 1, false);
+            AudioController::playAudio(JUMP_SOUND, false, 1, false);
         }
 
         _reynardController->jump();
@@ -963,7 +964,7 @@ void GameScene::beginContact(b2Contact *contact) {
                 }
 
                 if (trap->getPolyNode()->getColor() != Color4::GREEN) {
-                    MPAudioController::playAudio(_assets, CHECKPOINT_SOUND, false, 1, false);
+                    AudioController::playAudio(CHECKPOINT_SOUND, false, 1, false);
                 }
 
                 trap->getPolyNode()->setColor(Color4::GREEN);
