@@ -430,6 +430,10 @@ public:
      * @param delta Number of seconds since last animation frame
      */
     virtual void update(float dt) override;
+    
+    virtual float x_scale(){
+        return 1;
+    }
 
     /**
      * Returns the fixture currently associated with this character's face.
@@ -444,5 +448,7 @@ public:
         return _body;
     }
 };
+
+
 
 #endif /* MPCharacterModel_h */

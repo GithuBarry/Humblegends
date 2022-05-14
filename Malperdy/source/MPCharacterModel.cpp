@@ -150,7 +150,8 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             // Set character moving in the given direction at the right speed
             //setVX(0);
             //setVX((_faceRight ? 1 : -1) * RUN_SPEED);
-            _speed = RUN_SPEED;
+            _speed = RUN_SPEED*x_scale();
+        
             setAnimation("run");
             break;
         case MovementState::JUMPING:
@@ -186,7 +187,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             setGravityScale(0);
             // Flip the direction to dash direction
             if ((param > 0) != _faceRight) flipDirection();
-            setVX(param * RUN_SPEED * DASH_MULTIPLIER);
+            setVX(param * RUN_SPEED * DASH_MULTIPLIER * x_scale());
             _dashStart = Timestamp();
             // Freeze animation while dashing
             _currAnimation = "";
@@ -324,7 +325,7 @@ void CharacterModel::update(float dt) {
         case MovementState::RUNNING:
             // Continue moving if in the run state
             if (_speed>RUN_SPEED){
-                _speed -= 0.1;
+                //_speed -= 0.1;
             }
             if (isRunning()) setVX((_faceRight ? 1 : -1) * _speed);
             break;
