@@ -2,6 +2,8 @@
 #include <cugl/cugl.h>
 #include <string>
 
+
+
 using namespace cugl;
 	//static bool init() {
 	//	AudioEngine::start(24);
@@ -18,9 +20,9 @@ using namespace cugl;
 	//	AudioEngine::stop();
 	//}
 
-	void MPAudioController::playAudio(std::shared_ptr<cugl::AssetManager> &assets, string sound, bool loop, float vol, bool isMusic)
+	void AudioController::playAudio(string sound, bool loop, float vol, bool isMusic)
 	{
-		std::shared_ptr<Sound> source = assets->get<Sound>(sound);
+		std::shared_ptr<Sound> source = _assets->get<Sound>(sound);
 			
 		if (isMusic)
 		{
@@ -28,16 +30,23 @@ using namespace cugl;
 		}
 		else
 		{
-			AudioEngine::get()->play(sound, source, loop, vol);
+			AudioEngine::get()->play(sound, source, loop, vol, true);
 		}
 	}
 
-	bool MPAudioController::isPlaying(string sound)
+	bool AudioController::isPlaying(string sound, bool isMusic)
 	{
-		return AudioEngine::get()->isActive(sound);
+		if (isMusic)
+		{
+			return (AudioEngine::get()->getMusicQueue()->current() == sound);
+		}
+		else
+		{
+			return AudioEngine::get()->isActive(sound);
+		}
 	}
 
-	void MPAudioController::stopAudio(std::shared_ptr<cugl::AssetManager>& assets, string sound, bool isMusic, float fadeAmount)
+	void AudioController::stopAudio(string sound, bool isMusic, float fadeAmount)
 	{
 		if (isMusic) {
 			//TODO: make it not clear the queue???
@@ -49,7 +58,7 @@ using namespace cugl;
 		}
 	}
 		
-	void MPAudioController::setVolume(string sound, bool isMusic, float vol, bool isRel) {
+	void AudioController::setVolume(string sound, bool isMusic, float vol, bool isRel) {
 		if (isMusic)
 		{
 			AudioEngine::get()->setVolume(sound, isRel ? (AudioEngine::get()->AudioEngine::getVolume(sound) + vol) : vol);

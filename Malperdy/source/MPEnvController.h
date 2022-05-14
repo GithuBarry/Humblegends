@@ -40,6 +40,10 @@ private:
 
     /* History of room swaps as a list of pairs of rooms that have been swapped */
     vector<vector<Vec2>> _swapHistory;
+public:
+    void setSwapHistory(const vector<vector<Vec2>> &swapHistory);
+
+private:
 
     /**
      * how many pairs of rooms finished swapping

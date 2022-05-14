@@ -37,6 +37,8 @@ using namespace cugl;
 void Malperdy::onStartup() {
     _assets = AssetManager::alloc();
     _batch = SpriteBatch::alloc();
+    // Initialize audio controller with assets
+    AudioController::init(_assets);
 
     // Start-up basic input
 #ifdef CU_TOUCH_SCREEN
@@ -103,6 +105,7 @@ void Malperdy::onShutdown() {
  */
 void Malperdy::onSuspend() {
     AudioEngine::get()->pause();
+    _gameplay.rewriteSaveFile();
 }
 
 /**
@@ -141,6 +144,7 @@ void Malperdy::update(float timestep) {
         _loading.dispose(); // Disables the input listeners in this mode
         _gameplay.init(_assets);
         _loaded = true;
+        _gameplay.setMode(_loading.mode);
     } else {
         _gameplay.update(timestep);
     }
