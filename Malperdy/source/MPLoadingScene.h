@@ -28,14 +28,6 @@
  */
 class LoadingScene : public cugl::Scene2 {
     
-public:
-    /**
-     Mode: which mode does the user choose:
-     0: not yet chosen
-     1: Start a new game
-     2: Start from memory
-     */
-    int mode = 0;
 protected:
     /** The asset manager for loading. */
     std::shared_ptr<cugl::AssetManager> _assets;
@@ -50,20 +42,23 @@ protected:
 
     /** The game's name */
     std::shared_ptr<cugl::scene2::SceneNode>  _title;
-    /** The "play" button */
-    std::shared_ptr<cugl::scene2::Button>    _button;
+    /** The "new game" button */
+    std::shared_ptr<cugl::scene2::Button>       _new;
     /** The "load game" button */
     std::shared_ptr<cugl::scene2::SceneNode>   _load;
-    /** The "new game" button */
-    std::shared_ptr<cugl::scene2::SceneNode>    _new;
 
     // MODEL
     /** The progress displayed on the screen */
     float _progress;
     /** Whether or not the player has pressed play to continue */
     bool  _completed;
-    /** True if the player is starting a new game, false otherwise */
-    bool _newGame;
+    /**
+    * How the user wants to start playing
+    * 0: not yet chosen
+    * 1: Start a new game
+    * 2: Start from memory
+    */
+    int _mode = 0;
     
     
     
@@ -132,12 +127,14 @@ public:
     bool isPending( ) const;
 
     /**
-    * Returns true if the player is starting a new game
-    * (aka. they have selected "new game" instead of "load save")
+    * Returns a value based on how the player wants to start playing
+    * 0: not yet chosen
+    * 1: Start a new game
+    * 2: Start from memory
     * 
-    * @return true if the player is starting a new game
+    * @return   value based on how the player wants to start playing
     */
-    bool isNewGame() { return _newGame; }
+    bool getMode() { return _mode; }
 };
 
 

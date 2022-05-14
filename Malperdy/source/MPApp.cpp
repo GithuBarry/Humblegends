@@ -144,7 +144,7 @@ void Malperdy::update(float timestep) {
         _loading.dispose(); // Disables the input listeners in this mode
         _gameplay.init(_assets);
         _loaded = true;
-        _gameplay.setMode(_loading.mode);
+        _gameplay.setMode(_loading.getMode());
     } else {
         _gameplay.update(timestep);
     }

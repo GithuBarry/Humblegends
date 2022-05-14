@@ -56,14 +56,12 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     _bar = std::dynamic_pointer_cast<scene2::ProgressBar>(assets->get<scene2::SceneNode>("load_bar"));
     _brand = assets->get<scene2::SceneNode>("load_logo");
     _title = assets->get<scene2::SceneNode>("load_title");
-    _button = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new"));
-    _button->addListener([=](const std::string& name, bool down) {
-        mode = 1;
+    _new = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new"));
+    _new->addListener([=](const std::string& name, bool down) {
+        this->_mode = 1;
         this->_active = down;
-        this->_newGame = down;
     });
     _load = assets->get<scene2::SceneNode>("load_loadGame");
-    //_new = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new");
     
     Application::get()->setClearColor(Color4(192,192,192,255));
     addChild(layer);
@@ -76,9 +74,9 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
 void LoadingScene::dispose() {
     // Deactivate the button (platform dependent)
     if (isPending()) {
-        _button->deactivate();
+        _new->deactivate();
     }
-    _button = nullptr;
+    _new = nullptr;
     _load = nullptr;
     //_new = nullptr;
     _title = nullptr;
@@ -105,8 +103,8 @@ void LoadingScene::update(float progress) {
             _progress = 1.0f;
             _bar->setVisible(false);
             _brand->setVisible(false);
-            _button->setVisible(true);
-            _button->activate();
+            _new->setVisible(true);
+            _new->activate();
             _title->setVisible(true);
             //_new->setVisible(true);
             _load->setVisible(true);
@@ -121,6 +119,6 @@ void LoadingScene::update(float progress) {
  * @return true if loading is complete, but the player has not pressed play
  */
 bool LoadingScene::isPending( ) const {
-    return _button != nullptr && _button->isVisible();
+    return _new != nullptr && _new->isVisible();
 }
 
