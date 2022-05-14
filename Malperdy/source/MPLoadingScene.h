@@ -4,8 +4,8 @@
 //
 //  This file is based on the CS 4152 RocketDemo by Walker White, 2017
 // 
-//  Owner: TBD
-//  Contributors: Barry Wang
+//  Owner: Jordan Selin
+//  Contributors: Barry Wang, Jordan Selin
 //  Version: 2/21/2022
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
@@ -36,10 +36,17 @@ protected:
     // VIEW
     /** The animated progress bar */
     std::shared_ptr<cugl::scene2::ProgressBar>  _bar;
-    /** The engine name */
+    /** The game's name (to be replaced with the team logo) */
     std::shared_ptr<cugl::scene2::SceneNode>  _brand;
+
+    /** The game's name */
+    std::shared_ptr<cugl::scene2::SceneNode>  _title;
     /** The "play" button */
     std::shared_ptr<cugl::scene2::Button>    _button;
+    /** The "load game" button */
+    std::shared_ptr<cugl::scene2::SceneNode>   _load;
+    /** The "new game" button */
+    std::shared_ptr<cugl::scene2::SceneNode>    _new;
 
     // MODEL
     /** The progress displayed on the screen */
