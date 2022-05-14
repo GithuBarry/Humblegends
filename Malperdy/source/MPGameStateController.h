@@ -24,7 +24,8 @@ private:
     int SLOW_MO_SCALAR;
     float maxZoom = 2.4;
     float minZoom = 1;
-    std::chrono::time_point<std::chrono::system_clock> sinceResume = std::chrono::system_clock::now();
+    std::chrono::duration<unsigned long long> fourSeconds = std::chrono::seconds(4);
+    std::chrono::time_point<std::chrono::system_clock> sinceResume = std::chrono::system_clock::now() - fourSeconds;
 public:
     /**
      * Change parameter as you need

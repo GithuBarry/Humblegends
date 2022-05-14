@@ -26,7 +26,7 @@
 //
 //  Owner: Kristina Gu
 //  Contributors: Kristina Gu, Jordan Selin
-//  Version: 4/16/22
+//  Version: 5/12/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -56,6 +56,10 @@ using namespace cugl;
 #define DEFAULT_ROOM_ID "leftrightupdown"
 
 class RoomModel : public cugl::scene2::SceneNode {
+public:
+    /** Pointer to the node that displays the room background */
+    shared_ptr<scene2::PolygonNode> _bgNode;
+
 private:
     // ROOM LOADING
     /** Loads in room formats from a JSON and is used to look up geometries for rooms */
@@ -68,7 +72,6 @@ private:
     bool fogged = true;
 
 
-
     // GEOMETRY
     /** Vector of polygon nodes forming the room's geometry */
     shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> _geometry;
@@ -78,6 +81,9 @@ private:
     static const Vec2 ROOM_SCALE;
 
     shared_ptr<TrapModel> _trap  = nullptr;
+
+    /** Reference to the scene node for the lock */
+    std::shared_ptr<cugl::scene2::PolygonNode> _lockIcon;
 
     Vec2 destination;
 
@@ -242,6 +248,12 @@ public:
      */
     void setPosition(float x, float y) { this->SceneNode::setPosition(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT); }
 
+    /**
+    * Sets whether the room's lock icon is visible
+    * 
+    * @param isVisible  true if the lock icon should be visible
+    */
+    void setLockIcon(bool isVisible) { _lockIcon->setVisible(isVisible); }
 
     /**
      * Change position gradually
@@ -256,7 +268,7 @@ public:
         float cur_y =  SceneNode::getPosition().y;
         float diff_x = destination.x * DEFAULT_ROOM_WIDTH - cur_x;
 
-        float speed = 0.7; //0.5001-0.9999, lower the slower
+        float speed = 0.2; //0.1001-0.9999, lower the slower
 
 
         if (abs(destination.x * DEFAULT_ROOM_WIDTH - cur_x)<5){

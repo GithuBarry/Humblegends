@@ -204,7 +204,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     _pause = scene2::PolygonNode::allocWithFile("textures/PauseScreen/Pause_Button.png");
     _pause->setAnchor(Vec2::ANCHOR_TOP_LEFT);
-    padding = Vec2(Application::get()->getDisplaySize().width-100, -10);
+    padding = Vec2(computeActiveSize().width-100, -10);
     _pause->setPosition(offset + Vec2(0, getSize().height) + padding);
     _pause->setScale(0.3);
 
@@ -341,7 +341,7 @@ void GameScene::populateChars(){
     Vec2 pos_temp = _reynardController->getCharacter()->getPosition();
     _reynardController->getCharacter()->setPosition(Vec2(4,3));
 
-    addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
+    addObstacle(_reynardController->getCharacter(), _reynardController->getCharacter()->_node); // Put this at the very front
     _reynardController->getCharacter()->setPosition(pos_temp);
 
 #pragma mark Enemies
@@ -394,7 +394,7 @@ void GameScene::populateChars(){
 
                 _enemies->back()->setObstacleWorld(_world);
                 _enemies->back()->setReynardController(_reynardController);
-                addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode());
+                addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
 
                 _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1,1)) * Vec2(5,5));
@@ -408,7 +408,7 @@ void GameScene::populateChars(){
 //    for(shared_ptr<EnemyController> enemy : *_enemies){
 //        enemy->setObstacleWorld(_world);
 //        enemy->setReynardController(_reynardController);
-//        addObstacle(enemy->getCharacter(), enemy->getSceneNode()); // Put
+//        addObstacle(enemy->getCharacter(), enemy->getCharacter()->_node); // Put
 //    }
 
     _checkpointEnemyPos = vector<Vec2>();
@@ -579,7 +579,6 @@ void GameScene::update(float dt) {
 
     if (_input.didZoomIn()) {
         _gamestate.zoom_in();
-        // Deselect any selected rooms
         _envController->deselectRoom();
     }
 
@@ -650,7 +649,7 @@ void GameScene::update(float dt) {
     }
 
     // Update the environment
-    _envController->update(progressCoords, _reynardController, _enemies);
+    _envController->update(progressCoords, !_gamestate.zoomed_in(), _reynardController, _enemies);
 
     // Update the UI
     if (_reynardController->getCharacter()->getHearts() >= 3) {
@@ -972,6 +971,7 @@ void GameScene::beginContact(b2Contact *contact) {
                 //No helper is used because the abstraction is unnecessary
                 _reynardController->getCharacter()->slowCharacter();
             }
+            // COLLISION: Checkpoint vs. Reynard
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                 _checkpointEnemyPos = vector<Vec2>();
@@ -979,7 +979,11 @@ void GameScene::beginContact(b2Contact *contact) {
                 for (auto thisEnemy: *_enemies){
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
+                // Handle what to do when the checkpoint is hit
+                // Turn it green
                 trap->getPolyNode()->setColor(Color4::GREEN);
+                // Clear all the associated rooms
+                _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
             }
             else if (trapType == TrapModel::TrapType::GOAL) {
                 setComplete(true);
