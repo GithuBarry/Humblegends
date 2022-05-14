@@ -984,8 +984,12 @@ void GameScene::beginContact(b2Contact *contact) {
         // Now try to get if it's an enemy-on-object collision
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         // If it's nullptr, then it's Reynard, and handle all that accordingly
+#pragma mark REYNARD COLLISION SECTION
         if (enemy == nullptr) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
+#pragma mark TUTORIAL COLLISION CODE
+            
+#pragma mark TRAP COLLISION CODE
             shared_ptr<TrapModel> trap = isTrapCollision(contact);
             TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
             if (trap != nullptr){
