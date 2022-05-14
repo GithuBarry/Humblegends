@@ -404,6 +404,18 @@ public:
 	 * @return		Whether the checkpoint's associated rooms were cleared successfully
 	 */
 	bool clearCheckpoint(int cID);
+
+private:
+#pragma mark Debug
+	/**
+	 * Prints out the ID of each checkpoint and how many rooms are linked to it.
+	 */
+	void printCheckpointMap() {
+		CULog("[RegionModel.h] CHECKPOINT MAP");
+		for (map<int, int>::iterator itr = _checkpointMap->begin(); itr != _checkpointMap->end(); ++itr) {
+			CULog("[RegionModel.h] Checkpoint ID #%d: %d rooms", itr->first, itr->second);
+		}
+	}
 };
 
 

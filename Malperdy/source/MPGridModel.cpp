@@ -163,6 +163,13 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
         }
     }
 
+    // TODO: actually get the sublevel's origin
+    int sublevelOriginX = 0, sublevelOriginY = 0;
+    // TODO: actually get sublevel's width/height instead of using region's
+
+    // Store the final sublevel in the region
+    region->addSublevel(sublevelOriginX, sublevelOriginY, width, height, sublevel);
+
 
     // TRAPS
 
@@ -228,13 +235,6 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
             }
         }
     }
-
-    // TODO: actually get the sublevel's origin
-    int sublevelOriginX = 0, sublevelOriginY = 0;
-    // TODO: actually get sublevel's width/height instead of using region's
-
-    // Store the final sublevel in the region
-    region->addSublevel(sublevelOriginX, sublevelOriginY, width, height, sublevel);
 }
 
 /**
