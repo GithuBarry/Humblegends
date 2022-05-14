@@ -29,8 +29,7 @@
  */
 bool ReynardController::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
     // If initialization of parent class failed, return immediately
-    if (!(CharacterController::init(pos, drawScale, animation))) return false;
-    else return true;
+    return CharacterController::init(pos, drawScale, animation);
     //// Create user data to store in the physics body
     //BodyData* userData = new BodyData();
     //userData->_type = CharacterType::REYNARD;

@@ -131,10 +131,7 @@ protected:
     /**
      Revert the game state to the last state
      */
-    void revert(){
-        //_envController->revertHistory();
-        _reynardController->revert();
-    }
+    void revert();
 
     /**
      * Adds the physics object to the physics world and loosely couples it to the scene graph

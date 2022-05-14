@@ -152,12 +152,13 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
  * @return          true if the room is initialized properly, false otherwise.
  */
 bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {
-	// Add node for background texture if there is one
+    // Add node for background texture if there is one
 	if (bg != nullptr) {
         // Set background node's texture
 		shared_ptr<scene2::PolygonNode> bgNode = scene2::PolygonNode::allocWithTexture(bg);
 		bgNode->setPolygon(Rect(0, 0, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT));
 		addChild(bgNode);
+        _bgNode = bgNode;
 	}
 
 	// Build geometry for the room type with the given ID
