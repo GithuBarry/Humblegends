@@ -473,7 +473,6 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
 
     // Position the scene graph node (enough for static objects)
     _worldnode->addChild(node);
-    CULog("GameScene %f %f ", (obj->getPosition() * _scale).x, (obj->getPosition() * _scale).y);
     node->setPosition(obj->getPosition() * _scale);
 
     // Dynamic objects need constant updating
@@ -1003,7 +1002,7 @@ void GameScene::beginContact(b2Contact *contact) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
 #pragma mark TUTORIAL COLLISION CODE
             if (isTutorialCollision(contact) != nullptr){
-                //THERE IS NO DEFINED COLLISION CODE AT THIS MOMENT 
+                //THERE IS NO DEFINED COLLISION CODE AT THIS MOMENT
             } else{
 #pragma mark TRAP COLLISION CODE
                 shared_ptr<TrapModel> trap = isTrapCollision(contact);
@@ -1031,6 +1030,8 @@ void GameScene::beginContact(b2Contact *contact) {
                         _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                     }
                     trap->getPolyNode()->setColor(Color4::GREEN);
+                    // Clear all the associated rooms
+                    _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
                 }
                 else if (trapType == TrapModel::TrapType::GOAL) {
                     setComplete(true);

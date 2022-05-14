@@ -56,6 +56,10 @@ using namespace cugl;
 #define DEFAULT_ROOM_ID "leftrightupdown"
 
 class RoomModel : public cugl::scene2::SceneNode {
+public:
+    /** Pointer to the node that displays the room background */
+    shared_ptr<scene2::PolygonNode> _bgNode;
+
 private:
     // ROOM LOADING
     /** Loads in room formats from a JSON and is used to look up geometries for rooms */
@@ -66,7 +70,6 @@ private:
     bool locked = false;
     /* Whether this room's contents are currently hidden. False by default */
     bool fogged = true;
-
 
 
     // GEOMETRY

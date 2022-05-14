@@ -76,18 +76,6 @@ public:
      * @param dir   Direction to apply knockback force in
      */
     void knockback(b2Vec2 dir);
-    
-    /**
-     Record all the information needed to reset reynard to some checkpoint
-     */
-    void checkPoint(){
-        lastCheckPointPosition = _character->getPosition();
-    }
-    
-    void revert(){
-        _character->setHearts(2); //TODO change to better implementation
-        _character->setPosition(lastCheckPointPosition);
-    }
 };
 
 
