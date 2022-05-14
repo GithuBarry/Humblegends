@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 5/02/22
+//  Version: 5/06/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -202,10 +202,20 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _health->setPosition(offset + Vec2(0, getSize().height) + padding);
     _health->setScale(1.5);
 
+    _pause = scene2::PolygonNode::allocWithFile("textures/PauseScreen/Pause_Button.png");
+    _pause->setAnchor(Vec2::ANCHOR_TOP_LEFT);
+    padding = Vec2(computeActiveSize().width-100, -10);
+    _pause->setPosition(offset + Vec2(0, getSize().height) + padding);
+    _pause->setScale(0.3);
+
     addChild(_worldnode);
     addChild(_debugnode);
-    addChild(_winNode);
     addChild(_health);
+
+    addChild(_pause);
+
+    addChild(_winNode);
+
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
@@ -231,6 +241,7 @@ void GameScene::dispose() {
         _debugnode = nullptr;
         _winNode = nullptr;
         _health = nullptr;
+        _pause = nullptr;
         _complete = false;
         _debug = false;
         Scene2::dispose();
@@ -300,11 +311,8 @@ void GameScene::populateEnv() {
     MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
-    /////////////////////////////////////
-    // DEBUG: add room to scene graph
-    /////////////////////////////////////
     _grid = _envController->getGrid();
-    _grid->init(_assets, _scale, _assets->get<Texture>("overgrowth1"));
+    _grid->init(_assets, _scale);
 
     _worldnode->addChild(_grid);
     _grid->setScale(0.4);
@@ -332,7 +340,8 @@ void GameScene::populateChars(){
     // Add Reynard to physics world
     Vec2 pos_temp = _reynardController->getCharacter()->getPosition();
     _reynardController->getCharacter()->setPosition(Vec2(4,3));
-    addObstacle(_reynardController->getCharacter(), _reynardController->getSceneNode()); // Put this at the very front
+
+    addObstacle(_reynardController->getCharacter(), _reynardController->getCharacter()->_node); // Put this at the very front
     _reynardController->getCharacter()->setPosition(pos_temp);
 
 #pragma mark Enemies
@@ -358,48 +367,48 @@ void GameScene::populateChars(){
             entity_offset = levelJSON->get("tilesets")->get(i)->get("firstgid")->asInt();
         }
     }
-    
+
     // For each tile in the entity layer,
     for(int i = 0; i < entityLayer->get("data")->size(); i++){
-        
+
         // if there is something in the tile
         if(entityLayer->get("data")->get(i)->asInt() != 0){
             int tile = entityLayer->get("data")->get(i)->asInt() - entity_offset;
-            
+
             // determine if the entity corresponds to an enemy
             shared_ptr<JsonValue> temp1 =_assets->get<JsonValue>("tileset_entities")->get("tiles");
             string temp =temp1->get(tile - temp1->get(0)->get("id")->asInt())->get("image")->asString();
-            
+
             // if it is an enemy...
             if(temp.find("enemy") != string::npos){
-                
+
                 //HARDCODED
                 int room = i / 8/ 12;
                 int x = room % (levelJSON->get("width")->asInt() / 12);
                 int y = room / (levelJSON->get("width")->asInt() / 12);
                 Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() /8 -1 -y);
-                
+
                 // initialize it
 //                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(12,8), _scale, rabbit_animations));
                 _enemies->push_back(EnemyController::alloc(Vec2::ZERO, _scale, rabbit_animations));
-                
+
                 _enemies->back()->setObstacleWorld(_world);
                 _enemies->back()->setReynardController(_reynardController);
-                addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getSceneNode());
-                
-                
+                addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
+
+
                 _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1,1)) * Vec2(5,5));
             }
         }
     }
-    
+
     // Initialize EnemyController with the final animation map and store in vector of enemies
     //_enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
 //    for(shared_ptr<EnemyController> enemy : *_enemies){
 //        enemy->setObstacleWorld(_world);
 //        enemy->setReynardController(_reynardController);
-//        addObstacle(enemy->getCharacter(), enemy->getSceneNode()); // Put
+//        addObstacle(enemy->getCharacter(), enemy->getCharacter()->_node); // Put
 //    }
 
     _checkpointEnemyPos = vector<Vec2>();
@@ -432,8 +441,9 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
     obj->setDebugColor(Color4::RED);
 
     // Position the scene graph node (enough for static objects)
-    node->setPosition(obj->getPosition() * _scale);
     _worldnode->addChild(node);
+    CULog("GameScene %f %f ", (obj->getPosition() * _scale).x, (obj->getPosition() * _scale).y);
+    node->setPosition(obj->getPosition() * _scale);
 
     // Dynamic objects need constant updating
     if (obj->getBodyType() == b2_dynamicBody) {
@@ -491,26 +501,56 @@ void GameScene::update(float dt) {
         //restore
         _reynardController->getSceneNode()->setColor(Color4::WHITE);
     }
-    
-    
+
+
 
     // Variables to indicate which forms of room swap are being used
     bool usingClick = true;
     bool usingDrag = true;
 
-    bool hasSwapped = false;
+    bool triedSwap = false;
     Vec2 progressCoords = Vec2(-1, -1);
     // Room swap by click
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
-            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+            triedSwap = true;
+            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
         } else {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
     }
+    if (_input.didPress() &&(_gamestate.secondsAfterPause()>3)){
+        Vec2 node_coord = _pause->screenToNodeCoords(_input.getPosition());
+        if ((node_coord - Vec2(123,123)).length()<150){
+            _gamestate.pauseSwitch();
+            if (_gamestate.isPaused()){
+                _pause->setTexture("textures/PauseScreen/Play_Button.png");
+            }
+            return;
+        }
+    }
+    if (_gamestate.secondsAfterPause()<1){
+        _pause->setTexture("textures/PauseScreen/Pause_Count_Down_3.png");
+        return;
+    }
+    if (_gamestate.secondsAfterPause()<2){
+        _pause->setTexture("textures/PauseScreen/Pause_Count_Down_2.png");
+        return;
+    }
+    if (_gamestate.secondsAfterPause()<3){
+        _pause->setTexture("textures/PauseScreen/Pause_Count_Down_1.png");
+        return;
+    }
+    if(_gamestate.secondsAfterPause()<4){
+        _pause->setTexture("textures/PauseScreen/Pause_Button.png");
+    }
+
+
+
+
     // Room swap by drag
     if (usingDrag && !_gamestate.zoomed_in()) {
-        if (_input.didPress() && !hasSwapped) {
+        if (_input.didPress() && !triedSwap) {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
         else if (_input.didEndDrag() && _envController->hasSelected()) {
@@ -529,21 +569,17 @@ void GameScene::update(float dt) {
         //CULog("jumpin");
     }
     // When dashing right
-    else if (_input.didDashRight()) {
+    else if (_input.didDashRight() && _gamestate.zoomed_in()) {
         _reynardController->dashRight();
     }
 
     // When dashing left
-    else if (_input.didDashLeft()) {
+    else if (_input.didDashLeft() && _gamestate.zoomed_in()) {
         _reynardController->dashLeft();
     }
 
     if (_input.didZoomIn()) {
         _gamestate.zoom_in();
-        if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
-            //_gamestate.pauseSwitch();
-        }
-        // Deselect any selected rooms
         _envController->deselectRoom();
     }
 
@@ -555,16 +591,14 @@ void GameScene::update(float dt) {
 
     // When zooming out
     else if (_input.didZoomOut()) {
-        if (!_gamestate.zoomed_in() && _gamestate.finishedZooming(_worldnode->getZoom())){
-            revert(true);
+        if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
+            _gamestate.pauseSwitch();
         }
         _gamestate.zoom_out();
         _envController->deselectRoom();
     }
 
-    //if (_gamestate.isPaused()){
-    //    return;
-    //}
+
 
 
 
@@ -616,17 +650,33 @@ void GameScene::update(float dt) {
     }
 
     // Update the environment
-    _envController->update(progressCoords, _reynardController, _enemies);
+    _envController->update(progressCoords, !_gamestate.zoomed_in(), _reynardController, _enemies);
 
     // Update the UI
     if (_reynardController->getCharacter()->getHearts() >= 3) {
-        _health->setTexture("textures/Health_Bar_Full.png");
+        if (_health->getName() != "3"){
+            _health->setTexture("textures/Health_Bar_Full.png");
+            _health->setName("3");
+        }
+
     }else if (_reynardController->getCharacter()->getHearts() == 2) {
-        _health->setTexture("textures/Health_Bar_Two_Third.png");
+        if (_health->getName() != "2"){
+            _health->setTexture("textures/Health_Bar_Two_Third.png");
+            _health->setName("2");
+
+        }
     }else if (_reynardController->getCharacter()->getHearts() == 1) {
-        _health->setTexture("textures/Health_Bar_One_Third.png");
+        if (_health->getName() != "1"){
+            _health->setTexture("textures/Health_Bar_One_Third.png");
+            _health->setName("1");
+
+        }
     }else if (_reynardController->getCharacter()->getHearts() <= 0) {
-        _health->setTexture("textures/Health_Bar_None.png");
+        if (_health->getName() != "0"){
+            _health->setTexture("textures/Health_Bar_None.png");
+            _health->setName("0");
+
+        }
     }
 }
 
@@ -923,7 +973,6 @@ void GameScene::beginContact(b2Contact *contact) {
                 _reynardController->getCharacter()->slowCharacter();
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
-                //setComplete(true);
                 _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
@@ -931,6 +980,9 @@ void GameScene::beginContact(b2Contact *contact) {
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
                 trap->getPolyNode()->setColor(Color4::GREEN);
+            }
+            else if (trapType == TrapModel::TrapType::GOAL) {
+                setComplete(true);
             }
             else if (trapType == TrapModel::TrapType::TRAPDOOR) {
                 Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
