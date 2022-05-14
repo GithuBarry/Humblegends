@@ -291,7 +291,7 @@ void InputController::update(float dt) {
     if (_dashRightPressed){
         //CULog("MPInput dashed right");
     }
-    _jumpPressed = couldBeSwipe && yDist <= -EVENT_SWIPE_LENGTH && vertical;
+    _jumpPressed = couldBeSwipe && yDist <= -5 && vertical;
     if (_jumpPressed){
         CULog("MPInput jumped, dist = %f", yDist);
     }
