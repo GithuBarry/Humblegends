@@ -8,7 +8,7 @@
 //  Owner: TBD
 //  Contributors: Barry Wang
 //  Version: 2/21/22
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
@@ -88,11 +88,11 @@ public:
     bool isPaused(){
         return paused;
     }
-    
+
     bool finishedZooming(float currentScale){
         return abs(currentScale - maxZoom)<0.05 || abs(currentScale - minZoom)<0.05;
     }
-    
+
     float secondsAfterPause(){
         std::chrono::duration<float> diff = std::chrono::system_clock::now() - sinceResume;
         return diff.count();
@@ -124,7 +124,7 @@ public:
         if (paused){
             return 1;
         }
-        
+
         float result;
         if (_zoomed_in && currentZoom < maxZoom) {
             result = 1.0f + 0.02f * (maxZoom - currentZoom) * (maxZoom - currentZoom);
@@ -151,16 +151,16 @@ public:
             return Vec2();
         }
         Vec2 result;
-        int thr = 8;
-        if (reynardVelocity.y<-thr){
-            target = target + Vec2(0,(reynardVelocity.y+thr)*15);
-        }
+        //int thr = 8;
+        //if (reynardVelocity.y<-thr){
+            //            target = target + Vec2(0,(reynardVelocity.y+thr)*15);
+        //}
 
         if (_zoomed_in) {
             result = (Vec2(screenSize.width, screenSize.height) / 2 - target);
         } else {
             result = Vec2(screenSize.width, screenSize.height)/ 2  - target;
-            
+
             if (currentTranslation.x + result.x > 0) {
                 result = Vec2(-currentTranslation.x, result.y);
             }

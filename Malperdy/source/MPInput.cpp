@@ -7,12 +7,13 @@
 //  Additional reference was from the CS 4152 Geometry Lab by Walker White, 2022
 //
 //  Owner: Jordan Selin
-//  Contributors: Jordan Selin, Spencer Hurst
+//  Contributors: Jordan Selin, Spencer Hurst, Barry Wang
 //  Version: 3/07/2022
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #include "MPInput.h"
+#include <cmath>
 
 using namespace cugl;
 
@@ -95,7 +96,8 @@ InputController::InputController() :
         _pinchGesture(false),
         _zoomGesture(false),
         _panGesture(false),
-        _panOffsetMobile(cugl::Vec2::ZERO),
+        _panCurr(cugl::Vec2::ZERO),
+        _panPrev(cugl::Vec2::ZERO),
 
 //Reynard Direct Presses
         _spaceDown(false),
@@ -268,8 +270,10 @@ void InputController::update(float dt) {
 
     _zoomOutPressed = _pinchGesture;
     _zoomInPressed = _zoomGesture;
+
     _isScrolling = _panGesture;
-    _scrollOffset = _panOffsetMobile;
+    _scrollOffset = _panCurr - _panPrev;
+    _panPrev = _panCurr;
 
     _currDrag = _touchDragging;
     _dragStart = _touchStartPos;
@@ -278,23 +282,14 @@ void InputController::update(float dt) {
     if (_currDown && _prevDown) {
         _touchTime += dt;
     }
-    bool couldBeDash = didRelease() && _touchTime <= EVENT_SWIPE_TIME;
+    bool couldBeSwipe = didRelease() && _touchTime <= EVENT_SWIPE_TIME;
     float xDist = (_currPos - _touchStartPos).x;
-    _dashLeftPressed = couldBeDash && xDist <= (-1) * EVENT_SWIPE_LENGTH;
-    if (_dashLeftPressed){
-        //CULog("MPInput dashed left");
-        
-    }
-    _dashRightPressed = couldBeDash && xDist >= EVENT_SWIPE_LENGTH;
-    if (_dashRightPressed){
-        
-     //CULog("MPInput dashed right");
-}
-    
-    _jumpPressed = didRelease() && !_dashLeftPressed && !_dashRightPressed;
-    //if (_jumpPressed){
-        //CULog("MPInput jumped");
-//}
+    float yDist = (_currPos - _touchStartPos).y;
+    bool vertical = abs(yDist) > abs(xDist);
+    _dashLeftPressed = couldBeSwipe && xDist <= -EVENT_SWIPE_LENGTH && !vertical;
+    _dashRightPressed = couldBeSwipe && xDist >= EVENT_SWIPE_LENGTH && !vertical;
+    _jumpPressed = couldBeSwipe && abs(xDist) < EVENT_SWIPE_LENGTH; //Release to jump
+    //_jumpPressed = couldBeSwipe && yDist <= -5 && vertical; //SWIPE UP TO JUMP
 
 #endif
 
@@ -393,13 +388,8 @@ void InputController::touchBeginCB(const cugl::TouchEvent &event, bool focus) {
         _currentTouch = event.touch;
         _touchPos = event.position;
         _touchStartPos = event.position;
+        _touchTime = 0;
     }
-    std::chrono::duration<float> diff = std::chrono::system_clock::now() - _lastTouchBegan;
-    //CULog("%f",diff.count());
-    if (diff.count() <0.2){
-        doubleTap = true;
-    }
-    _lastTouchBegan = std::chrono::system_clock::now();
 }
 
 /*
@@ -450,7 +440,8 @@ void InputController::multiBeginCB(const cugl::CoreGestureEvent &event, bool foc
 void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool focus) {
     if (event.type == CoreGestureType::PINCH) {
         _panGesture = false;
-        _panOffsetMobile = Vec2::ZERO;
+        _panPrev = Vec2::ZERO;
+        _panCurr = Vec2::ZERO;
         float spreadDiff = event.currSpread - event.origSpread;
         _pinchGesture = spreadDiff < -EVENT_SPREAD_LENGTH;
         _zoomGesture = spreadDiff > EVENT_SPREAD_LENGTH;
@@ -459,11 +450,12 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool fo
         Vec2 scrollVec = event.currPosition - event.origPosition;
         _panGesture = scrollVec.length() > EVENT_SWIPE_LENGTH;
         if (_panGesture) {
-            _panOffsetMobile = scrollVec;
+            _panCurr = event.currPosition;
         }
     } else {
         _panGesture = false;
-        _panOffsetMobile = Vec2::ZERO;
+        _panPrev = Vec2::ZERO;
+        _panCurr = Vec2::ZERO;
         _pinchGesture = false;
         _zoomGesture = false;
     }
@@ -480,6 +472,7 @@ void InputController::multiEndCB(const cugl::CoreGestureEvent &event, bool focus
     _pinchGesture = false;
     _zoomGesture = false;
     _panGesture = false;
-    _panOffsetMobile = Vec2::ZERO;
+    _panPrev = Vec2::ZERO;
+    _panCurr = Vec2::ZERO;
     _inMulti = false;
 }

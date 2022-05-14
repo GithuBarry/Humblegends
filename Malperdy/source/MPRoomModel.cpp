@@ -152,12 +152,13 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
  * @return          true if the room is initialized properly, false otherwise.
  */
 bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {
-	// Add node for background texture if there is one
+    // Add node for background texture if there is one
 	if (bg != nullptr) {
         // Set background node's texture
 		shared_ptr<scene2::PolygonNode> bgNode = scene2::PolygonNode::allocWithTexture(bg);
 		bgNode->setPolygon(Rect(0, 0, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT));
 		addChild(bgNode);
+        _bgNode = bgNode;
 	}
 
 	// Build geometry for the room type with the given ID
@@ -234,6 +235,35 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
     return true;
 }
 
+/**
+* Execute animations
+* 
+* @return whether it finished and does not need any more updates
+*/
+bool RoomModel::update() {
+    if ((Vec2(destination.x * DEFAULT_ROOM_WIDTH, destination.y * DEFAULT_ROOM_HEIGHT)).distance(SceneNode::getPosition()) < 10) {
+        this->setPosition(destination.x, destination.y);
+        return true;
+    }
+    float cur_x = SceneNode::getPosition().x;
+    float cur_y = SceneNode::getPosition().y;
+    float diff_x = destination.x * DEFAULT_ROOM_WIDTH - cur_x;
+
+    float speed = 0.7; //0.5001-0.9999, lower the slower
+
+
+    if (abs(destination.x * DEFAULT_ROOM_WIDTH - cur_x) < 5) {
+        this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH, destination.y * DEFAULT_ROOM_HEIGHT * (speed)+cur_y * (1 - speed));
+    }
+    else {
+        float yfactor = 1 / (abs(diff_x) / 100 + 1);
+
+        this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH * (speed)+cur_x * (1 - speed), destination.y * (yfactor)*DEFAULT_ROOM_HEIGHT + cur_y * (1 - yfactor));
+    }
+
+    return false;
+}
+
 #pragma mark Destructors
 /**
  * Disposes all resources and assets of this room.
@@ -246,5 +276,3 @@ void RoomModel::dispose() {
 	_physicsGeometry = nullptr;
     _lockIcon = nullptr;
 }
-
-//void RoomModel::draw() {}

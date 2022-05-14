@@ -56,6 +56,10 @@ using namespace cugl;
 #define DEFAULT_ROOM_ID "leftrightupdown"
 
 class RoomModel : public cugl::scene2::SceneNode {
+public:
+    /** Pointer to the node that displays the room background */
+    shared_ptr<scene2::PolygonNode> _bgNode;
+
 private:
     // ROOM LOADING
     /** Loads in room formats from a JSON and is used to look up geometries for rooms */
@@ -66,7 +70,6 @@ private:
     bool locked = false;
     /* Whether this room's contents are currently hidden. False by default */
     bool fogged = true;
-
 
 
     // GEOMETRY
@@ -256,31 +259,7 @@ public:
      * Change position gradually
      * @return whether it finished and does not need any more updates
      */
-    bool update(){
-        if ((Vec2(destination.x * DEFAULT_ROOM_WIDTH, destination.y * DEFAULT_ROOM_HEIGHT)).distance(SceneNode::getPosition())<10){
-            this->setPosition(destination.x, destination.y);
-            return true;
-        }
-        float cur_x =  SceneNode::getPosition().x;
-        float cur_y =  SceneNode::getPosition().y;
-        float diff_x = destination.x * DEFAULT_ROOM_WIDTH - cur_x;
-
-        float speed = 0.2; //0.1001-0.9999, lower the slower
-
-
-        if (abs(destination.x * DEFAULT_ROOM_WIDTH - cur_x)<5){
-            this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH, destination.y * DEFAULT_ROOM_HEIGHT*(speed)+ cur_y*(1-speed));
-        }
-        else{
-            float yfactor = 1/(abs(diff_x)/100+1);
-
-            this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH*(speed)+ cur_x*(1-speed), destination.y*(yfactor) * DEFAULT_ROOM_HEIGHT+cur_y*(1-yfactor));
-        }
-
-
-        return false;
-    }
-
+    bool update();
 
 };
 
