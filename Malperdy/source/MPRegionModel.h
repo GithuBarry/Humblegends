@@ -22,7 +22,7 @@
 #include <cugl/cugl.h>
 #include <map>
 
-#include <MPRoomModel.h>
+#include "MPRoomModel.h"
 
 using namespace cugl;
 
