@@ -293,7 +293,7 @@ void InputController::update(float dt) {
     }
     _jumpPressed = couldBeSwipe && yDist <= -EVENT_SWIPE_LENGTH && vertical;
     if (_jumpPressed){
-        //CULog("MPInput jumped");
+        CULog("MPInput jumped, dist = %f", yDist);
     }
 
 #endif
