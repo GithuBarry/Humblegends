@@ -99,8 +99,11 @@ protected:
     /** A store position of reynard before reset*/
     Vec2 _checkpointReynardPos = reynardDefault;
 
-    /**/
+    /* Offset of scrolling */
     Vec2 scrollingOffset = Vec2();
+
+    /** A store position of room swapping history */
+    vector<vector<Vec2>> _swapHistory;
 
     /**Workaround for wall jump corner stuck*/
     int corner_num_frames_workaround = 0;
@@ -134,11 +137,117 @@ protected:
      */
     void populateChars();
 
+    /**
+     * Save all the states of the game to a file
+     */
+    void rewriteSaveFile(){
+        //Init a JSON file
+        vector<std::string> file_path_list =vector<std::string>(2);
+        file_path_list[0] = Application::get()->getSaveDirectory();
+        file_path_list[1] = "state.json";
+        if (filetool::file_exists(cugl::filetool::join_path(file_path_list))){
+            cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
+        }
+        shared_ptr<JsonWriter> jw = JsonWriter::alloc(cugl::filetool::join_path(file_path_list));
+
+        /**
+         * JSON structure:
+         * "state.json"
+         *  - "EnemyPos" :      [enemy1Pos's x, enemy1Pos's y, ...]
+         *  - "ReynardPos" :    [reynardPos's x, reynardPos's y]
+         *  - "RoomSwap" :     [Swap1-Room1-x, Swap1-Room1-y, Swap1-Room2-x, Swap1-Room2-y, Swap2....]
+         */
+        //Init json objects
+        std::shared_ptr<JsonValue> jsonRoot = JsonValue::alloc(JsonValue::Type::ObjectType);
+        jsonRoot->initObject();
+
+        // JSON - Enemy
+        std::shared_ptr<JsonValue> jsonEnemyPos = JsonValue::alloc(JsonValue::Type::ArrayType);
+        jsonEnemyPos->initArray();
+        for (auto thisEnemy: *_enemies){
+            jsonEnemyPos->appendValue(thisEnemy->getCharacter()->getPosition().x);
+            jsonEnemyPos->appendValue(thisEnemy->getCharacter()->getPosition().y);
+        }
+        jsonRoot->appendChild("EnemyPos",jsonEnemyPos);
+
+        // JSON - Reynard
+        std::shared_ptr<JsonValue> jsonReynardPos = JsonValue::alloc(JsonValue::Type::ArrayType);
+        jsonReynardPos->initArray();
+        jsonReynardPos->appendValue(_reynardController->getCharacter()->getPosition().x);
+        jsonReynardPos->appendValue(_reynardController->getCharacter()->getPosition().y);
+        jsonRoot->appendChild("ReynardPos",jsonReynardPos);
+
+        // JSON - Room Swapping
+        std::shared_ptr<JsonValue> jsonRoomSwap = JsonValue::alloc(JsonValue::Type::ArrayType);
+        jsonRoomSwap->initArray();
+        int hisotoryLen = static_cast<int>(_envController->getSwapHistory().size());
+        for(int i = 0; i < hisotoryLen; i++){
+            jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][0].x);
+            jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][0].y);
+            jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][1].x);
+            jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][1].y);
+        }
+        jsonRoot->appendChild("RoomSwap",jsonRoomSwap);
+
+        // Save JSON file
+        jw->writeJson(jsonRoot);
+        jw->flush();
+        jw->close();
+    }
 
     /**
-     Revert the game state to the last state
-     */
-    void revert();
+    * Save all the states of the game to a file
+    */
+    bool readSaveFile(){
+        //Init a JSON
+        vector<std::string> file_path_list =vector<std::string>(2);
+        file_path_list[0] = Application::get()->getSaveDirectory();
+        file_path_list[1] = "state.json";
+        if (!filetool::file_exists(cugl::filetool::join_path(file_path_list))){
+            return false;
+        }
+        shared_ptr<JsonReader> jr = JsonReader::alloc(cugl::filetool::join_path(file_path_list));
+        jr->reset();
+        if (!jr->ready()){
+            cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
+            return false;
+        }
+        std::shared_ptr<JsonValue> jsonRoot = jr->readJson();
+
+        //Read files
+        std::vector<float> enemyPos1D = jsonRoot->get("EnemyPos")->asFloatArray();
+        std::vector<float> reynardPos1D = jsonRoot->get("ReynardPos")->asFloatArray();
+        std::vector<float> swapHistory1D = jsonRoot->get("RoomSwap")->asFloatArray();
+        if (enemyPos1D.size() % 2 != 0 || reynardPos1D.size() != 2 || swapHistory1D.size() % 4 != 0){
+            cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
+            return false;
+        }
+
+        // JSON - Enemy
+        int index = 0;
+        _checkpointEnemyPos = vector<Vec2>();
+        for (int i  =0; i < enemyPos1D.size(); i+=2){
+            _checkpointEnemyPos.push_back(Vec2(enemyPos1D[index],enemyPos1D[index+1]));
+        }
+
+        // JSON - Reynard
+        _checkpointReynardPos = Vec2(reynardPos1D[0],reynardPos1D[1]);
+
+        // JSON - Room Swapping
+        std::shared_ptr<JsonValue> jsonRoomSwap = JsonValue::alloc(JsonValue::Type::ObjectType);
+        jsonRoomSwap->initArray();
+        _checkpointSwapLen = static_cast<int>(swapHistory1D.size() / 4);
+        int hisotoryLen = static_cast<int>(swapHistory1D.size());
+        _swapHistory = vector<vector<Vec2>>();
+        for(int i = 0; i < hisotoryLen; i+=4){
+            vector<Vec2> thisSwap = vector<Vec2>();
+            thisSwap.push_back(Vec2(swapHistory1D[i],swapHistory1D[i+1]));
+            thisSwap.push_back(Vec2(swapHistory1D[i+2],swapHistory1D[i+3]));
+            _swapHistory.push_back(thisSwap);
+        }
+
+        return true;
+    }
 
     /**
      * Adds the physics object to the physics world and loosely couples it to the scene graph
