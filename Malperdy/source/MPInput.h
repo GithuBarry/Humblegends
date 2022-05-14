@@ -49,7 +49,7 @@ protected:
     /* Whether the user is scrolling */
     bool _isScrolling;
     /* 
-     * The difference between the scroll start and end positions, if currently scrolling
+     * The difference between the scroll position this frame and last frame, if currently scrolling
      * Otherwise (0,0) if there is no current scroll
      */
     cugl::Vec2 _scrollOffset;
@@ -150,8 +150,10 @@ private:
     bool _zoomGesture;
     /* Whether a scroll gesture was detected */
     bool _panGesture;
-    /* The offset from the start of the pan */
-    cugl::Vec2 _panOffsetMobile;
+    /* The current pan position */
+    cugl::Vec2 _panCurr;
+    /* The previous pan position */
+    cugl::Vec2 _panPrev;
 
 public:
 #pragma mark -
@@ -272,10 +274,10 @@ public:
     }
 
     /**
-     * Returns the offset of the current scroll, if there is a current scroll.
+     * Returns the offset of the current scroll since the last frame, if there is a current scroll.
      * Otherwise returns zero if there is no current scroll.
      *
-     * @return the offset of the current scroll, if there is one
+     * @return the offset of the current scroll since the last frame, if there is one
      *         zero if there is no current scroll
      */
     cugl::Vec2 scrollOffset() const {
