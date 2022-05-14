@@ -23,6 +23,7 @@
 #include <map>
 
 #include "MPRoomModel.h"
+#include "MPAudioController.h"
 
 using namespace cugl;
 

@@ -332,7 +332,13 @@ void AudioQueue::play(const std::shared_ptr<audio::AudioNode>& graph, bool loop,
 const std::string AudioQueue::current() const {
     CUAssertLog(_cover != nullptr, "Attempt to use a disposed audio queue");
     std::shared_ptr<audio::AudioNode> source = accessInstance(_queue->getCurrent());
+    if (source == nullptr)
+    {
+        return "";
+    }
+    
     std::string id = source->getName();
+
     AudioPlayer* player = dynamic_cast<AudioPlayer*>(source.get());
     if (player && id == "__queue_playback__") {
         id = player->getSource()->getFile();

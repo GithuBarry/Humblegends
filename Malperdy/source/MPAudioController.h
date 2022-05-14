@@ -7,15 +7,60 @@
 
 using namespace cugl;
 
-class MPAudioController {
+/* Sound */
+/* Play these with MPAudioController::playAudio(_assets, XYZ_SOUND_GOES_HERE, false, 1, false); */
+#define BUMP_SOUND "bump"
+#define JUMP_SOUND "jump"
+#define LAND_SOUND "land"
+#define SWAP_SOUND "swap_room"
+#define NOSWAP_SOUND "noswap"
+#define CHECKPOINT_SOUND "checkpoint"
+/* Play these with MPAudioController::playAudio(_assets, XYZ_MUSIC_GOES_HERE, false, 1, true); */
+#define LEVEL_MUSIC "level_music"
+
+class AudioController {
+private:
+	/** Store a reference to the assets for easy access */
+	static std::shared_ptr<cugl::AssetManager>& _assets;
+
+	static void playAudio(string sound, bool loop, float vol, bool isMusic);
 
 public:
 
-	static void playAudio(std::shared_ptr<cugl::AssetManager>& assets, string sound, bool loop, float vol, bool isMusic);
+	/**
+	 * Initializes the audio controller by giving it a reference to the sound assets
+	 * it will be using.
+	 * 
+	 * @param assets	Reference to the asset manager with the sounds
+	 */
+	static void init(std::shared_ptr<cugl::AssetManager>& assets) { _assets = assets; }
 
-	static bool isPlaying(string sound);
+#pragma mark Playing/Stopping
+	/**
+	 * Plays a sound effect with the given volume. A sound effect plays once and
+	 * then stops, and does not loop.
+	 * 
+	 * @param sound	The name of the sound to play (USE THE MACROS IN AUDIOCONTROLLER)
+	 * @param vol	The relative volume at which to play the sound (1 by default)
+	 */
+	static void playSFX(string sound, float vol=1.0f) {
+		playAudio(sound, false, vol, false);
+	}
 
-	static void stopAudio(std::shared_ptr<cugl::AssetManager>& assets, string sound, bool isMusic, float fadeAmount);
+	/**
+	 * Plays a music track with the given volume. A music track plays once and then
+	 * loops.
+	 *
+	 * @param sound	The name of the music to play (USE THE MACROS IN AUDIOCONTROLLER)
+	 * @param vol	The relative volume at which to play the music (1 by default)
+	 */
+	static void playMusic(string sound, float vol=1.0f) {
+		playAudio(sound, true, vol, true);
+	}
+
+	static bool isPlaying(string sound, bool isMusic);
+
+	static void stopAudio(string sound, bool isMusic, float fadeAmount);
 
 	static void setVolume(string sound, bool isMusic, float vol, bool isRel);
 };

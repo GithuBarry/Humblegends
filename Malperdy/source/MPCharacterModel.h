@@ -42,6 +42,19 @@ using namespace cugl;
 #define JUMP_SPEED 12.5f
 
 class CharacterModel : public cugl::physics2::CapsuleObstacle {
+private:
+#pragma mark Constants
+
+    /** The texture for the character avatar */
+    const string CHARACTER_TEXTURE;
+
+    /** The amount of time in between each frame update */
+    const float FRAME_TIME = 0.03;
+
+    /** The duration in milliseconds of a dash */
+    const Uint64 DASH_DURATION = 150;
+    const Uint64 DASH_COOLDOWN = 1150;
+
 public:
     /** Enum representing the current state of movement that the character is in */
     enum class MovementState : int {
@@ -76,25 +89,10 @@ protected:
     /** represents the actual frame of animation, invariant to texture flips */
     int _currFrame = 0;
 
-    /** if the character has dashed since last touching the ground */
-    bool _hasDashed = false;
-
     /** the time that the last dash started */
     Timestamp _dashStart = Timestamp();
 
 #pragma mark -
-#pragma mark Constants
-
-    /** The texture for the character avatar */
-    const string CHARACTER_TEXTURE;
-
-    /** The amount of time in between each frame update */
-    const float FRAME_TIME = 0.03;
-
-    /** The duration in milliseconds of a dash */
-    const Uint64 DASH_DURATION = 200;
-    const Uint64 DASH_COOLDOWN = 800;
-
 #pragma mark Attributes
 
     /** The dictionary of all character animations */
@@ -271,11 +269,6 @@ public:
         _speed = RUN_SPEED;
     }
 
-    /** whether or not the character can dash */
-    bool canDash() {
-        return (Timestamp().ellapsedMillis(_dashStart) > DASH_COOLDOWN);
-    }
-
     /**
      * Sets the character's direction to be facing in the opposite direction that
      * it is currently facing in.
@@ -385,10 +378,15 @@ public:
      * Sets the character's movement state, changing physical attributes
      * accordingly as necessary.
      *
+     * The second argument can be used to pass in relevant info for a specific
+     * state change (defaults to 0).
+     * - To DASHING: this indicates the direction of the dash (-1 or 1)
+     *
      * @param state The new movement state the character should be in
+     * @param param An argument that can be used for additional state change info
      * @return      Whether the state change happened successfully
      */
-    bool setMoveState(MovementState newState);
+    bool setMoveState(MovementState newState, int param=0);
 
     /**
      * Sets the current position for this physics body

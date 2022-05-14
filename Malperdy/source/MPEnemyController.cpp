@@ -208,8 +208,6 @@ void EnemyController::reyCast() {
                 if (!isMyBody){
                     return -1;
                 }
-                
-
                 return fraction;
             },
             _character->getPosition(), _reynard->getCharacter()->getPosition());
