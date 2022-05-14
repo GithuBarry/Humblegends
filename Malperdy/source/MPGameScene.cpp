@@ -424,6 +424,13 @@ void GameScene::populateChars(){
 
 void GameScene::populateTutorials(){
     _tutorials = make_shared<vector<std::shared_ptr<Tutorial>>>();
+    //TODO: LAST STEP IS TO FUCKING MAKE A REFERENCE IN ASSETS JSON
+    createTutorial(Vec2(1,4), 3, 3, "DashTutorial");
+    createTutorial(Vec2(4,4), 3, 3, "JumpTutorial");
+    createTutorial(Vec2(7,4), 3, 3, "SwapTutorial");
+    createTutorial(Vec2(10,4), 3, 3, "ZoomInTutorial");
+    createTutorial(Vec2(13,4), 3, 3, "ZoomOutTutorial");
+
 }
 
 void GameScene::createTutorial(Vec2 pos, float width, float height, string TextureName){

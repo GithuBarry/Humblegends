@@ -48,6 +48,21 @@
     "rabbit_idle": {
       "file": "textures/rabbit_idling.png"
     },
+    "DashTutorial": {
+      "file": "textures/tutorial/TutorialDash.png"
+    },
+    "JumpTutorial": {
+      "file": "textures/tutorial/TutorialJump.png"
+    },
+    "SwapTutorial": {
+      "file": "textures/tutorial/TutorialSwapRoom.png"
+    },
+    "ZoomInTutorial": {
+      "file": "textures/tutorial/TutorialZoomIn.png"
+    },
+    "ZoomOutTutorial": {
+      "file": "textures/tutorial/TutorialZoomOut.png"
+    },
     "bg-r1-1": {
       "file": "textures/environment/BG_R1_1.png"
     },
