@@ -33,8 +33,6 @@ using namespace std;
 #define SCENE_WIDTH 1024
 #define SCENE_HEIGHT 576
 
-#define LEVEL_MUSIC "level_music"
-
 /** Width of the game world in Box2d units */
 #define DEFAULT_WIDTH   32.0f
 
@@ -60,13 +58,8 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 /** Opacity of the physics outlines {@example} */
 #define SOME_COLOR   Color4::YELLOW
 
-/** The key for collisions sounds {@example} */
-
-#define SOME_SOUND     "somesoundname"
-
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
-
 
 float REYNARD_POS[] = {30, 10};
 
@@ -176,8 +169,6 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     Vec2 offset;
 
 
-
-
     //CULog("Size: %f %f", getSize().width, getSize().height);
     // Create the scene graph
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
@@ -220,7 +211,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
 
-    populate();
+    //populate();
+    revert(false);
     _active = true;
     _complete = false;
 
@@ -262,7 +254,9 @@ void GameScene::reset() {
 }
 
 void GameScene::revert(bool totalReset){
-    vector<vector<Vec2>> swapHistory = _envController->getSwapHistory();
+//    _swapHistory = _envController->getSwapHistory();
+    readSaveFile();
+    scrollingOffset = Vec2();
 
     _reynardController = nullptr;
     _grid = nullptr;
@@ -280,7 +274,7 @@ void GameScene::revert(bool totalReset){
         populateEnv();
         populateChars();
         for (int i = 0; i<_checkpointSwapLen; i++) {
-            _envController->swapRoomOnGrid(swapHistory[i][0],swapHistory[i][1],true);
+            _envController->swapRoomOnGrid(_swapHistory[i][0],_swapHistory[i][1],true);
         }
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
         for (int i = 0; i < _enemies->size(); i++){
@@ -308,7 +302,7 @@ void GameScene::populate() {
 }
 
 void GameScene::populateEnv() {
-    MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
+    AudioController::playMusic(LEVEL_MUSIC);
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     _grid = _envController->getGrid();
@@ -512,8 +506,15 @@ void GameScene::update(float dt) {
     // Room swap by click
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
+            if (_envController->swapWithSelected(inputPos, _reynardController, _enemies))
+            {
+                AudioController::playSFX(SWAP_SOUND);
+            }
+            else
+            {
+                AudioController::playSFX(NOSWAP_SOUND);
+            }
             triedSwap = true;
-            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
         } else {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
@@ -553,28 +554,51 @@ void GameScene::update(float dt) {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
         else if (_input.didEndDrag() && _envController->hasSelected()) {
-            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+            if (_envController->swapWithSelected(inputPos, _reynardController, _enemies))
+            {
+                AudioController::playSFX(SWAP_SOUND);
+            }
+            else
+            {
+                AudioController::playSFX(NOSWAP_SOUND);
+            }
         }
         if (_input.isDragging() && _envController->hasSelected()) {
             progressCoords = inputPos;
         }
     }
 
+    if (_input.isScrolling() && !_gamestate.zoomed_in()) {
+        Vec2 incrementalOffset = _input.getPosition()- lastFramePos;
+        scrollingOffset = scrollingOffset + Vec2(incrementalOffset.x,-incrementalOffset.y);
+    }
+    if (_gamestate.zoomed_in()){
+        scrollingOffset = Vec2();
+        lastFramePos = Vec2();
+    }
+
     // Only allow jumping while zoomed in
     if (_input.didJump() && _gamestate.zoomed_in()) {
+        bool i = _reynardController->isGrounded();
+        bool j = _reynardController->getCharacter()->isOnWall();
+
+        if (i || j)
+        {
+            //TODO: DELETE THIS DEBUGGING STUFF
+            cout << "Grounded: %d" + i << endl;
+            cout << "Walled: %d" + j << endl;
+            AudioController::playSFX(JUMP_SOUND);
+        }
+
         _reynardController->jump();
         corner_num_frames_workaround = 0;
         //cout << "Press Jump Button" << endl;
         //CULog("jumpin");
     }
-    // When dashing right
-    else if (_input.didDashRight() && _gamestate.zoomed_in()) {
-        _reynardController->dashRight();
-    }
 
-    // When dashing left
-    else if (_input.didDashLeft() && _gamestate.zoomed_in()) {
-        _reynardController->dashLeft();
+    // If dash was pressed
+    else if (_input.getDashDirection() != 0 && _gamestate.zoomed_in()) {
+        _reynardController->dash(_input.getDashDirection());
     }
 
     if (_input.didZoomIn()) {
@@ -591,14 +615,11 @@ void GameScene::update(float dt) {
     // When zooming out
     else if (_input.didZoomOut()) {
         if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
-            _gamestate.pauseSwitch();
+            //_gamestate.pauseSwitch();
         }
         _gamestate.zoom_out();
         _envController->deselectRoom();
     }
-
-
-
 
 
 
@@ -633,7 +654,8 @@ void GameScene::update(float dt) {
     bool faceRight = _reynardController->getCharacter()->isFacingRight();
     Vec2 reynardVelocity = _reynardController->getCharacter()->getLinearVelocity();
 
-    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(), faceRight,reynardVelocity));
+
+    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition-scrollingOffset, _scale, getSize(), faceRight,reynardVelocity));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
@@ -677,6 +699,7 @@ void GameScene::update(float dt) {
 
         }
     }
+    lastFramePos = _input.getPosition();
 }
 
 #pragma mark -
@@ -979,6 +1002,10 @@ void GameScene::beginContact(b2Contact *contact) {
                 for (auto thisEnemy: *_enemies){
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
+
+                rewriteSaveFile();
+
+
                 // Handle what to do when the checkpoint is hit
                 // Turn it green
                 trap->getPolyNode()->setColor(Color4::GREEN);
@@ -1000,6 +1027,7 @@ void GameScene::beginContact(b2Contact *contact) {
             }
             else if (isThisAReynardGroundContact(contact)) {
                 resolveReynardGroundOnContact();
+                //MPAudioController::playAudio(_assets, LAND_SOUND, false, 1, false);
             }
             else {
                 //CULog("Non-checked contact occured with Reynard");
@@ -1182,3 +1210,5 @@ void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
 Vec2 GameScene::inputToGameCoords(Vec2 inputCoords) {
     return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }
+
+

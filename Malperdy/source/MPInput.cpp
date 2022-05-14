@@ -24,7 +24,7 @@ using namespace cugl;
 /** How far we must move for a drag */
 #define EVENT_DRAG_LENGTH  100
 /** How far we must swipe left, right, up or down for a gesture */
-#define EVENT_SWIPE_LENGTH  200
+#define EVENT_SWIPE_LENGTH  100
 /** How fast we must swipe left or right for a gesture (in milliseconds) */
 #define EVENT_SWIPE_TIME   1000
 /** How far we must pinch or zoom for a gesture */
@@ -449,6 +449,7 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool fo
     }
     else if (event.type == CoreGestureType::PAN) {
         Vec2 scrollVec = event.currPosition - event.origPosition;
+        _panGesture = true;
         _panGesture = scrollVec.length() > EVENT_SWIPE_LENGTH;
         if (_panGesture) {
             _panCurr = event.currPosition;
