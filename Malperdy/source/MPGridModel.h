@@ -18,12 +18,19 @@
 #include <cugl/cugl.h>
 #include "MPRoomModel.h"
 #include "MPGridLoader.h"
+#include "MPRegionModel.h"
+#include "MPCheckpoint.h"
+
+#define DEFAULT_REGION 1
 
 using namespace cugl;
 
 class GridModel : public cugl::scene2::SceneNode {
 
 private:
+    /** Reference to asset manager */
+    shared_ptr<cugl::AssetManager> _assets;
+
     // GRID LOADING
     /** Loads in grid format  from a JSON and is used to look up roomIDs for rooms */
     static shared_ptr<GridLoader> _gridLoader;
@@ -31,11 +38,20 @@ private:
     /** Horizontal gap between rooms in SCREEN SPACE  */
     float _horizontal_gap;
 
-    /** Verticle gap between rooms in SCREEN SPACE  */
+    /** Vertical gap between rooms in SCREEN SPACE  */
     float _vertical_gap;
 
+    /** Dimensions of a room in tiles */
+    int _roomWidth, _roomHeight;
+
+    /** Size of each tile in pixels */
+    int _tileSize;
+
+    /** Rooms tileset */
+    shared_ptr<JsonValue> _roomsTileset;
+
     /**
-     * Size of the level (in units of number of rooms )
+     * Size of the entire level, spanning all regions (in units of number of rooms )
      * _size[0] is the width, _size[1] is the height
      */
     Vec2 _size = Vec2(3, 3);
@@ -45,12 +61,15 @@ private:
     /*
      * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
      */
-    shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> _grid;
+    //shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> _grid;
 
     /*
      * Holds all the physics objects of the grid
      */
     vector<vector<vector<shared_ptr<physics2::PolygonObstacle>>>> _physicsGeometry;
+
+    /** The regions that form the entire level */
+    shared_ptr<vector<shared_ptr<RegionModel>>> _regions;
 
 public:
 #pragma mark Constructors
@@ -71,12 +90,43 @@ public:
         return (result->init(assets) ? result : nullptr);
     }
 
+private:
+    /**
+     * Initializes and returns a grid of rooms with the given dimensions.
+     *
+     * @param width     The width/number of columns of rooms that the grid should have
+     * @param height    The height/number of rows of rooms that the grid should have
+     * @return          The initialized grid with the given dimensions
+     */
+    shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> initGrid(int width, int height);
+
+    /**
+     * Initializes a region for the game. The region is placed such that its
+     * lower left corner, its region origin, is at the given coordinates in the
+     * overall grid space.
+     * 
+     * Note that everything here uses REGION space, not grid space. The only coordinates
+     * in grid space are the region's origin, which will be used to organize the regions,
+     * but otherwise regions only care about where things are relative to their origin.
+     *
+     * TODO: currently this just pretends that the whole region is
+     * one sublevel, needs to be fixed to account for different sublevels
+     * once we're able to identify that from the level data
+     *
+     * @param regNum        The number of the region to initialize
+     * @param originX       The x-coordinate of the region origin in grid space
+     * @param originY       The y-coordinate of the region origin in grid space
+     * @param regionJSON    The JSON for the given region
+     */
+    void initRegion(int regNum, int originX, int originY, shared_ptr<JsonValue> regionJSON);
+    
+public:
     /**
      * Deafult init
      * @param json - whether to use json loader or not
      * @return a grid with 3x3 rooms, each room the default
      */
-    bool init(shared_ptr<AssetManager> assets, float scale = 1,  shared_ptr<Texture> bg = nullptr);
+    bool init(shared_ptr<AssetManager> assets, float scale = 1);
 
 #pragma mark Destructors
     /**
@@ -104,9 +154,6 @@ public:
     int getHeight() const {
         return _size.y;
     }
-
-    /** Returns a 1-D vector of all the rooms */
-    vector<shared_ptr<RoomModel>> getRooms();
 
     /**
      * Returns the ptr to the room located at the given coordinate,
@@ -136,6 +183,18 @@ public:
      */
     shared_ptr<RoomModel> getRoom(int x, int y);
 
+private:
+    /**
+     * Helper function that returns the number of the region that the given
+     * GRID space coordinates are located within.
+     * 
+     * @param x     An x-coordinate in GRID space
+     * @param y     A y-coordinate in GRID space
+     * @return      The region # (1-3) that these coordinates are in, or 0 if not found
+     */
+    int getRegion(int x, int y);
+
+public:
     /**
      * Returns a shared pointer to the vector of physics objects that compose
      * the geometry of all rooms in the grid.
@@ -229,6 +288,16 @@ public:
     void calculatePhysicsGeometry();
 
     shared_ptr<physics2::PolygonObstacle> makeStaticFromPath(Path2 path);
+
+#pragma mark Checkpoints
+    /**
+     * Clears all the rooms associated with the checkpoint with the given ID (backgrounds
+     * are swapped to the "cleared" option for the associated region).
+     *
+     * @param cID	The unique ID number for a specific checkpoint
+     * @return		Whether the checkpoint's associated rooms were cleared successfully
+     */
+    bool clearCheckpoint(int cID);
 };
 
 

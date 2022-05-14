@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 5/02/22
+//  Version: 5/06/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -61,6 +61,9 @@ protected:
 
     /** Reference to the health bar scene node */
     std::shared_ptr<cugl::scene2::PolygonNode> _health;
+    
+    /** Reference to the pause button */
+    std::shared_ptr<cugl::scene2::PolygonNode> _pause;
 
     /** Reference to the pause button scene node */
     std::shared_ptr<cugl::scene2::PolygonNode> _pauseButton;
@@ -128,10 +131,7 @@ protected:
     /**
      Revert the game state to the last state
      */
-    void revert(){
-        //_envController->revertHistory();
-        _reynardController->revert();
-    }
+    void revert();
 
     /**
      * Adds the physics object to the physics world and loosely couples it to the scene graph
@@ -292,6 +292,7 @@ public:
     void setComplete(bool value) {
         _complete = value;
         _winNode->setVisible(value);
+        //_health->setVisible(!value);
     }
 
 

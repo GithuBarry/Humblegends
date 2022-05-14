@@ -7,7 +7,7 @@
 //  Additional reference was from the CS 4152 Geometry Lab by Walker White, 2022
 //
 //  Owner: Jordan Selin
-//  Contributors: Jordan Selin, Spencer Hurst
+//  Contributors: Jordan Selin, Spencer Hurst, Barry Wang
 //  Version: 3/07/2022
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
@@ -16,7 +16,7 @@
 #define __MP_INPUT_H__
 
 #include <cugl/cugl.h>
-static bool doubleTap = false;
+
 /* This class represents player input in Malperdy. */
 class InputController {
 // Common fields are protected
@@ -49,7 +49,7 @@ protected:
     /* Whether the user is scrolling */
     bool _isScrolling;
     /* 
-     * The difference between the scroll start and end positions, if currently scrolling
+     * The difference between the scroll position this frame and last frame, if currently scrolling
      * Otherwise (0,0) if there is no current scroll
      */
     cugl::Vec2 _scrollOffset;
@@ -135,10 +135,6 @@ private:
     cugl::Vec2 _touchEndPos;
     /* The length (in time) of the current touch */
     float _touchTime;
-    /* The beginning timestamp of the last touch */
-    std::chrono::time_point<std::chrono::system_clock> _lastTouchBegan = std::chrono::system_clock::now();
-    
-    
 
     // MULTITOUCH SUPPORT
     /* The key for multitouch listeners */
@@ -154,8 +150,10 @@ private:
     bool _zoomGesture;
     /* Whether a scroll gesture was detected */
     bool _panGesture;
-    /* The offset from the start of the pan */
-    cugl::Vec2 _panOffsetMobile;
+    /* The current pan position */
+    cugl::Vec2 _panCurr;
+    /* The previous pan position */
+    cugl::Vec2 _panPrev;
 
 public:
 #pragma mark -
@@ -276,10 +274,10 @@ public:
     }
 
     /**
-     * Returns the offset of the current scroll, if there is a current scroll.
+     * Returns the offset of the current scroll since the last frame, if there is a current scroll.
      * Otherwise returns zero if there is no current scroll.
      *
-     * @return the offset of the current scroll, if there is one
+     * @return the offset of the current scroll since the last frame, if there is one
      *         zero if there is no current scroll
      */
     cugl::Vec2 scrollOffset() const {
@@ -319,15 +317,7 @@ public:
      * @return true if the jump button was pressed.
      */
     bool didJump() const {
-        return _jumpPressed ;
-    }
-    
-    bool didDoubleTap() const{
-        if (doubleTap){
-            doubleTap = false;
-            return true;
-        }
-        return false;
+        return _jumpPressed;
     }
 
     /**

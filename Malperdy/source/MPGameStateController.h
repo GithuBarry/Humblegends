@@ -24,6 +24,8 @@ private:
     int SLOW_MO_SCALAR;
     float maxZoom = 2.4;
     float minZoom = 1;
+    std::chrono::duration<unsigned long long> fourSeconds = std::chrono::seconds(4);
+    std::chrono::time_point<std::chrono::system_clock> sinceResume = std::chrono::system_clock::now() - fourSeconds;
 public:
     /**
      * Change parameter as you need
@@ -72,10 +74,15 @@ public:
 
     void unpause(){
         paused = false;
+        sinceResume = std::chrono::system_clock::now();
     }
 
     void pauseSwitch(){
-        paused = !paused;
+        if (paused){
+            unpause();
+        }else{
+            pause();
+        }
     }
 
     bool isPaused(){
@@ -83,8 +90,12 @@ public:
     }
     
     bool finishedZooming(float currentScale){
-    
         return abs(currentScale - maxZoom)<0.05 || abs(currentScale - minZoom)<0.05;
+    }
+    
+    float secondsAfterPause(){
+        std::chrono::duration<float> diff = std::chrono::system_clock::now() - sinceResume;
+        return diff.count();
     }
 
 
@@ -142,10 +153,10 @@ public:
         Vec2 result;
         Vec2 target;
         target = reynardScreenPosition;
-        int thr = 8;
-        if (reynardVelocity.y<-thr){
-            target = target + Vec2(0,(reynardVelocity.y+thr)*15);
-        }
+        //int thr = 8;
+        //if (reynardVelocity.y<-thr){
+            //            target = target + Vec2(0,(reynardVelocity.y+thr)*15);
+        //}
 
         if (_zoomed_in) {
             result = (Vec2(screenSize.width, screenSize.height) / 2 - target);
