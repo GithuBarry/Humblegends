@@ -203,7 +203,12 @@ void EnemyController::reyCast() {
 
                 // If Reynard is a fixture in the path, then set the point to start going to
                 // Otherwise, set the point as a "null" value
-                _raycastCache = _reynard->isMyBody(fixture->GetBody()) ? point : Vec2(-1, -1);
+                bool isMyBody = _reynard->isMyBody(fixture->GetBody());
+                _raycastCache = isMyBody? point : Vec2(-1, -1);
+                if (!isMyBody){
+                    return -1;
+                }
+                
 
                 return fraction;
             },
@@ -229,7 +234,10 @@ void EnemyController::reyCast() {
                     if (_character->getBehaveState() == EnemyModel::BehaviorState::CHASING) {
                         jump();
                     } else if (_character->getBehaveState() == EnemyModel::BehaviorState::PATROLLING) {
-                        _character->flipDirection();
+                        if (!_character->isJumping()){
+                            _character->flipDirection();
+                        }
+                        
                     }
 
                 return fraction;
