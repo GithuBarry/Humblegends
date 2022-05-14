@@ -13,7 +13,7 @@
 //  Owner: Evan Azari
 //  Contributors: Evan Azari, Barry Wang, Jordan Selin
 //  Version: 4/19/22
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
@@ -28,12 +28,13 @@ shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testleve
 
 /**
  * Initializes and returns a grid of rooms with the given dimensions.
- * 
+ *
  * @param width     The width/number of columns of rooms that the grid should have
  * @param height    The height/number of rows of rooms that the grid should have
  * @return          The initialized grid with the given dimensions
  */
-shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> GridModel::initGrid(int width, int height) {
+shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> GridModel::initGrid(int width, int height)
+{
     // Initialize grid
     shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> grid =
         make_shared<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>>();
@@ -41,11 +42,13 @@ shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> GridModel::initGri
     shared_ptr<RoomModel> room;
 
     // Fill the grid with uninstantiated rooms
-    for (int y = 0; y < height; y++) {
+    for (int y = 0; y < height; y++)
+    {
         // Initialize vector for a row of rooms
         shared_ptr<vector<shared_ptr<RoomModel>>> roomRow = make_shared<vector<shared_ptr<RoomModel>>>();
 
-        for (int x = 0; x < width; x++) {
+        for (int x = 0; x < width; x++)
+        {
             room = make_shared<RoomModel>();
             roomRow->push_back(room);
         }
@@ -60,21 +63,22 @@ shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> GridModel::initGri
  * Initializes a region for the game. The region is placed such that its
  * lower left corner, its region origin, is at the given coordinates in the
  * overall grid space.
- * 
+ *
  * Note that everything here uses REGION space, not grid space. The only coordinates
  * in grid space are the region's origin, which will be used to organize the regions,
  * but otherwise regions only care about where things are relative to their origin.
- * 
+ *
  * TODO: currently this just pretends that the whole region is
  * one sublevel, needs to be fixed to account for different sublevels
  * once we're able to identify that from the level data
- * 
+ *
  * @param regNum        The number of the region to initialize
  * @param originX       The x-coordinate of the region origin in grid space
  * @param originY       The y-coordinate of the region origin in grid space
  * @param regionJSON    The JSON for the given region
  */
-void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<JsonValue> regionJSON) {
+void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<JsonValue> regionJSON)
+{
     // First create a new region with the corresponding region number
     shared_ptr<RegionModel> region = RegionModel::alloc(regNum, originX, originY);
     _regions->operator[](regNum - 1) = region;
@@ -99,32 +103,38 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
     shared_ptr<JsonValue> tilesets = regionJSON->get("tilesets");
 
     // loop through the tilesets of the level
-    for (int i = 0; i < tilesets->size(); i++) {
+    for (int i = 0; i < tilesets->size(); i++)
+    {
 
         // if the tileset is the entities tileset, set the tileset offset
-        if (tilesets->get(i)->get("source")->asString().find("entities") != string::npos) {
+        if (tilesets->get(i)->get("source")->asString().find("entities") != string::npos)
+        {
             entity_offset = tilesets->get(i)->get("firstgid")->asInt();
         }
 
         // if the tileset is the entities tileset, set the tileset offset
-        if (tilesets->get(i)->get("source")->asString().find("rooms") != string::npos) {
+        if (tilesets->get(i)->get("source")->asString().find("rooms") != string::npos)
+        {
             room_offset = tilesets->get(i)->get("firstgid")->asInt();
         }
     }
 
     // INSTANTIATING ROOMS
-    
+
     // Room JSON cache
     shared_ptr<JsonValue> roomJSON;
 
     // Go through each layer to find the object layer
-    for (int i = 0; i < layers->size(); i++) {
+    for (int i = 0; i < layers->size(); i++)
+    {
 
         shared_ptr<JsonValue> layer = layers->get(i);
 
         // Once the object layer is found, loop through all objects
-        if (layer->get("name")->asString() == "rooms") {
-            for (int j = 0; j < layer->get("data")->size() / _roomWidth / _roomHeight; j++) {
+        if (layer->get("name")->asString() == "rooms")
+        {
+            for (int j = 0; j < layer->get("data")->size() / _roomWidth / _roomHeight; j++)
+            {
 
                 int x = j % width;
                 int y = (j / width);
@@ -136,10 +146,12 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
                 string im = _roomsTileset->get("tiles")->get(room_id - room_offset)->get("image")->asString();
 
                 string name;
-                if (im.rfind("solid") != string::npos) {
+                if (im.rfind("solid") != string::npos)
+                {
                     name = "room_solid";
                 }
-                else {
+                else
+                {
                     int p = im.rfind("room");
                     name = im.substr(p);
                     name = name.substr(0, name.length() - 4);
@@ -148,13 +160,14 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
                 cout << name;
 
                 // get the room type
-                //string name = "room_" + object->get("name")->asString();
+                // string name = "room_" + object->get("name")->asString();
                 roomJSON = _assets->get<JsonValue>(name);
 
                 // instantiate the room and add it as a child
                 y = height - 1 - y;
                 sublevel->at(y)->at(x)->init(x, y, roomJSON, RegionModel::getRandBG(regNum));
-                if (name == "room_solid") {
+                if (name == "room_solid")
+                {
                     sublevel->at(y)->at(x)->permlocked = true;
                 }
                 addChild(sublevel->at(y)->at(x));
@@ -170,7 +183,6 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
     // Store the final sublevel in the region
     region->addSublevel(sublevelOriginX, sublevelOriginY, width, height, sublevel);
 
-
     // TRAPS
 
     // create a map that maps values in data[] to entity names
@@ -179,58 +191,103 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
 
     // TODO: add more options for entities
     // go through all tiles in the entities tileset
-    for (int i = 0; i < ent->get("tiles")->size(); i++) {
+    for (int i = 0; i < ent->get("tiles")->size(); i++)
+    {
 
         // depending on the type of tile, add its mapping
         shared_ptr<JsonValue> the_tile = ent->get("tiles")->get(i);
 
         // if the tile represents reynard, then add a mapping for reynard according to the tile id
-        if (the_tile->get("image")->asString().find("reynard") != string::npos) {
+        if (the_tile->get("image")->asString().find("reynard") != string::npos)
+        {
             tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "reynard";
         }
-        else if (the_tile->get("image")->asString().find("spike") != string::npos) {
+        else if (the_tile->get("image")->asString().find("spike") != string::npos)
+        {
             tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "spike";
         }
-        else if (the_tile->get("image")->asString().find("trapdoor") != string::npos) {
+        else if (the_tile->get("image")->asString().find("trapdoor") != string::npos)
+        {
             tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "trapdoor";
         }
-        else if (the_tile->get("image")->asString().find("checkpoint") != string::npos) {
+        else if (the_tile->get("image")->asString().find("checkpoint") != string::npos)
+        {
             tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "checkpoint";
+        }
+
+        else if (the_tile->get("image")->asString().find("keyenemy") != string::npos)
+        {
+            tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "keyenemy";
+        }
+        else if (the_tile->get("image")->asString().find("key") != string::npos)
+        {
+            tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "key";
+        }
+        else if (the_tile->get("image")->asString().find("locked") != string::npos)
+        {
+            tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "locked";
+        }
+        else if (the_tile->get("image")->asString().find("sap") != string::npos)
+        {
+            tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "sap";
         }
     }
 
     // now, go through the data, and for each encountered entity, if it is a trap then add it to the appropriate room
     // first, loop through the level layers again
-    for (int i = 0; i < regionJSON->get("layers")->size(); i++) {
+    for (int i = 0; i < regionJSON->get("layers")->size(); i++)
+    {
         shared_ptr<JsonValue> layer = regionJSON->get("layers")->get(i);
 
         // if the layer is a tilelayer...
-        if (layer->get("type")->asString() == "tilelayer") {
+        if (layer->get("type")->asString() == "tilelayer")
+        {
             vector<int> data = layer->get("data")->asIntArray();
 
             // loop through its data
-            for (int j = 0; j < data.size(); j++) {
+            for (int j = 0; j < data.size(); j++)
+            {
 
                 // if the data element represents an entity
-                if (data.at(j) != 0) {
+                if (data.at(j) != 0)
+                {
 
                     // calculate the room coordinate that the data element is in
                     int curr_row = ((_roomHeight * height - 1) - (j / (_roomWidth * width))) / _roomHeight;
                     int curr_col = (j % (_roomWidth * width)) / _roomWidth;
 
                     // if the tile is a trap, then add it
-                    if (tile_to_traps[data.at(j)] == "trapdoor") {
+                    if (tile_to_traps[data.at(j)] == "trapdoor")
+                    {
                         sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::TRAPDOOR);
                     }
-                    else if (tile_to_traps[data.at(j)] == "spike") {
+                    else if (tile_to_traps[data.at(j)] == "spike")
+                    {
                         sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::SPIKE);
                     }
-                    else if (tile_to_traps[data.at(j)] == "checkpoint") {
+                    else if (tile_to_traps[data.at(j)] == "checkpoint")
+                    {
                         sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::CHECKPOINT);
                         // Add checkpoint to the region
-                        region->addCheckpoint(dynamic_cast<Checkpoint*>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap())))->getID(),
-                            curr_col, curr_row);
+                        region->addCheckpoint(dynamic_cast<Checkpoint *>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap())))->getID(),
+                                              curr_col, curr_row);
                     }
+                    else if (tile_to_traps[data.at(j)] == "sap")
+                    {
+                        // TODO: make sure this works
+                        sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::SAP);
+                    }
+                    else if (tile_to_traps[data.at(j)] == "locked")
+                    {
+                        // TODO: make sure this works
+                        sublevel->at(curr_row)->at(curr_col)->permlocked = true;
+                    }
+                    else if (tile_to_traps[data.at(j)] == "key")
+                    {
+                        // TODO: add key in this room (using curr_col / curr_row)
+                    }
+                    // ADD KEY ENEMY IN GAMESCENE WHERE THE OTHER ENEMY IS INSTANTIATED
+                    // Gamescene line 401
                 }
             }
         }
@@ -243,7 +300,8 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
  * @param scale: the physics scale
  * @return a grid with 3x3 rooms, each room the default
  */
-bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
+bool GridModel::init(shared_ptr<AssetManager> assets, float scale)
+{
     // Store assets
     _assets = assets;
 
@@ -257,7 +315,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
     // get JsonValues representing the level, and an arbitrary room
     shared_ptr<JsonValue> levelJSON = assets->get<JsonValue>("level");
     shared_ptr<JsonValue> roomJSON = assets->get<JsonValue>("room_leftright");
-    
+
     // Get room dimensions in tiles
     _roomWidth = roomJSON->get("width")->asInt();
     _roomHeight = roomJSON->get("height")->asInt();
@@ -271,7 +329,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
     /**************************************************************/
     // REGIONS
     /**************************************************************/
-    
+
     // Initialize regions
     _regions = make_shared<vector<shared_ptr<RegionModel>>>(NUM_REGIONS, nullptr);
 
@@ -294,7 +352,8 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
  * Any assets owned by this object will be immediately released.  Once
  * disposed, a room may not be used until it is initialized again.
  */
-void GridModel::dispose() {
+void GridModel::dispose()
+{
     removeAllChildren();
 };
 
@@ -311,7 +370,8 @@ void GridModel::dispose() {
  * @param y The row from the bottom that the desired room is located in
  * @return  The room located at the given coordinates
  */
-shared_ptr<RoomModel> GridModel::getRoom(int x, int y) {
+shared_ptr<RoomModel> GridModel::getRoom(int x, int y)
+{
     int regionNum = getRegion(x, y);
     return (regionNum == 0) ? nullptr : _regions->at(regionNum - 1)->getRoom(x, y);
 };
@@ -324,9 +384,12 @@ shared_ptr<RoomModel> GridModel::getRoom(int x, int y) {
  * @param y     A y-coordinate in GRID space
  * @return      The region # (1-3) that these coordinates are in, or 0 if not found
  */
-int GridModel::getRegion(int x, int y) {
-    for (int k = 0; k < NUM_REGIONS; k++) {
-        if (_regions->at(k)->isInRegion(x, y)) return (k + 1);
+int GridModel::getRegion(int x, int y)
+{
+    for (int k = 0; k < NUM_REGIONS; k++)
+    {
+        if (_regions->at(k)->isInRegion(x, y))
+            return (k + 1);
     }
     return 0;
 }
@@ -344,7 +407,8 @@ int GridModel::getRegion(int x, int y) {
  * @param room  The room to be placed at the given coordinates
  * @return      Whether the room was set successfully
  */
-bool GridModel::setRoom(int x, int y, shared_ptr<RoomModel> room) {
+bool GridModel::setRoom(int x, int y, shared_ptr<RoomModel> room)
+{
     int regionNum = getRegion(x, y);
     return (regionNum == 0) ? false : _regions->at(regionNum - 1)->setRoom(x, y, room);
 };
@@ -359,22 +423,25 @@ bool GridModel::setRoom(int x, int y, shared_ptr<RoomModel> room) {
  * @param room2 The coordinates of the second room to swap in (column, row) form
  * @return      Whether the swap was performed successfully
  */
-bool GridModel::swapRooms(Vec2 room1, Vec2 room2,bool forced) {
+bool GridModel::swapRooms(Vec2 room1, Vec2 room2, bool forced)
+{
     // Don't swap if not allowed
-    if (!forced && !canSwap(room1, room2)) return false;
+    if (!forced && !canSwap(room1, room2))
+        return false;
 
     shared_ptr<RoomModel> temp = getRoom(room1);
     // Store Room2 at Room1's old location
     setRoom(room1, getRoom(room2));
     // Update Room2's location accordingly
-    getRoom(room2)->setPosition(room1,!forced);
+    getRoom(room2)->setPosition(room1, !forced);
     // Store Room1 at Room2's old location
     setRoom(room2, temp);
     // Update Room1's location accordingly
-    temp->setPosition(room2,!forced);
+    temp->setPosition(room2, !forced);
 
     // For each obstacle in room1
-    for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = _physicsGeometry.at(room1.y).at(room1.x).begin(); itr != _physicsGeometry.at(room1.y).at(room1.x).end(); ++itr) {
+    for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = _physicsGeometry.at(room1.y).at(room1.x).begin(); itr != _physicsGeometry.at(room1.y).at(room1.x).end(); ++itr)
+    {
 
         // convert the position from physics to grid space
         Vec2 newPos = (*itr)->getPosition() * _physics_scale;
@@ -385,11 +452,11 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2,bool forced) {
         // convert back to physics space
         newPos = this->nodeToWorldCoords(newPos) / _physics_scale;
         (*itr)->setPosition(newPos);
-
     }
 
     // For each obstacle in room2
-    for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = _physicsGeometry.at(room2.y).at(room2.x).begin(); itr != _physicsGeometry.at(room2.y).at(room2.x).end(); ++itr) {
+    for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = _physicsGeometry.at(room2.y).at(room2.x).begin(); itr != _physicsGeometry.at(room2.y).at(room2.x).end(); ++itr)
+    {
 
         // convert the position from physics to grid space
         Vec2 newPos = (*itr)->getPosition() * _physics_scale;
@@ -414,7 +481,7 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2,bool forced) {
 /**
  *
  * Returns whether the two given rooms can be swapped.
- * 
+ *
  * Rooms can only be swapped if they are both in-bounds and within the same region
  * and sublevel.
  *
@@ -422,10 +489,13 @@ bool GridModel::swapRooms(Vec2 room1, Vec2 room2,bool forced) {
  * @param room2 The coordinates of the second room to swap in (column, row) form
  * @return      Whether the rooms can be swappedd
  */
-bool GridModel::canSwap(Vec2 room1, Vec2 room2) {
+bool GridModel::canSwap(Vec2 room1, Vec2 room2)
+{
     // Can't swap if in different regions or in different sublevels within the same region
-    for (shared_ptr<RegionModel> region : *_regions) {
-        if (region->areInSameSublevel(room1.x, room1.y, room2.x, room2.y)) return true;
+    for (shared_ptr<RegionModel> region : *_regions)
+    {
+        if (region->areInSameSublevel(room1.x, room1.y, room2.x, room2.y))
+            return true;
     }
     return false;
 };
@@ -436,18 +506,22 @@ bool GridModel::canSwap(Vec2 room1, Vec2 room2) {
  *
  * @return a flat version of _physicsGeometry, with the level bounds included
  */
-shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsObjects() {
+shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsObjects()
+{
     // flat vector to store all room obstacles
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> obstacles = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
 
     calculatePhysicsGeometry();
 
     // For each room in the grid
-    for (int col = 0; col < _size.x; col++) {
-        for (int row = 0; row < _size.y; row++) {
+    for (int col = 0; col < _size.x; col++)
+    {
+        for (int row = 0; row < _size.y; row++)
+        {
 
             // For each polygon in the room
-            for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = _physicsGeometry.at(row).at(col).begin(); itr != _physicsGeometry.at(row).at(col).end(); ++itr) {
+            for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr = _physicsGeometry.at(row).at(col).begin(); itr != _physicsGeometry.at(row).at(col).end(); ++itr)
+            {
 
                 // add the obstacle to the flat vector
                 obstacles->push_back(*itr);
@@ -482,37 +556,43 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
  *
  * If coord = (i,j), then this returns the room at the ith row from the bottom,
  * jth column from the left */
-//Vec2 GridModel::worldToRoomCoords(Vec2 coord)
+// Vec2 GridModel::worldToRoomCoords(Vec2 coord)
 //{
-//    //TODO: convert to room row and column
-//    //TODO: return null if not corresponding to a room
-//    return coord;
-//};
+//     //TODO: convert to room row and column
+//     //TODO: return null if not corresponding to a room
+//     return coord;
+// };
 
-Poly2 GridModel::convertToScreen(Poly2 poly) {
+Poly2 GridModel::convertToScreen(Poly2 poly)
+{
     vector<Vec2> verts;
-    for (Vec2 v: poly.getVertices()) {
+    for (Vec2 v : poly.getVertices())
+    {
         verts.push_back(this->scene2::SceneNode::nodeToWorldCoords(v));
     }
     return Poly2(verts);
 };
 
-void GridModel::calculatePhysicsGeometry() {
+void GridModel::calculatePhysicsGeometry()
+{
     _physicsGeometry = vector<vector<vector<shared_ptr<physics2::PolygonObstacle>>>>();
 
     // Trap cache
     shared_ptr<TrapModel> trap;
 
     // For each room in _grid...
-    for (int row = 0; row < _size.y; row++) {
+    for (int row = 0; row < _size.y; row++)
+    {
         _physicsGeometry.push_back(vector<vector<shared_ptr<physics2::PolygonObstacle>>>());
-        for (int col = 0; col < _size.x; col++) {
+        for (int col = 0; col < _size.x; col++)
+        {
             _physicsGeometry.at(row).push_back(vector<shared_ptr<physics2::PolygonObstacle>>());
             // Get pointers to PolygonNodes with the room's geometry
             shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> geometry = getRoom(col, row)->getGeometry();
 
             // For each polygon in the room
-            for (vector<shared_ptr<scene2::PolygonNode>>::iterator itr = geometry->begin(); itr != geometry->end(); ++itr) {
+            for (vector<shared_ptr<scene2::PolygonNode>>::iterator itr = geometry->begin(); itr != geometry->end(); ++itr)
+            {
                 // Copy polygon data
                 Poly2 poly = (*itr)->getPolygon();
                 // Get node to world transformation and apply to the polygon
@@ -531,7 +611,8 @@ void GridModel::calculatePhysicsGeometry() {
             // TODO: Why does this have no impact on instantiation
             // if the room has a trap
             trap = getRoom(col, row)->getTrap();
-            if (trap) {
+            if (trap)
+            {
                 shared_ptr<scene2::PolygonNode> pn = trap->getPolyNode();
                 Poly2 p = pn->getPolygon();
                 p *= pn->getNodeToWorldTransform();
@@ -543,16 +624,17 @@ void GridModel::calculatePhysicsGeometry() {
 
                 _physicsGeometry.at(row).at(col).push_back(obstacle);
                 trap->initObstacle(obstacle);
-                if (trap->getType() == TrapModel::TrapType::TRAPDOOR) {
+                if (trap->getType() == TrapModel::TrapType::TRAPDOOR)
+                {
                     trap->getObstacle()->setSensor(true);
                 }
-                if (trap->getType() == TrapModel::TrapType::CHECKPOINT) {
+                if (trap->getType() == TrapModel::TrapType::CHECKPOINT)
+                {
                     trap->getObstacle()->setSensor(true);
                 }
             }
         }
     }
-
 }
 
 #pragma mark Checkpoints
@@ -563,9 +645,12 @@ void GridModel::calculatePhysicsGeometry() {
  * @param cID	The unique ID number for a specific checkpoint
  * @return		Whether the checkpoint's associated rooms were cleared successfully
  */
-bool GridModel::clearCheckpoint(int cID) {
-    for (shared_ptr<RegionModel> region : *_regions) {
-        if (region->clearCheckpoint(cID)) return true;
+bool GridModel::clearCheckpoint(int cID)
+{
+    for (shared_ptr<RegionModel> region : *_regions)
+    {
+        if (region->clearCheckpoint(cID))
+            return true;
     }
     return false;
 }
