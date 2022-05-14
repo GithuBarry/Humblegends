@@ -177,6 +177,9 @@ bool RegionModel::clearCheckpoint(int cID) {
 	// or if checkpoint isn't in this region
 	if (_checkpointMap->count(cID) == 0 || _checkpointMap->at(cID) < 0) return false;
 
+	// Play checkpoint clear sound effect
+	AudioController::playSFX(CHECKPOINT_SOUND);
+
 	// Clear all the rooms in the sublevel
 	_sublevels->at(_checkpointMap->at(cID))->clearSublevel(_bgsCleared->at(_regionNumber));
 

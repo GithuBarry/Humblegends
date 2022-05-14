@@ -100,7 +100,13 @@
       "file": "textures/rabbit_all.png"
     }
   },
-    "sounds": {
+  "sounds": {
+
+    "bump": {
+      "type": "sample",
+      "file": "sounds/jump.wav",
+      "volume": 0.5
+    },
 
     "jump": {
       "type": "sample",
@@ -126,10 +132,23 @@
       "volume": 0.5
     },
 
+    "noswap": {
+      "type": "sample",
+      "file": "sounds/noswap.wav",
+      "volume": 0.5
+    },
+
+    "checkpoint": {
+      "type": "sample",
+      "file": "sounds/checkpoint.wav",
+      "volume": 0.5
+    },
+
     "level_music": {
       "type": "sample",
       "file": "sounds/levelmusic.ogg",
-      "volume": 0.3
+      "volume": 0.3,
+      "stream": true
     }
   },
 

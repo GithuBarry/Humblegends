@@ -22,8 +22,6 @@
 #pragma mark Physics Constants
 /** Cooldown (in animation frames) for jumping */
 #define JUMP_COOLDOWN   5
-/** Cooldown (in animation frames) for Dashing */
-#define DASH_COOLDOWN   20
 /** Amount of time (in seconds) for wall slide duration */
 #define WALL_SLIDE_DURATION 1.5f
 /** Any character's width*/
@@ -34,11 +32,10 @@
 #define SENSOR_HEIGHT   0.1f
 /** The density of the character */
 #define DUDE_DENSITY    1.0f
-/** The impulse for the character dash */
-#define DUDE_DASH       10.0f
 /** Debug color for the sensor */
 #define DEBUG_COLOR     Color4::RED
-
+/** The multiplier for the character dash */
+#define DASH_MULTIPLIER 7
 
 using namespace cugl;
 
@@ -100,17 +97,26 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Ani
 /**
  * Sets the character's movement state, changing physical attributes
  * accordingly as necessary.
+ * 
+ * The second argument can be used to pass in relevant info for a specific
+ * state change (defaults to 0).
+ * - To DASHING: this indicates the direction of the dash (-1 or 1)
+ * - From DASHING: 0 if the dash is not over, 1 otherwise
  *
  * @param state The new movement state the character should be in
+ * @param param An argument that can be used for additional state change info
  * @return      Whether the state change happened successfully
  */
-bool CharacterModel::setMoveState(MovementState newState) {
+bool CharacterModel::setMoveState(MovementState newState, int param) {
     //if (newState != MovementState::STOPPED && newState != MovementState::RUNNING) CULog("%d", newState);
+
+    // Fail if trying to transition into the same state
+    if (_moveState == newState) return false;
 
     // Do what needs to be done when leaving the old state
     switch (_moveState) {
 //        case MovementState::STOPPED:
-//        case MovementState::RUNNING:
+        //case MovementState::RUNNING:
 //        case MovementState::JUMPING:
 //            //Nothing should happen
 //            return false;
@@ -119,15 +125,15 @@ bool CharacterModel::setMoveState(MovementState newState) {
 //            // Ignore attempts to get on wall if character is falling
 //            //if (newState == MovementState::ONWALL) return false;
 //            break;
-//        case MovementState::ONWALL:
-//            // Reset gravity to normal
-//            setGravityScale(1.0f);
-//            break;
-//        case MovementState::DASHING:
-//            // Reset gravity to normal
-//            //setVX((_faceRight ? 1 : -1) * RUN_SPEED);
-//            setGravityScale(1.0f);
-//            break;
+        case MovementState::ONWALL:
+            // Reset gravity to normal
+            setGravityScale(1.0f);
+            break;
+        case MovementState::DASHING:
+            // Only allow breaking from dash if dash has ended or switching to wall slide
+            if (!param && newState != MovementState::ONWALL) return false;
+            setGravityScale(1.0f);
+            break;
         case MovementState::DEAD:
             // TODO: any changes for swapping from DEAD state, if any
             //Nothing should happen
@@ -142,8 +148,9 @@ bool CharacterModel::setMoveState(MovementState newState) {
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
-            setVX((_faceRight ? 1 : -1) * RUN_SPEED);
-            _hasDashed = false;
+            //setVX(0);
+            //setVX((_faceRight ? 1 : -1) * RUN_SPEED);
+            _speed = RUN_SPEED;
             setAnimation("run");
             break;
         case MovementState::JUMPING:
@@ -161,19 +168,28 @@ bool CharacterModel::setMoveState(MovementState newState) {
         case MovementState::FALLING:
             break;
         case MovementState::ONWALL:
-            // Reduce gravity so that character "sticks" to wall
-            _speed = JUMP_SPEED;
-            // Stop moving temporarily as character sticks
-            _currAnimation = "";
             setVX(0);
             setVY(0);
+            // Reduce gravity so that character "sticks" to wall
+            setGravityScale(WALL_SLIDE_GRAV_SCALE);
+            // Stop moving temporarily as character sticks
+            _currAnimation = "";
             break;
         case MovementState::DASHING:
-            _hasDashed = true;
-            setGravityScale(0);
-            setVX((_faceRight ? 1 : -1) * RUN_SPEED * 3.0);
+            // Don't allow dashing if dash cooldown hasn't finished
+            if (Timestamp().ellapsedMillis(_dashStart) <= DASH_COOLDOWN) {
+                return false;
+            }
+
+            // Set to 0 in case of dashing in the air
             setVY(0);
+            setGravityScale(0);
+            // Flip the direction to dash direction
+            if ((param > 0) != _faceRight) flipDirection();
+            setVX(param * RUN_SPEED * DASH_MULTIPLIER);
             _dashStart = Timestamp();
+            // Freeze animation while dashing
+            _currAnimation = "";
             break;
         case MovementState::DEAD:
             // TODO: any changes for swapping into DEAD state
@@ -299,7 +315,6 @@ void CharacterModel::dispose() {
  */
 void CharacterModel::update(float dt) {
 
-    setGravityScale(1.00f);
     float jump_x = JUMP_SPEED/1.8 ;
 
     // Handle any necessary behavior for the current move state
@@ -332,13 +347,12 @@ void CharacterModel::update(float dt) {
             setVX((_faceRight ? 1 : -1) * jump_x);
             break;
         case MovementState::ONWALL:
-            setGravityScale(WALL_SLIDE_GRAV_SCALE);
             break;
         case MovementState::DASHING:
             if (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION) {
-
-                setMoveState(MovementState::RUNNING);
+                setMoveState(MovementState::RUNNING, 1);
             }
+            break;
         case MovementState::DEAD:
             // TODO: any updates for when in DEAD state
             setBodyType(b2_staticBody);

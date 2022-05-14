@@ -22,6 +22,7 @@
 #include <cugl/cugl.h>
 #include "MPGameScene.h"
 #include "MPLoadingScene.h"
+#include "MPAudioController.h"
 
 /**
  * This class represents the application root for the ship demo.

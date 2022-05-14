@@ -294,21 +294,14 @@ public:
     }
 
     /**
-     * Returns true if the dash right button was pressed.
-     *
-     * @return true if the dash right button was pressed.
+     * Returns 1 if the dash right button was pressed,
+     * -1 if the dash left button was pressed, or
+     * 0 if dash was not pressed at all.
      */
-    bool didDashRight() const {
-        return _dashRightPressed;
-    }
-
-    /**
-     * Returns true if the dash left button was pressed.
-     *
-     * @return true if the dash left button was pressed.
-     */
-    bool didDashLeft() const {
-        return _dashLeftPressed;
+    int getDashDirection() const {
+        if (_dashRightPressed) return 1;
+        else if (_dashLeftPressed) return -1;
+        else return 0;
     }
 
     /**

@@ -33,8 +33,6 @@ using namespace std;
 #define SCENE_WIDTH 1024
 #define SCENE_HEIGHT 576
 
-#define LEVEL_MUSIC "level_music"
-
 /** Width of the game world in Box2d units */
 #define DEFAULT_WIDTH   32.0f
 
@@ -60,13 +58,8 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 /** Opacity of the physics outlines {@example} */
 #define SOME_COLOR   Color4::YELLOW
 
-/** The key for collisions sounds {@example} */
-
-#define SOME_SOUND     "somesoundname"
-
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
-
 
 float REYNARD_POS[] = {30, 10};
 
@@ -174,8 +167,6 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
     //Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
     Vec2 offset;
-
-
 
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
@@ -311,7 +302,7 @@ void GameScene::populate() {
 }
 
 void GameScene::populateEnv() {
-    MPAudioController::playAudio(_assets, LEVEL_MUSIC, true, 1, true);
+    AudioController::playMusic(LEVEL_MUSIC);
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     _grid = _envController->getGrid();
@@ -515,8 +506,15 @@ void GameScene::update(float dt) {
     // Room swap by click
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
+            if (_envController->swapWithSelected(inputPos, _reynardController, _enemies))
+            {
+                AudioController::playSFX(SWAP_SOUND);
+            }
+            else
+            {
+                AudioController::playSFX(NOSWAP_SOUND);
+            }
             triedSwap = true;
-            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
         } else {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
@@ -556,7 +554,14 @@ void GameScene::update(float dt) {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
         else if (_input.didEndDrag() && _envController->hasSelected()) {
-            _envController->swapWithSelected(inputPos, _reynardController, _enemies);
+            if (_envController->swapWithSelected(inputPos, _reynardController, _enemies))
+            {
+                AudioController::playSFX(SWAP_SOUND);
+            }
+            else
+            {
+                AudioController::playSFX(NOSWAP_SOUND);
+            }
         }
         if (_input.isDragging() && _envController->hasSelected()) {
             progressCoords = inputPos;
@@ -574,19 +579,26 @@ void GameScene::update(float dt) {
 
     // Only allow jumping while zoomed in
     if (_input.didJump() && _gamestate.zoomed_in()) {
+        bool i = _reynardController->isGrounded();
+        bool j = _reynardController->getCharacter()->isOnWall();
+
+        if (i || j)
+        {
+            //TODO: DELETE THIS DEBUGGING STUFF
+            cout << "Grounded: %d" + i << endl;
+            cout << "Walled: %d" + j << endl;
+            AudioController::playSFX(JUMP_SOUND);
+        }
+
         _reynardController->jump();
         corner_num_frames_workaround = 0;
         //cout << "Press Jump Button" << endl;
         //CULog("jumpin");
     }
-    // When dashing right
-    else if (_input.didDashRight() && _gamestate.zoomed_in()) {
-        _reynardController->dashRight();
-    }
 
-    // When dashing left
-    else if (_input.didDashLeft() && _gamestate.zoomed_in()) {
-        _reynardController->dashLeft();
+    // If dash was pressed
+    else if (_input.getDashDirection() != 0 && _gamestate.zoomed_in()) {
+        _reynardController->dash(_input.getDashDirection());
     }
 
     if (_input.didZoomIn()) {
@@ -608,9 +620,6 @@ void GameScene::update(float dt) {
         _gamestate.zoom_out();
         _envController->deselectRoom();
     }
-
-
-
 
 
 
@@ -1018,6 +1027,7 @@ void GameScene::beginContact(b2Contact *contact) {
             }
             else if (isThisAReynardGroundContact(contact)) {
                 resolveReynardGroundOnContact();
+                //MPAudioController::playAudio(_assets, LAND_SOUND, false, 1, false);
             }
             else {
                 //CULog("Non-checked contact occured with Reynard");
