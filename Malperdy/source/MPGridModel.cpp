@@ -131,10 +131,8 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
         shared_ptr<JsonValue> layer = layers->get(i);
 
         // Once the object layer is found, loop through all objects
-        if (layer->get("name")->asString() == "rooms")
-        {
-            for (int j = 0; j < layer->get("data")->size() / _roomWidth / _roomHeight; j++)
-            {
+        if (layer->get("name")->asString() == "rooms") {
+            for (int j = 0; j < layer->get("data")->size() / _roomWidth / _roomHeight; j++) {
 
                 int x = j % width;
                 int y = (j / width);
