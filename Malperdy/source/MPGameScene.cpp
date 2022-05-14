@@ -280,6 +280,7 @@ void GameScene::revert(bool totalReset){
     }else{
         populateEnv();
         populateChars();
+        populateTutorials();
         for (int i = 0; i<_checkpointSwapLen; i++) {
             _envController->swapRoomOnGrid(swapHistory[i][0],swapHistory[i][1],true);
         }
@@ -306,6 +307,7 @@ void GameScene::revert(bool totalReset){
 void GameScene::populate() {
     populateEnv();
     populateChars();
+    populateTutorials();
 }
 
 void GameScene::populateEnv() {
