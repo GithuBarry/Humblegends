@@ -442,7 +442,6 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
 
     // Position the scene graph node (enough for static objects)
     _worldnode->addChild(node);
-    CULog("GameScene %f %f ", (obj->getPosition() * _scale).x, (obj->getPosition() * _scale).y);
     node->setPosition(obj->getPosition() * _scale);
 
     // Dynamic objects need constant updating
@@ -972,6 +971,7 @@ void GameScene::beginContact(b2Contact *contact) {
                 //No helper is used because the abstraction is unnecessary
                 _reynardController->getCharacter()->slowCharacter();
             }
+            // COLLISION: Checkpoint vs. Reynard
             else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                 _checkpointEnemyPos = vector<Vec2>();
@@ -979,7 +979,11 @@ void GameScene::beginContact(b2Contact *contact) {
                 for (auto thisEnemy: *_enemies){
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
+                // Handle what to do when the checkpoint is hit
+                // Turn it green
                 trap->getPolyNode()->setColor(Color4::GREEN);
+                // Clear all the associated rooms
+                _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
             }
             else if (trapType == TrapModel::TrapType::GOAL) {
                 setComplete(true);
