@@ -149,6 +149,10 @@ protected:
             cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
         }
         shared_ptr<JsonWriter> jw = JsonWriter::alloc(cugl::filetool::join_path(file_path_list));
+        if (jw == nullptr){
+            CULog("GameScene.h: Saving failed");
+            return;
+        }
 
         /**
          * JSON structure:

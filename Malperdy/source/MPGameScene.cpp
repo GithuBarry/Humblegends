@@ -504,6 +504,16 @@ void GameScene::update(float dt) {
     bool triedSwap = false;
     Vec2 progressCoords = Vec2(-1, -1);
     // Room swap by click
+    if (_input.didPress() &&(_gamestate.secondsAfterPause()>3)){
+        Vec2 node_coord = _pause->screenToNodeCoords(_input.getPosition());
+        if ((node_coord - Vec2(123,123)).length()<150){
+            _gamestate.pauseSwitch();
+            if (_gamestate.isPaused()){
+                _pause->setTexture("textures/PauseScreen/Play_Button.png");
+            }
+            return;
+        }
+    }
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
             if (_envController->swapWithSelected(inputPos, _reynardController, _enemies))
@@ -517,16 +527,6 @@ void GameScene::update(float dt) {
             triedSwap = true;
         } else {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
-        }
-    }
-    if (_input.didPress() &&(_gamestate.secondsAfterPause()>3)){
-        Vec2 node_coord = _pause->screenToNodeCoords(_input.getPosition());
-        if ((node_coord - Vec2(123,123)).length()<150){
-            _gamestate.pauseSwitch();
-            if (_gamestate.isPaused()){
-                _pause->setTexture("textures/PauseScreen/Play_Button.png");
-            }
-            return;
         }
     }
     if (_gamestate.secondsAfterPause()<1){
