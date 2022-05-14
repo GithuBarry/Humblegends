@@ -21,6 +21,8 @@
 #include "MPRegionModel.h"
 #include "MPCheckpoint.h"
 
+#define DEFAULT_REGION 1
+
 using namespace cugl;
 
 class GridModel : public cugl::scene2::SceneNode {

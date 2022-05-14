@@ -174,6 +174,17 @@ bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_pt
 
     //Fog of war
 	setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
+
+    // Initialize lock icon
+    _lockIcon = scene2::PolygonNode::allocWithFile("textures/lock_icon.png");
+    _lockIcon->setAnchor(Vec2::ANCHOR_TOP_RIGHT);
+    Vec2 roomCorner = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+    Vec2 padding = Vec2(-20, -20);
+    _lockIcon->setPosition(roomCorner + padding);
+    _lockIcon->setScale(3);
+    _lockIcon->setVisible(false);
+    addChild(_lockIcon);
+
     destination = Vec2(x,y);
 	// Initialize with the default room width/height and given position
 	return this->initWithBounds(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
@@ -211,6 +222,13 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
         _trap = trap;
         addChild(_trap);
     }
+    else if (type == TrapModel::TrapType::GOAL) {
+        shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
+        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT, true);
+
+        _trap = trap;
+        addChild(_trap);
+    }
     else{
         return false;
     }
@@ -227,6 +245,7 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
 void RoomModel::dispose() {
 	removeAllChildren();
 	_physicsGeometry = nullptr;
+    _lockIcon = nullptr;
 }
 
 //void RoomModel::draw() {}
