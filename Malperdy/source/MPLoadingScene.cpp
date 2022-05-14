@@ -56,12 +56,12 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     _bar = std::dynamic_pointer_cast<scene2::ProgressBar>(assets->get<scene2::SceneNode>("load_bar"));
     _brand = assets->get<scene2::SceneNode>("load_logo");
     _title = assets->get<scene2::SceneNode>("load_title");
-    _button = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_play"));
+    _button = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new"));
     _button->addListener([=](const std::string& name, bool down) {
         this->_active = down;
     });
     _load = assets->get<scene2::SceneNode>("load_loadGame");
-    _new = assets->get<scene2::SceneNode>("load_new");
+    //_new = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new");
     
     Application::get()->setClearColor(Color4(192,192,192,255));
     addChild(layer);
@@ -78,7 +78,7 @@ void LoadingScene::dispose() {
     }
     _button = nullptr;
     _load = nullptr;
-    _new = nullptr;
+    //_new = nullptr;
     _title = nullptr;
     _brand = nullptr;
     _bar = nullptr;
@@ -106,7 +106,7 @@ void LoadingScene::update(float progress) {
             _button->setVisible(true);
             _button->activate();
             _title->setVisible(true);
-            _new->setVisible(true);
+            //_new->setVisible(true);
             _load->setVisible(true);
         }
         _bar->setProgress(_progress);

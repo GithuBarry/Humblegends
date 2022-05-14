@@ -145,16 +145,23 @@
 		    	}
             },
             "new"  : {
-			    "type"   : "Image",
-			    "format"    : {
-				    "type" : "Anchored"
-			    },
+			    "type"   : "Button",
 			    "data"   : {
+                    "upnode"   : "up",
+                    "pushable" : [0,0, 0,122, 680,122, 680,0],
+                    "pushsize" : true,
                     "visible"  : false,
-                    "texture"  : "new",
                     "anchor"   : [1,0.5],
                     "scale"    : 0.425
 			    },
+                "children" : {
+                    "up"       : {
+                        "type"   : "Image",
+                        "data"   : {
+                            "texture"  : "new"
+                        }
+                    }
+                },
 			    "layout" : {
                     "x_anchor" : "right",
                     "y_anchor" : "middle",
