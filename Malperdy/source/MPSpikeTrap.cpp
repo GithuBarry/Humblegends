@@ -34,7 +34,7 @@ bool SpikeTrap::init(float roomWidth, float roomHeight){
     _sceneNode->initWithFile("textures/spikes.png");
     _type = TrapType::SPIKE;
 
-    _sceneNode->setAnchor(Vec2::ZERO);
+//    _sceneNode->setAnchor(Vec2::ZERO);
     _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX());
     _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y);
     _sceneNode->setAbsolute(true);

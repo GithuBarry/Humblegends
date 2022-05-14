@@ -355,13 +355,9 @@ void GameScene::populateArrows() {
                 cout<<",";
                 cout<<worldPos.y<<endl;
                 
-//                cout<<""<<endl;
-//                cout<<trap->getObstacle()->getPosition().x<<endl;
-//                cout<<trap->getObstacle()->getPosition().y<<endl;
-//
-//                createArrow2(trap->getPosition(), right, trap);
-                
-//                createArrow(trap->getPosition(), right);
+                //TODO: FIND OUT WHY THIS CURRENTLY SPAWNS AT 0,0.
+                //Feel free to talk to spencer anyone trying to currently deal with this. 
+                createArrow(trap->getPosition(), right);
             }
         }
     }
