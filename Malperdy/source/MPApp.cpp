@@ -37,6 +37,8 @@ using namespace cugl;
 void Malperdy::onStartup() {
     _assets = AssetManager::alloc();
     _batch = SpriteBatch::alloc();
+    // Initialize audio controller with assets
+    AudioController::init(_assets);
 
     // Start-up basic input
 #ifdef CU_TOUCH_SCREEN

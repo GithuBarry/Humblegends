@@ -2,6 +2,8 @@
 #include <cugl/cugl.h>
 #include <string>
 
+std::shared_ptr<cugl::AssetManager>& AudioController::_assets = shared_ptr<cugl::AssetManager>();
+
 using namespace cugl;
 	//static bool init() {
 	//	AudioEngine::start(24);

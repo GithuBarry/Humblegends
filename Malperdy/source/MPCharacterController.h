@@ -14,7 +14,6 @@
 
 using namespace std;
 
-
 // Type of the model that this character controller holds
 template<class ModelType, class ControllerType>
 class CharacterController {
@@ -192,43 +191,15 @@ public:
     }
     
     /**
-     * The character dashes right at a set velocity.
+     * The character dashes in the given direction at a set velocity.
      *
-     * @return  Whether the character dashed successfully
+     * @param dashDir   The direction in which the character should dash (-1 for left, 1 for right)
+     * @return          Whether the character dashed successfully
      */
-    bool dashRight(){
-        if (_character->canDash()){
-            _character->_speed = RUN_SPEED*4;
-            if (!_character->isFacingRight()){
-                _character->flipDirection();
-                _character->_speed = RUN_SPEED*2;
-            }
-
-            return true;
-            //return _character->setMoveState(CharacterModel::MovementState::DASHING);
-        }
-        return false;
+    bool dash(int dashDir){
+        return _character->setMoveState(CharacterModel::MovementState::DASHING, dashDir);
     }
     
-    /**
-     * The character dashes left at a set velocity.
-     *
-     * @return  Whether the character dashed successfully
-     */
-    bool dashLeft(){
-        if (_character->canDash()){
-            _character->_speed = RUN_SPEED*4;
-            if (_character->isFacingRight()){
-                _character->flipDirection();
-                _character->_speed = RUN_SPEED*2;
-            }
-
-            return true;
-            //return _character->setMoveState(CharacterModel::MovementState::DASHING);
-        }
-        return false;
-    }
-
 #pragma mark Character Actions
     protected:
     /**
@@ -291,12 +262,17 @@ public:
     }
 
     /**
-     * Sets the character to be on the ground.
+     * Sets the character to be on the ground and plays the sound effect if
+     * the player landed properly.
      *
      * @return  Whether the character is successfully marked as being on the ground
      */
     bool land() {
-        return _character->setMoveState(CharacterModel::MovementState::RUNNING);
+        if (_character->setMoveState(CharacterModel::MovementState::RUNNING)) {
+            //AudioController::playSFX(LAND_SOUND);
+            return true;
+        }
+        return false;
     }
 
     public:

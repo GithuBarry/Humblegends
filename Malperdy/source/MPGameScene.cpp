@@ -33,8 +33,6 @@ using namespace std;
 #define SCENE_WIDTH 1024
 #define SCENE_HEIGHT 576
 
-#define LEVEL_MUSIC "level_music"
-
 /** Width of the game world in Box2d units */
 #define DEFAULT_WIDTH   32.0f
 
@@ -62,17 +60,6 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 
 /** The key for the font reference */
 #define PRIMARY_FONT        "retro"
-
-/* Sound */
-/* Play these with MPAudioController::playAudio(_assets, XYZ_SOUND_GOES_HERE, false, 1, false); */
-#define BUMP_SOUND "bump"
-#define JUMP_SOUND "jump"
-#define LAND_SOUND "land"
-#define SWAP_SOUND "swap_room"
-#define NOSWAP_SOUND "noswap"
-#define CHECKPOINT_SOUND "checkpoint"
-/* Play these with MPAudioController::playAudio(_assets, XYZ_MUSIC_GOES_HERE, false, 1, true); */
-#define LEVEL_MUSIC "level_music"
 
 float REYNARD_POS[] = {30, 10};
 
@@ -150,9 +137,6 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
  */
 bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rect, const Vec2 gravity) {
     Size dimen = computeActiveSize();
-
-    // Initialize audio controller with assets
-    AudioController::init(_assets);
 
     if (assets == nullptr) {
         return false;
@@ -315,7 +299,7 @@ void GameScene::populate() {
 }
 
 void GameScene::populateEnv() {
-    AudioController::playAudio(LEVEL_MUSIC, true, 1, true);
+    AudioController::playMusic(LEVEL_MUSIC);
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     _grid = _envController->getGrid();
@@ -519,15 +503,13 @@ void GameScene::update(float dt) {
     // Room swap by click
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
-            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
-
-            if (hasSwapped)
+            if (_envController->swapWithSelected(inputPos, _reynardController, _enemies))
             {
-                AudioController::playAudio(SWAP_SOUND, false, 1, false);
+                AudioController::playSFX(SWAP_SOUND);
             }
             else
             {
-                AudioController::playAudio(NOSWAP_SOUND, false, 1, false);
+                AudioController::playSFX(NOSWAP_SOUND);
             }
             triedSwap = true;
         } else {
@@ -569,14 +551,13 @@ void GameScene::update(float dt) {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
         else if (_input.didEndDrag() && _envController->hasSelected()) {
-            hasSwapped = _envController->swapWithSelected(inputPos, _reynardController, _enemies);
-            if (hasSwapped)
+            if (_envController->swapWithSelected(inputPos, _reynardController, _enemies))
             {
-                AudioController::playAudio(SWAP_SOUND, false, 1, false);
+                AudioController::playSFX(SWAP_SOUND);
             }
             else
             {
-                AudioController::playAudio(NOSWAP_SOUND, false, 1, false);
+                AudioController::playSFX(NOSWAP_SOUND);
             }
         }
         if (_input.isDragging() && _envController->hasSelected()) {
@@ -594,7 +575,7 @@ void GameScene::update(float dt) {
             //TODO: DELETE THIS DEBUGGING STUFF
             cout << "Grounded: %d" + i << endl;
             cout << "Walled: %d" + j << endl;
-            AudioController::playAudio(JUMP_SOUND, false, 1, false);
+            AudioController::playSFX(JUMP_SOUND);
         }
 
         _reynardController->jump();
@@ -602,14 +583,10 @@ void GameScene::update(float dt) {
         //cout << "Press Jump Button" << endl;
         //CULog("jumpin");
     }
-    // When dashing right
-    else if (_input.didDashRight() && _gamestate.zoomed_in()) {
-        _reynardController->dashRight();
-    }
 
-    // When dashing left
-    else if (_input.didDashLeft() && _gamestate.zoomed_in()) {
-        _reynardController->dashLeft();
+    // If dash was pressed
+    else if (_input.getDashDirection() != 0 && _gamestate.zoomed_in()) {
+        _reynardController->dash(_input.getDashDirection());
     }
 
     if (_input.didZoomIn()) {
