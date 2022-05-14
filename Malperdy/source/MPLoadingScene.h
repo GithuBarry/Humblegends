@@ -6,7 +6,7 @@
 // 
 //  Owner: Jordan Selin
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 2/21/2022
+//  Version: 5/14/2022
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -53,6 +53,8 @@ protected:
     float _progress;
     /** Whether or not the player has pressed play to continue */
     bool  _completed;
+    /** True if the player is starting a new game, false otherwise */
+    bool _newGame;
     
     /**
      * Returns the active screen size of this scene.
@@ -117,6 +119,14 @@ public:
      * @return true if loading is complete, but the player has not pressed play
      */
     bool isPending( ) const;
+
+    /**
+    * Returns true if the player is starting a new game
+    * (aka. they have selected "new game" instead of "load save")
+    * 
+    * @return true if the player is starting a new game
+    */
+    bool isNewGame() { return _newGame; }
 };
 
 

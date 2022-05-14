@@ -6,7 +6,7 @@
 // 
 //  Owner: Jordan Selin
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 2/21/2022
+//  Version: 5/14/2022
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -59,6 +59,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     _button = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new"));
     _button->addListener([=](const std::string& name, bool down) {
         this->_active = down;
+        this->_newGame = down;
     });
     _load = assets->get<scene2::SceneNode>("load_loadGame");
     //_new = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new");
