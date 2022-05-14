@@ -222,7 +222,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
 
-    populate();
+    //populate();
+    revert(false);
     _active = true;
     _complete = false;
 
@@ -265,9 +266,10 @@ void GameScene::reset()
     revert(true);
 }
 
-void GameScene::revert(bool totalReset)
-{
-    vector<vector<Vec2>> swapHistory = _envController->getSwapHistory();
+void GameScene::revert(bool totalReset){
+//    _swapHistory = _envController->getSwapHistory();
+    readSaveFile();
+    scrollingOffset = Vec2();
 
     _reynardController = nullptr;
     _grid = nullptr;
@@ -287,9 +289,8 @@ void GameScene::revert(bool totalReset)
     {
         populateEnv();
         populateChars();
-        for (int i = 0; i < _checkpointSwapLen; i++)
-        {
-            _envController->swapRoomOnGrid(swapHistory[i][0], swapHistory[i][1], true);
+        for (int i = 0; i<_checkpointSwapLen; i++) {
+            _envController->swapRoomOnGrid(_swapHistory[i][0],_swapHistory[i][1],true);
         }
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
         for (int i = 0; i < _enemies->size(); i++)
@@ -612,6 +613,15 @@ void GameScene::update(float dt)
         }
     }
 
+    if (_input.isScrolling() && !_gamestate.zoomed_in()) {
+        Vec2 incrementalOffset = _input.getPosition()- lastFramePos;
+        scrollingOffset = scrollingOffset + Vec2(incrementalOffset.x,-incrementalOffset.y);
+    }
+    if (_gamestate.zoomed_in()){
+        scrollingOffset = Vec2();
+        lastFramePos = Vec2();
+    }
+
     // Only allow jumping while zoomed in
     if (_input.didJump() && _gamestate.zoomed_in())
     {
@@ -645,11 +655,9 @@ void GameScene::update(float dt)
     }
 
     // When zooming out
-    else if (_input.didZoomOut())
-    {
-        if (!_gamestate.zoomed_in() && _gamestate.finishedZooming(_worldnode->getZoom()))
-        {
-            _gamestate.pauseSwitch();
+    else if (_input.didZoomOut()) {
+        if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
+            //_gamestate.pauseSwitch();
         }
         _gamestate.zoom_out();
         _envController->deselectRoom();
@@ -687,7 +695,8 @@ void GameScene::update(float dt)
     bool faceRight = _reynardController->getCharacter()->isFacingRight();
     Vec2 reynardVelocity = _reynardController->getCharacter()->getLinearVelocity();
 
-    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition, _scale, getSize(), faceRight, reynardVelocity));
+
+    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition-scrollingOffset, _scale, getSize(), faceRight,reynardVelocity));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
@@ -739,6 +748,7 @@ void GameScene::update(float dt)
             _health->setName("0");
         }
     }
+    lastFramePos = _input.getPosition();
 }
 
 #pragma mark -
@@ -1107,6 +1117,10 @@ void GameScene::beginContact(b2Contact *contact)
                 {
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
+
+                rewriteSaveFile();
+
+
                 // Handle what to do when the checkpoint is hit
                 // Turn it green
                 trap->getPolyNode()->setColor(Color4::GREEN);
@@ -1343,3 +1357,5 @@ Vec2 GameScene::inputToGameCoords(Vec2 inputCoords)
 {
     return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }
+
+
