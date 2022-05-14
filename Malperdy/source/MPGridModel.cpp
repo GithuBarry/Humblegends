@@ -30,10 +30,9 @@ shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testleve
  * Deafult init
  * @param assets: the asset manager of the game
  * @param scale: the physics scale
- * @param bg    A default background to place in the back of rooms
  * @return a grid with 3x3 rooms, each room the default
  */
-bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Texture> bg) {
+bool GridModel::init(shared_ptr<AssetManager> assets, float scale) {
     _horizontal_gap = 0;
     _vertical_gap = 0;
     _physics_scale = scale;
@@ -99,6 +98,15 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
     }
     
     shared_ptr<JsonValue> rooms_tileset = assets->get<JsonValue>("tileset_rooms");
+
+    // Store all the possible background textures, indexed by region
+    _backgrounds = make_shared<vector<shared_ptr<vector<shared_ptr<Texture>>>>>();
+    for (int k = 0; k < 3; k++) {
+        _backgrounds->push_back(make_shared<vector<shared_ptr<Texture>>>());
+        for (string name : bgNames[k]) {
+            if (name != "") _backgrounds->at(k)->push_back(assets->get<Texture>(name));
+        }
+    }
     
     // INSTANTIATING ROOMS
     // Go through each layer to find the object layer
@@ -143,7 +151,8 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
                 
                 // instantiate the room and add it as a child
                 y =height -1- y;
-                _grid->at(y)->at(x)->init(x, y, roomJSON, bg);
+                // TODO: replace with proper retrieval of correct region based on level
+                _grid->at(y)->at(x)->init(x, y, roomJSON, getRandBG(DEFAULT_REGION));
                 if (name == "room_solid"){
                     _grid->at(y)->at(x)->permlocked = true;
                 }
@@ -214,10 +223,10 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale, shared_ptr<Te
             }
         }
     }
-    // TEMP CODE TO BE DELETED ONCE CHECKPOINTS ARE IN JSON
-//    int top_row = _size.y - 1;
-//    int left_col = _size.x - 1;
-//    _grid->at(top_row)->at(left_col)->initTrap(TrapModel::TrapType::CHECKPOINT);
+    // TEMP CODE TO ADD GOAL TO THE TOP RIGHT CORNER
+    //int top_row = _size.y - 1;
+    //int left_col = _size.x - 1;
+    //_grid->at(top_row)->at(left_col)->initTrap(TrapModel::TrapType::GOAL);
     // TEMP CODE END
 
     return this->scene2::SceneNode::init();
