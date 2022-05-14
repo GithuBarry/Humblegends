@@ -151,10 +151,10 @@ public:
             return Vec2();
         }
         Vec2 result;
-        //int thr = 8;
-        //if (reynardVelocity.y<-thr){
-            //            target = target + Vec2(0,(reynardVelocity.y+thr)*15);
-        //}
+        int thr = 12;
+        if (reynardVelocity.y<-thr){
+            target = target + Vec2(0,(reynardVelocity.y+thr)*15);
+        }
 
         if (_zoomed_in) {
             result = (Vec2(screenSize.width, screenSize.height) / 2 - target);
