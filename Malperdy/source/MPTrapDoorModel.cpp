@@ -45,3 +45,14 @@ bool TrapDoor::init(float roomWidth, float roomHeight){
     
     return this->TrapModel::init();
 }
+
+bool TrapDoor::init2(float roomWidth, float roomHeight){
+    shared_ptr<JsonReader> jr = JsonReader::allocWithAsset("jsons/framedata");
+    shared_ptr<JsonValue> framedata = jr->readJson();
+    
+    shared_ptr<Texture> sheet = make_shared<Texture>();
+    sheet->initWithFile("trapdoorsheet");
+    
+    
+    
+}
