@@ -21,7 +21,8 @@ using namespace cugl;
 class AudioController {
 private:
 	/** Store a reference to the assets for easy access */
-	static std::shared_ptr<cugl::AssetManager>& _assets;
+    inline static std::shared_ptr<AssetManager> _assets = AssetManager::alloc();
+
 
 	static void playAudio(string sound, bool loop, float vol, bool isMusic);
 
