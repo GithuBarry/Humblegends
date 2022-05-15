@@ -77,6 +77,9 @@ private:
     /** Loads in room formats from a JSON and is used to look up geometries for rooms */
     static shared_ptr<RoomLoader> _roomLoader;
 
+    /** This room's original location */
+    Vec2 _originalLoc;
+
     // STATUS
     /** Whether this room is currently locked/unable to be swapped. False by default */
     bool locked = false;
@@ -137,7 +140,6 @@ public:
      */
     bool init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg = nullptr);
 
-    /** */
     bool initTrap(TrapModel::TrapType type);
 
 #pragma mark Static Constructors

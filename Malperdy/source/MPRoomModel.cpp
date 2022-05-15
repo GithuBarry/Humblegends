@@ -152,6 +152,9 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
  * @return          true if the room is initialized properly, false otherwise.
  */
 bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {
+    // Store room's original location
+    _originalLoc = Vec2(x, y);
+
     // Add node for background texture if there is one
 	if (bg != nullptr) {
         // Create ordered node so background nodes can be sorted

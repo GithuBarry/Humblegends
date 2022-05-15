@@ -27,6 +27,8 @@ using namespace std;
 
 /** Whether or not the game will even bother loading from a save */
 #define LOAD_FROM_SAVE 0
+/** Reynard's start location */
+#define REYNARD_START Vec2(2, 16)
 
 #pragma mark -
 #pragma mark Level Geography
@@ -220,8 +222,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
 
-    //populate();
-    revert(false);
+    revert(true);
     _active = true;
     _complete = false;
 
@@ -267,38 +268,46 @@ void GameScene::reset()
 void GameScene::revert(bool totalReset){
 //    _swapHistory = _envController->getSwapHistory();
 
-    // TODO: proper new game/load from save logic
-
-    // Whether to load from save or not
-    if (_loadFromSave) readSaveFile();
-    else {
-        _checkpointReynardPos = Vec2(2, 16);
-        _loadFromSave = true;
-    }
-
     scrollingOffset = Vec2();
 
     _reynardController = nullptr;
-    _grid = nullptr;
-    _envController = nullptr;
-    _world->clear();
-    _worldnode->removeAllChildren();
-    _debugnode->removeAllChildren();
-    _gamestate.reset();
     _enemies = nullptr;
+    _gamestate.reset();
     setComplete(false);
+
+    // New Game or starting over
     if (totalReset)
     {
-        _checkpointReynardPos = reynardDefault;
+        // TODO: proper new game/load from save logic
+
+        // Whether to load from save or not
+        if (_loadFromSave) readSaveFile();
+        else {
+            _checkpointReynardPos = REYNARD_START;
+            //_loadFromSave = true;
+        }
+
+        // Only reset level in a total reset
+        _grid = nullptr;
+        _envController = nullptr;
+        _world->clear();
+        _worldnode->removeAllChildren();
+        _debugnode->removeAllChildren();
+
+        _checkpointReynardPos = REYNARD_START;
         populate();
     }
+    // Respawn
     else
     {
-        populateEnv();
         populateChars();
-        for (int i = 0; i<_checkpointSwapLen; i++) {
+
+        // Undo swaps
+        /*for (int i = 0; i<_checkpointSwapLen; i++) {
             _envController->swapRoomOnGrid(_swapHistory[i][0],_swapHistory[i][1],true);
-        }
+        }*/
+
+        // Place Reynard at his last checkpoint location
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
         for (int i = 0; i < _enemies->size(); i++)
         {
