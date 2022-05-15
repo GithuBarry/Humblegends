@@ -54,6 +54,10 @@ using namespace cugl;
 #define DEFAULT_ROOM_HEIGHT 480
 /** The ID of the default room type */
 #define DEFAULT_ROOM_ID "leftrightupdown"
+/** The speed at which the rooms should swap, from 0.5001-0.9999, smaller is slower */
+#define SWAP_SPEED 0.7f
+/** The rate at which a room should clear (background changes) */
+#define CLEAR_RATE 0.1f
 
 class RoomModel : public cugl::scene2::SceneNode {
 public:
@@ -61,6 +65,14 @@ public:
     shared_ptr<scene2::PolygonNode> _bgNode;
 
 private:
+    /** The ordered node to ensure backgrounds are layered properly */
+    shared_ptr<scene2::OrderedNode> _bgOrderNode;
+    /** Pointer to the node that displays the cleared room background.
+    Nullptr if the room has not been cleared yet. */
+    shared_ptr<scene2::PolygonNode> _bgClearedNode = nullptr;
+    /** Whether the room has been cleared yet */
+    bool _isCleared = false;
+
     // ROOM LOADING
     /** Loads in room formats from a JSON and is used to look up geometries for rooms */
     static shared_ptr<RoomLoader> _roomLoader;
@@ -70,7 +82,8 @@ private:
     bool locked = false;
     /* Whether this room's contents are currently hidden. False by default */
     bool fogged = true;
-
+    /** Value to track original background opacity, from 0-1, starting at 1 */
+    float bgOpacity = 1.0f;
 
     // GEOMETRY
     /** Vector of polygon nodes forming the room's geometry */
@@ -218,6 +231,14 @@ public:
     void unlock() { locked = false; }
 
     /**
+     * Sets this room to be cleared, meaning the background will gradually
+     * change to the given background.
+     * 
+     * @param bg    The "cleared background" texture to change this room to.
+     */
+    void clear(shared_ptr<Texture> bg);
+
+    /**
      * Sets whether this room is fogged (contents hidden) or not.
      */
     void setFogged(bool isFogged) { fogged = isFogged; }
@@ -255,11 +276,12 @@ public:
     */
     void setLockIcon(bool isVisible) { _lockIcon->setVisible(isVisible); }
 
+#pragma mark Updates
     /**
      * Change position gradually
      * @return whether it finished and does not need any more updates
      */
-    bool update();
+    bool updateSwap();
 
 };
 

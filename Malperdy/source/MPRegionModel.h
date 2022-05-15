@@ -155,7 +155,7 @@ private:
 			// For each room in the sublevel
 			for (int x = _originX; x < _originX + _width; x++) {
 				for (int y = _originY; y < _originY + _height; y++) {
-					_rooms->at(y)->at(x)->_bgNode->setTexture(bgCleared);
+					_rooms->at(y)->at(x)->clear(bgCleared);
 				}
 			}
 		}
