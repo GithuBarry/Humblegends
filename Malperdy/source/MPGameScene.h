@@ -32,6 +32,10 @@
 /** Reynard's start location */
 #define REYNARD_START Vec2(2, 16)
 
+/** Room dimensions in tiles */
+#define ROOM_WIDTH 12
+#define ROOM_HEIGHT 8
+
 /**
  * This class is the primary gameplay constroller for the demo.
  *
@@ -160,15 +164,17 @@ protected:
     void populateChars();
 
     /**
-     * Lays out the game geography.Part of populate()
-     *
+     * Place all the tutorials at their correct locations in Region 1.
      */
     void populateTutorials();
 
     /**
-     * Generates the individual tutorials that we put into the game
+     * Helper function that creates, transforms, and places the node for an environment image
+     * 
+     * @param x     x-coordinate in ROOM coordinates
+     * @param y     y-coordinate in ROOM coordinates
      */
-    void createTutorial(Vec2 pos, float width, float height, float scale, string TextureName);
+    void placeEnvImage(float x, float y, float scale, string TextureName);
 
 public:
     /**
