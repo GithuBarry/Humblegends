@@ -291,3 +291,9 @@ EnvController::~EnvController() {
 const vector<vector<Vec2>> &EnvController::getSwapHistory() const {
     return _swapHistory;
 }
+
+void EnvController::setSwapHistory(const vector<vector<Vec2>> &swapHistory) {
+    _swapHistory = swapHistory;
+}
+
+
