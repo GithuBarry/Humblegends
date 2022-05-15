@@ -27,7 +27,14 @@
 #include "MPGridModel.h"
 #include "MPEnvController.h"
 #include "MPAudioController.h"
+#include "MPTutorial.hpp"
 
+/** Reynard's start location */
+#define REYNARD_START Vec2(2, 16)
+
+/** Room dimensions in tiles */
+#define ROOM_WIDTH 12
+#define ROOM_HEIGHT 8
 
 /**
  * This class is the primary gameplay constroller for the demo.
@@ -63,7 +70,7 @@ protected:
 
     /** Reference to the health bar scene node */
     std::shared_ptr<cugl::scene2::PolygonNode> _health;
-    
+
     /** Reference to the pause button */
     std::shared_ptr<cugl::scene2::PolygonNode> _pause;
 
@@ -86,6 +93,10 @@ protected:
     /** References to all the enemy controllers */
     std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies;
 
+    /** References to all the tutorials */
+    std::shared_ptr<vector<std::shared_ptr<Tutorial>>> _tutorials;
+
+
     /** Whether we have completed this "game" */
     bool _complete;
     /** Whether or not debug mode is active */
@@ -95,11 +106,8 @@ protected:
     int _checkpointSwapLen = 0;
     vector<Vec2> _checkpointEnemyPos;
 
-    /**Reynard position*/
-    Vec2 reynardDefault = Vec2(4,3);
-
     /** A store position of reynard before reset*/
-    Vec2 _checkpointReynardPos = reynardDefault;
+    Vec2 _checkpointReynardPos = REYNARD_START;
 
     /* Offset of scrolling */
     Vec2 scrollingOffset = Vec2();
@@ -109,17 +117,19 @@ protected:
 
     /**Workaround for wall jump corner stuck*/
     int corner_num_frames_workaround = 0;
-    
+
     /*
      Remaining number of frames to color reynard red
      */
     int keepRedFrames = 0;
 
+public:
+
     /*
      Flag past from owner of this class to indicate whether to start a new game.
      */
-    int _mode = 1;
-public:
+    int _mode = 0;
+
     void setMode(int mode){
         _mode = mode;
     }
@@ -152,6 +162,19 @@ protected:
      *
      */
     void populateChars();
+
+    /**
+     * Place all the tutorials at their correct locations in Region 1.
+     */
+    void populateTutorials();
+
+    /**
+     * Helper function that creates, transforms, and places the node for an environment image
+     * 
+     * @param x     x-coordinate in ROOM coordinates
+     * @param y     y-coordinate in ROOM coordinates
+     */
+    void placeEnvImage(float x, float y, float scale, string TextureName);
 
 public:
     /**
@@ -549,6 +572,18 @@ public:
     shared_ptr<TrapModel> isTrapCollision(b2Contact* contact);
 
     /**
+     * Detects if a collision includes a tutorial object, and if so returns the tutorial's pointer
+     *
+     * @param  contact  The two bodies that collided
+     *
+     * @return  trap type if one body is a trap
+                or UNTYPED if neither body is a trap
+     */
+    shared_ptr<Tutorial> isTutorialCollision(b2Contact* contact);
+
+
+
+    /**
      * Helper function that checks if a contact event includes Reynard
      *
      * Neccesary to call this before calling getReynardFixture.
@@ -685,9 +720,9 @@ public:
     bool isThisAEnemyGroundContact(b2Contact *contact, shared_ptr<EnemyController> enemy);
 
     void resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy);
-    
+
     void dealReynardDamage();
-    
+
 
 #pragma mark Helper Functions
     /* Converts input coordinates to coordinates in the game world */

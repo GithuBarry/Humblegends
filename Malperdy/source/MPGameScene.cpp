@@ -143,7 +143,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rect, const Vec2 gravity)
 {
     Size dimen = computeActiveSize();
-
+    _checkpointReynardPos = REYNARD_START;
     if (assets == nullptr)
     {
         return false;
@@ -222,6 +222,14 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
     if (_mode == 1){
+        
+        vector<std::string> file_path_list =vector<std::string>(2);
+        file_path_list[0] = Application::get()->getSaveDirectory();
+        file_path_list[1] = "state.json";
+        if (filetool::file_exists(cugl::filetool::join_path(file_path_list))){
+            cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
+        }
+        
         populate();
     }else {
         revert(false);
@@ -232,6 +240,10 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::BLACK);
+
+    // Finally start playing level music
+    AudioController::playMusic(LEVEL_MUSIC);
+
     return true;
 }
 
@@ -270,8 +282,13 @@ void GameScene::reset() {
 }
 
 void GameScene::revert(bool totalReset){
-//    _swapHistory = _envController->getSwapHistory();
-    readSaveFile();
+    if (_envController!= nullptr){
+        _swapHistory = _envController->getSwapHistory();
+    }
+
+    if (!readSaveFile()){
+        totalReset = true;
+    }
     scrollingOffset = Vec2();
 
     _reynardController = nullptr;
@@ -284,7 +301,7 @@ void GameScene::revert(bool totalReset){
     _enemies = nullptr;
     setComplete(false);
     if (totalReset){
-        _checkpointReynardPos = reynardDefault;
+
         populate();
     }else{
         populateEnv();
@@ -319,7 +336,6 @@ void GameScene::populate()
 }
 
 void GameScene::populateEnv() {
-    AudioController::playMusic(LEVEL_MUSIC);
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     _grid = _envController->getGrid();
@@ -342,6 +358,9 @@ void GameScene::populateEnv() {
 
     // Start the camera above Reynard and pan to him
     _worldnode->applyPan(Vec2(0, -500));
+
+    // Add tutorial icons
+    populateTutorials();
 }
 
 void GameScene::populateChars()
@@ -405,10 +424,10 @@ void GameScene::populateChars()
             // TODO: change code in this if statement to add key enemy instead of regular enemy
             if (temp.find("keyenemy") != string::npos)
             {
-                // HARDCODED
-                int room = i / 8 / 12;
-                int x = room % (levelJSON->get("width")->asInt() / 12);
-                int y = room / (levelJSON->get("width")->asInt() / 12);
+                // Get enemy location, converting from tile space
+                int room = i / ROOM_HEIGHT / ROOM_WIDTH;
+                int x = room % (levelJSON->get("width")->asInt() / ROOM_WIDTH);
+                int y = room / (levelJSON->get("width")->asInt() / ROOM_WIDTH);
                 Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() / 8 - 1 - y);
 
                 // initialize it
@@ -424,14 +443,14 @@ void GameScene::populateChars()
             else if (temp.find("enemy") != string::npos)
             {
 
-                // HARDCODED
-                int room = i / 8 / 12;
-                int x = room % (levelJSON->get("width")->asInt() / 12);
-                int y = room / (levelJSON->get("width")->asInt() / 12);
+                // Get enemy location, converting from tile space
+                int room = i / ROOM_HEIGHT / ROOM_WIDTH;
+                int x = room % (levelJSON->get("width")->asInt() / ROOM_WIDTH);
+                int y = room / (levelJSON->get("width")->asInt() / ROOM_WIDTH);
                 Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() / 8 - 1 - y);
 
                 // initialize it
-                //                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(12,8), _scale, rabbit_animations));
+                //                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(ROOM_WIDTH,ROOM_HEIGHT), _scale, rabbit_animations));
                 _enemies->push_back(EnemyController::alloc(Vec2::ZERO, _scale, rabbit_animations));
 
                 _enemies->back()->setObstacleWorld(_world);
@@ -458,6 +477,47 @@ void GameScene::populateChars()
     {
         _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
     }
+
+}
+
+/**
+ * Place all the tutorials at their correct locations in Region 1.
+ */
+void GameScene::populateTutorials(){
+    // First Jump
+    placeEnvImage(1.1f, 1.7f, 0.1f, "JumpTutorial");
+
+    // Wall Jump
+    placeEnvImage(2.2f, 2, 0.1f, "JumpTutorial");
+    placeEnvImage(1.55f, 2.5f, 0.1f, "JumpTutorial");
+    placeEnvImage(2.2f, 2.9f, 0.1f, "JumpTutorial");
+
+    // Top Left
+    placeEnvImage(2.63f, 4.1f, 0.1f, "ZoomOutTutorial");
+    placeEnvImage(1.3f, 4.3f, 0.25f, "SwapTutorial");
+    placeEnvImage(1.9f, 4.1f, 0.1f, "ZoomInTutorial");
+
+    placeEnvImage(7.75f, 4.8f, 0.1f, "DashTutorial");
+}
+
+/**
+ * Helper function that creates, transforms, and places the node for an environment image
+ * 
+ * @param x     x-coordinate in ROOM coordinates
+ * @param y     y-coordinate in ROOM coordinates
+ */
+void GameScene::placeEnvImage(float x, float y, float scale, string TextureName){
+    // Make scene node for the given tutorial image
+    shared_ptr<scene2::PolygonNode> tutorialNode =
+        scene2::PolygonNode::allocWithTexture(_assets->get<Texture>(TextureName));
+
+    // Scale and place node
+    tutorialNode->setScale(scale);
+    tutorialNode->setPosition(x * ROOM_WIDTH * _scale, y * ROOM_HEIGHT * _scale);
+    tutorialNode->setAbsolute(true);
+
+    // Attach to the world node
+    _worldnode->addChild(tutorialNode);
 }
 
 /**
@@ -1104,8 +1164,7 @@ void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyCont
     //    enemy->getCharacter()->setVY(-1 * enemyVY);
 }
 
-void GameScene::beginContact(b2Contact *contact)
-{
+void GameScene::beginContact(b2Contact *contact) {
     // TODO: all of these collisions need to apply for every character, not just Reynard
     // Try to get the character, assuming it's a character-on-object collision
     b2Body *charInCharOnObject = getCharacterBodyInObjectCollision(contact);
@@ -1115,77 +1174,57 @@ void GameScene::beginContact(b2Contact *contact)
         // Now try to get if it's an enemy-on-object collision
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         // If it's nullptr, then it's Reynard, and handle all that accordingly
-        if (enemy == nullptr)
-        {
+#pragma mark REYNARD COLLISION SECTION
+        if (enemy == nullptr) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
+#pragma mark TRAP COLLISION CODE
             shared_ptr<TrapModel> trap = isTrapCollision(contact);
             TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
-            if (trap != nullptr)
-            {
+            if (trap != nullptr){
                 trapType = trap->getType();
             }
-            if (trapType == TrapModel::TrapType::SPIKE)
-            {
+            if (trapType == TrapModel::TrapType::SPIKE) {
                 float reynardVY = _reynardController->getCharacter()->getVY();
-                if (reynardVY < 0)
-                {
+                if (reynardVY < 0) {
                     resolveTrapOnContact();
                     resolveWallJumpOntoTrap(reynardVY);
                 }
             }
-            else if (trapType == TrapModel::TrapType::SAP)
-            {
-                // This line of code is sufficient to slow Reynard
-                // No helper is used because the abstraction is unnecessary
+            else if (trapType == TrapModel::TrapType::SAP) {
+                //This line of code is sufficient to slow Reynard
+                //No helper is used because the abstraction is unnecessary
                 _reynardController->getCharacter()->slowCharacter();
             }
-            // COLLISION: Checkpoint vs. Reynard
-            else if (trapType == TrapModel::TrapType::CHECKPOINT)
-            {
+            else if (trapType == TrapModel::TrapType::CHECKPOINT) {
                 _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                 _checkpointEnemyPos = vector<Vec2>();
                 _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                for (auto thisEnemy : *_enemies)
-                {
+                for (auto thisEnemy: *_enemies){
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
-
                 rewriteSaveFile();
-
-
-                // Handle what to do when the checkpoint is hit
-                // Turn it green
-//                trap->getPolyNode()->setColor(Color4::GREEN);
-                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+                //trap->getPolyNode()->setColor(Color4::GREEN);
                 // Clear all the associated rooms
-                _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
+                _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
             }
-            else if (trapType == TrapModel::TrapType::GOAL)
-            {
+            else if (trapType == TrapModel::TrapType::GOAL) {
                 setComplete(true);
             }
-            else if (trapType == TrapModel::TrapType::TRAPDOOR)
-            {
+            else if (trapType == TrapModel::TrapType::TRAPDOOR) {
                 Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
                 _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
-                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
             }
-            else if (isThisAReynardWallContact(contact, reynardIsRight))
-            {
+            else if (isThisAReynardWallContact(contact, reynardIsRight)) {
                 resolveReynardWallOnContact();
             }
-            else if (isThisAReynardWallContact(contact, !reynardIsRight))
-            {
+            else if (isThisAReynardWallContact(contact, !reynardIsRight)) {
                 // the wall reynard's tail is touching lol
             }
-            else if (isThisAReynardGroundContact(contact))
-            {
+            else if (isThisAReynardGroundContact(contact)) {
                 resolveReynardGroundOnContact();
-                //MPAudioController::playAudio(_assets, LAND_SOUND, false, 1, false);
             }
-            else
-            {
-                // CULog("Non-checked contact occured with Reynard");
+            else {
+                //CULog("Non-checked contact occured with Reynard");
             }
         }
         // Otherwise it's an enemy-on-object collision, and handle that accordingly
