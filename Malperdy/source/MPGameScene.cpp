@@ -272,7 +272,7 @@ void GameScene::reset() {
 }
 
 void GameScene::revert(bool totalReset){
-//    _swapHistory = _envController->getSwapHistory();
+    _swapHistory = _envController->getSwapHistory();
     readSaveFile();
     scrollingOffset = Vec2();
 
