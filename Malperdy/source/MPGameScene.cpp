@@ -355,10 +355,9 @@ void GameScene::populateChars()
 
     // Add Reynard to physics world
     Vec2 pos_temp = _reynardController->getCharacter()->getPosition();
-    //_reynardController->getCharacter()->setPosition(Vec2(4, 3));
-
+    _reynardController->getCharacter()->setPosition(Vec2(4, 3));
     addObstacle(_reynardController->getCharacter(), _reynardController->getCharacter()->_node); // Put this at the very front
-    //_reynardController->getCharacter()->setPosition(pos_temp);
+    _reynardController->getCharacter()->setPosition(pos_temp);
 
 #pragma mark Enemies
 
