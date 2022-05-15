@@ -1196,6 +1196,7 @@ void GameScene::beginContact(b2Contact *contact) {
                     }
                     //trap->getPolyNode()->setColor(Color4::GREEN);
                     // Clear all the associated rooms
+                    trap->setTrapState(TrapModel::TrapState::ACTIVATED);
                     _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
                 }
                 else if (trapType == TrapModel::TrapType::GOAL) {
@@ -1203,6 +1204,8 @@ void GameScene::beginContact(b2Contact *contact) {
                 }
                 else if (trapType == TrapModel::TrapType::TRAPDOOR) {
                     Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
+                    
+                    trap->setTrapState(TrapModel::TrapState::ACTIVATED);
                     _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
                 }
                 else if (isThisAReynardWallContact(contact, reynardIsRight)) {
