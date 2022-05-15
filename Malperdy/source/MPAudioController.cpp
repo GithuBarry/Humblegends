@@ -2,7 +2,7 @@
 #include <cugl/cugl.h>
 #include <string>
 
-shared_ptr<AssetManager> AudioController::_assets = make_shared<AssetManager>();
+//shared_ptr<AssetManager> AudioController::_assets = make_shared<AssetManager>();
 
 using namespace cugl;
 	//static bool init() {
@@ -19,6 +19,7 @@ using namespace cugl;
 	//static void del() {
 	//	AudioEngine::stop();
 	//}
+	shared_ptr<AssetManager> AudioController::_assets = make_shared<AssetManager>();
 
 	void AudioController::playAudio(string sound, bool loop, float vol, bool isMusic)
 	{

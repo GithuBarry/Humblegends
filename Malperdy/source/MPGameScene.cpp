@@ -221,8 +221,12 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
+    if (_mode == 1){
+        populate();
+    }else {
+        revert(false);
+    }
 
-    revert(true);
     _active = true;
     _complete = false;
 
@@ -525,7 +529,7 @@ void GameScene::update(float dt)
 {
     _input.update(dt);
     Vec2 inputPos = inputToGameCoords(_input.getPosition());
-    
+
     _envController->getGrid()->update(dt);
 
     // Process the toggled key commands
@@ -571,6 +575,16 @@ void GameScene::update(float dt)
     bool triedSwap = false;
     Vec2 progressCoords = Vec2(-1, -1);
     // Room swap by click
+    if (_input.didPress() &&(_gamestate.secondsAfterPause()>3)){
+        Vec2 node_coord = _pause->screenToNodeCoords(_input.getPosition());
+        if ((node_coord - Vec2(123,123)).length()<150){
+            _gamestate.pauseSwitch();
+            if (_gamestate.isPaused()){
+                _pause->setTexture("textures/PauseScreen/Play_Button.png");
+            }
+            return;
+        }
+    }
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
         if (_envController->hasSelected()) {
             if (_envController->swapWithSelected(inputPos, _reynardController, _enemies))
@@ -586,21 +600,7 @@ void GameScene::update(float dt)
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
     }
-    if (_input.didPress() && (_gamestate.secondsAfterPause() > 3))
-    {
-        Vec2 node_coord = _pause->screenToNodeCoords(_input.getPosition());
-        if ((node_coord - Vec2(123, 123)).length() < 150)
-        {
-            _gamestate.pauseSwitch();
-            AudioController::playSFX(PAUSE_UI_SOUND);
-            if (_gamestate.isPaused()){
-                _pause->setTexture("textures/PauseScreen/Play_Button.png");
-            }
-            return;
-        }
-    }
-    if (_gamestate.secondsAfterPause() < 1)
-    {
+    if (_gamestate.secondsAfterPause()<1){
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_3.png");
         return;
     }
@@ -1411,5 +1411,3 @@ Vec2 GameScene::inputToGameCoords(Vec2 inputCoords)
 {
     return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }
-
-
