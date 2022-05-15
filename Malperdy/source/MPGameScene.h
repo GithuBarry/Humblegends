@@ -169,7 +169,7 @@ protected:
      */
     void createTutorial(Vec2 pos, float width, float height, float scale, string TextureName);
 
-
+public:
     /**
      * Save all the states of the game to a file
      */
