@@ -28,7 +28,7 @@ using namespace std;
 /** Whether or not the game will even bother loading from a save */
 #define LOAD_FROM_SAVE 0
 /** Reynard's start location */
-#define REYNARD_START Vec2(2, 16)
+#define REYNARD_START Vec2(16, 16)
 
 #pragma mark -
 #pragma mark Level Geography
@@ -358,6 +358,7 @@ void GameScene::populateChars()
     _reynardController->getCharacter()->setPosition(Vec2(4, 3));
     addObstacle(_reynardController->getCharacter(), _reynardController->getCharacter()->_node); // Put this at the very front
     _reynardController->getCharacter()->setPosition(pos_temp);
+    _reynardController->getCharacter()->setPosition(Vec2(4, 8));
 
 #pragma mark Enemies
 
