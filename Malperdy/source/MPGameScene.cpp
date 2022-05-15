@@ -179,7 +179,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     //Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
     Vec2 offset;
 
-
+    //Gives the Statues References to the physics world for spawning arrows
+    StatueTrap::setPhysicsProperties(_world, _scale);
 
 
     //CULog("Size: %f %f", getSize().width, getSize().height);
@@ -351,6 +352,8 @@ void GameScene::populateArrows() {
                     right = false;
                 }
                 Vec2 worldPos = trap->getParent()->getPosition() + trap->getPosition();
+//                Vec2 worldToTrap = trap->worldToNodeCoords(<#const Vec2 worldPoint#>)
+//                trap->getParentToNodeTransform()
                 cout<<worldPos.x;
                 cout<<",";
                 cout<<worldPos.y<<endl;
@@ -511,7 +514,6 @@ void GameScene::createArrow2(Vec2 pos, bool right, shared_ptr<TrapModel> trap){
     cout<<_arrows->size()<<endl;
     
     addObstacle(arrow, arrow->getSceneNode());
-//    _arrows->erase(arrow);
 }
 
 void GameScene::createArrow(Vec2 pos, bool right){
@@ -535,7 +537,6 @@ void GameScene::createArrow(Vec2 pos, bool right){
         cout<<"OUTSIDE"<<endl;
     }
     arrow->setPosition(Vec2(7, 3));
-//    _arrows->erase(arrow);
 }
 
 
@@ -865,7 +866,8 @@ shared_ptr<Arrow> GameScene::isArrowCollision(b2Contact* contact) {
     for(int i = 0; i < _arrows->size(); i++){
         
         if(_arrows->at(i) != nullptr){
-//            cout<<"IN Arrows->at(i)"<<endl;
+            cout<<"IN Arrows->at(i)";
+            cout<<_arrows->size()<<endl;
             b2Body* body = _arrows->at(i)->getBody();
             bool isCollision = body == body1 || body == body2;
             if (isCollision) return _arrows->at(i);

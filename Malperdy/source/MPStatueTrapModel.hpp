@@ -27,7 +27,12 @@ using namespace cugl;
 
 class StatueTrap : public TrapModel{
 
+private:
+    static shared_ptr<physics2::ObstacleWorld> _world;
+    static float _scale;
+    
 public:
+    
 
 #pragma mark Constructor
 
@@ -41,6 +46,11 @@ public:
     bool init(float roomWidth, float roomHeight);
 
 
+    static void setPhysicsProperties(shared_ptr<physics2::ObstacleWorld> world, float scale){
+        _world = world;
+        _scale = scale;
+        
+    }
 };
 
 
