@@ -95,28 +95,60 @@ void TrapModel::setTrapState(TrapState newState){
 
 
 void TrapModel::update(float dt) {
-    switch(_trapState){
-        case TrapState::SPAWN:
-            setTrapState(TrapState::SPAWN);
-            break;
-        case TrapState::ACTIVATED:
-            setTrapState(TrapState::ACTIVATED);
-            break;
-        case TrapState::DEACTIVATED:
-            setTrapState(TrapState::DEACTIVATED);
-
-            break;
-    }
+//    switch(_trapState){
+//        case TrapState::SPAWN:
+//            setTrapState(TrapState::SPAWN);
+//            break;
+//        case TrapState::ACTIVATED:
+//            setTrapState(TrapState::ACTIVATED);
+//            break;
+//        case TrapState::DEACTIVATED:
+//            setTrapState(TrapState::DEACTIVATED);
+//
+//            break;
+//    }
 
     // UPDATE THE ANIMATION
     // update time since last frame update
     _elapsed += dt;
 
-    if (_trapState == TrapState::ACTIVATED || _trapState == TrapState::DEACTIVATED) {
+    if (_sceneNode->getSize()) {
+//        cout << "activated";
+    }
+    
+    if(_type == TrapType::CHECKPOINT){
+        if (_trapState == TrapState::ACTIVATED && _sceneNode->getSize()) {
+            // update time since last frame update
+
+
+                // if it is time to update the frame...
+                float frame_time = FRAME_TIME;
+                if (_elapsed > frame_time ) {
+
+                    // if on the last frame
+                    if (_currFrame == 0){
+                        // loop the animation if needed
+       
+                    }
+                    // if not on the last frame, then increment
+                    else{
+                        _currFrame = _currFrame - 1;
+                        
+                    }
+                    _sceneNode->setFrame(_currFrame);
+                    // reset time since last frame update
+                    _elapsed = 0;
+                }
+            }
+    }
+    
+    else{
+    if (_trapState == TrapState::ACTIVATED && _sceneNode->getSize()) {
         // update time since last frame update
 
+
             // if it is time to update the frame...
-            float frame_time = FRAME_TIME * ((_trapState == TrapState::ACTIVATED) ? 2.0 : 1.0);
+            float frame_time = FRAME_TIME;
             if (_elapsed > frame_time ) {
 
                 // if on the last frame
@@ -127,12 +159,14 @@ void TrapModel::update(float dt) {
                 // if not on the last frame, then increment
                 else{
                     _currFrame = _currFrame + 1;
+                    
                 }
                 _sceneNode->setFrame(_currFrame);
                 // reset time since last frame update
                 _elapsed = 0;
             }
         }
+    }
 }
 
 

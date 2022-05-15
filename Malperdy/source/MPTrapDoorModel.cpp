@@ -29,9 +29,33 @@ using namespace cugl;
  *
  * @return  true if the trap is initialized properly, false otherwise.
  */
+//bool TrapDoor::init(float roomWidth, float roomHeight){
+//    _sceneNode = make_shared<scene2::SpriteNode>();
+//    _sceneNode->initWithFile("textures/MP_TrapDoor-1.png");
+//    _type = TrapType::TRAPDOOR;
+//    // Inherantly starts activated
+//    _trapState = TrapModel::TrapState::ACTIVATED;
+//
+////    FULL SIZE IS 720
+//
+//    _sceneNode->setAnchor(Vec2::ZERO);
+//    _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX());
+//    _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y + (roomHeight/16));
+//    _sceneNode->setAbsolute(true);
+//
+//    return this->TrapModel::init();
+//}
+
 bool TrapDoor::init(float roomWidth, float roomHeight){
+//    shared_ptr<JsonReader> jr = JsonReader::allocWithAsset("jsons/framedata");
+//    shared_ptr<JsonValue> framedata = jr->readJson();
+    
+    shared_ptr<Texture> sheet = make_shared<Texture>();
+    sheet->initWithFile("textures/MP_TrapDoor-1.png");
+    
     _sceneNode = make_shared<scene2::SpriteNode>();
-    _sceneNode->initWithFile("textures/MP_TrapDoor-1.png");
+    _sceneNode->initWithSprite(sheet, 1, 1, 1);
+    
     _type = TrapType::TRAPDOOR;
     // Inherantly starts activated
     _trapState = TrapModel::TrapState::ACTIVATED;
@@ -44,15 +68,5 @@ bool TrapDoor::init(float roomWidth, float roomHeight){
     _sceneNode->setAbsolute(true);
     
     return this->TrapModel::init();
-}
-
-bool TrapDoor::init2(float roomWidth, float roomHeight){
-    shared_ptr<JsonReader> jr = JsonReader::allocWithAsset("jsons/framedata");
-    shared_ptr<JsonValue> framedata = jr->readJson();
-    
-    shared_ptr<Texture> sheet = make_shared<Texture>();
-    sheet->initWithFile("trapdoorsheet");
-    
-    
     
 }

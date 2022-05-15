@@ -260,6 +260,8 @@ public:
      * @return whether it finished and does not need any more updates
      */
     bool update();
+    
+    bool updateTraps(float dt);
 
 };
 

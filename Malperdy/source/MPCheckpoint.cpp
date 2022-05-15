@@ -34,8 +34,11 @@ bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal) {
     _id = ID_COUNTER;
     ID_COUNTER++;
 
+    shared_ptr<Texture> sheet = make_shared<Texture>();
+    sheet->initWithFile("textures/checkpoint_sheet.png");
+    
     _sceneNode = make_shared<scene2::SpriteNode>();
-    _sceneNode->initWithFile("textures/checkpoint.png");
+    _sceneNode->initWithSprite(sheet, 6, 5);
     if (isFinal) _type = TrapType::GOAL;
     else _type = TrapType::CHECKPOINT;
 
@@ -43,6 +46,8 @@ bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal) {
     _sceneNode->setScale((roomWidth / 4) / _sceneNode->getPolygon().getBounds().getMaxX());
     _sceneNode->setPosition(_sceneNode->getPosition().x + (roomWidth / 4), _sceneNode->getPosition().y + (roomHeight / 8));
     _sceneNode->setAbsolute(true);
+    
+    _currFrame = 29;
 
     return this->TrapModel::init();
 }

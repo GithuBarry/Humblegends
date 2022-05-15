@@ -260,7 +260,18 @@ bool RoomModel::update() {
 
         this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH * (speed)+cur_x * (1 - speed), destination.y * (yfactor)*DEFAULT_ROOM_HEIGHT + cur_y * (1 - yfactor));
     }
+    
 
+
+    return false;
+}
+
+bool RoomModel::updateTraps(float dt){
+    // traps
+    if(_trap != nullptr){
+        _trap->update(dt);
+        return true;
+    }
     return false;
 }
 
