@@ -135,7 +135,16 @@ public:
     * @return   value based on how the player wants to start playing
     */
     bool getMode() { return _mode; }
-};
 
+private:
+#pragma mark -
+#pragma mark Progress Monitoring
+    /*
+    * Returns whether there is a save file to load
+    *
+    * @return whether there is a save file to load
+    */
+    bool LoadingScene::isSaveFile();
+};
 
 #endif /* __MP_LOADING_SCENE_H__ */
