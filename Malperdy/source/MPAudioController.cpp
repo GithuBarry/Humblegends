@@ -2,7 +2,7 @@
 #include <cugl/cugl.h>
 #include <string>
 
-
+shared_ptr<AssetManager> AudioController::_assets = make_shared<AssetManager>();
 
 using namespace cugl;
 	//static bool init() {
