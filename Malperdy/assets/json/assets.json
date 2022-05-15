@@ -173,21 +173,21 @@
     "level_music": {
       "type": "sample",
       "file": "sounds/levelmusic.ogg",
-      "volume": 0.3,
+      "volume": 0.2,
       "stream": true
     },
 
     "slowedlevel_music": {
       "type": "sample",
       "file": "sounds/slowedlevelmusic.ogg",
-      "volume": 0.3,
+      "volume": 0.2,
       "stream": true
     },
 
     "titlescreen_music": {
       "type": "sample",
       "file": "sounds/titlescreenmusic.ogg",
-      "volume": 0.3,
+      "volume": 0.2,
       "stream": true
     }
   },
