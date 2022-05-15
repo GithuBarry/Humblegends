@@ -464,11 +464,11 @@ void GameScene::populateChars()
 void GameScene::populateTutorials(){
     _tutorials = make_shared<vector<std::shared_ptr<Tutorial>>>();
 
-    createTutorial(Vec2(2,4), 3, 3, .1, "DashTutorial");
-    createTutorial(Vec2(5,4), 3, 3, .1, "JumpTutorial");
-    createTutorial(Vec2(10,4), 3, 3, .1, "SwapTutorial");
-    createTutorial(Vec2(13,4), 3, 3, .1, "ZoomInTutorial");
-    createTutorial(Vec2(16,4), 3, 3, .1, "ZoomOutTutorial");
+    createTutorial(Vec2(2,16), 3, 3, .1, "DashTutorial");
+    createTutorial(Vec2(5,16), 3, 3, .1, "JumpTutorial");
+    createTutorial(Vec2(10,16), 3, 3, .1, "SwapTutorial");
+    createTutorial(Vec2(13,16), 3, 3, .1, "ZoomInTutorial");
+    createTutorial(Vec2(16,16), 3, 3, .1, "ZoomOutTutorial");
 
 }
 
