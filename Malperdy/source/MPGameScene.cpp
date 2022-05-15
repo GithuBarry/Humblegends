@@ -27,8 +27,6 @@ using namespace std;
 
 /** Whether or not the game will even bother loading from a save */
 #define LOAD_FROM_SAVE 0
-/** Reynard's start location */
-#define REYNARD_START Vec2(2, 16)
 
 #pragma mark -
 #pragma mark Level Geography
@@ -285,7 +283,7 @@ void GameScene::revert(bool totalReset){
     _tutorials = nullptr;
     setComplete(false);
     if (totalReset){
-        _checkpointReynardPos = reynardDefault;
+        _checkpointReynardPos = REYNARD_START;
         populate();
     }else{
         populateEnv();
