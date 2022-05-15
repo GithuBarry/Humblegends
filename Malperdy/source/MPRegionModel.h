@@ -140,10 +140,6 @@ private:
 			// Return false now if this location is not in this sublevel
 			if (!isInSublevel(x, y)) return false;
 
-			// Otherwise, convert from region space to sublevel space
-			x -= _originX;
-			y -= _originY;
-
 			// Set the room and then return true
 			_rooms->at(y)->at(x) = room;
 			return true;
@@ -157,9 +153,9 @@ private:
 		 */
 		void clearSublevel(shared_ptr<Texture> bgCleared) {
 			// For each room in the sublevel
-			for (shared_ptr<vector<shared_ptr<RoomModel>>> col : *_rooms) {
-				for (shared_ptr<RoomModel> room : *col) {
-					room->_bgNode->setTexture(bgCleared);
+			for (int x = _originX; x < _originX + _width; x++) {
+				for (int y = _originY; y < _originY + _height; y++) {
+					_rooms->at(y)->at(x)->_bgNode->setTexture(bgCleared);
 				}
 			}
 		}

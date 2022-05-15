@@ -68,10 +68,6 @@ shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> GridModel::initGri
  * in grid space are the region's origin, which will be used to organize the regions,
  * but otherwise regions only care about where things are relative to their origin.
  *
- * TODO: currently this just pretends that the whole region is
- * one sublevel, needs to be fixed to account for different sublevels
- * once we're able to identify that from the level data
- *
  * @param regNum        The number of the region to initialize
  * @param originX       The x-coordinate of the region origin in grid space
  * @param originY       The y-coordinate of the region origin in grid space
