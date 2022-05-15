@@ -428,7 +428,7 @@ void GameScene::populateChars()
                 int room = i / ROOM_HEIGHT / ROOM_WIDTH;
                 int x = room % (levelJSON->get("width")->asInt() / ROOM_WIDTH);
                 int y = room / (levelJSON->get("width")->asInt() / ROOM_WIDTH);
-                Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() / 8 - 1 - y);
+                Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() / ROOM_HEIGHT - 1 - y);
 
                 // initialize it
                 //                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(12,8), _scale, rabbit_animations));
@@ -438,7 +438,8 @@ void GameScene::populateChars()
                 _enemies->back()->setReynardController(_reynardController);
                 addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
-                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1, 1)) * Vec2(5, 5));
+                // TODO: wtf are these numbers
+                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(3.5f, 1)) * Vec2(5, 5));
             }
             else if (temp.find("enemy") != string::npos)
             {
@@ -447,7 +448,7 @@ void GameScene::populateChars()
                 int room = i / ROOM_HEIGHT / ROOM_WIDTH;
                 int x = room % (levelJSON->get("width")->asInt() / ROOM_WIDTH);
                 int y = room / (levelJSON->get("width")->asInt() / ROOM_WIDTH);
-                Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() / 8 - 1 - y);
+                Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() / ROOM_WIDTH - 1 - y);
 
                 // initialize it
                 //                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(ROOM_WIDTH,ROOM_HEIGHT), _scale, rabbit_animations));
