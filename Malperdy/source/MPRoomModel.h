@@ -57,7 +57,7 @@ using namespace cugl;
 /** The speed at which the rooms should swap, from 0.5001-0.9999, smaller is slower */
 #define SWAP_SPEED 0.7f
 /** The rate at which a room should clear (background changes) */
-#define CLEAR_RATE 0.1f
+#define CLEAR_RATE 0.08f
 
 class RoomModel : public cugl::scene2::SceneNode {
 public:

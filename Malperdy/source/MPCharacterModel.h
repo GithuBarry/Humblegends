@@ -52,8 +52,8 @@ private:
     const float FRAME_TIME = 0.03;
 
     /** The duration in milliseconds of a dash */
-    const Uint64 DASH_DURATION = 150;
-    const Uint64 DASH_COOLDOWN = 1150;
+    const Uint64 DASH_DURATION = 120;
+    const Uint64 DASH_COOLDOWN = 950;
 
 public:
     /** Enum representing the current state of movement that the character is in */
