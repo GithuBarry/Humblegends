@@ -230,6 +230,10 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::BLACK);
+
+    // Finally start playing level music
+    AudioController::playMusic(LEVEL_MUSIC);
+
     return true;
 }
 
@@ -317,7 +321,6 @@ void GameScene::populate()
 }
 
 void GameScene::populateEnv() {
-    AudioController::playMusic(LEVEL_MUSIC);
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     _grid = _envController->getGrid();

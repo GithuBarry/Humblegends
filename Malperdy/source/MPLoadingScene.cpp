@@ -72,6 +72,10 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     }
     Application::get()->setClearColor(Color4::BLACK);
     addChild(layer);
+
+    // Play title screen music
+    AudioController::playGivenMusic(_assets->get<Sound>("titlescreen_music"));
+
     return true;
 }
 
