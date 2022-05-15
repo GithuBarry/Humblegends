@@ -146,9 +146,47 @@
       "volume": 0.5
     },
 
+    "dash": {
+      "type": "sample",
+      "file": "sounds/dash.wav",
+      "volume": 0.5
+    },
+
+    "zoom_out": {
+      "type": "sample",
+      "file": "sounds/zoom_out.wav",
+      "volume": 0.45
+    },
+
+    "zoom_in": {
+      "type": "sample",
+      "file": "sounds/zoom_in.wav",
+      "volume": 0.45
+    },
+
+    "pause_ui": {
+      "type": "sample",
+      "file": "sounds/pause_ui.wav",
+      "volume": 0.5
+    },
+
     "level_music": {
       "type": "sample",
       "file": "sounds/levelmusic.ogg",
+      "volume": 0.3,
+      "stream": true
+    },
+
+    "slowedlevel_music": {
+      "type": "sample",
+      "file": "sounds/slowedlevelmusic.ogg",
+      "volume": 0.3,
+      "stream": true
+    },
+
+    "titlescreen_music": {
+      "type": "sample",
+      "file": "sounds/titlescreenmusic.ogg",
       "volume": 0.3,
       "stream": true
     }
