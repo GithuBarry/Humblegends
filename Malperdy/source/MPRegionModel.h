@@ -58,7 +58,7 @@ private:
 
 		/** Grid of pointers for all the rooms in the sublevel, where _rooms[i][j]
 		is the room in the ith row from the bottom and jth column from the left in
-		sublevel space */
+		REGION space */
 		shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> _rooms;
 
 	public:
@@ -120,10 +120,6 @@ private:
 		shared_ptr<RoomModel> getRoom(int x, int y) {
 			// Return nullptr now if this room is not in this sublevel
 			if (!isInSublevel(x, y)) return nullptr;
-
-			// Otherwise, convert from region space to sublevel space
-			x -= _originX;
-			y -= _originY;
 
 			// Then return the right room
 			return _rooms->at(y)->at(x);

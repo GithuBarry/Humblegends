@@ -90,7 +90,7 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
 
     // TODO: this is where it pretends there's only one sublevel
 
-    // Initialize grid for a sublevel of the region
+    // Initialize grid for a sublevel layer (dimensions are the dimensions of the region)
     shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> sublevel = initGrid(width, height);
 
     // Now start reading data from the JSON

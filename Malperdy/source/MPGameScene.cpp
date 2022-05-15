@@ -25,6 +25,9 @@
 using namespace cugl;
 using namespace std;
 
+/** Whether or not the game will even bother loading from a save */
+#define LOAD_FROM_SAVE 0
+
 #pragma mark -
 #pragma mark Level Geography
 
@@ -263,7 +266,11 @@ void GameScene::reset()
 
 void GameScene::revert(bool totalReset){
 //    _swapHistory = _envController->getSwapHistory();
-    readSaveFile();
+
+    // Whether to load from save or not
+    if (LOAD_FROM_SAVE) readSaveFile();
+    else (_checkpointReynardPos = Vec2(2, 16));
+
     scrollingOffset = Vec2();
 
     _reynardController = nullptr;
@@ -333,6 +340,9 @@ void GameScene::populateEnv() {
         (*itr)->setDebugColor(Color4::RED);
         // CULog("populate: %f %f ", (*itr)->getPosition().x);
     }
+
+    // Start the camera above Reynard and pan to him
+    _worldnode->applyPan(Vec2(0, -500));
 }
 
 void GameScene::populateChars()
@@ -346,10 +356,10 @@ void GameScene::populateChars()
 
     // Add Reynard to physics world
     Vec2 pos_temp = _reynardController->getCharacter()->getPosition();
-    _reynardController->getCharacter()->setPosition(Vec2(4, 3));
+    //_reynardController->getCharacter()->setPosition(Vec2(4, 3));
 
     addObstacle(_reynardController->getCharacter(), _reynardController->getCharacter()->_node); // Put this at the very front
-    _reynardController->getCharacter()->setPosition(pos_temp);
+    //_reynardController->getCharacter()->setPosition(pos_temp);
 
 #pragma mark Enemies
 
