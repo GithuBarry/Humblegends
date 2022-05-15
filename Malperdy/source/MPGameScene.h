@@ -28,6 +28,8 @@
 #include "MPEnvController.h"
 #include "MPAudioController.h"
 
+/** Reynard's start location */
+#define REYNARD_START Vec2(2, 16)
 
 /**
  * This class is the primary gameplay constroller for the demo.
@@ -95,11 +97,8 @@ protected:
     int _checkpointSwapLen = 0;
     vector<Vec2> _checkpointEnemyPos;
 
-    /**Reynard position*/
-    Vec2 reynardDefault = Vec2(4,3);
-
     /** A store position of reynard before reset*/
-    Vec2 _checkpointReynardPos = reynardDefault;
+    Vec2 _checkpointReynardPos = REYNARD_START;
 
     /* Offset of scrolling */
     Vec2 scrollingOffset = Vec2();
