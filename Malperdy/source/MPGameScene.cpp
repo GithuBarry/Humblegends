@@ -466,9 +466,9 @@ void GameScene::populateTutorials(){
 
     createTutorial(Vec2(2,16), 3, 3, .1, "DashTutorial");
     createTutorial(Vec2(5,16), 3, 3, .1, "JumpTutorial");
-    createTutorial(Vec2(10,16), 3, 3, .1, "SwapTutorial");
-    createTutorial(Vec2(13,16), 3, 3, .1, "ZoomInTutorial");
-    createTutorial(Vec2(16,16), 3, 3, .1, "ZoomOutTutorial");
+    createTutorial(Vec2(11,16), 3, 3, .1, "SwapTutorial");
+    createTutorial(Vec2(14,16), 3, 3, .1, "ZoomInTutorial");
+    createTutorial(Vec2(17,16), 3, 3, .1, "ZoomOutTutorial");
 
 }
 
