@@ -21,15 +21,15 @@
         "minfilter": "linear",
         "magfilter": "linear"
 	},
-	"play": {
-        "file":      "textures/cugl-play.png",
+    "loadGame-noSave": {
+        "file":      "textures/Load_Locked.png",
         "wrapS":     "clamp",
         "wrapT":     "clamp",
         "minfilter": "linear",
         "magfilter": "linear"
 	},
-    "loadGame": {
-        "file":      "textures/Load_Locked.png",
+    "loadGame-withSave": {
+        "file":      "textures/Load_Default.png",
         "wrapS":     "clamp",
         "wrapT":     "clamp",
         "minfilter": "linear",
@@ -100,31 +100,6 @@
                     "absolute" : true
 		    	}
             },
-            "play"  : {
-                "type"   : "Button",
-                "data"   : {
-                    "upnode"   : "up",
-                    "pushable" : [160,280,190,370,280,400,370,370,400,280,370,190,280,160,190,190],
-                    "visible"  : false,
-                    "pushsize" : true,
-                    "anchor"   : [0.5,0.5],
-                    "scale"    : 0.8
-                },
-                "children" : {
-                    "up"       : {
-                        "type"   : "Image",
-                        "data"   : {
-                            "texture"  : "play"
-                        }
-                    }
-                },
-                "layout" : {
-                    "x_anchor" : "center",
-                    "y_anchor" : "middle",
-                    "y_offset" : -115,
-                    "absolute" : true
-                }
-            },
             "title"  : {
 			    "type"   : "Image",
 			    "format"    : {
@@ -170,17 +145,48 @@
                     "absolute" : true
 		    	}
             },
-            "loadGame"  : {
-			    "type"   : "Image",
-			    "format"    : {
-				    "type" : "Anchored"
-			    },
+            "load-noSave"  : {
+			    "type"   : "Button",
 			    "data"   : {
+                    "upnode"   : "up",
                     "visible"  : false,
-                    "texture"  : "loadGame",
                     "anchor"   : [1,0.5],
                     "scale"    : 0.425
 			    },
+                "children" : {
+                    "up"       : {
+                        "type"   : "Image",
+                        "data"   : {
+                            "texture"  : "loadGame-noSave"
+                        }
+                    }
+                },
+			    "layout" : {
+                    "x_anchor" : "right",
+                    "y_anchor" : "middle",
+                    "x_offset" : -25,
+                    "y_offset" : -30,
+                    "absolute" : true
+		    	}
+            },
+            "load-withSave"  : {
+			    "type"   : "Button",
+			    "data"   : {
+                    "upnode"   : "up",
+                    "pushable" : [0,0, 0,122, 680,122, 680,0],
+                    "pushsize" : true,
+                    "visible"  : false,
+                    "anchor"   : [1,0.5],
+                    "scale"    : 0.425
+			    },
+                "children" : {
+                    "up"       : {
+                        "type"   : "Image",
+                        "data"   : {
+                            "texture"  : "loadGame-withSave"
+                        }
+                    }
+                },
 			    "layout" : {
                     "x_anchor" : "right",
                     "y_anchor" : "middle",

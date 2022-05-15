@@ -61,9 +61,16 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         this->_mode = 1;
         this->_active = down;
     });
-    _load = assets->get<scene2::SceneNode>("load_loadGame");
-    
-    Application::get()->setClearColor(Color4(192,192,192,255));
+    if (saveFileExists()) {
+        _load = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_load-withSave"));
+        _load->addListener([=](const std::string& name, bool down) {
+            this->_mode = 2;
+            this->_active = down;
+        });
+    }else {
+        _load = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_load-noSave"));
+    }
+    Application::get()->setClearColor(Color4::BLACK);
     addChild(layer);
     return true;
 }
@@ -75,10 +82,10 @@ void LoadingScene::dispose() {
     // Deactivate the button (platform dependent)
     if (isPending()) {
         _new->deactivate();
+        _load->deactivate();
     }
     _new = nullptr;
     _load = nullptr;
-    //_new = nullptr;
     _title = nullptr;
     _brand = nullptr;
     _bar = nullptr;
@@ -106,17 +113,17 @@ void LoadingScene::update(float progress) {
             _new->setVisible(true);
             _new->activate();
             _title->setVisible(true);
-            //_new->setVisible(true);
             _load->setVisible(true);
+            if (saveFileExists()) _load->activate();
         }
         _bar->setProgress(_progress);
     }
 }
 
 /**
- * Returns true if loading is complete, but the player has not pressed play
+ * Returns true if loading is complete, but the player has not started the game
  *
- * @return true if loading is complete, but the player has not pressed play
+ * @return true if loading is complete, but the player has not started the game
  */
 bool LoadingScene::isPending( ) const {
     return _new != nullptr && _new->isVisible();
@@ -127,9 +134,9 @@ bool LoadingScene::isPending( ) const {
 *
 * @return whether there is a save file to load
 */
-bool LoadingScene::isSaveFile() {
+bool LoadingScene::saveFileExists() {
     vector<std::string> file_path_list = vector<std::string>(2);
     file_path_list[0] = Application::get()->getSaveDirectory();
     file_path_list[1] = "state.json";
-    filetool::file_exists(cugl::filetool::join_path(file_path_list));
+    return filetool::file_exists(cugl::filetool::join_path(file_path_list));
 }

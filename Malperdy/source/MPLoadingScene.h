@@ -45,7 +45,7 @@ protected:
     /** The "new game" button */
     std::shared_ptr<cugl::scene2::Button>       _new;
     /** The "load game" button */
-    std::shared_ptr<cugl::scene2::SceneNode>   _load;
+    std::shared_ptr<cugl::scene2::Button>      _load;
 
     // MODEL
     /** The progress displayed on the screen */
@@ -120,9 +120,9 @@ public:
     void update(float timestep);
     
     /**
-     * Returns true if loading is complete, but the player has not pressed play
+     * Returns true if loading is complete, but the player has not started the game
      *
-     * @return true if loading is complete, but the player has not pressed play
+     * @return true if loading is complete, but the player has not started the game
      */
     bool isPending( ) const;
 
@@ -134,7 +134,8 @@ public:
     * 
     * @return   value based on how the player wants to start playing
     */
-    bool getMode() { return _mode; }
+    bool getMode() { 
+        return _mode; }
 
 private:
 #pragma mark -
@@ -144,7 +145,7 @@ private:
     *
     * @return whether there is a save file to load
     */
-    bool LoadingScene::isSaveFile();
+    bool LoadingScene::saveFileExists();
 };
 
 #endif /* __MP_LOADING_SCENE_H__ */
