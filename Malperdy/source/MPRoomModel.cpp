@@ -163,6 +163,14 @@ bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_pt
 		bgNode->setPolygon(Rect(0, 0, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT));
 		_bgOrderNode->addChild(bgNode);
         _bgNode = bgNode;
+
+        // Set cleared background node, without texture for now
+        shared_ptr<scene2::PolygonNode> bgClearedNode =
+            scene2::PolygonNode::allocWithPoly(Rect(0, 0, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT));
+        // Place it behind the original background
+        bgClearedNode->setPriority(-1);
+        _bgOrderNode->addChild(bgClearedNode);
+        _bgClearedNode = bgClearedNode;
 	}
 
 	// Build geometry for the room type with the given ID
@@ -240,11 +248,28 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
 }
 
 bool RoomModel::update(float dt){
+    // BACKGROUND CLEAR TRANSITION
+    // When a room is being cleared, transition smoothly between backgrounds
+
+    // TODO: for some reason only some rooms clear?
+
+    // Only transition if the room is being cleared, so bgClear isn't nullptr
+    if (_isCleared) {
+        bgOpacity -= CLEAR_RATE;
+        // If old background is now fully clear
+        if (bgOpacity < 0.0f) {
+            _bgNode = _bgClearedNode;
+            _bgClearedNode = nullptr;
+        }
+        else _bgNode->setColor(Color4(Vec4(1, 1, 1, bgOpacity)));
+    }
+
     // traps
-    if(_trap != nullptr){
+    if (_trap != nullptr) {
         _trap->update(dt);
         return true;
     }
+
     return false;
 }
 
@@ -274,12 +299,7 @@ void RoomModel::clear(shared_ptr<Texture> bg) {
     _isCleared = true;
 
     // Set cleared background node's texture
-    shared_ptr<scene2::PolygonNode> bgClearedNode = scene2::PolygonNode::allocWithTexture(bg);
-    bgClearedNode->setPolygon(Rect(0, 0, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT));
-    // Place it behind the original background
-    bgClearedNode->setPriority(-1);
-    _bgOrderNode->addChild(bgClearedNode);
-    _bgClearedNode = bgClearedNode;
+    _bgClearedNode->setTexture(bg);
 }
 
 #pragma mark Updates
@@ -290,23 +310,6 @@ void RoomModel::clear(shared_ptr<Texture> bg) {
  * @return whether it finished and does not need any more updates
  */
 bool RoomModel::updateSwap() {
-    // BACKGROUND CLEAR TRANSITION
-    // When a room is being cleared, transition smoothly between backgrounds
-
-    // TODO: for some reason only some rooms clear?
-
-    // Only transition if the room is being cleared, so bgClear isn't nullptr
-    if (_isCleared) {
-        bgOpacity -= CLEAR_RATE;
-        // If old background is now fully clear
-        /*if (bgOpacity < 0.0f) {
-            _bgNode = _bgClearedNode;
-            _bgClearedNode = nullptr;
-        }
-        else */
-        _bgNode->setColor(Color4(Vec4(1, 1, 1, bgOpacity)));
-    }
-
     // ROOM SWAP TRANSITION
     if ((Vec2(destination.x * DEFAULT_ROOM_WIDTH,
         destination.y * DEFAULT_ROOM_HEIGHT)).distance(SceneNode::getPosition()) < 10) {

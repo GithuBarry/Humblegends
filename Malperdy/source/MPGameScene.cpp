@@ -267,9 +267,14 @@ void GameScene::reset()
 void GameScene::revert(bool totalReset){
 //    _swapHistory = _envController->getSwapHistory();
 
+    // TODO: proper new game/load from save logic
+
     // Whether to load from save or not
-    if (LOAD_FROM_SAVE) readSaveFile();
-    else (_checkpointReynardPos = Vec2(2, 16));
+    if (_loadFromSave) readSaveFile();
+    else {
+        _checkpointReynardPos = Vec2(2, 16);
+        _loadFromSave = true;
+    }
 
     scrollingOffset = Vec2();
 

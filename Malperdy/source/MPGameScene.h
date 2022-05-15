@@ -37,7 +37,9 @@
  * so that we can have a separate mode for the loading screen.
  */
 class GameScene : public cugl::Scene2 {
-
+private:
+    /** Whether or not to load from a save file on start */
+    bool _loadFromSave = false;
 
 protected:
     /** The asset manager for this game mode. */

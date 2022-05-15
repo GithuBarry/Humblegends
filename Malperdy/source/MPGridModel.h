@@ -243,7 +243,7 @@ public:
                 for(int col = 0; col < width; col++){
                     shared_ptr<RoomModel> room = rm->getRoom(col, row);
                     if(room){
-                        room->updateTraps(dt);
+                        room->update(dt);
                     }
                 }
             }
