@@ -119,11 +119,13 @@ protected:
      */
     int keepRedFrames = 0;
 
+public:
+
     /*
      Flag past from owner of this class to indicate whether to start a new game.
      */
-    int _mode = 1;
-public:
+    int _mode = 0;
+
     void setMode(int mode){
         _mode = mode;
     }

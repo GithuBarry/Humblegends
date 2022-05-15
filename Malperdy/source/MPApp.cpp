@@ -105,7 +105,10 @@ void Malperdy::onShutdown() {
  */
 void Malperdy::onSuspend() {
     AudioEngine::get()->pause();
-    _gameplay.rewriteSaveFile();
+    if (_gameplay._mode != 0){
+        _gameplay.rewriteSaveFile();
+    }
+
 }
 
 /**
