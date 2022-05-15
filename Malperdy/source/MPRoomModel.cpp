@@ -326,12 +326,12 @@ bool RoomModel::updateSwap() {
 
         if (abs(destination.x * DEFAULT_ROOM_WIDTH - cur_x) < 5) {
             this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH,
-                destination.y * DEFAULT_ROOM_HEIGHT * (SWAP_SPEED)+cur_y * (1 - SWAP_SPEED));
+                destination.y * DEFAULT_ROOM_HEIGHT * (swapSpeed)+cur_y * (1 - swapSpeed));
         }
         else {
             float yfactor = 1 / (abs(diff_x) / 100 + 1);
 
-            this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH * (SWAP_SPEED)+cur_x * (1 - SWAP_SPEED),
+            this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH * (swapSpeed)+cur_x * (1 - swapSpeed),
                 destination.y * (yfactor)*DEFAULT_ROOM_HEIGHT + cur_y * (1 - yfactor));
         }
     }

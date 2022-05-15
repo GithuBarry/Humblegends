@@ -55,7 +55,7 @@ using namespace cugl;
 /** The ID of the default room type */
 #define DEFAULT_ROOM_ID "leftrightupdown"
 /** The speed at which the rooms should swap, from 0.5001-0.9999, smaller is slower */
-#define SWAP_SPEED 0.7f
+#define swapSpeed 0.2f
 /** The rate at which a room should clear (background changes) */
 #define CLEAR_RATE 0.08f
 
