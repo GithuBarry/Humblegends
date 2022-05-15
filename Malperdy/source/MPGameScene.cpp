@@ -220,6 +220,14 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
     if (_mode == 1){
+        
+        vector<std::string> file_path_list =vector<std::string>(2);
+        file_path_list[0] = Application::get()->getSaveDirectory();
+        file_path_list[1] = "state.json";
+        if (filetool::file_exists(cugl::filetool::join_path(file_path_list))){
+            cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
+        }
+        
         populate();
     }else {
         revert(false);
