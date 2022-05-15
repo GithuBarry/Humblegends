@@ -239,6 +239,15 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
     return true;
 }
 
+bool RoomModel::update(float dt){
+    // traps
+    if(_trap != nullptr){
+        _trap->update(dt);
+        return true;
+    }
+    return false;
+}
+
 #pragma mark Destructors
 /**
  * Disposes all resources and assets of this room.

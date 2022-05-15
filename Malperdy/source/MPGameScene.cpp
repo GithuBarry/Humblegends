@@ -511,6 +511,8 @@ void GameScene::update(float dt)
 {
     _input.update(dt);
     Vec2 inputPos = inputToGameCoords(_input.getPosition());
+    
+    _envController->getGrid()->update(dt);
 
     // Process the toggled key commands
     if (_input.didDebug())
@@ -1158,7 +1160,8 @@ void GameScene::beginContact(b2Contact *contact)
 
                 // Handle what to do when the checkpoint is hit
                 // Turn it green
-                trap->getPolyNode()->setColor(Color4::GREEN);
+//                trap->getPolyNode()->setColor(Color4::GREEN);
+                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
                 // Clear all the associated rooms
                 _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
             }
@@ -1169,7 +1172,8 @@ void GameScene::beginContact(b2Contact *contact)
             else if (trapType == TrapModel::TrapType::TRAPDOOR)
             {
                 Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
-                _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x, -abs(v.y) / 3));
+                _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
+                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
             }
             else if (isThisAReynardWallContact(contact, reynardIsRight))
             {

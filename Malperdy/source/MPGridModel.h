@@ -231,6 +231,24 @@ public:
     bool isRoomFogged(Vec2 coord) {
         return getRoom(coord) != nullptr && getRoom(coord)->isFogged();
     }
+    
+    void update(float dt){
+        for(int i = 0; i < _regions->size(); i++){
+            shared_ptr<RegionModel> rm = _regions->at(i);
+            
+            int width = rm->getWidth();
+            int height = rm->getHeight();
+            
+            for(int row = 0; row < height; row++){
+                for(int col = 0; col < width; col++){
+                    shared_ptr<RoomModel> room = rm->getRoom(col, row);
+                    if(room){
+                        room->updateTraps(dt);
+                    }
+                }
+            }
+        }
+    }
 
 #pragma mark Setters
 

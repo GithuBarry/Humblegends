@@ -283,6 +283,9 @@ public:
      */
     bool updateSwap();
 
+    
+    bool update(float dt);
+
 };
 
 #endif /* MPRoomModel_h */
