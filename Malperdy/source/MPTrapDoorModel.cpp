@@ -51,10 +51,10 @@ bool TrapDoor::init(float roomWidth, float roomHeight){
 //    shared_ptr<JsonValue> framedata = jr->readJson();
     
     shared_ptr<Texture> sheet = make_shared<Texture>();
-    sheet->initWithFile("textures/trapdoor_sheet.png");
+    sheet->initWithFile("textures/MP_TrapDoor-1.png");
     
     _sceneNode = make_shared<scene2::SpriteNode>();
-    _sceneNode->initWithSprite(sheet, 1, 79);
+    _sceneNode->initWithSprite(sheet, 1, 1);
     
     _type = TrapType::TRAPDOOR;
     // Inherantly starts activated

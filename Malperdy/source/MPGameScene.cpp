@@ -1191,7 +1191,7 @@ void GameScene::beginContact(b2Contact *contact) {
                     for (auto thisEnemy: *_enemies){
                         _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                     }
-                    trap->getPolyNode()->setColor(Color4::GREEN);
+                    //trap->getPolyNode()->setColor(Color4::GREEN);
                     // Clear all the associated rooms
                     _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
                 }
