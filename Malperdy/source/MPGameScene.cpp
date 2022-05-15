@@ -60,7 +60,7 @@ float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 #define SOME_COLOR Color4::YELLOW
 
 /** The key for the font reference */
-#define PRIMARY_FONT        "retro"
+#define PRIMARY_FONT "retro"
 
 float REYNARD_POS[] = {30, 10};
 
@@ -178,9 +178,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
     Vec2 offset;
 
-
-    //CULog("Size: %f %f", getSize().width, getSize().height);
-    // Create the scene graph
+    // CULog("Size: %f %f", getSize().width, getSize().height);
+    //  Create the scene graph
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _worldnode->setPosition(offset);
 
@@ -219,9 +218,21 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     // Give all enemies a reference to the ObstacleWorld for raycasting
     EnemyController::setObstacleWorld(_world);
-    if (_mode == 1){
+    if (_mode == 1)
+    {
+
+        vector<std::string> file_path_list = vector<std::string>(2);
+        file_path_list[0] = Application::get()->getSaveDirectory();
+        file_path_list[1] = "state.json";
+        if (filetool::file_exists(cugl::filetool::join_path(file_path_list)))
+        {
+            cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
+        }
+
         populate();
-    }else {
+    }
+    else
+    {
         revert(false);
     }
 
@@ -261,19 +272,27 @@ void GameScene::dispose()
 #pragma mark -
 #pragma mark Level Layout
 
-
 /**
  * Resets the status of the game so that we can play again.
  *
  * This method disposes of the world and creates a new one.
  */
-void GameScene::reset() {
+void GameScene::reset()
+{
     revert(true);
 }
 
-void GameScene::revert(bool totalReset){
-//    _swapHistory = _envController->getSwapHistory();
-    readSaveFile();
+void GameScene::revert(bool totalReset)
+{
+    if (_envController != nullptr)
+    {
+        _swapHistory = _envController->getSwapHistory();
+    }
+
+    if (!readSaveFile())
+    {
+        totalReset = true;
+    }
     scrollingOffset = Vec2();
 
     _reynardController = nullptr;
@@ -284,25 +303,26 @@ void GameScene::revert(bool totalReset){
     _debugnode->removeAllChildren();
     _gamestate.reset();
     _enemies = nullptr;
-    _tutorials = nullptr;
     setComplete(false);
-    if (totalReset){
+    if (totalReset)
+    {
 
         populate();
-    }else{
+    }
+    else
+    {
         populateEnv();
         populateChars();
-        populateTutorials();
-        for (int i = 0; i<_checkpointSwapLen; i++) {
-            _envController->swapRoomOnGrid(_swapHistory[i][0],_swapHistory[i][1],true);
+        for (int i = 0; i < _checkpointSwapLen; i++)
+        {
+            _envController->swapRoomOnGrid(_swapHistory[i][0], _swapHistory[i][1], true);
         }
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
-        for (int i = 0; i < _enemies->size(); i++){
+        for (int i = 0; i < _enemies->size(); i++)
+        {
             (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
         }
     }
-
-
 }
 
 /**
@@ -320,10 +340,10 @@ void GameScene::populate()
 {
     populateEnv();
     populateChars();
-    populateTutorials();
 }
 
-void GameScene::populateEnv() {
+void GameScene::populateEnv()
+{
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     _grid = _envController->getGrid();
@@ -346,6 +366,9 @@ void GameScene::populateEnv() {
 
     // Start the camera above Reynard and pan to him
     _worldnode->applyPan(Vec2(0, -500));
+
+    // Add tutorial icons
+    populateTutorials();
 }
 
 void GameScene::populateChars()
@@ -408,10 +431,10 @@ void GameScene::populateChars()
             // TODO: change code in this if statement to add key enemy instead of regular enemy
             if (temp.find("keyenemy") != string::npos)
             {
-                // HARDCODED
-                int room = i / 8 / 12;
-                int x = room % (levelJSON->get("width")->asInt() / 12);
-                int y = room / (levelJSON->get("width")->asInt() / 12);
+                // Get enemy location, converting from tile space
+                int room = i / ROOM_HEIGHT / ROOM_WIDTH;
+                int x = room % (levelJSON->get("width")->asInt() / ROOM_WIDTH);
+                int y = room / (levelJSON->get("width")->asInt() / ROOM_WIDTH);
                 Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() / 8 - 1 - y);
 
                 // initialize it
@@ -427,14 +450,14 @@ void GameScene::populateChars()
             else if (temp.find("enemy") != string::npos)
             {
 
-                // HARDCODED
-                int room = i / 8 / 12;
-                int x = room % (levelJSON->get("width")->asInt() / 12);
-                int y = room / (levelJSON->get("width")->asInt() / 12);
+                // Get enemy location, converting from tile space
+                int room = i / ROOM_HEIGHT / ROOM_WIDTH;
+                int x = room % (levelJSON->get("width")->asInt() / ROOM_WIDTH);
+                int y = room / (levelJSON->get("width")->asInt() / ROOM_WIDTH);
                 Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() / 8 - 1 - y);
 
                 // initialize it
-                //                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(12,8), _scale, rabbit_animations));
+                //                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(ROOM_WIDTH,ROOM_HEIGHT), _scale, rabbit_animations));
                 _enemies->push_back(EnemyController::alloc(Vec2::ZERO, _scale, rabbit_animations));
 
                 _enemies->back()->setObstacleWorld(_world);
@@ -461,36 +484,48 @@ void GameScene::populateChars()
     {
         _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
     }
-
 }
 
-void GameScene::populateTutorials(){
-    _tutorials = make_shared<vector<std::shared_ptr<Tutorial>>>();
+/**
+ * Place all the tutorials at their correct locations in Region 1.
+ */
+void GameScene::populateTutorials()
+{
+    // First Jump
+    placeEnvImage(1.1f, 1.7f, 0.1f, "JumpTutorial");
 
-    createTutorial(Vec2(2,16), 3, 3, .1, "DashTutorial");
-    createTutorial(Vec2(5,16), 3, 3, .1, "JumpTutorial");
-    createTutorial(Vec2(11,16), 3, 3, .1, "SwapTutorial");
-    createTutorial(Vec2(14,16), 3, 3, .1, "ZoomInTutorial");
-    createTutorial(Vec2(17,16), 3, 3, .1, "ZoomOutTutorial");
+    // Wall Jump
+    placeEnvImage(2.2f, 2, 0.1f, "JumpTutorial");
+    placeEnvImage(1.55f, 2.5f, 0.1f, "JumpTutorial");
+    placeEnvImage(2.2f, 2.9f, 0.1f, "JumpTutorial");
 
+    // Top Left
+    placeEnvImage(2.63f, 4.1f, 0.1f, "ZoomOutTutorial");
+    placeEnvImage(1.3f, 4.3f, 0.25f, "SwapTutorial");
+    placeEnvImage(1.9f, 4.1f, 0.1f, "ZoomInTutorial");
+
+    placeEnvImage(7.75f, 4.8f, 0.1f, "DashTutorial");
 }
 
-void GameScene::createTutorial(Vec2 pos, float width, float height, float scale, string TextureName){
+/**
+ * Helper function that creates, transforms, and places the node for an environment image
+ *
+ * @param x     x-coordinate in ROOM coordinates
+ * @param y     y-coordinate in ROOM coordinates
+ */
+void GameScene::placeEnvImage(float x, float y, float scale, string TextureName)
+{
+    // Make scene node for the given tutorial image
+    shared_ptr<scene2::PolygonNode> tutorialNode =
+        scene2::PolygonNode::allocWithTexture(_assets->get<Texture>(TextureName));
 
-    shared_ptr<Tutorial> tutorial = make_shared<Tutorial>();
-    tutorial->init(pos, width, height);
+    // Scale and place node
+    tutorialNode->setScale(scale);
+    tutorialNode->setPosition(x * ROOM_WIDTH * _scale, y * ROOM_HEIGHT * _scale);
+    tutorialNode->setAbsolute(true);
 
-    //Node Textures
-    std::shared_ptr<Texture> tutImage = _assets->get<Texture>(TextureName);
-    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(tutImage);
-    tutorial->setSceneNode(sprite);
-    tutorial->getSceneNode()->setScale(scale);
-    if(_world->inBounds(&(*tutorial))){
-        _tutorials->push_back(tutorial);
-        addObstacle(tutorial, tutorial->getSceneNode());
-    }else{
-        cout<<"OUTSIDE"<<endl;
-    }
+    // Attach to the world node
+    _worldnode->addChild(tutorialNode);
 }
 
 /**
@@ -589,18 +624,23 @@ void GameScene::update(float dt)
     bool triedSwap = false;
     Vec2 progressCoords = Vec2(-1, -1);
     // Room swap by click
-    if (_input.didPress() &&(_gamestate.secondsAfterPause()>3)){
+    if (_input.didPress() && (_gamestate.secondsAfterPause() > 3))
+    {
         Vec2 node_coord = _pause->screenToNodeCoords(_input.getPosition());
-        if ((node_coord - Vec2(123,123)).length()<150){
+        if ((node_coord - Vec2(123, 123)).length() < 150)
+        {
             _gamestate.pauseSwitch();
-            if (_gamestate.isPaused()){
+            if (_gamestate.isPaused())
+            {
                 _pause->setTexture("textures/PauseScreen/Play_Button.png");
             }
             return;
         }
     }
-    if (usingClick && !_gamestate.zoomed_in() && _input.didPress()) {
-        if (_envController->hasSelected()) {
+    if (usingClick && !_gamestate.zoomed_in() && _input.didPress())
+    {
+        if (_envController->hasSelected())
+        {
             if (_envController->swapWithSelected(inputPos, _reynardController, _enemies))
             {
                 AudioController::playSFX(SWAP_SOUND);
@@ -610,11 +650,14 @@ void GameScene::update(float dt)
                 AudioController::playSFX(NOSWAP_SOUND);
             }
             triedSwap = true;
-        } else {
+        }
+        else
+        {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
     }
-    if (_gamestate.secondsAfterPause()<1){
+    if (_gamestate.secondsAfterPause() < 1)
+    {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_3.png");
         return;
     }
@@ -640,7 +683,8 @@ void GameScene::update(float dt)
         {
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
-        else if (_input.didEndDrag() && _envController->hasSelected()) {
+        else if (_input.didEndDrag() && _envController->hasSelected())
+        {
             if (_envController->swapWithSelected(inputPos, _reynardController, _enemies))
             {
                 AudioController::playSFX(SWAP_SOUND);
@@ -656,23 +700,26 @@ void GameScene::update(float dt)
         }
     }
 
-    if (_input.isScrolling() && !_gamestate.zoomed_in()) {
-        Vec2 incrementalOffset = _input.getPosition()- lastFramePos;
-        scrollingOffset = scrollingOffset + Vec2(incrementalOffset.x,-incrementalOffset.y);
+    if (_input.isScrolling() && !_gamestate.zoomed_in())
+    {
+        Vec2 incrementalOffset = _input.getPosition() - lastFramePos;
+        scrollingOffset = scrollingOffset + Vec2(incrementalOffset.x, -incrementalOffset.y);
     }
-    if (_gamestate.zoomed_in()){
+    if (_gamestate.zoomed_in())
+    {
         scrollingOffset = Vec2();
         lastFramePos = Vec2();
     }
 
     // Only allow jumping while zoomed in
-    if (_input.didJump() && _gamestate.zoomed_in()) {
+    if (_input.didJump() && _gamestate.zoomed_in())
+    {
         bool i = _reynardController->isGrounded();
         bool j = _reynardController->getCharacter()->isOnWall();
 
         if (i || j)
         {
-            //TODO: DELETE THIS DEBUGGING STUFF
+            // TODO: DELETE THIS DEBUGGING STUFF
             cout << "Grounded: %d" + i << endl;
             cout << "Walled: %d" + j << endl;
             AudioController::playSFX(JUMP_SOUND);
@@ -685,11 +732,13 @@ void GameScene::update(float dt)
     }
 
     // If dash was pressed
-    else if (_input.getDashDirection() != 0 && _gamestate.zoomed_in()) {
+    else if (_input.getDashDirection() != 0 && _gamestate.zoomed_in())
+    {
         _reynardController->dash(_input.getDashDirection());
     }
 
-    if (_input.didZoomIn()) {
+    if (_input.didZoomIn())
+    {
         if (!_gamestate.isPaused())
         {
             if (!_gamestate.zoomed_in())
@@ -708,8 +757,10 @@ void GameScene::update(float dt)
     }
 
     // When zooming out
-    else if (_input.didZoomOut()) {
-        if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
+    else if (_input.didZoomOut())
+    {
+        if (!_gamestate.zoomed_in() && _gamestate.finishedZooming(_worldnode->getZoom()))
+        {
             //_gamestate.pauseSwitch();
         }
 
@@ -723,8 +774,6 @@ void GameScene::update(float dt)
         }
         _envController->deselectRoom();
     }
-
-
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
     // TODO: Why does both these updates exist you only need the _world one
@@ -758,8 +807,7 @@ void GameScene::update(float dt)
     bool faceRight = _reynardController->getCharacter()->isFacingRight();
     Vec2 reynardVelocity = _reynardController->getCharacter()->getLinearVelocity();
 
-
-    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition-scrollingOffset, _scale, getSize(), faceRight,reynardVelocity));
+    _worldnode->applyPan(_gamestate.getPan(currentTranslation, reynardScreenPosition - scrollingOffset, _scale, getSize(), faceRight, reynardVelocity));
     _worldnode->applyZoom(_gamestate.getZoom(_worldnode->getZoom()));
 
     // Copy World's zoom and transform
@@ -1123,10 +1171,11 @@ void GameScene::resolveWallJumpOntoTrap(float reynardVY)
 void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy)
 {
     enemy->getCharacter()->setHearts(enemy->getCharacter()->getHearts() - SPIKE_DAMAGE);
-    if (!enemy->getCharacter()->getBody()->GetWorld()->IsLocked()){
+    if (!enemy->getCharacter()->getBody()->GetWorld()->IsLocked())
+    {
         enemy->jump();
     }
-    //enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
+    // enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
 }
 
 void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyController> enemy)
@@ -1137,22 +1186,8 @@ void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyCont
     //    enemy->getCharacter()->setVY(-1 * enemyVY);
 }
 
-shared_ptr<Tutorial> GameScene::isTutorialCollision(b2Contact* contact) {
-    b2Body *body1 = contact->GetFixtureA()->GetBody();
-    b2Body *body2 = contact->GetFixtureB()->GetBody();
-    for(int i = 0; i < _tutorials->size(); i++){
-        if(_tutorials->at(i) != nullptr){
-            b2Body* body = _tutorials->at(i)->getBody();
-            bool isCollision = body == body1 || body == body2;
-            if (isCollision) return _tutorials->at(i);
-        }
-    }
-    return nullptr;
-}
-
-
-
-void GameScene::beginContact(b2Contact *contact) {
+void GameScene::beginContact(b2Contact *contact)
+{
     // TODO: all of these collisions need to apply for every character, not just Reynard
     // Try to get the character, assuming it's a character-on-object collision
     b2Body *charInCharOnObject = getCharacterBodyInObjectCollision(contact);
@@ -1163,63 +1198,71 @@ void GameScene::beginContact(b2Contact *contact) {
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         // If it's nullptr, then it's Reynard, and handle all that accordingly
 #pragma mark REYNARD COLLISION SECTION
-        if (enemy == nullptr) {
+        if (enemy == nullptr)
+        {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
-#pragma mark TUTORIAL COLLISION CODE
-            if (isTutorialCollision(contact) != nullptr){
-                //THERE IS NO DEFINED COLLISION CODE AT THIS MOMENT
-            } else{
 #pragma mark TRAP COLLISION CODE
-                shared_ptr<TrapModel> trap = isTrapCollision(contact);
-                TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
-                if (trap != nullptr){
-                    trapType = trap->getType();
+            shared_ptr<TrapModel> trap = isTrapCollision(contact);
+            TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
+            if (trap != nullptr)
+            {
+                trapType = trap->getType();
+            }
+            if (trapType == TrapModel::TrapType::SPIKE)
+            {
+                float reynardVY = _reynardController->getCharacter()->getVY();
+                if (reynardVY < 0)
+                {
+                    resolveTrapOnContact();
+                    resolveWallJumpOntoTrap(reynardVY);
                 }
-                if (trapType == TrapModel::TrapType::SPIKE) {
-                    float reynardVY = _reynardController->getCharacter()->getVY();
-                    if (reynardVY < 0) {
-                        resolveTrapOnContact();
-                        resolveWallJumpOntoTrap(reynardVY);
-                    }
+            }
+            else if (trapType == TrapModel::TrapType::SAP)
+            {
+                // This line of code is sufficient to slow Reynard
+                // No helper is used because the abstraction is unnecessary
+                _reynardController->getCharacter()->slowCharacter();
+            }
+            else if (trapType == TrapModel::TrapType::CHECKPOINT)
+            {
+                _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
+                _checkpointEnemyPos = vector<Vec2>();
+                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                for (auto thisEnemy : *_enemies)
+                {
+                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
-                else if (trapType == TrapModel::TrapType::SAP) {
-                    //This line of code is sufficient to slow Reynard
-                    //No helper is used because the abstraction is unnecessary
-                    _reynardController->getCharacter()->slowCharacter();
-                }
-                else if (trapType == TrapModel::TrapType::CHECKPOINT) {
-                    _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
-                    _checkpointEnemyPos = vector<Vec2>();
-                    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                    for (auto thisEnemy: *_enemies){
-                        _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
-                    }
-                    //trap->getPolyNode()->setColor(Color4::GREEN);
-                    // Clear all the associated rooms
-                    trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-                    _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
-                }
-                else if (trapType == TrapModel::TrapType::GOAL) {
-                    setComplete(true);
-                }
-                else if (trapType == TrapModel::TrapType::TRAPDOOR) {
-                    Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
-                    
-                    trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-                    _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
-                }
-                else if (isThisAReynardWallContact(contact, reynardIsRight)) {
-                    resolveReynardWallOnContact();
-                }
-                else if (isThisAReynardWallContact(contact, !reynardIsRight)) {
-                    // the wall reynard's tail is touching lol
-                }
-                else if (isThisAReynardGroundContact(contact)) {
-                    resolveReynardGroundOnContact();
-                }
-                else {
-                    //CULog("Non-checked contact occured with Reynard");
-                }
+                rewriteSaveFile();
+                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+                // trap->getPolyNode()->setColor(Color4::GREEN);
+                //  Clear all the associated rooms
+                _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
+            }
+            else if (trapType == TrapModel::TrapType::GOAL)
+            {
+                setComplete(true);
+            }
+            else if (trapType == TrapModel::TrapType::TRAPDOOR)
+            {
+                Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
+                _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x, -abs(v.y) / 3));
+                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+            }
+            else if (isThisAReynardWallContact(contact, reynardIsRight))
+            {
+                resolveReynardWallOnContact();
+            }
+            else if (isThisAReynardWallContact(contact, !reynardIsRight))
+            {
+                // the wall reynard's tail is touching lol
+            }
+            else if (isThisAReynardGroundContact(contact))
+            {
+                resolveReynardGroundOnContact();
+            }
+            else
+            {
+                // CULog("Non-checked contact occured with Reynard");
             }
         }
         // Otherwise it's an enemy-on-object collision, and handle that accordingly
