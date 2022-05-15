@@ -141,7 +141,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rect, const Vec2 gravity)
 {
     Size dimen = computeActiveSize();
-
+    _checkpointReynardPos = REYNARD_START;
     if (assets == nullptr)
     {
         return false;
@@ -230,6 +230,10 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 
     // XNA nostalgia
     Application::get()->setClearColor(Color4f::BLACK);
+
+    // Finally start playing level music
+    AudioController::playMusic(LEVEL_MUSIC);
+
     return true;
 }
 
@@ -283,7 +287,7 @@ void GameScene::revert(bool totalReset){
     _tutorials = nullptr;
     setComplete(false);
     if (totalReset){
-        _checkpointReynardPos = REYNARD_START;
+
         populate();
     }else{
         populateEnv();
@@ -320,7 +324,6 @@ void GameScene::populate()
 }
 
 void GameScene::populateEnv() {
-    AudioController::playMusic(LEVEL_MUSIC);
     _envController = make_shared<EnvController>();
 #pragma mark Rooms
     _grid = _envController->getGrid();

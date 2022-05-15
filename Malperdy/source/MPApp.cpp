@@ -53,12 +53,13 @@ void Malperdy::onStartup() {
     _assets->attach<Sound>(SoundLoader::alloc()->getHook());
     _assets->attach<scene2::SceneNode>(Scene2Loader::alloc()->getHook());
 
+    AudioEngine::start(24);
+
     // Create a "loading" screen
     _loaded = false;
     _loading.init(_assets);
 
     // Que up the other assets
-    AudioEngine::start(24);
     _assets->loadDirectoryAsync("json/assets.json", nullptr);
 
     Application::onStartup(); // YOU MUST END with call to parent
@@ -105,7 +106,10 @@ void Malperdy::onShutdown() {
  */
 void Malperdy::onSuspend() {
     AudioEngine::get()->pause();
-    _gameplay.rewriteSaveFile();
+    if (_gameplay._mode != 0){
+        _gameplay.rewriteSaveFile();
+    }
+
 }
 
 /**
