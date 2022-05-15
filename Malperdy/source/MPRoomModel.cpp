@@ -90,7 +90,7 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
     vector<int> data= roomJSON->get("layers")->get(0)->get("data")->asIntArray();
 
     // The tile in the top left corner (indicates geometry to be created)
-    int tile = data.at(0);
+    int tile = 1;
 
     // room size
     int width = roomJSON->get("width")->asInt();
