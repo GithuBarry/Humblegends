@@ -122,3 +122,14 @@ bool LoadingScene::isPending( ) const {
     return _new != nullptr && _new->isVisible();
 }
 
+/*
+* Returns whether there is a save file to load
+*
+* @return whether there is a save file to load
+*/
+bool LoadingScene::isSaveFile() {
+    vector<std::string> file_path_list = vector<std::string>(2);
+    file_path_list[0] = Application::get()->getSaveDirectory();
+    file_path_list[1] = "state.json";
+    filetool::file_exists(cugl::filetool::join_path(file_path_list));
+}
