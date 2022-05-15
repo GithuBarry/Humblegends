@@ -1,126 +1,217 @@
 {
-	"textures": {
-		"logo": {
-			"file":      "textures/cugl-logo.png",
+"textures": {
+	"background": {
+		"file":      "textures/MainMenu.png",
             "wrapS":     "clamp",
             "wrapT":     "clamp",
             "minfilter": "linear",
             "magfilter": "linear"
 		},
-        "name": {
-            "file":      "textures/cugl-name.png",
-            "wrapS":     "clamp",
-            "wrapT":     "clamp",
-            "minfilter": "linear",
-            "magfilter": "linear"
-        },
-        "play": {
-            "file":      "textures/cugl-play.png",
-            "wrapS":     "clamp",
-            "wrapT":     "clamp",
-            "minfilter": "linear",
-            "magfilter": "linear"
-        },
-        "progress": {
-            "file":      "textures/progress.png",
-            "wrapS":     "clamp",
-            "wrapT":     "clamp",
-            "minfilter": "linear",
-            "magfilter": "linear",
-            "atlas":     {
-                "background" : [0,    0, 320, 45],
-                "foreground" : [24,  45, 296, 90],
-                "leftcap"    : [0,   45,  24, 90],
-                "rightcap"   : [296, 45, 320, 90]
-            }
-        }
+    "logo": {
+        "file":      "textures/MenuTitle.png",
+        "wrapS":     "clamp",
+        "wrapT":     "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
+    },
+	"title": {
+        "file":      "textures/MenuTitle.png",
+        "wrapS":     "clamp",
+        "wrapT":     "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
 	},
-    "scene2s" : {
-        "load" : {
-            "type"      : "Solid",
-            "format"    : {
-                "type" : "Anchored"
+    "loadGame-noSave": {
+        "file":      "textures/Load_Locked.png",
+        "wrapS":     "clamp",
+        "wrapT":     "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
+	},
+    "loadGame-withSave": {
+        "file":      "textures/Load_Default.png",
+        "wrapS":     "clamp",
+        "wrapT":     "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
+	},
+    "new": {
+        "file":      "textures/New_Emphasis.png",
+        "wrapS":     "clamp",
+        "wrapT":     "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
+	},
+	"progress": {
+        "file":      "textures/progress.png",
+        "wrapS":     "clamp",
+        "wrapT":     "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "atlas":     {
+			"background" : [0,    0, 320, 45],
+			"foreground" : [24,  45, 296, 90],
+			"leftcap"    : [0,   45,  24, 90],
+			"rightcap"   : [296, 45, 320, 90]
+        }
+	}
+},
+"scene2s" : {
+	"load" : {
+		"type"      : "Solid",
+        "format"    : {
+			"type" : "Anchored"
+        },
+        "data" : {
+			"color": [46,61,90,255]
+        },
+        "children"  : {
+            "background"  : {
+            	"type"   : "Image",
+                "format"    : {
+                    "type" : "Anchored"
+			    },
+			    "data"   : {
+                    "texture"  : "background",
+                    "anchor"   : [0.5,0.5],
+                    "scale"    : 0.425
+			    },
+			    "layout" : {
+                    "x_anchor" : "center",
+                    "y_anchor" : "middle",
+                    "y_offset" : 0,
+                    "absolute" : false
+   		    	}
+		    },
+		    "logo"  : {
+			    "type"   : "Image",
+			    "format"    : {
+				    "type" : "Anchored"
+			    },
+			    "data"   : {
+                    "texture"  : "logo",
+                    "anchor"   : [0.5,0.5],
+                    "scale"    : 0.75
+			    },
+			    "layout" : {
+                    "x_anchor" : "center",
+                    "y_anchor" : "middle",
+                    "y_offset" : -55,
+                    "absolute" : true
+		    	}
             },
-            "data" : {
-                "color": [46,61,90,255]
+            "title"  : {
+			    "type"   : "Image",
+			    "format"    : {
+				    "type" : "Anchored"
+			    },
+			    "data"   : {
+                    "visible"  : false,
+                    "texture"  : "title",
+                    "anchor"   : [1,0.5],
+                    "scale"    : 0.425
+			    },
+			    "layout" : {
+                    "x_anchor" : "right",
+                    "y_anchor" : "middle",
+                    "x_offset" : -25,
+                    "y_offset" : 120,
+                    "absolute" : true
+		    	}
             },
-            "children"  : {
-                "logo"  : {
-                    "type"   : "Image",
-                    "format"    : {
-                        "type" : "Anchored"
-                    },
-                    "data"   : {
-                        "texture"  : "logo",
-                        "anchor"   : [0.5,0.5],
-                        "scale"    : 0.75
-                    },
-                    "layout" : {
-                        "x_anchor" : "center",
-                        "y_anchor" : "middle",
-                        "y_offset" : 0,
-                        "absolute" : false
-                    }
-                },
-                "name"  : {
-                    "type"   : "Image",
-                    "format"    : {
-                        "type" : "Anchored"
-                    },
-                    "data"   : {
-                        "texture"  : "name",
-                        "anchor"   : [0.5,0.5],
-                        "scale"    : 0.75
-                    },
-                    "layout" : {
-                        "x_anchor" : "center",
-                        "y_anchor" : "middle",
-                        "y_offset" : -55,
-                        "absolute" : true
-                    }
-                },
-                "play"  : {
-                    "type"   : "Button",
-                    "data"   : {
-                        "upnode"   : "up",
-                        "pushable" : [160,280,190,370,280,400,370,370,400,280,370,190,280,160,190,190],
-                        "visible"  : false,
-                        "pushsize" : true,
-                        "anchor"   : [0.5,0.5],
-                        "scale"    : 0.8
-                    },
-                    "children" : {
-                        "up"       : {
-                            "type"   : "Image",
-                            "data"   : {
-                                "texture"  : "play"
-                            }
+            "new"  : {
+			    "type"   : "Button",
+			    "data"   : {
+                    "upnode"   : "up",
+                    "pushable" : [0,0, 0,122, 680,122, 680,0],
+                    "pushsize" : true,
+                    "visible"  : false,
+                    "anchor"   : [1,0.5],
+                    "scale"    : 0.425
+			    },
+                "children" : {
+                    "up"       : {
+                        "type"   : "Image",
+                        "data"   : {
+                            "texture"  : "new"
                         }
-                    },
-                    "layout" : {
-                        "x_anchor" : "center",
-                        "y_anchor" : "middle",
-                        "y_offset" : -115,
-                        "absolute" : true
                     }
                 },
-                "bar"  : {
-                    "type"   : "Progress",
-                    "data"   : {
-                        "anchor"     : [0.5,0.5],
-                        "background" : "progress_background",
-                        "foreground" : "progress_foreground",
-                        "left_cap"   : "progress_leftcap",
-                        "right_cap"  : "progress_rightcap"
-                    },
-                    "layout" : {
-                        "x_anchor" : "center",
-                        "y_anchor" : "middle",
-                        "y_offset" : -175,
-                        "absolute" : true
+			    "layout" : {
+                    "x_anchor" : "right",
+                    "y_anchor" : "middle",
+                    "x_offset" : -25,
+                    "y_offset" : 30,
+                    "absolute" : true
+		    	}
+            },
+            "load-noSave"  : {
+			    "type"   : "Button",
+			    "data"   : {
+                    "upnode"   : "up",
+                    "visible"  : false,
+                    "anchor"   : [1,0.5],
+                    "scale"    : 0.425
+			    },
+                "children" : {
+                    "up"       : {
+                        "type"   : "Image",
+                        "data"   : {
+                            "texture"  : "loadGame-noSave"
+                        }
                     }
+                },
+			    "layout" : {
+                    "x_anchor" : "right",
+                    "y_anchor" : "middle",
+                    "x_offset" : -25,
+                    "y_offset" : -30,
+                    "absolute" : true
+		    	}
+            },
+            "load-withSave"  : {
+			    "type"   : "Button",
+			    "data"   : {
+                    "upnode"   : "up",
+                    "pushable" : [0,0, 0,122, 680,122, 680,0],
+                    "pushsize" : true,
+                    "visible"  : false,
+                    "anchor"   : [1,0.5],
+                    "scale"    : 0.425
+			    },
+                "children" : {
+                    "up"       : {
+                        "type"   : "Image",
+                        "data"   : {
+                            "texture"  : "loadGame-withSave"
+                        }
+                    }
+                },
+			    "layout" : {
+                    "x_anchor" : "right",
+                    "y_anchor" : "middle",
+                    "x_offset" : -25,
+                    "y_offset" : -30,
+                    "absolute" : true
+		    	}
+            },
+            "bar"  : {
+                "type"   : "Progress",
+                "data"   : {
+                    "anchor"     : [0.5,0.5],
+                    "background" : "progress_background",
+                    "foreground" : "progress_foreground",
+                    "left_cap"   : "progress_leftcap",
+                    "right_cap"  : "progress_rightcap"
+                },
+                "layout" : {
+                    "x_anchor" : "center",
+                    "y_anchor" : "middle",
+                    "y_offset" : -175,
+                    "absolute" : true
                 }
             }
         }
     }
+}
 }

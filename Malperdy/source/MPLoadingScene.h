@@ -4,9 +4,9 @@
 //
 //  This file is based on the CS 4152 RocketDemo by Walker White, 2017
 // 
-//  Owner: TBD
-//  Contributors: Barry Wang
-//  Version: 2/21/2022
+//  Owner: Jordan Selin
+//  Contributors: Barry Wang, Jordan Selin
+//  Version: 5/14/2022
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -27,6 +27,7 @@
  * this button will inform the application root to switch to the gameplay mode.
  */
 class LoadingScene : public cugl::Scene2 {
+    
 protected:
     /** The asset manager for loading. */
     std::shared_ptr<cugl::AssetManager> _assets;
@@ -36,16 +37,30 @@ protected:
     // VIEW
     /** The animated progress bar */
     std::shared_ptr<cugl::scene2::ProgressBar>  _bar;
-    /** The engine name */
+    /** The game's name (to be replaced with the team logo) */
     std::shared_ptr<cugl::scene2::SceneNode>  _brand;
-    /** The "play" button */
-    std::shared_ptr<cugl::scene2::Button>    _button;
+
+    /** The game's name */
+    std::shared_ptr<cugl::scene2::SceneNode>  _title;
+    /** The "new game" button */
+    std::shared_ptr<cugl::scene2::Button>       _new;
+    /** The "load game" button */
+    std::shared_ptr<cugl::scene2::Button>      _load;
 
     // MODEL
     /** The progress displayed on the screen */
     float _progress;
     /** Whether or not the player has pressed play to continue */
     bool  _completed;
+    /**
+    * How the user wants to start playing
+    * 0: not yet chosen
+    * 1: Start a new game
+    * 2: Start from memory
+    */
+    int _mode = 0;
+    
+    
     
     /**
      * Returns the active screen size of this scene.
@@ -105,12 +120,33 @@ public:
     void update(float timestep);
     
     /**
-     * Returns true if loading is complete, but the player has not pressed play
+     * Returns true if loading is complete, but the player has not started the game
      *
-     * @return true if loading is complete, but the player has not pressed play
+     * @return true if loading is complete, but the player has not started the game
      */
     bool isPending( ) const;
-};
 
+    /**
+    * Returns a value based on how the player wants to start playing
+    * 0: not yet chosen
+    * 1: Start a new game
+    * 2: Start from memory
+    * 
+    * @return   value based on how the player wants to start playing
+    */
+    int getMode() {
+        return _mode;
+    }
+
+private:
+#pragma mark -
+#pragma mark Progress Monitoring
+    /*
+    * Returns whether there is a save file to load
+    *
+    * @return whether there is a save file to load
+    */
+    bool saveFileExists();
+};
 
 #endif /* __MP_LOADING_SCENE_H__ */

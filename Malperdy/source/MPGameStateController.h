@@ -8,7 +8,7 @@
 //  Owner: TBD
 //  Contributors: Barry Wang
 //  Version: 2/21/22
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
@@ -88,11 +88,11 @@ public:
     bool isPaused(){
         return paused;
     }
-    
+
     bool finishedZooming(float currentScale){
         return abs(currentScale - maxZoom)<0.05 || abs(currentScale - minZoom)<0.05;
     }
-    
+
     float secondsAfterPause(){
         std::chrono::duration<float> diff = std::chrono::system_clock::now() - sinceResume;
         return diff.count();
@@ -124,7 +124,7 @@ public:
         if (paused){
             return 1;
         }
-        
+
         float result;
         if (_zoomed_in && currentZoom < maxZoom) {
             result = 1.0f + 0.02f * (maxZoom - currentZoom) * (maxZoom - currentZoom);
@@ -140,29 +140,27 @@ public:
     /**
      *
      * @param currentTranslation Current global translation of the scrollpane.
-     * @param reynardScreenPosition location of reynard to follow, on screen
+     * @param target location of reynard to follow, on screen
      * @param scale scale between drawing world and physics world
      * @param screenSize screen size
      * @param faceRight whether reynard is facing right.
      * @return Pan to be applied to nodes
      */
-    Vec2 getPan(Vec2 currentTranslation, Vec2 reynardScreenPosition, float scale, Size screenSize, bool faceRight, Vec2 reynardVelocity) {
+    Vec2 getPan(Vec2 currentTranslation, Vec2 target, float scale, Size screenSize, bool faceRight, Vec2 reynardVelocity) {
         if (paused){
             return Vec2();
         }
         Vec2 result;
-        Vec2 target;
-        target = reynardScreenPosition;
-        //int thr = 8;
-        //if (reynardVelocity.y<-thr){
-            //            target = target + Vec2(0,(reynardVelocity.y+thr)*15);
-        //}
+        int thr = 12;
+        if (reynardVelocity.y<-thr){
+            target = target + Vec2(0,(reynardVelocity.y+thr)*15);
+        }
 
         if (_zoomed_in) {
             result = (Vec2(screenSize.width, screenSize.height) / 2 - target);
         } else {
             result = Vec2(screenSize.width, screenSize.height)/ 2  - target;
-            
+
             if (currentTranslation.x + result.x > 0) {
                 result = Vec2(-currentTranslation.x, result.y);
             }
