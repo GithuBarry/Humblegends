@@ -259,65 +259,46 @@ void GameScene::dispose()
 #pragma mark -
 #pragma mark Level Layout
 
+
 /**
  * Resets the status of the game so that we can play again.
  *
  * This method disposes of the world and creates a new one.
  */
-void GameScene::reset()
-{
+void GameScene::reset() {
     revert(true);
 }
 
 void GameScene::revert(bool totalReset){
 //    _swapHistory = _envController->getSwapHistory();
-
+    readSaveFile();
     scrollingOffset = Vec2();
 
     _reynardController = nullptr;
-    _enemies = nullptr;
+    _grid = nullptr;
+    _envController = nullptr;
+    _world->clear();
+    _worldnode->removeAllChildren();
+    _debugnode->removeAllChildren();
     _gamestate.reset();
+    _enemies = nullptr;
     setComplete(false);
-
-    // New Game or starting over
-    if (totalReset)
-    {
-        // TODO: proper new game/load from save logic
-
-        // Whether to load from save or not
-        if (_loadFromSave) readSaveFile();
-        else {
-            _checkpointReynardPos = REYNARD_START;
-            //_loadFromSave = true;
-        }
-
-        // Only reset level in a total reset
-        _grid = nullptr;
-        _envController = nullptr;
-        _world->clear();
-        _worldnode->removeAllChildren();
-        _debugnode->removeAllChildren();
-
-        _checkpointReynardPos = REYNARD_START;
+    if (totalReset){
+        _checkpointReynardPos = reynardDefault;
         populate();
-    }
-    // Respawn
-    else
-    {
+    }else{
+        populateEnv();
         populateChars();
-
-        // Undo swaps
-        /*for (int i = 0; i<_checkpointSwapLen; i++) {
+        for (int i = 0; i<_checkpointSwapLen; i++) {
             _envController->swapRoomOnGrid(_swapHistory[i][0],_swapHistory[i][1],true);
-        }*/
-
-        // Place Reynard at his last checkpoint location
+        }
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
-        for (int i = 0; i < _enemies->size(); i++)
-        {
+        for (int i = 0; i < _enemies->size(); i++){
             (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
         }
     }
+
+
 }
 
 /**
