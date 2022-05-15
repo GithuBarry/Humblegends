@@ -335,6 +335,7 @@ void InputController::mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, b
         _mouseDown = true;
         _mousePos = event.position;
         _mouseDragStart = event.position;
+        CULog("Input: mouse location (%f, %f)", event.position.x, event.position.y);
     }
 }
 
