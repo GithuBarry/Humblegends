@@ -141,7 +141,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
 bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rect, const Vec2 gravity)
 {
     Size dimen = computeActiveSize();
-
+    _checkpointReynardPos = REYNARD_START;
     if (assets == nullptr)
     {
         return false;
@@ -283,7 +283,7 @@ void GameScene::revert(bool totalReset){
     _tutorials = nullptr;
     setComplete(false);
     if (totalReset){
-        _checkpointReynardPos = REYNARD_START;
+
         populate();
     }else{
         populateEnv();
