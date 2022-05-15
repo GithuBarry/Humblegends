@@ -52,8 +52,8 @@ private:
     const float FRAME_TIME = 0.03;
 
     /** The duration in milliseconds of a dash */
-    const Uint64 DASH_DURATION = 150;
-    const Uint64 DASH_COOLDOWN = 1150;
+    const Uint64 DASH_DURATION = 120;
+    const Uint64 DASH_COOLDOWN = 950;
 
 public:
     /** Enum representing the current state of movement that the character is in */
@@ -430,6 +430,10 @@ public:
      * @param delta Number of seconds since last animation frame
      */
     virtual void update(float dt) override;
+    
+    virtual float x_scale(){
+        return 1;
+    }
 
     /**
      * Returns the fixture currently associated with this character's face.
@@ -444,5 +448,7 @@ public:
         return _body;
     }
 };
+
+
 
 #endif /* MPCharacterModel_h */

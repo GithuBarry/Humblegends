@@ -10,19 +10,25 @@ using namespace cugl;
 /* Sound */
 /* Play these with MPAudioController::playAudio(_assets, XYZ_SOUND_GOES_HERE, false, 1, false); */
 #define BUMP_SOUND "bump"
+#define DASH_SOUND "dash"
 #define JUMP_SOUND "jump"
 #define LAND_SOUND "land"
 #define SWAP_SOUND "swap_room"
 #define NOSWAP_SOUND "noswap"
 #define CHECKPOINT_SOUND "checkpoint"
+
+#define ZOOMIN_SOUND "zoom_in"
+#define ZOOMOUT_SOUND "zoom_out"
+#define PAUSE_UI_SOUND "pause_ui"
+
 /* Play these with MPAudioController::playAudio(_assets, XYZ_MUSIC_GOES_HERE, false, 1, true); */
 #define LEVEL_MUSIC "level_music"
+#define TITLE_MUSIC "titlescreen_music"
 
 class AudioController {
 private:
 	/** Store a reference to the assets for easy access */
-    inline static std::shared_ptr<AssetManager> _assets = AssetManager::alloc();
-
+	static std::shared_ptr<AssetManager> _assets;
 
 	static void playAudio(string sound, bool loop, float vol, bool isMusic);
 

@@ -42,8 +42,8 @@ void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<Rey
     }
     if (swapIndex <_swapHistory.size()){
         for (int i = swapIndex; i < _swapHistory.size(); ++i) {
-            bool a = _grid->getRoom(_swapHistory[i][0])->update();
-            bool b = _grid->getRoom(_swapHistory[i][1])->update();
+            bool a = _grid->getRoom(_swapHistory[i][0])->updateSwap();
+            bool b = _grid->getRoom(_swapHistory[i][1])->updateSwap();
             if (a && b){
                 swapIndex = i+1;
             }
@@ -259,7 +259,7 @@ void EnvController::animateSwap(Vec2 vec1, Vec2 vec2) {
 /* Sets the room to look selected */
 void EnvController::lookSelected(Vec2 room) {
     if (_grid->getRoom(room)) {
-        _grid->getRoom(room)->setColor(Color4::RED);
+        _grid->getRoom(room)->setColor(Color4::MAGENTA);
     }
 }
 
