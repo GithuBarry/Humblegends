@@ -280,6 +280,7 @@ void GameScene::revert(bool totalReset){
     _debugnode->removeAllChildren();
     _gamestate.reset();
     _enemies = nullptr;
+    _tutorials = nullptr;
     setComplete(false);
     if (totalReset){
         _checkpointReynardPos = REYNARD_START;
@@ -287,6 +288,7 @@ void GameScene::revert(bool totalReset){
     }else{
         populateEnv();
         populateChars();
+        populateTutorials();
         for (int i = 0; i<_checkpointSwapLen; i++) {
             _envController->swapRoomOnGrid(_swapHistory[i][0],_swapHistory[i][1],true);
         }
@@ -314,6 +316,7 @@ void GameScene::populate()
 {
     populateEnv();
     populateChars();
+    populateTutorials();
 }
 
 void GameScene::populateEnv() {
@@ -454,6 +457,36 @@ void GameScene::populateChars()
     for (auto enemy : *_enemies)
     {
         _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
+    }
+
+}
+
+void GameScene::populateTutorials(){
+    _tutorials = make_shared<vector<std::shared_ptr<Tutorial>>>();
+
+    createTutorial(Vec2(2,4), 3, 3, .1, "DashTutorial");
+    createTutorial(Vec2(5,4), 3, 3, .1, "JumpTutorial");
+    createTutorial(Vec2(10,4), 3, 3, .1, "SwapTutorial");
+    createTutorial(Vec2(13,4), 3, 3, .1, "ZoomInTutorial");
+    createTutorial(Vec2(16,4), 3, 3, .1, "ZoomOutTutorial");
+
+}
+
+void GameScene::createTutorial(Vec2 pos, float width, float height, float scale, string TextureName){
+
+    shared_ptr<Tutorial> tutorial = make_shared<Tutorial>();
+    tutorial->init(pos, width, height);
+
+    //Node Textures
+    std::shared_ptr<Texture> tutImage = _assets->get<Texture>(TextureName);
+    std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(tutImage);
+    tutorial->setSceneNode(sprite);
+    tutorial->getSceneNode()->setScale(scale);
+    if(_world->inBounds(&(*tutorial))){
+        _tutorials->push_back(tutorial);
+        addObstacle(tutorial, tutorial->getSceneNode());
+    }else{
+        cout<<"OUTSIDE"<<endl;
     }
 }
 
@@ -1101,8 +1134,22 @@ void GameScene::resolveEnemyWallJumpOntoTrap(float enemyVY, shared_ptr<EnemyCont
     //    enemy->getCharacter()->setVY(-1 * enemyVY);
 }
 
-void GameScene::beginContact(b2Contact *contact)
-{
+shared_ptr<Tutorial> GameScene::isTutorialCollision(b2Contact* contact) {
+    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    for(int i = 0; i < _tutorials->size(); i++){
+        if(_tutorials->at(i) != nullptr){
+            b2Body* body = _tutorials->at(i)->getBody();
+            bool isCollision = body == body1 || body == body2;
+            if (isCollision) return _tutorials->at(i);
+        }
+    }
+    return nullptr;
+}
+
+
+
+void GameScene::beginContact(b2Contact *contact) {
     // TODO: all of these collisions need to apply for every character, not just Reynard
     // Try to get the character, assuming it's a character-on-object collision
     b2Body *charInCharOnObject = getCharacterBodyInObjectCollision(contact);
@@ -1112,77 +1159,61 @@ void GameScene::beginContact(b2Contact *contact)
         // Now try to get if it's an enemy-on-object collision
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         // If it's nullptr, then it's Reynard, and handle all that accordingly
-        if (enemy == nullptr)
-        {
+#pragma mark REYNARD COLLISION SECTION
+        if (enemy == nullptr) {
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
-            shared_ptr<TrapModel> trap = isTrapCollision(contact);
-            TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
-            if (trap != nullptr)
-            {
-                trapType = trap->getType();
-            }
-            if (trapType == TrapModel::TrapType::SPIKE)
-            {
-                float reynardVY = _reynardController->getCharacter()->getVY();
-                if (reynardVY < 0)
-                {
-                    resolveTrapOnContact();
-                    resolveWallJumpOntoTrap(reynardVY);
+#pragma mark TUTORIAL COLLISION CODE
+            if (isTutorialCollision(contact) != nullptr){
+                //THERE IS NO DEFINED COLLISION CODE AT THIS MOMENT
+            } else{
+#pragma mark TRAP COLLISION CODE
+                shared_ptr<TrapModel> trap = isTrapCollision(contact);
+                TrapModel::TrapType trapType = TrapModel::TrapType::UNTYPED;
+                if (trap != nullptr){
+                    trapType = trap->getType();
                 }
-            }
-            else if (trapType == TrapModel::TrapType::SAP)
-            {
-                // This line of code is sufficient to slow Reynard
-                // No helper is used because the abstraction is unnecessary
-                _reynardController->getCharacter()->slowCharacter();
-            }
-            // COLLISION: Checkpoint vs. Reynard
-            else if (trapType == TrapModel::TrapType::CHECKPOINT)
-            {
-                _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
-                _checkpointEnemyPos = vector<Vec2>();
-                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                for (auto thisEnemy : *_enemies)
-                {
-                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                if (trapType == TrapModel::TrapType::SPIKE) {
+                    float reynardVY = _reynardController->getCharacter()->getVY();
+                    if (reynardVY < 0) {
+                        resolveTrapOnContact();
+                        resolveWallJumpOntoTrap(reynardVY);
+                    }
                 }
-
-                rewriteSaveFile();
-
-
-                // Handle what to do when the checkpoint is hit
-                // Turn it green
-//                trap->getPolyNode()->setColor(Color4::GREEN);
-                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-                // Clear all the associated rooms
-                _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
-            }
-            else if (trapType == TrapModel::TrapType::GOAL)
-            {
-                setComplete(true);
-            }
-            else if (trapType == TrapModel::TrapType::TRAPDOOR)
-            {
-                Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
-                _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
-                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-            }
-            else if (isThisAReynardWallContact(contact, reynardIsRight))
-            {
-                resolveReynardWallOnContact();
-            }
-            else if (isThisAReynardWallContact(contact, !reynardIsRight))
-            {
-                // the wall reynard's tail is touching lol
-            }
-            else if (isThisAReynardGroundContact(contact))
-            {
-                resolveReynardGroundOnContact();
-                //MPAudioController::playAudio(_assets, LAND_SOUND, false, 1, false);
-            }
-            else
-            {
-                // CULog("Non-checked contact occured with Reynard");
+                else if (trapType == TrapModel::TrapType::SAP) {
+                    //This line of code is sufficient to slow Reynard
+                    //No helper is used because the abstraction is unnecessary
+                    _reynardController->getCharacter()->slowCharacter();
+                }
+                else if (trapType == TrapModel::TrapType::CHECKPOINT) {
+                    _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
+                    _checkpointEnemyPos = vector<Vec2>();
+                    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                    for (auto thisEnemy: *_enemies){
+                        _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                    }
+                    trap->getPolyNode()->setColor(Color4::GREEN);
+                    // Clear all the associated rooms
+                    _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
+                }
+                else if (trapType == TrapModel::TrapType::GOAL) {
+                    setComplete(true);
+                }
+                else if (trapType == TrapModel::TrapType::TRAPDOOR) {
+                    Vec2 v = _reynardController->getCharacter()->getLinearVelocity();
+                    _reynardController->getCharacter()->setLinearVelocity(Vec2(v.x,-abs(v.y)/3));
+                }
+                else if (isThisAReynardWallContact(contact, reynardIsRight)) {
+                    resolveReynardWallOnContact();
+                }
+                else if (isThisAReynardWallContact(contact, !reynardIsRight)) {
+                    // the wall reynard's tail is touching lol
+                }
+                else if (isThisAReynardGroundContact(contact)) {
+                    resolveReynardGroundOnContact();
+                }
+                else {
+                    //CULog("Non-checked contact occured with Reynard");
+                }
             }
         }
         // Otherwise it's an enemy-on-object collision, and handle that accordingly
