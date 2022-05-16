@@ -3,7 +3,7 @@
     "framedata": "json/framedata.json",
     "framedata2": "json/framedatanew.json",
 
-    "level": "json/levels/MP_Region_1.json",
+    "level": "json/levels/MP_KeyTest.json",
 
     "tileset_geometry": "json/tilesets/geometry.tsj",
     "tileset_entities": "json/tilesets/entities.json",
@@ -115,6 +115,9 @@
     },
     "rabbit_all": {
       "file": "textures/rabbit_all.png"
+    },
+    "key" : {
+        "file" : "textures/MP_Key.png"
     }
   },
   "sounds": {
@@ -188,29 +191,29 @@
     "level_music": {
       "type": "sample",
       "file": "sounds/levelmusic.ogg",
-      "volume": 0.2,
+      "volume": 0.3,
       "stream": true
     },
 
     "slowedlevel_music": {
       "type": "sample",
       "file": "sounds/slowedlevelmusic.ogg",
-      "volume": 0.2,
+      "volume": 0.3,
       "stream": true
     },
 
     "titlescreen_music": {
       "type": "sample",
       "file": "sounds/titlescreenmusic.ogg",
-      "volume": 0.2,
+      "volume": 0.3,
       "stream": true
     }
   },
 
-	"fonts": {
-		"retro": {
-			"file":     "fonts/RetroGame.ttf",
-			"size":     64
-		}
-	}
+    "fonts": {
+        "retro": {
+            "file":     "fonts/RetroGame.ttf",
+            "size":     64
+        }
+    }
 }
