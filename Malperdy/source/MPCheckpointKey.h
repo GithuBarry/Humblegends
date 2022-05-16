@@ -133,6 +133,10 @@ public:
     */
     void update(float dt) override;
 
+    void createFixtures();
+    
+    void releaseFixtures();
+
 
 
 };

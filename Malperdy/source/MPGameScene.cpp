@@ -609,16 +609,16 @@ void GameScene::update(float dt)
     }
 
     if (key) {
+        // Create a key object and place at enemy position
         createKey(enemyPos);
         enemyPos = Vec2(0,0);
         key = false;
     }
     
+    // Update code for Key pathfinding to Reynard
     if (_key != nullptr) {
         Vec2 reyPos = _reynardController->getCharacter()->getPosition();
         Vec2 currPos = _key->getPosition();
-        CULog("REY %f %f", reyPos.x, reyPos.y);
-        CULog("CUR %f %f", currPos.x, currPos.y);
         float x = reyPos.x - currPos.x;
         float y = reyPos.y - currPos.y;
         _key->setVX(x);
@@ -630,14 +630,6 @@ void GameScene::update(float dt)
     {
         // keep time (frame)
         keepRedFrames -= 1;
-    }
-    
-    // reynard gold when getting key
-    else if(keepGoldFrames>0)
-    {
-        //keep time (frame)
-        keepGoldFrames-=1;
-        _reynardController->getSceneNode()->setColor(Color4::YELLOW);
     }
     else
     {
@@ -1228,6 +1220,17 @@ void GameScene::beginContact(b2Contact *contact)
 #pragma mark REYNARD COLLISION SECTION
         if (enemy == nullptr)
         {
+            if (_key != nullptr) {
+                CULog("CONTACT MADE ?>>");
+                b2Body *body1 = contact->GetFixtureA()->GetBody();
+                b2Body *body2 = contact->GetFixtureB()->GetBody();
+                b2Body *body = _key->getBody();
+                bool isKeyCollision = body == body1 || body == body2;
+                if (isKeyCollision and isReynardCollision(contact)) {
+                    CULog("YES");
+                    removeKey();
+                }
+            }
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
 #pragma mark TRAP COLLISION CODE
             shared_ptr<TrapModel> trap = isTrapCollision(contact);
@@ -1253,23 +1256,22 @@ void GameScene::beginContact(b2Contact *contact)
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT)
             {
+                // If Reynard has a key for the checkpoint, use it.
                 if (_reynardController->get_keys_count() > 0) {
                     _reynardController->decrement_keys();
-                    keepGoldFrames = 5;
-                    _reynardController->getSceneNode()->setColor(Color4(255,215,0,255));
+                    _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
+                    _checkpointEnemyPos = vector<Vec2>();
+                    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                    for (auto thisEnemy : *_enemies)
+                    {
+                        _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                    }
+                    rewriteSaveFile();
+                    trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+                    // trap->getPolyNode()->setColor(Color4::GREEN);
+                    //  Clear all the associated rooms
+                    _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
                 }
-                _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
-                _checkpointEnemyPos = vector<Vec2>();
-                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                for (auto thisEnemy : *_enemies)
-                {
-                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
-                }
-                rewriteSaveFile();
-                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-                // trap->getPolyNode()->setColor(Color4::GREEN);
-                //  Clear all the associated rooms
-                _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
             }
             else if (trapType == TrapModel::TrapType::GOAL)
             {
@@ -1359,8 +1361,17 @@ void GameScene::beginContact(b2Contact *contact)
             }
         }
     }
+    // Random key collisions
+    else if (_key != nullptr) {
+        b2Body *body1 = contact->GetFixtureA()->GetBody();
+        b2Body *body2 = contact->GetFixtureB()->GetBody();
+        b2Body *body = _key->getBody();
+        bool isKeyCollision = body == body1 || body == body2;
+        if (isKeyCollision) {
+            CULog("Random key collision");
+        }
+    }
     // Reynard-on-enemy collision
-    else
     {
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         if (isReynardCollision(contact) && enemy != nullptr)
@@ -1551,13 +1562,16 @@ void GameScene::createKey(Vec2 enemyPos) {
     //AudioEngine::get()->play(PEW_EFFECT,source, false, EFFECT_VOLUME, true);
 }
 
-void GameScene::removeKey(CheckpointKey* k) {
+void GameScene::removeKey() {
   // do not attempt to remove a bullet that has already been removed
-    if (k->isRemoved()) {
+    if (_key == nullptr) {
         return;
     }
-    _worldnode->removeChild(k->getSceneNode());
-    k->setDebugScene(nullptr);
-    k->markRemoved(true);
-    key = nullptr;
+    if (_key->isRemoved()) {
+        return;
+    }
+    _worldnode->removeChild(_key->getSceneNode());
+    _key->setDebugScene(nullptr);
+    _key->markRemoved(true);
+    _key = nullptr;
 }

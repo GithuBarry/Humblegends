@@ -123,12 +123,10 @@ protected:
      Remaining number of frames to color reynard red
      */
     int keepRedFrames = 0;
-    
-    int keepGoldFrames = 0;
-    
+
     bool key = false;
     
-    std::shared_ptr<CheckpointKey> _key; 
+    std::shared_ptr<CheckpointKey> _key;
     
     Vec2 enemyPos;
 
@@ -739,7 +737,7 @@ public:
     
     void createKey(Vec2 enemyPos);
     
-    void removeKey(CheckpointKey* k);
+    void removeKey();
     
 
 };
