@@ -22,6 +22,7 @@
 #include "MPCharacterModel.h"
 #include "MPEnemyController.h"
 #include "MPInput.h"
+#include "MPCheckpointKey.h"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
 #include "MPGridModel.h"
@@ -122,6 +123,14 @@ protected:
      Remaining number of frames to color reynard red
      */
     int keepRedFrames = 0;
+    
+    int keepGoldFrames = 0;
+    
+    bool key = false;
+    
+    std::shared_ptr<CheckpointKey> _key; 
+    
+    Vec2 enemyPos;
 
 public:
 
@@ -727,6 +736,12 @@ public:
 #pragma mark Helper Functions
     /* Converts input coordinates to coordinates in the game world */
     Vec2 inputToGameCoords(Vec2 inputCoords);
+    
+    void createKey(Vec2 enemyPos);
+    
+    void removeKey(CheckpointKey* k);
+    
+
 };
 
 #endif /* __MP_GAME_MODE_H__ */
