@@ -799,6 +799,7 @@ void GameScene::update(float dt)
     // TODO: Why does both these updates exist you only need the _world one
     _reynardController->update(scaled_dt);
     _world->update(scaled_dt);
+    _world->garbageCollect();
 
     // TODO debugging area. Disable for releases
     if ((!_reynardController->getCharacter()->isOnWall()) && abs(_reynardController->getCharacter()->getLinearVelocity().x) <= 0.5)
@@ -1221,13 +1222,11 @@ void GameScene::beginContact(b2Contact *contact)
         if (enemy == nullptr)
         {
             if (_key != nullptr) {
-                CULog("CONTACT MADE ?>>");
                 b2Body *body1 = contact->GetFixtureA()->GetBody();
                 b2Body *body2 = contact->GetFixtureB()->GetBody();
                 b2Body *body = _key->getBody();
                 bool isKeyCollision = body == body1 || body == body2;
                 if (isKeyCollision and isReynardCollision(contact)) {
-                    CULog("YES");
                     removeKey();
                 }
             }
@@ -1368,7 +1367,7 @@ void GameScene::beginContact(b2Contact *contact)
         b2Body *body = _key->getBody();
         bool isKeyCollision = body == body1 || body == body2;
         if (isKeyCollision) {
-            CULog("Random key collision");
+            return;
         }
     }
     // Reynard-on-enemy collision
@@ -1533,33 +1532,7 @@ void GameScene::createKey(Vec2 enemyPos) {
     n->setScale(.2);
     _key->setPosition(enemyPos);
     addObstacle(_key, n);
-    
-    //k->travelToReynard(_reynardController->getScenePosition());
     _reynardController->increment_keys();
-    
-    
-
-    //std::shared_ptr<2> image = _assets->get<Texture>(BULLET_TEXTURE);
-    // float radius = 0.5f*image->getSize().width/_scale;
-
-    // std::shared_ptr<Bullet> bullet = Bullet::alloc(pos, radius);
-    // bullet->setName(BULLET_NAME);
-    // bullet->setDensity(HEAVY_DENSITY);
-    // bullet->setBullet(true);
-    // bullet->setGravityScale(0);
-    // bullet->setDebugColor(DEBUG_COLOR);
-    // bullet->setDrawScale(_scale);
-
-    // std::shared_ptr<scene2::PolygonNode> sprite = scene2::PolygonNode::allocWithTexture(image);
-    // bullet->setSceneNode(sprite);
-
-    // Compute position and velocity
-    // float speed  = (_avatar->isFacingRight() ? BULLET_SPEED : -BULLET_SPEED);
-    // bullet->setVX(speed);
-    //addObstacle(bullet, sprite, 5);
-
-    //std::shared_ptr<Sound> source = _assets->get<Sound>(PEW_EFFECT);
-    //AudioEngine::get()->play(PEW_EFFECT,source, false, EFFECT_VOLUME, true);
 }
 
 void GameScene::removeKey() {
@@ -1571,7 +1544,7 @@ void GameScene::removeKey() {
         return;
     }
     _worldnode->removeChild(_key->getSceneNode());
-    _key->setDebugScene(nullptr);
     _key->markRemoved(true);
+    // _key->setDebugScene(nullptr);
     _key = nullptr;
 }

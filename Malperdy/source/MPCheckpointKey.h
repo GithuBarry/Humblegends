@@ -69,13 +69,7 @@ public:
         return (result->init(pos,size) ? result : nullptr);
     }
 
-    
-    /**
-     * Disposes all resources and assets of this Bullet
-     *
-     * Any assets owned by this object will be immediately released.  Once
-     * disposed, a Bullet may not be used until it is initialized again.
-     */
+
     void dispose();
   
 #pragma mark -

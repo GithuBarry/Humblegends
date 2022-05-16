@@ -20,7 +20,6 @@ using namespace cugl;
 
 
 bool CheckpointKey::init(const Vec2 pos, const Size size) {
-    CULog("INSTANTIAEDDDD");
     if (physics2::BoxObstacle::init(pos,size)) {
         return true;
     };
@@ -53,5 +52,14 @@ void CheckpointKey::update(float dt) {
 void CheckpointKey::dispose() {
     _node = nullptr;
 }
+
+void CheckpointKey::createFixtures() {
+    BoxObstacle::createFixtures();
+}
+
+void CheckpointKey::releaseFixtures() {
+    BoxObstacle::releaseFixtures();
+}
+
 
 #endif
