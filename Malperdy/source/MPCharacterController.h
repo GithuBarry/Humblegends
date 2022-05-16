@@ -322,6 +322,18 @@ public:
     }
 
     /**
+     * Deal the given amount of damage to this character, reducing their
+     * hearts by that amount.
+     * 
+     * @param dmg   How much damage to deal to the character
+     */
+    void hurt(float dmg) {
+        _character->setHearts(_character->getHearts() - dmg);
+        // Kill if dead
+        if (_character->getHearts() <= 0) _character->setMoveState(MovementState::DEAD);
+    }
+
+    /**
      * Applies a knockback force to the character in the direction of the
      * given vector.
      *
@@ -348,6 +360,15 @@ public:
         }
         // Update model
         _character->update(delta);
+    }
+
+#pragma mark -
+#pragma mark Getters
+    /**
+     * Returns whether this character is dead (no health remaining).
+     */
+    bool isDead() const {
+        return (_character->getHearts() <= 0);
     }
 
 };

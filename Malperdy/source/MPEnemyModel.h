@@ -50,7 +50,8 @@ public:
         REALIZING,  // Enemy has line of sight and is noticing Reynard's presence
         CHASING,    // Enemy is chasing after Reynard
         SEARCHING,  // Enemy has lost Reynard and is looking for him
-        RETURNING   // Enemy has given up on Reynard and is going home
+        RETURNING,  // Enemy has given up on Reynard and is going home
+        DEAD        // Enemy is dead and does nothing
     };
 
     /** Queue of locations that the enemy will try to go to next */

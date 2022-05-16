@@ -349,10 +349,6 @@ public:
     bool isDashing() const {
         return (_moveState == MovementState::DASHING);
     }
-    
-    bool isDead() const {
-        return (_moveState == MovementState::DEAD);
-    }
 
     /**
      * Returns the name of the ground sensor

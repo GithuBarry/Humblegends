@@ -1173,7 +1173,7 @@ void GameScene::resolveWallJumpOntoTrap(float reynardVY)
 
 void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy)
 {
-    enemy->getCharacter()->setHearts(enemy->getCharacter()->getHearts() - SPIKE_DAMAGE);
+    enemy->hurt(SPIKE_DAMAGE);
     if (!enemy->getCharacter()->getBody()->GetWorld()->IsLocked())
     {
         enemy->jump();
