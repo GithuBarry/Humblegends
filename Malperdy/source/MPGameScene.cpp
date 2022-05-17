@@ -610,9 +610,19 @@ void GameScene::update(float dt)
 
     if (key) {
         // Create a key object and place at enemy position
-        createKey(enemyPos);
-        enemyPos = Vec2(0,0);
-        key = false;
+        // int v2 = rand() % 100 + 1;
+        int v2 = 1;
+        if (v2 > 50) {
+            createKey(enemyPos);
+            enemyPos = Vec2(0,0);
+            key = false;
+        }
+        else {
+            Vec2 reyPos = _reynardController->getCharacter()->getPosition();
+            createKeyCrazy(Vec2(reyPos.x+3, reyPos.y));
+            enemyPos = Vec2(0,0);
+            key = false;
+        }
     }
     
     // Update code for Key pathfinding to Reynard
@@ -623,6 +633,24 @@ void GameScene::update(float dt)
         float y = reyPos.y - currPos.y;
         _key->setVX(x);
         _key->setVY(y);
+    }
+    
+    // Update code for CrazyKey pathfinding away from Reynard
+    if (_keyCrazy != nullptr) {
+        Vec2 reyPos = _reynardController->getCharacter()->getPosition();
+        bool isFacingRight = _reynardController->getCharacter()->isFacingRight();
+        Vec2 currPos = _keyCrazy->getPosition();
+        //_keyCrazy->setVX(3.0f);
+        float x = reyPos.x - currPos.x;
+        float y = reyPos.y - currPos.y;
+        if (isFacingRight) {
+            _keyCrazy->setVX(-x);
+            _keyCrazy->setVY(-y);
+        }
+        else {
+            _keyCrazy->setVX(x);
+            _keyCrazy->setVY(y);
+        }
     }
     
     // reynard red when hurt/dealt damage
@@ -1533,6 +1561,17 @@ void GameScene::createKey(Vec2 enemyPos) {
     _key->setPosition(enemyPos);
     addObstacle(_key, n);
     _reynardController->increment_keys();
+}
+
+void GameScene::createKeyCrazy(Vec2 enemyPos) {
+    _keyCrazy = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
+    std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
+    _keyCrazy->setSceneNode(n);
+    _keyCrazy->setDrawScale(_scale);
+    n->setScale(.2);
+    _keyCrazy->setPosition(enemyPos);
+    addObstacle(_keyCrazy, n);
+    // _reynardController->increment_keys();
 }
 
 void GameScene::removeKey() {

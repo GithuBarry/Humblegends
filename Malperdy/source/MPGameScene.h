@@ -23,6 +23,7 @@
 #include "MPEnemyController.h"
 #include "MPInput.h"
 #include "MPCheckpointKey.h"
+#include "MPCheckpointKeyCrazy.hpp"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
 #include "MPGridModel.h"
@@ -129,6 +130,10 @@ protected:
     std::shared_ptr<CheckpointKey> _key;
     
     Vec2 enemyPos;
+    
+    std::shared_ptr<CheckpointKeyCrazy> _keyCrazy;
+    
+    Vec2 reynardPos;
 
 public:
 
@@ -736,6 +741,8 @@ public:
     Vec2 inputToGameCoords(Vec2 inputCoords);
     
     void createKey(Vec2 enemyPos);
+    
+    void createKeyCrazy(Vec2 enemyPos);
     
     void removeKey();
     
