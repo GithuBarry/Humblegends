@@ -188,7 +188,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale);                             // Debug node draws in PHYSICS coordinates
     _debugnode->setPosition(offset / _scale);
-    setDebug(true);
+    setDebug(false);
 
     _winNode = scene2::Label::allocWithText("VICTORY!", _assets->get<Font>(PRIMARY_FONT));
     _winNode->setAnchor(Vec2::ANCHOR_CENTER);

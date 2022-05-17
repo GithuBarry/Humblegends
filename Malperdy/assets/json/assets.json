@@ -3,7 +3,7 @@
     "framedata": "json/framedata.json",
     "framedata2": "json/framedatanew.json",
 
-    "level": "json/levels/MP_KeyTest.json",
+    "level": "json/levels/MP_Region_1.json",
 
     "tileset_geometry": "json/tilesets/geometry.tsj",
     "tileset_entities": "json/tilesets/entities.json",
