@@ -1249,12 +1249,12 @@ void GameScene::beginContact(b2Contact *contact)
 #pragma mark REYNARD COLLISION SECTION
         if (enemy == nullptr)
         {
-            if (_key != nullptr) {
+            if (_key != nullptr || _keyCrazy != nullptr) {
                 b2Body *body1 = contact->GetFixtureA()->GetBody();
                 b2Body *body2 = contact->GetFixtureB()->GetBody();
-                b2Body *body = _key->getBody();
-                bool isKeyCollision = body == body1 || body == body2;
-                if (isKeyCollision and isReynardCollision(contact)) {
+                b2Body *keyBody = _key != nullptr ? _key->getBody() : _keyCrazy->getBody();
+                bool isKeyCollision = keyBody == body1 || keyBody == body2;
+                if (isKeyCollision) {
                     removeKey();
                 }
             }
@@ -1338,22 +1338,11 @@ void GameScene::beginContact(b2Contact *contact)
                 trapType = trap->getType();
             }
             if (trapType == TrapModel::TrapType::SPIKE) {
+                // TODO: Change this because enemy dies instantly on contact with spikes.
                 enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
-                CULog("EMENY ON TRAP");
                 if (enemy->getCharacter()->isDead()) {
-                    CULog("DEAD");
-                    
-                    //Vec2 enemyPos = enemy->getScenePosition();
-                    //std::shared_ptr<CheckpointKey> k = CheckpointKey::alloc(Vec2(0,0),Size(1.0f, 1.0f));
-                    //std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
-                    //_worldnode->addChild(n);
-                    // addObstacle(k, n);
-                    //k->setPosition(enemyPos);
-                    // k->travelToReynard(_reynardController->getScenePosition());
-                    //createKey(enemy->getScenePosition());
                     key = true;
                     enemyPos = enemy->getCharacter()->getPosition();
-                    _reynardController->increment_keys();
                 }
                 else {
                     CULog("NOT DEAD");
@@ -1389,11 +1378,11 @@ void GameScene::beginContact(b2Contact *contact)
         }
     }
     // Random key collisions
-    else if (_key != nullptr) {
+    else if (_key != nullptr || _keyCrazy != nullptr) {
         b2Body *body1 = contact->GetFixtureA()->GetBody();
         b2Body *body2 = contact->GetFixtureB()->GetBody();
-        b2Body *body = _key->getBody();
-        bool isKeyCollision = body == body1 || body == body2;
+        b2Body *keyBody = _key != nullptr ? _key->getBody() : _keyCrazy->getBody();
+        bool isKeyCollision = keyBody == body1 || keyBody == body2;
         if (isKeyCollision) {
             return;
         }
@@ -1576,14 +1565,23 @@ void GameScene::createKeyCrazy(Vec2 enemyPos) {
 
 void GameScene::removeKey() {
   // do not attempt to remove a bullet that has already been removed
-    if (_key == nullptr) {
+    if (_keyCrazy != nullptr) {
+        if (_keyCrazy->isRemoved()) {
+            return;
+        }
+        _worldnode->removeChild(_keyCrazy->getSceneNode());
+        _keyCrazy->markRemoved(true);
+        _keyCrazy = nullptr;
+    }
+    else if (_key != nullptr) {
+        if (_key->isRemoved()) {
+            return;
+        }
+        _worldnode->removeChild(_key->getSceneNode());
+        _key->markRemoved(true);
+        _key = nullptr;
+    }
+    else {
         return;
     }
-    if (_key->isRemoved()) {
-        return;
-    }
-    _worldnode->removeChild(_key->getSceneNode());
-    _key->markRemoved(true);
-    // _key->setDebugScene(nullptr);
-    _key = nullptr;
 }
