@@ -21,6 +21,11 @@ using namespace cugl;
 
 bool CheckpointKey::init(const Vec2 pos, const Size size) {
     if (physics2::BoxObstacle::init(pos,size)) {
+        // ABU: Below gives physics object weight
+        //setDensity(10.0f);
+        //setFriction(0.0f);
+        //setFixedRotation(true);
+        //setSensor(false);
         return true;
     };
     return false;
