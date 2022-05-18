@@ -74,6 +74,10 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     _settings->addListener([=](const std::string& name, bool down) {
         showSettings();
     });
+    _credits = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_credits"));
+    _credits->addListener([=](const std::string& name, bool down) {
+        showCredits();
+    });
     Application::get()->setClearColor(Color4::BLACK);
     addChild(layer);
 
@@ -95,6 +99,7 @@ void LoadingScene::dispose() {
     _new = nullptr;
     _load = nullptr;
     _settings = nullptr;
+    _credits = nullptr;
     _title = nullptr;
     _brand = nullptr;
     _bar = nullptr;
@@ -158,6 +163,8 @@ void LoadingScene::hideAll(int helper) {
     _new->deactivate();
     _settings->setVisible(false);
     if (helper != 1) _settings->deactivate();
+    _credits->setVisible(false);
+    if (helper != 2) _credits->deactivate();
 }
 
 /* Switches to main menu screen */
@@ -170,6 +177,8 @@ void LoadingScene::showMainMenu() {
     _new->activate();
     _settings->setVisible(true);
     _settings->activate();
+    _credits->setVisible(true);
+    _credits->activate();
 }
 
 /* Switches to settings screen */
@@ -179,5 +188,5 @@ void LoadingScene::showSettings() {
 
 /* Switches to credits screen */
 void LoadingScene::showCredits() {
-    hideAll();
+    //hideAll(2);
 }

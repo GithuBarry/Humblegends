@@ -44,11 +44,13 @@ protected:
     /** The game's name */
     std::shared_ptr<cugl::scene2::SceneNode>  _title;
     /** The "load game" button */
-    std::shared_ptr<cugl::scene2::Button>      _load;
+    std::shared_ptr<cugl::scene2::Button>     _load;
     /** The "new game" button */
-    std::shared_ptr<cugl::scene2::Button>       _new;
+    std::shared_ptr<cugl::scene2::Button>     _new;
     /** The "settings" button */
-    std::shared_ptr<cugl::scene2::Button>       _settings;
+    std::shared_ptr<cugl::scene2::Button>     _settings;
+    /** The "credits" button */
+    std::shared_ptr<cugl::scene2::Button>     _credits;
 
     // MODEL
     /** The progress displayed on the screen */

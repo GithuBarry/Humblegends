@@ -49,7 +49,7 @@
         "minfilter": "linear",
         "magfilter": "linear"
     },
-    "credits_button": {
+    "credits": {
         "file": "textures/Credits_Icon.png",
         "wrapS": "clamp",
         "wrapT": "clamp",
@@ -240,6 +240,32 @@
                     "y_anchor" : "middle",
                     "x_offset" : -25,
                     "y_offset" : -95,
+                    "absolute" : true
+		    	}
+            },
+            "credits"  : {
+			    "type"   : "Button",
+			    "data"   : {
+                    "upnode"   : "up",
+                    "pushable" : [0,0, 0,523, 803,523, 803,0],
+                    "pushsize" : true,
+                    "visible"  : false,
+                    "anchor"   : [1,0],
+                    "scale"    : 0.4
+			    },
+                "children" : {
+                    "up"       : {
+                        "type"   : "Image",
+                        "data"   : {
+                            "texture"  : "credits"
+                        }
+                    }
+                },
+			    "layout" : {
+                    "x_anchor" : "right",
+                    "y_anchor" : "bottom",
+                    "x_offset" : -25,
+                    "y_offset" : 25,
                     "absolute" : true
 		    	}
             },
