@@ -78,14 +78,14 @@ void TrapModel::setTrapState(TrapState newState){
     //In case we ever want actions based on current state --> new state.
     switch (newState) {
         case TrapState::SPAWN:
-            uploadTexture("spawn");
+            
             break;
         case TrapModel::TrapState::DEACTIVATED:
-            uploadTexture("deactivated");
+            
 //            _obstacle->setSensor(false);
             break;
         case TrapModel::TrapState::ACTIVATED:
-            uploadTexture("activated");
+
 //            _obstacle->setSensor(true);
             break;
     }
@@ -93,99 +93,80 @@ void TrapModel::setTrapState(TrapState newState){
     _trapState = newState;
 }
 
-bool TrapModel::uploadTexture(string tex) {
-    
-    // If the animation doesn't exist, return false
-    if (!(*_animations).count(tex)) return false;
-    
-    // Jump to the beginning of the animation
-    _currFrame = 0;
-    _elapsed = 0;
-    
-    // Make a new node for the animation
-    shared_ptr<scene2::SpriteNode> newNode = make_shared<scene2::SpriteNode>();
-    newNode->initWithSprite((*_animations)[tex]._frames, (*_animations)[tex]._rows, (*_animations)[tex]._cols, (*_animations)[tex]._size);
-    
-    // Add the node to the scenegraph, and then delete the old node
-    scene2::SceneNode* p = _sceneNode->getParent();
-    if(p != nullptr) return false;
-    p->addChild(newNode);
-    _sceneNode->SceneNode::dispose();
-    _sceneNode = newNode;
-    _sceneNode->setPosition(getPosition() * _drawScale);
-    
-    // Update the current Animation class
-    _currAnimation = (*_animations)[tex];
-//    _sceneNode->setAnchor(0.5, 0.5);
-    
-    _sceneNode->setScale(_sceneNode->getScale()*Vec2(1,1));
-    
-    return true;
-}
 
 void TrapModel::update(float dt) {
-    switch(_trapState){
-        case TrapState::SPAWN:
-            setTrapState(TrapState::SPAWN);
-            break;
-        case TrapState::ACTIVATED:
-            setTrapState(TrapState::ACTIVATED);
-            break;
-        case TrapState::DEACTIVATED:
-            setTrapState(TrapState::DEACTIVATED);
-
-            break;
-    }
+//    switch(_trapState){
+//        case TrapState::SPAWN:
+//            setTrapState(TrapState::SPAWN);
+//            break;
+//        case TrapState::ACTIVATED:
+//            setTrapState(TrapState::ACTIVATED);
+//            break;
+//        case TrapState::DEACTIVATED:
+//            setTrapState(TrapState::DEACTIVATED);
+//
+//            break;
+//    }
 
     // UPDATE THE ANIMATION
     // update time since last frame update
     _elapsed += dt;
 
-    if (_trapState == TrapState::ACTIVATED || _trapState == TrapState::DEACTIVATED) {
+    if (_sceneNode->getSize()) {
+//        cout << "activated";
+    }
+    
+    if(_type == TrapType::CHECKPOINT){
+        if (_trapState == TrapState::ACTIVATED && _sceneNode->getSize()) {
+            // update time since last frame update
+
+
+                // if it is time to update the frame...
+                float frame_time = FRAME_TIME;
+                if (_elapsed > frame_time ) {
+
+                    // if on the last frame
+                    if (_currFrame == 0){
+                        // loop the animation if needed
+       
+                    }
+                    // if not on the last frame, then increment
+                    else{
+                        _currFrame = _currFrame - 1;
+                        
+                    }
+                    _sceneNode->setFrame(_currFrame);
+                    // reset time since last frame update
+                    _elapsed = 0;
+                }
+            }
+    }
+    
+    else{
+    if (_trapState == TrapState::ACTIVATED && _sceneNode->getSize()) {
         // update time since last frame update
 
+
             // if it is time to update the frame...
-            float frame_time = FRAME_TIME * ((_trapState == TrapState::ACTIVATED) ? 2.0 : 1.0);
+            float frame_time = FRAME_TIME;
             if (_elapsed > frame_time ) {
 
                 // if on the last frame
                 if (_currFrame >= _sceneNode->getSize()-1){
                     // loop the animation if needed
-                    if(_currAnimation._loop){
-                        _currFrame = 0;
-                    }
+   
                 }
                 // if not on the last frame, then increment
                 else{
                     _currFrame = _currFrame + 1;
+                    
                 }
                 _sceneNode->setFrame(_currFrame);
                 // reset time since last frame update
                 _elapsed = 0;
             }
         }
-
-        // if it is time to update the frame...
-//        float frame_time = FRAME_TIME * ((_moveState == MovementState::JUMPING) ? 2.0 : 1.0);
-//        if (_elapsed > frame_time ) {
-//
-//            // if on the last frame
-//            if (_currFrame >= _node->getSize()-1){
-//                // loop the animation if needed
-//                if(_currAnimation._loop){
-//                    _currFrame = 0;
-//                }
-//            }
-//            // if not on the last frame, then increment
-//            else{
-//                _currFrame = _currFrame + 1;
-//            }
-//            _node->setFrame(_currFrame);
-//            // reset time since last frame update
-//            _elapsed = 0;
-//        }
-//    }
-
+    }
 }
 
 

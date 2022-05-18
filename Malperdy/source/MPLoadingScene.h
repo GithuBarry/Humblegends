@@ -12,8 +12,9 @@
 //
 #ifndef __MP_LOADING_SCENE_H__
 #define __MP_LOADING_SCENE_H__
-#include <cugl/cugl.h>
 
+#include <cugl/cugl.h>
+#include "MPAudioController.h"
 
 /**
  * This class is a simple loading screen for asychronous asset loading.

@@ -30,7 +30,6 @@ private:
 	/** Store a reference to the assets for easy access */
 	static std::shared_ptr<AssetManager> _assets;
 
-
 	static void playAudio(string sound, bool loop, float vol, bool isMusic);
 
 public:
@@ -41,7 +40,9 @@ public:
 	 * 
 	 * @param assets	Reference to the asset manager with the sounds
 	 */
-	static void init(std::shared_ptr<cugl::AssetManager>& assets) { _assets = assets; }
+	static void init(std::shared_ptr<cugl::AssetManager>& assets) {
+		_assets = assets;
+	}
 
 #pragma mark Playing/Stopping
 	/**
@@ -64,6 +65,17 @@ public:
 	 */
 	static void playMusic(string sound, float vol=1.0f) {
 		playAudio(sound, true, vol, true);
+	}
+
+	/**
+	 * Plays the given music track with the given volume. A music track plays once and
+	 * then loops.
+	 *
+	 * @param sound	The music asset to play
+	 * @param vol	The relative volume at which to play the music (1 by default)
+	 */
+	static void playGivenMusic(std::shared_ptr<Sound> sound, float vol = 1.0f) {
+		AudioEngine::get()->getMusicQueue()->play(sound, true, vol);
 	}
 
 	static bool isPlaying(string sound, bool isMusic);

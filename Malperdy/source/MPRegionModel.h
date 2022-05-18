@@ -58,7 +58,7 @@ private:
 
 		/** Grid of pointers for all the rooms in the sublevel, where _rooms[i][j]
 		is the room in the ith row from the bottom and jth column from the left in
-		sublevel space */
+		REGION space */
 		shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> _rooms;
 
 	public:
@@ -121,10 +121,6 @@ private:
 			// Return nullptr now if this room is not in this sublevel
 			if (!isInSublevel(x, y)) return nullptr;
 
-			// Otherwise, convert from region space to sublevel space
-			x -= _originX;
-			y -= _originY;
-
 			// Then return the right room
 			return _rooms->at(y)->at(x);
 		}
@@ -144,10 +140,6 @@ private:
 			// Return false now if this location is not in this sublevel
 			if (!isInSublevel(x, y)) return false;
 
-			// Otherwise, convert from region space to sublevel space
-			x -= _originX;
-			y -= _originY;
-
 			// Set the room and then return true
 			_rooms->at(y)->at(x) = room;
 			return true;
@@ -161,9 +153,9 @@ private:
 		 */
 		void clearSublevel(shared_ptr<Texture> bgCleared) {
 			// For each room in the sublevel
-			for (shared_ptr<vector<shared_ptr<RoomModel>>> col : *_rooms) {
-				for (shared_ptr<RoomModel> room : *col) {
-					room->_bgNode->setTexture(bgCleared);
+			for (int x = _originX; x < _originX + _width; x++) {
+				for (int y = _originY; y < _originY + _height; y++) {
+					_rooms->at(y)->at(x)->clear(bgCleared);
 				}
 			}
 		}
@@ -240,6 +232,13 @@ public:
 	}
 
 #pragma mark Getters
+	/**
+	 * Returns the number of sublevels in this region.
+	 * 
+	 * @return	The number of sublevels in this region
+	 */
+	int getNumSublevels() { return _sublevels->size(); }
+
 	/**
 	 * Returns the width of this region in rooms, which is
 	 * equivalent to the number of columns in this region.

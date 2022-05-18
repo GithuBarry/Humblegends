@@ -109,10 +109,6 @@ private:
      * in grid space are the region's origin, which will be used to organize the regions,
      * but otherwise regions only care about where things are relative to their origin.
      *
-     * TODO: currently this just pretends that the whole region is
-     * one sublevel, needs to be fixed to account for different sublevels
-     * once we're able to identify that from the level data
-     *
      * @param regNum        The number of the region to initialize
      * @param originX       The x-coordinate of the region origin in grid space
      * @param originY       The y-coordinate of the region origin in grid space
@@ -234,6 +230,24 @@ public:
     */
     bool isRoomFogged(Vec2 coord) {
         return getRoom(coord) != nullptr && getRoom(coord)->isFogged();
+    }
+    
+    void update(float dt){
+        for(int i = 0; i < _regions->size(); i++){
+            shared_ptr<RegionModel> rm = _regions->at(i);
+            
+            int width = rm->getWidth();
+            int height = rm->getHeight();
+            
+            for(int row = 0; row < height; row++){
+                for(int col = 0; col < width; col++){
+                    shared_ptr<RoomModel> room = rm->getRoom(col, row);
+                    if(room){
+                        room->update(dt);
+                    }
+                }
+            }
+        }
     }
 
 #pragma mark Setters

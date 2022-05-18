@@ -1,61 +1,69 @@
 {
-"textures": {
-	"background": {
-		"file":      "textures/MainMenu.png",
-            "wrapS":     "clamp",
-            "wrapT":     "clamp",
-            "minfilter": "linear",
-            "magfilter": "linear"
-		},
-    "logo": {
-        "file":      "textures/MenuTitle.png",
-        "wrapS":     "clamp",
-        "wrapT":     "clamp",
-        "minfilter": "linear",
-        "magfilter": "linear"
+  "textures": {
+    "background": {
+      "file": "textures/MainMenu.png",
+      "wrapS": "clamp",
+      "wrapT": "clamp",
+      "minfilter": "linear",
+      "magfilter": "linear"
     },
-	"title": {
-        "file":      "textures/MenuTitle.png",
-        "wrapS":     "clamp",
-        "wrapT":     "clamp",
-        "minfilter": "linear",
-        "magfilter": "linear"
-	},
+    "logo": {
+      "file": "textures/MenuTitle.png",
+      "wrapS": "clamp",
+      "wrapT": "clamp",
+      "minfilter": "linear",
+      "magfilter": "linear"
+    },
+    "title": {
+      "file": "textures/MenuTitle.png",
+      "wrapS": "clamp",
+      "wrapT": "clamp",
+      "minfilter": "linear",
+      "magfilter": "linear"
+    },
     "loadGame-noSave": {
-        "file":      "textures/Load_Locked.png",
-        "wrapS":     "clamp",
-        "wrapT":     "clamp",
-        "minfilter": "linear",
-        "magfilter": "linear"
-	},
+      "file": "textures/Load_Locked.png",
+      "wrapS": "clamp",
+      "wrapT": "clamp",
+      "minfilter": "linear",
+      "magfilter": "linear"
+    },
     "loadGame-withSave": {
-        "file":      "textures/Load_Default.png",
-        "wrapS":     "clamp",
-        "wrapT":     "clamp",
-        "minfilter": "linear",
-        "magfilter": "linear"
-	},
+      "file": "textures/Load_Default.png",
+      "wrapS": "clamp",
+      "wrapT": "clamp",
+      "minfilter": "linear",
+      "magfilter": "linear"
+    },
     "new": {
-        "file":      "textures/New_Emphasis.png",
-        "wrapS":     "clamp",
-        "wrapT":     "clamp",
-        "minfilter": "linear",
-        "magfilter": "linear"
-	},
-	"progress": {
-        "file":      "textures/progress.png",
-        "wrapS":     "clamp",
-        "wrapT":     "clamp",
-        "minfilter": "linear",
-        "magfilter": "linear",
-        "atlas":     {
-			"background" : [0,    0, 320, 45],
-			"foreground" : [24,  45, 296, 90],
-			"leftcap"    : [0,   45,  24, 90],
-			"rightcap"   : [296, 45, 320, 90]
-        }
-	}
-},
+      "file": "textures/New_Emphasis.png",
+      "wrapS": "clamp",
+      "wrapT": "clamp",
+      "minfilter": "linear",
+      "magfilter": "linear"
+    },
+    "progress": {
+      "file": "textures/progress.png",
+      "wrapS": "clamp",
+      "wrapT": "clamp",
+      "minfilter": "linear",
+      "magfilter": "linear",
+      "atlas": {
+        "background": [ 0, 0, 320, 45 ],
+        "foreground": [ 24, 45, 296, 90 ],
+        "leftcap": [ 0, 45, 24, 90 ],
+        "rightcap": [ 296, 45, 320, 90 ]
+      }
+    }
+  },
+  "sounds": {
+    "titlescreen_music": {
+      "type": "sample",
+      "file": "sounds/titlescreenmusic.ogg",
+      "volume": 0.2,
+      "stream": true
+    }
+  },
 "scene2s" : {
 	"load" : {
 		"type"      : "Solid",
