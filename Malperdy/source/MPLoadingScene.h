@@ -43,10 +43,12 @@ protected:
 
     /** The game's name */
     std::shared_ptr<cugl::scene2::SceneNode>  _title;
-    /** The "new game" button */
-    std::shared_ptr<cugl::scene2::Button>       _new;
     /** The "load game" button */
     std::shared_ptr<cugl::scene2::Button>      _load;
+    /** The "new game" button */
+    std::shared_ptr<cugl::scene2::Button>       _new;
+    /** The "settings" button */
+    std::shared_ptr<cugl::scene2::Button>       _settings;
 
     // MODEL
     /** The progress displayed on the screen */
@@ -141,13 +143,32 @@ public:
 
 private:
 #pragma mark -
-#pragma mark Progress Monitoring
+#pragma mark Helper Functions
     /*
     * Returns whether there is a save file to load
     *
     * @return whether there is a save file to load
     */
     bool saveFileExists();
+
+    /* 
+    * Hides all assets so it's safe to switch screens
+    * 
+    * @param helper     0 if proceeding as normal
+    *                   1 to not deactivate settings
+    *                   2 to not deactivate credits
+    */
+    void hideAll(int helper = 0);
+
+    /* Switches to main menu screen */
+    void showMainMenu();
+
+    /* Switches to settings screen */
+    void showSettings();
+
+    /* Switches to credits screen */
+    void showCredits();
+
 };
 
 #endif /* __MP_LOADING_SCENE_H__ */
