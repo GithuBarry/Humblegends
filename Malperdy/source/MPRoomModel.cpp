@@ -51,6 +51,7 @@ const Vec2 RoomModel::ROOM_SCALE = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT)
 
 // Create color for geometry
 Color4 geometryColor = Color4(20,20,20,255);
+Color4 fogColor = Color4(Color4(Vec4(0.2, 0.2, 0.2, 1)));
 
 #pragma mark Room Layout
 /** The vertices for the boundary of a room */
@@ -173,7 +174,7 @@ bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_pt
 	addChild(boundNode);
 
     //Fog of war
-	setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
+	setColor(fogColor);
 
     // Initialize lock icon
     _lockIcon = scene2::PolygonNode::allocWithFile("textures/lock_icon.png");
@@ -221,6 +222,7 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
 
         _trap = trap;
         addChild(_trap);
+        setColor(Color4::WHITE);
     }
     else if (type == TrapModel::TrapType::GOAL) {
         shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
