@@ -964,13 +964,15 @@ shared_ptr<TrapModel> GameScene::isTrapCollision(b2Contact *contact)
         return nullptr;
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    for (int row = 0; row < _grid->getWidth(); row++)
+    shared_ptr<RoomModel> room;
+    for (int col = 0; col < _grid->getWidth(); col++)
     {
-        for (int col = 0; col < _grid->getHeight(); col++)
+        for (int row = 0; row < _grid->getHeight(); row++)
         {
-            if (_grid->getRoom(row, col)->getTrap() != nullptr)
+            room = _grid->getRoom(col, row);
+            if (room != nullptr && room->getTrap() != nullptr)
             {
-                shared_ptr<TrapModel> _trap = _grid->getRoom(row, col)->getTrap();
+                shared_ptr<TrapModel> _trap = _grid->getRoom(col, row)->getTrap();
                 b2Body *body = _trap->getObstacle()->getBody();
                 bool isCollision = body == body1 || body == body2;
                 if (isCollision)

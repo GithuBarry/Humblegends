@@ -161,6 +161,9 @@ private:
 	/** The location of the lower left corner of this region in grid space */
 	int _originX, _originY;
 
+	/** The bounds of the region in GRID space as a rect */
+	Rect _bounds;
+
 	// CHECKPOINTS + SUBLEVELS
 
 	/** Vector of all sublevels in this region */
@@ -211,6 +214,7 @@ public:
 		_height = height;
 		_originX = originX;
 		_originY = originY;
+		_bounds = Rect(_originX, _originY, width, height);
 		return true;
 	}
 
@@ -294,6 +298,13 @@ public:
 	int getGridOriginY() {
 		return _originY;
 	}
+
+	/**
+	 * Returns the bounds of this region as a Rect.
+	 * 
+	 * @return	The bounds of this region
+	 */
+	Rect getBounds() { return _bounds; }
 
 	/**
 	 * Returns whether the given GRID space coordinates are within this

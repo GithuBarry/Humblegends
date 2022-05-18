@@ -129,10 +129,7 @@ void EnemyModel::update(float dt) {
  * fixture to act as their detection radius, which is also added here.
  */
 void EnemyModel::createFixtures() {
-    // Check if there is a body
-    if (_body == nullptr) {
-        return;
-    }
+    if (_body == nullptr) return;
 
     // Call parent method to get feet/face fixtures
     CharacterModel::createFixtures();
@@ -156,9 +153,7 @@ void EnemyModel::createFixtures() {
  * This is the primary method to override for custom physics objects.
  */
 void EnemyModel::releaseFixtures() {
-    if (_body != nullptr) {
-        return;
-    }
+    if (_body == nullptr) return;
 
     CharacterModel::releaseFixtures();
 

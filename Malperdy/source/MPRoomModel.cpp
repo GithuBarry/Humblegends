@@ -148,7 +148,7 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
  * @param x         The x-coordinate of the room in parent space
  * @param y         The y-coordinate of the room in parent space
  * @param roomID    ID of room type with the desired geometry
- * @param bg		Background texture to apply to the room
+ * @param bg		Background texture to apply to the room (nullptr by default)
  * @return          true if the room is initialized properly, false otherwise.
  */
 bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {

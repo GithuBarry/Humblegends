@@ -53,17 +53,23 @@ void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<Rey
     if (zoomedOut && !_prevZoomOut) setLockVisibility(true, reynard, enemies);
     else if (!zoomedOut && _prevZoomOut) setLockVisibility(false, reynard, enemies);
     else if (zoomedOut && _prevZoomOut) {
+        shared_ptr<RoomModel> room;
+
         // Check if prevs should still be locked
         bool isVisible = !isSwappable(_reyPrev, reynard, enemies);
-        _grid->getRoom(_reyPrev)->setLockIcon(isVisible);
+        room = _grid->getRoom(_reyPrev);
+        if (room != nullptr) room->setLockIcon(isVisible);
         for (auto i = _enemyPrevs.begin(); i != _enemyPrevs.end(); i++) {
             isVisible = !isSwappable((*i), reynard, enemies);
-            _grid->getRoom(*i)->setLockIcon(isVisible);
+            room = _grid->getRoom(*i);
+            if (room != nullptr) room->setLockIcon(isVisible);
         }
         // Lock currents
-        _grid->getRoom(newReyRoom)->setLockIcon(true);
+        room = _grid->getRoom(newReyRoom);
+        if (room != nullptr) room->setLockIcon(isVisible);
         for (auto i = newEnemyPrevs.begin(); i != newEnemyPrevs.end(); i++) {
-            _grid->getRoom(*i)->setLockIcon(true);
+            room = _grid->getRoom(*i);
+            if (room != nullptr) room->setLockIcon(true);
         }
     }
 
@@ -155,15 +161,17 @@ void EnvController::deselectRoom() {
 #pragma mark Helper Functions
 
 /*
-* Shows or hides the lock icons on locked rooms
+* Shows or hides the lock icons on locked rooms, but not solid ones
 * To be called when zooming out or in
 *
 * @param isVisible  true if the locks should be visible
 */
-void EnvController::setLockVisibility(bool isVisible, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+void EnvController::setLockVisibility(bool isVisible, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {    
     for (int x = 0; x < _grid->getWidth(); x++) {
         for (int y = 0; y < _grid->getHeight(); y++) {
-            _grid->getRoom(Vec2(x, y))->setLockIcon(isVisible && !isSwappable(Vec2(x, y), reynard, enemies));
+            if (_grid->getRoom(x, y) == nullptr) break;
+
+            _grid->getRoom(x, y)->setLockIcon(isVisible && !isSwappable(Vec2(x, y), reynard, enemies));
         }
     }
 }

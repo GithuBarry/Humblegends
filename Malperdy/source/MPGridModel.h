@@ -44,7 +44,13 @@ private:
      * Size of the entire level, spanning all regions (in units of number of rooms )
      * _size[0] is the width, _size[1] is the height
      */
-    Vec2 _size = Vec2(3, 3);
+    Vec2 _size = Vec2(0, 0);
+
+    /** The origin of the grid, so location of the lower left corner */
+    int _originX = 0;
+    int _originY = 0;
+
+    Rect _bounds = Rect();
 
     float _physics_scale;
 
@@ -56,7 +62,7 @@ private:
     /*
      * Holds all the physics objects of the grid
      */
-    vector<vector<vector<shared_ptr<physics2::PolygonObstacle>>>> _physicsGeometry;
+    shared_ptr<vector<shared_ptr<vector<shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>>>>>> _physicsGeometry;
 
     // REGIONS
 
@@ -65,6 +71,12 @@ private:
 
     /** The regions that Reynard has already unlocked and therefore has access to */
     shared_ptr<vector<shared_ptr<RegionModel>>> _activeRegions = make_shared<vector<shared_ptr<RegionModel>>>();
+
+    /** The filler rooms, so solid rooms placed in empty areas */
+    shared_ptr<vector<shared_ptr<RoomModel>>> _filler = make_shared<vector<shared_ptr<RoomModel>>>();
+
+    /** The edge rooms, so solid rooms placed around the full level */
+    shared_ptr<vector<shared_ptr<RoomModel>>> _edges = make_shared<vector<shared_ptr<RoomModel>>>();
 
 public:
 #pragma mark Constructors
@@ -179,6 +191,20 @@ public:
      * @return  The list of active regions
      */
     shared_ptr<vector<shared_ptr<RegionModel>>> getActiveRegions() { return _activeRegions; }
+
+    /**
+     * Returns the physics objects of the given room in GRID coordinates.
+     * 
+     * This handles the issue with adding extra solid rooms to surround the
+     * whole level.
+     * 
+     * @param row   Row of the room in GRID coordinates
+     * @param col   Column of the room in GRID coordinates
+     * @return      Physics objects in the given room
+     */
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsGeometryAt(int row, int col) {
+        return (_physicsGeometry->at(row)->at(col));
+    }
 
 private:
     /**
