@@ -605,7 +605,14 @@ void GameScene::update(float dt) {
     }
 
     if (_input.didZoomIn()) {
-        _gamestate.zoom_in();
+        if (!_gamestate.isPaused())
+        {
+            if (!_gamestate.zoomed_in())
+            {
+                AudioController::playSFX(ZOOMIN_SOUND);
+            }
+            _gamestate.zoom_in();
+        }
         _envController->deselectRoom();
     }
 
@@ -620,7 +627,15 @@ void GameScene::update(float dt) {
         if (!_gamestate.zoomed_in()&& _gamestate.finishedZooming(_worldnode->getZoom())){
             //_gamestate.pauseSwitch();
         }
-        _gamestate.zoom_out();
+
+        if (!_gamestate.isPaused())
+        {
+            if (_gamestate.zoomed_in())
+            {
+                AudioController::playSFX(ZOOMOUT_SOUND);
+            }
+            _gamestate.zoom_out();
+        }
         _envController->deselectRoom();
     }
 
@@ -957,7 +972,9 @@ void GameScene::resolveWallJumpOntoTrap(float reynardVY) {
 
 void GameScene::resolveEnemyTrapOnContact(shared_ptr<EnemyController> enemy) {
     enemy->getCharacter()->setHearts(enemy->getCharacter()->getHearts() - SPIKE_DAMAGE);
-    enemy->jump();
+    if (!enemy->getCharacter()->getBody()->GetWorld()->IsLocked()){
+        enemy->jump();
+    }
     //enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
 }
 
@@ -1213,5 +1230,3 @@ void GameScene::render(const std::shared_ptr<SpriteBatch> &batch) {
 Vec2 GameScene::inputToGameCoords(Vec2 inputCoords) {
     return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }
-
-

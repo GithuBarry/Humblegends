@@ -134,8 +134,9 @@ public:
     * 
     * @return   value based on how the player wants to start playing
     */
-    bool getMode() { 
-        return _mode; }
+    int getMode() {
+        return _mode;
+    }
 
 private:
 #pragma mark -
@@ -145,7 +146,7 @@ private:
     *
     * @return whether there is a save file to load
     */
-    bool LoadingScene::saveFileExists();
+    bool saveFileExists();
 };
 
 #endif /* __MP_LOADING_SCENE_H__ */
