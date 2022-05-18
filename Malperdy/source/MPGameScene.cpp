@@ -371,9 +371,19 @@ void GameScene::populateEnv()
     populateTutorials();
 }
 
-void GameScene::populateChars()
+/**
+ * Places all the characters, including Reynard and enemies, in the game world.
+ */
+void GameScene::populateChars() {
+    populateReynard();
+    populateEnemies();
+}
+
+/**
+ * Places Reynard in the game world.
+ */
+void GameScene::populateReynard()
 {
-#pragma mark Reynard
     Vec2 pos = _checkpointReynardPos;
 
     shared_ptr<Animation> reynard_animations = make_shared<Animation>(_assets->get<Texture>("reynard_all"), _assets->get<JsonValue>("framedata2")->get("reynard"));
@@ -385,16 +395,36 @@ void GameScene::populateChars()
     _reynardController->getCharacter()->setPosition(Vec2(4, 3));
     addObstacle(_reynardController->getCharacter(), _reynardController->getCharacter()->_node); // Put this at the very front
     _reynardController->getCharacter()->setPosition(pos_temp);
+}
 
-#pragma mark Enemies
+/**
+ * Places all the enemies for the active regions in the game world.
+ */
+void GameScene::populateEnemies() {
+    shared_ptr<vector<shared_ptr<RegionModel>>> _activeRegions = _grid->getActiveRegions();
+    for (vector<shared_ptr<RegionModel>>::iterator itr = _activeRegions->begin();
+        itr != _activeRegions->end(); ++itr) {
+        populateEnemiesInRegion(*itr);
+    }
+}
 
+/**
+ * Places the enemies for the given region in the game world.
+ *
+ * Allows us to populate enemies on a per-region basis, instead
+ * of loading them all in at once and potentially causing runtime
+ * issues.
+ *
+ * @param region    The region to populate the enemies for.
+ */
+void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region) {
     shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
 
-    // Give all enemies a reference to Reynard's controller to handle detection
+    // Initialize new enemy
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
     // get Level data from the JSON
-    shared_ptr<JsonValue> levelJSON = _assets->get<JsonValue>("level");
+    shared_ptr<JsonValue> levelJSON = _assets->get<JsonValue>(region->getName());
     // get the layer containing entities
     shared_ptr<JsonValue> entityLayer;
     for (int i = 0; i < levelJSON->get("layers")->size(); i++)

@@ -1,0 +1,40 @@
+{
+  "roomWidth": 12,
+  "roomHeight": 8,
+  "tileSize": 10,
+  "regions": [
+    {
+      "name": "region1",
+      "type": 1,
+      "width": 14,
+      "height": 8,
+      "originX": 0,
+      "originY": 0
+    }
+  ],
+  "backgrounds": [
+    [
+      "bg-r1-0",
+      "bg-r1-1",
+      "bg-r1-2",
+      "bg-r1-3"
+    ],
+    [
+      "bg-r2-0",
+      "bg-r2-1",
+      "bg-r2-2",
+      "bg-r2-3",
+      "bg-r2-4"
+    ],
+    [
+      "bg-r3-0",
+      "bg-r3-1",
+      "bg-r3-2",
+      "bg-r3-3",
+      "bg-r3-4",
+      "bg-r3-5",
+      "bg-r3-6",
+      "bg-r3-7"
+    ]
+  ]
+}

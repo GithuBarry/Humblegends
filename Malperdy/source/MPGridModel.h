@@ -17,7 +17,6 @@
 
 #include <cugl/cugl.h>
 #include "MPRoomModel.h"
-#include "MPGridLoader.h"
 #include "MPRegionModel.h"
 #include "MPCheckpoint.h"
 
@@ -32,15 +31,6 @@ private:
     shared_ptr<cugl::AssetManager> _assets;
 
     // GRID LOADING
-    /** Loads in grid format  from a JSON and is used to look up roomIDs for rooms */
-    static shared_ptr<GridLoader> _gridLoader;
-
-    /** Horizontal gap between rooms in SCREEN SPACE  */
-    float _horizontal_gap;
-
-    /** Vertical gap between rooms in SCREEN SPACE  */
-    float _vertical_gap;
-
     /** Dimensions of a room in tiles */
     int _roomWidth, _roomHeight;
 
@@ -68,8 +58,13 @@ private:
      */
     vector<vector<vector<shared_ptr<physics2::PolygonObstacle>>>> _physicsGeometry;
 
+    // REGIONS
+
     /** The regions that form the entire level */
-    shared_ptr<vector<shared_ptr<RegionModel>>> _regions;
+    shared_ptr<vector<shared_ptr<RegionModel>>> _regions = make_shared<vector<shared_ptr<RegionModel>>>();
+
+    /** The regions that Reynard has already unlocked and therefore has access to */
+    shared_ptr<vector<shared_ptr<RegionModel>>> _activeRegions = make_shared<vector<shared_ptr<RegionModel>>>();
 
 public:
 #pragma mark Constructors
@@ -104,17 +99,15 @@ private:
      * Initializes a region for the game. The region is placed such that its
      * lower left corner, its region origin, is at the given coordinates in the
      * overall grid space.
-     * 
+     *
      * Note that everything here uses REGION space, not grid space. The only coordinates
      * in grid space are the region's origin, which will be used to organize the regions,
      * but otherwise regions only care about where things are relative to their origin.
      *
-     * @param regNum        The number of the region to initialize
-     * @param originX       The x-coordinate of the region origin in grid space
-     * @param originY       The y-coordinate of the region origin in grid space
-     * @param regionJSON    The JSON for the given region
+     * @param region    The JSONValue for the metadata of the region to be initialized
+
      */
-    void initRegion(int regNum, int originX, int originY, shared_ptr<JsonValue> regionJSON);
+    void GridModel::initRegion(shared_ptr<JsonValue> region);
     
 public:
     /**
@@ -178,6 +171,14 @@ public:
      * @return  The room located at the given coordinates
      */
     shared_ptr<RoomModel> getRoom(int x, int y);
+
+    /**
+     * Returns all the active regions, so the ones that Reynard has
+     * already unlocked and therefore has access to.
+     * 
+     * @return  The list of active regions
+     */
+    shared_ptr<vector<shared_ptr<RegionModel>>> getActiveRegions() { return _activeRegions; }
 
 private:
     /**

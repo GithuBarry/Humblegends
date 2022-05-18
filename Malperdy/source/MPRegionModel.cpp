@@ -22,30 +22,33 @@ using namespace cugl;
 
 shared_ptr<vector<shared_ptr<Texture>>> RegionModel::_bgsCleared = make_shared<vector<shared_ptr<Texture>>>();
 shared_ptr<vector<shared_ptr<vector<shared_ptr<Texture>>>>> RegionModel::_backgrounds = make_shared<vector<shared_ptr<vector<shared_ptr<Texture>>>>>();
-//const string RegionModel::BG_REGIONS[NUM_REGIONS][NUM_BACKGROUNDS] = {R1_BGS, R2_BGS, R3_BGS};
-// TODO: replace with a full size-3 array when the regions are all in
-const string RegionModel::BG_REGIONS[NUM_REGIONS][NUM_BACKGROUNDS] = { R1_BGS };
 
 #pragma mark Backgrounds
 /**
  * Stores static references to all the background options for all regions.
  *
  * @param assets	Asset manager where all the backgrounds are stored
+ * @param world		The JSON that contains all the world metadata
  */
-void RegionModel::setBackgrounds(shared_ptr<cugl::AssetManager> assets) {
-	string bgClearName;
+void RegionModel::setBackgrounds(shared_ptr<cugl::AssetManager> assets, shared_ptr<JsonValue> world) {
+	// Get the list of lists of backgrounds for each region type
+	vector<shared_ptr<JsonValue>> bgs = world->get("backgrounds")->children();
+
+	// Initialize vector cache for each region type's background options
+	vector<string> regionBgs;
 
 	// Store all the possible background textures, indexed by region
-	_backgrounds = make_shared<vector<shared_ptr<vector<shared_ptr<Texture>>>>>();
-	for (int k = 0; k < NUM_REGIONS; k++) {
+	for (int k = 0; k < NUM_BG_TYPES; k++) {
+		regionBgs = bgs[k]->asStringArray();
+
+		// For each background array, first is the cleared background for that region
+		_bgsCleared->push_back(assets->get<Texture>(regionBgs[0]));
+
+		// The rest are the possible options for uncleared backgrounds for that region
 		_backgrounds->push_back(make_shared<vector<shared_ptr<Texture>>>());
-		for (string name : BG_REGIONS[k]) {
-			if (name != "") _backgrounds->at(k)->push_back(assets->get<Texture>(name));
+		for (int n = 1; n < regionBgs.size(); n++) {
+			_backgrounds->at(k)->push_back(assets->get<Texture>(regionBgs[n]));
 		}
-	}
-	// Store all the cleared backgrounds for each region
-	for (string name : BG_CLEARED) {
-		_bgsCleared->push_back(assets->get<Texture>(name));
 	}
 }
 
@@ -181,7 +184,7 @@ bool RegionModel::clearCheckpoint(int cID) {
 	AudioController::playSFX(CHECKPOINT_SOUND);
 
 	// Clear all the rooms in the sublevel
-	_sublevels->at(_checkpointMap->at(cID))->clearSublevel(_bgsCleared->at(_regionNumber));
+	_sublevels->at(_checkpointMap->at(cID))->clearSublevel(_bgsCleared->at(_bgType));
 
 	// Now unlink this checkpoint from the checkpoint map
 	_checkpointMap->operator[](cID) = -1;

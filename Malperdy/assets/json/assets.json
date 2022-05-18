@@ -3,7 +3,8 @@
     "framedata": "json/framedata.json",
     "framedata2": "json/framedatanew.json",
 
-    "level": "json/levels/MP_Region_1.json",
+    "world": "json/levels/MP_WorldData.json",
+    "region1": "json/levels/MP_Region_1.json",
 
     "tileset_geometry": "json/tilesets/geometry.tsj",
     "tileset_entities": "json/tilesets/entities.json",
@@ -65,6 +66,9 @@
     "ZoomOutTutorial": {
       "file": "textures/tutorial/TutorialZoomOut.png"
     },
+    "bg-r1-0": {
+      "file": "textures/environment/BG_R1_0.jpg"
+    },
     "bg-r1-1": {
       "file": "textures/environment/BG_R1_1.png"
     },
@@ -74,8 +78,8 @@
     "bg-r1-3": {
       "file": "textures/environment/BG_R1_3.png"
     },
-    "bg-r1c-1": {
-      "file": "textures/environment/BG_R1C_1.jpg"
+    "bg-r2-0": {
+      "file": "textures/environment/BG_R1_0.jpg"
     },
     "bg-r2-1": {
       "file": "textures/environment/BG_R2_1.jpg"
@@ -88,6 +92,9 @@
     },
     "bg-r2-4": {
       "file": "textures/environment/BG_R2_4.jpg"
+    },
+    "bg-r3-0": {
+      "file": "textures/environment/BG_R1_0.jpg"
     },
     "bg-r3-1": {
       "file": "textures/environment/BG_R3_1.jpg"

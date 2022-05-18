@@ -21,9 +21,6 @@
 
 using namespace cugl;
 
-/** Initialize RoomLoader for loading in rooms from a JSON */
-shared_ptr<GridLoader> GridModel::_gridLoader = GridLoader::alloc("json/testlevel2.json");
-
 #pragma mark Constructors
 
 /**
@@ -68,28 +65,31 @@ shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> GridModel::initGri
  * in grid space are the region's origin, which will be used to organize the regions,
  * but otherwise regions only care about where things are relative to their origin.
  *
- * @param regNum        The number of the region to initialize
- * @param originX       The x-coordinate of the region origin in grid space
- * @param originY       The y-coordinate of the region origin in grid space
- * @param regionJSON    The JSON for the given region
+ * @param regionMetadata    The JSONValue for the metadata of the region to be initialized
+ * 
  */
-void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<JsonValue> regionJSON)
+void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
 {
-    // First create a new region with the corresponding region number
-    shared_ptr<RegionModel> region = RegionModel::alloc(regNum, originX, originY);
-    _regions->operator[](regNum - 1) = region;
+    int width = regionMetadata->getInt("width");
+    int height = regionMetadata->getInt("height");
 
-    // Get region dimensions
-    int width = regionJSON->get("width")->asInt() / _roomWidth;
-    int height = regionJSON->get("height")->asInt() / _roomHeight;
-    region->setDims(width, height);
+    // First create a new region with the given metadata
+    shared_ptr<RegionModel> region = RegionModel::alloc(
+        regionMetadata->getString("name"),
+        regionMetadata->getInt("type"),
+        width, height,
+        regionMetadata->getInt("originX"),
+        regionMetadata->getInt("originY")
+    );
+    _regions->push_back(region);
 
-    // TODO: this is where it pretends there's only one sublevel
+    // Now load in the actual region JSON
+    shared_ptr<JsonValue> regionJSON = _assets->get<JsonValue>(regionMetadata->getString("name"));
 
     // Initialize grid for a sublevel layer (dimensions are the dimensions of the region)
     shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> sublevel = initGrid(width, height);
 
-    // Now start reading data from the JSON
+    // Start reading data from the JSON
     shared_ptr<JsonValue> layers = regionJSON->get("layers");
 
     // INSTANTIATING TRAPS
@@ -180,7 +180,7 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
                 roomJSON = _assets->get<JsonValue>(name);
 
                 // instantiate the room and add it as a child                
-                sublevel->at(y)->at(x)->init(x, y, roomJSON, RegionModel::getRandBG(regNum));
+                sublevel->at(y)->at(x)->init(x, y, roomJSON, RegionModel::getRandBG(region->getType()));
                 if (name == "room_solid")
                 {
                     sublevel->at(y)->at(x)->permlocked = true;
@@ -322,26 +322,17 @@ void GridModel::initRegion(int regNum, int originX, int originY, shared_ptr<Json
  */
 bool GridModel::init(shared_ptr<AssetManager> assets, float scale)
 {
-    // Store assets
     _assets = assets;
-
-    // First give all the regions access to the backgrounds they'll need
-    RegionModel::setBackgrounds(assets);
-
-    _horizontal_gap = 0;
-    _vertical_gap = 0;
     _physics_scale = scale;
 
-    // get JsonValues representing the level, and an arbitrary room
-    shared_ptr<JsonValue> levelJSON = assets->get<JsonValue>("level");
-    shared_ptr<JsonValue> roomJSON = assets->get<JsonValue>("room_leftright");
+    // Get JSON for the world metadata and parse for constants
+    shared_ptr<JsonValue> worldJSON = assets->get<JsonValue>("world");
 
     // Get room dimensions in tiles
-    _roomWidth = roomJSON->get("width")->asInt();
-    _roomHeight = roomJSON->get("height")->asInt();
-
+    _roomWidth = worldJSON->get("roomWidth")->asInt();
+    _roomHeight = worldJSON->get("roomHeight")->asInt();
     // The size of each tile in pixels
-    _tileSize = assets->get<JsonValue>("tileset_geometry")->get("tilewidth")->asInt();
+    _tileSize = worldJSON->get("tileSize")->asInt();
 
     // Get the tileset for the rooms
     _roomsTileset = assets->get<JsonValue>("tileset_rooms");
@@ -349,17 +340,23 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale)
     /**************************************************************/
     // REGIONS
     /**************************************************************/
+    // First give all the regions access to the backgrounds they'll need
+    RegionModel::setBackgrounds(assets, worldJSON);
 
-    // Initialize regions
-    _regions = make_shared<vector<shared_ptr<RegionModel>>>(NUM_REGIONS, nullptr);
+    // Get the list of regions in the world
+    vector<shared_ptr<JsonValue>> regions = worldJSON->get("regions")->children();
 
-    // Now build each region based on the level JSON
-    // TODO: right now it pretends that it's all one region, needs to be generalized
-    initRegion(1, 0, 0, levelJSON);
+    // Now build each region based on the corresponding JSON metadata
+    for (shared_ptr<JsonValue> regionMetadata : regions) {
+        initRegion(regionMetadata);
+    }
 
     // TODO: calculate the size across all three regions instead of just using the first region's
     _size.x = _regions->at(0)->getWidth();
     _size.y = _regions->at(0)->getHeight();
+
+    // Set only first region to be active at start
+    _activeRegions->push_back(_regions->at(0));
 
     return this->scene2::SceneNode::init();
 };
@@ -406,7 +403,7 @@ shared_ptr<RoomModel> GridModel::getRoom(int x, int y)
  */
 int GridModel::getRegion(int x, int y)
 {
-    for (int k = 0; k < NUM_REGIONS; k++)
+    for (int k = 0; k < _regions->size(); k++)
     {
         if (_regions->at(k)->isInRegion(x, y))
             return (k + 1);
