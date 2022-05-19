@@ -184,6 +184,14 @@ private:
 	/** Number of uncleared checkpoints remaining in this region */
 	int _checkpointsToClear = 0;
 
+	/** Pointers to the SceneNodes that have the blocked exit textures */
+	shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> _blockedNodes =
+		make_shared<vector<shared_ptr<scene2::PolygonNode>>>();
+
+	/** Physics objects for region exit blockades */
+	shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> _blockades =
+		make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
+
 	// BACKGROUNDS
 	/** Static reference to the background textures for all the regions */
 	static shared_ptr<vector<shared_ptr<vector<shared_ptr<Texture>>>>> _backgrounds;
@@ -363,6 +371,17 @@ public:
 	 * @return      Whether the room was set successfully
 	 */
 	bool setRoom(int x, int y, shared_ptr<RoomModel> room);
+
+	/**
+	 * Sets the exit room to be the onelocated in the xth column from the
+	 * left and the yth row from the bottom in GRID space coordinates.
+	 *
+	 * @param x     The x-coordinate to place the room at in GRID space
+	 * @param y     The y-coordinate to place the room at in GRID space
+	 * @param tex	The texture to apply to an exit room
+	 * @return      Whether the room was set successfully
+	 */
+	bool setExitRoom(int x, int y, shared_ptr<Texture> tex);
 
 #pragma mark Backgrounds
 	/**

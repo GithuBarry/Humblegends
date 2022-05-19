@@ -75,9 +75,6 @@ private:
     /** The filler rooms, so solid rooms placed in empty areas */
     shared_ptr<vector<shared_ptr<RoomModel>>> _filler = make_shared<vector<shared_ptr<RoomModel>>>();
 
-    /** The edge rooms, so solid rooms placed around the full level */
-    shared_ptr<vector<shared_ptr<RoomModel>>> _edges = make_shared<vector<shared_ptr<RoomModel>>>();
-
 public:
 #pragma mark Constructors
 
@@ -317,10 +314,17 @@ public:
      */
     bool setRoom(int x, int y, shared_ptr<RoomModel> room);
 
-    /** Swaps two rooms given two room coordinates.
-     * room = (i,j) meaning the room at row i, col j
-     * returns true if the swap occurs successfully, returns false if rooms cannot be swapped */
-    bool swapRooms(Vec2 room1, Vec2 room2,bool forced);
+    /**
+     * Swaps the two rooms at the given coordinates, where the x-coordinate is
+     * the column from the left and the y-coordinate is the row from the bottom.
+     *
+     * Returns true if the swap was successfully performed.
+     *
+     * @param pos1  The coordinates of the first room to swap in (column, row) form
+     * @param pos2  The coordinates of the second room to swap in (column, row) form
+     * @return      Whether the swap was performed successfully
+     */
+    bool swapRooms(Vec2 pos1, Vec2 pos2, bool forced);
 
     /*
     * Sets the fog of war for the room at the given coordinates.

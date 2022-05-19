@@ -52,6 +52,9 @@
     "ZoomOutTutorial": {
       "file": "textures/tutorial/TutorialZoomOut.png"
     },
+    "blocked": {
+      "file": "textures/environment/BG_Blocked.png"
+    },
     "bg-r1-0": {
       "file": "textures/environment/BG_R1_0.jpg"
     },

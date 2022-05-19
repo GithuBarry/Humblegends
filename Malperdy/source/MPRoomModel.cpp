@@ -111,55 +111,6 @@ void RoomModel::buildGeometry(string roomID) {
         // Store as part of the physics geometry
         _physicsGeometry->push_back(physPoly);
     }
-
-    // DEPRECATED: Old tile geometry, because it made things extremely laggy
-
-    // get the geometry data from the JSON
-    //vector<int> data= roomJSON->get("layers")->get(0)->get("data")->asIntArray();
-
-    //// The tile in the top left corner (indicates geometry to be created)
-    //int tile = 1;
-
-    //// room size
-    //int width = roomJSON->get("width")->asInt();
-    //int height = roomJSON->get("height")->asInt();
-    //PolyFactory pf = PolyFactory();
-    //Poly2 p;
-
-    //// for each tile,
-    //for(int i =  0; i < data.size(); i++){
-
-    //    // get the current tile and its position within the room
-    //    int current_tile = data.at(i);
-    //    int curr_row = (height-1) - (i / width);
-    //    int curr_col = i % width;
-
-    //    // if the tile at this location should be created...
-    //    if(current_tile == tile){
-
-    //        // make a square in its position
-    //        p = pf.makeRect(float(curr_col)/float(width), float(curr_row)/float(height), 1.0/float(width), 1.0/float(height));
-    //        p *= ROOM_SCALE;
-
-    //        // Convert polygon into a scene graph node and add as a child to the room node
-    //        shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
-    //        polyNode->setPolygon(p);
-    //        polyNode->setColor(geometryColor);
-    //        // Ensure that polygons are drawn to their absolute coordinates
-    //        polyNode->setAbsolute(true);
-    //        // Set position of polygon node accordingly
-    //        addChild(polyNode);
-    //        _geometry->push_back(polyNode);
-
-    //        // Generate PolygonObstacle and set the corresponding properties for level geometry
-    //        shared_ptr<physics2::PolygonObstacle> physPoly = physics2::PolygonObstacle::alloc(p, Vec2::ZERO);
-    //        physPoly->setBodyType(b2_staticBody);
-    //        // Store as part of the physics geometry
-    //        _physicsGeometry->push_back(physPoly);
-
-    //    }
-    //}
-
 }
 
 #pragma mark -
@@ -281,8 +232,6 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
 bool RoomModel::update(float dt){
     // BACKGROUND CLEAR TRANSITION
     // When a room is being cleared, transition smoothly between backgrounds
-
-    // TODO: for some reason only some rooms clear?
 
     // Only transition if the room is being cleared, so bgClear isn't nullptr
     if (_isCleared) {

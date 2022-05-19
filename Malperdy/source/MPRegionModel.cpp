@@ -74,7 +74,7 @@ bool RegionModel::isInRegion(int x, int y) {
  * @return		The Sublevel containing the given coordinates, or nullptr if there is none
  */
 shared_ptr<RegionModel::Sublevel> RegionModel::getSublevel(int x, int y) {
-	// Convert coordinates from grid to region space
+	// Transform these GRID coordinates to REGION space
 	x -= _originX;
 	y -= _originY;
 
@@ -95,7 +95,12 @@ shared_ptr<RegionModel::Sublevel> RegionModel::getSublevel(int x, int y) {
  */
 shared_ptr<RoomModel> RegionModel::getRoom(int x, int y) {
 	shared_ptr<Sublevel> sublevel = getSublevel(x, y);
-	return (sublevel == nullptr) ? nullptr : sublevel->getRoom(x - _originX, y - _originY);
+
+	// Transform these GRID coordinates to REGION space
+	x -= _originX;
+	y -= _originY;
+
+	return (sublevel == nullptr) ? nullptr : sublevel->getRoom(x, y);
 }
 
 #pragma mark Setters
@@ -112,7 +117,12 @@ shared_ptr<RoomModel> RegionModel::getRoom(int x, int y) {
  */
 bool RegionModel::setRoom(int x, int y, shared_ptr<RoomModel> room) {
 	shared_ptr<Sublevel> sublevel = getSublevel(x, y);
-	return (sublevel == nullptr) ? false : sublevel->setRoom(x - _originX, y - _originY, room);
+
+	// Transform these GRID coordinates to REGION space
+	x -= _originX;
+	y -= _originY;
+
+	return (sublevel == nullptr) ? false : sublevel->setRoom(x, y, room);
 }
 
 #pragma mark Sublevels
@@ -133,6 +143,37 @@ void RegionModel::addSublevel(int originX, int originY, int width, int height,
 	// Create a new sublevel with the given characteristics and store
 	shared_ptr<Sublevel> sublevel = Sublevel::alloc(originX, originY, width, height, rooms);
 	_sublevels->push_back(sublevel);
+}
+
+/**
+ * Sets the exit room to be the onelocated in the xth column from the
+ * left and the yth row from the bottom in GRID space coordinates.
+ *
+ * @param x     The x-coordinate to place the room at in GRID space
+ * @param y     The y-coordinate to place the room at in GRID space
+ * @param tex	The texture to apply to an exit room
+ * @return      Whether the room was set successfully
+ */
+bool RegionModel::setExitRoom(int x, int y, shared_ptr<Texture> tex) {
+	shared_ptr<RoomModel> exitRoom = getRoom(x, y);
+	if (exitRoom == nullptr) return false;
+
+	// Make SceneNode for the blocked texture
+	shared_ptr<scene2::PolygonNode> blockedNode = scene2::PolygonNode::allocWithTexture(tex);
+	blockedNode->setPolygon(Rect(0, 0, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT));
+	exitRoom->addChild(blockedNode);
+	_blockedNodes->push_back(blockedNode);
+
+	// Generate PolygonObstacle and set the corresponding properties for the blockade
+	shared_ptr<physics2::PolygonObstacle> physPoly =
+		physics2::PolygonObstacle::alloc(blockedNode->getPolygon(), Vec2::ZERO);
+	physPoly->setBodyType(b2_staticBody);
+	// Store as part of the physics geometry of the room
+	exitRoom->addToPhysics(physPoly);
+	// Also store a reference for later deletion
+	_blockades->push_back(physPoly);
+
+	return true;
 }
 
 #pragma mark Checkpoints
