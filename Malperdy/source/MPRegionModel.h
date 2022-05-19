@@ -179,11 +179,10 @@ private:
 	 * 
 	 * Map is in the (key, value) format (checkpoint ID, index in _sublevels).
 	 */
-	shared_ptr<map<int, int>> _checkpointMap;
+	shared_ptr<map<int, int>> _checkpointMap = make_shared<map<int, int>>();
 
-	/** Number of uncleared checkpoints remaining in this region (initialize at 1 so that it
-	doesn't register as no checkpoints remaining before checkpoints have been added) */
-	int _checkpointsToClear = 1;
+	/** Number of uncleared checkpoints remaining in this region */
+	int _checkpointsToClear = 0;
 
 	// BACKGROUNDS
 	/** Static reference to the background textures for all the regions */

@@ -148,11 +148,8 @@ void RegionModel::addSublevel(int originX, int originY, int width, int height,
  * @return		Whether the checkpoint was successfully added to the region
  */
 bool RegionModel::addCheckpoint(int cID, int cX, int cY) {
-	// If this is the first time that this was called, then all sublevels have been added
-	// Thus, initialize the level map to be the same length as there are sublevels
-	if (!_checkpointMap) _checkpointMap = make_shared<map<int, int>>();
-	// If not, then increment number of uncleared checkpoints in the level
-	else _checkpointsToClear++;
+	// Increment number of uncleared checkpoints in the level
+	_checkpointsToClear++;
 
 	// Now check each sublevel to find the one this checkpoint belongs to
 	for (int k = 0; k < _sublevels->size(); k++) {
