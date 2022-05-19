@@ -27,6 +27,7 @@ EnvController::EnvController() {
 /* Updates the environment */
 void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
     Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getScenePosition());
+
     if (!isSwappable(_toSwap, reynard, enemies)) {
         deselectRoom();
     }

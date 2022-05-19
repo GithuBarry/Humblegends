@@ -227,8 +227,8 @@ public:
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsObjects();
 
     Vec2 gridSpaceToRoom(Vec2 coord) {
-        int x = static_cast<int>(coord.x) / DEFAULT_ROOM_WIDTH;
-        int y = static_cast<int>(coord.y) / DEFAULT_ROOM_HEIGHT;
+        int x = (static_cast<int>(coord.x) / DEFAULT_ROOM_WIDTH) - _originX;
+        int y = (static_cast<int>(coord.y) / DEFAULT_ROOM_HEIGHT) - _originY;
         // y-coordinate is in the wrong direction, so flip to be from bottom instead of top
         //y = getHeight() - y - 1;
         return Vec2(x, y);
