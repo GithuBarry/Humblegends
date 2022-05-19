@@ -609,17 +609,6 @@ int fps = 0;
  */
 void GameScene::update(float dt)
 {
-    // Debug frame rate
-    if (frameAcc <= 1.0f) {
-        frameAcc += dt;
-        fps++;
-    }
-    else {
-        CULog("[GameScene.cpp] %d fps", fps);
-        frameAcc = 0;
-        fps = 0;
-    }
-
     _input.update(dt);
     Vec2 inputPos = inputToGameCoords(_input.getPosition());
 

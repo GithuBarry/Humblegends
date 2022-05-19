@@ -158,32 +158,26 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                 json1 = json1->get("image");
                 string im = json1->asString();
 
-
-                string name;
+                // Get the ID/name of the desired room type
+                string roomID;
                 if (im.rfind("solid") != string::npos)
                 {
-                    name = "room_solid";
+                    roomID = "room_solid";
                     isSolid = true;
                 }
                 else
                 {
                     int p = im.rfind("room");
-                    name = im.substr(p);
-                    name = name.substr(0, name.length() - 4);
+                    roomID = im.substr(p);
+                    roomID = roomID.substr(0, roomID.length() - 4);
                 }
-
-                cout << name;
 
                 // Flip the y, so now the coordinates are from the lower left
                 y = height - 1 - y;
 
-                // get the room type
-                // string name = "room_" + object->get("name")->asString();
-                roomJSON = _assets->get<JsonValue>(name);
-
                 // instantiate the room and add it as a child
                 // Make sure to place it at the right place in GRID space
-                sublevel->at(y)->at(x)->init(x + originX, y + originY, roomJSON,
+                sublevel->at(y)->at(x)->init(x + originX, y + originY, roomID,
                     isSolid ? nullptr : RegionModel::getRandBG(region->getType()));
                 if (isSolid) sublevel->at(y)->at(x)->setSolid();
                 addChild(sublevel->at(y)->at(x));
@@ -372,7 +366,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale)
         for (int x = 0; x < _size.x; x++) {
             // If there's no room there, put a solid one
             if (getRoom(x, y) == nullptr)
-                _filler->push_back(RoomModel::alloc(x, y, _assets->get<JsonValue>("room_solid")));
+                _filler->push_back(RoomModel::alloc(x, y, "room_solid"));
         }
     }
 
@@ -380,7 +374,7 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale)
     for (int x = -1; x <= _size.x; x++) {
         for (int y = -1; y <= _size.y; y++) {
             if (x == -1 || x == _size.x) y = _size.y;
-            _edges->push_back(RoomModel::alloc(x, y, _assets->get<JsonValue>("room_solid")));
+            _edges->push_back(RoomModel::alloc(x, y, "room_solid"));
         }
     }
 

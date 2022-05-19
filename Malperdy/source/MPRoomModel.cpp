@@ -63,74 +63,103 @@ float BOUND[] = {				 0,						  0,
 
 /**
  * Creates all the polygons for any geometry for the room type with the given ID.
- * If no room ID is given, then it defaults to a room with only floor.
+ * If no room ID is given, then it defaults to a solid room.
  *
  * This is a private helper function that is only used within the class.
  *
  * @param roomID	ID of room type with the desired geometry
  */
-void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
-
-//    string roomID = "";
-//
-//	// Get data for the room with the corresponding ID
-//	// If no roomID is given, use a default room
-//	shared_ptr<vector<shared_ptr<JsonValue>>> roomData = _roomLoader->getRoomData(roomID == "" ? "leftright" : roomID);
+void RoomModel::buildGeometry(string roomID) {
+    // Get data for the room with the corresponding ID
+	// If no roomID is given, use a default solid room
+	shared_ptr<vector<shared_ptr<JsonValue>>> roomData = _roomLoader->getRoomData(roomID == "" ? "room_solid" : roomID);
 
 	// Initialize vector of physics objects for the room
 	_physicsGeometry = make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
 	// Initialize vector of polygons for the room
 	_geometry = make_shared<vector<shared_ptr<scene2::PolygonNode>>>();
 
-	// Initialize variable to temporarily hold polygon info
-	shared_ptr<Poly2> poly;
-	vector<Vec2> verts;
+    // Initialize variable to temporarily hold polygon info
+    shared_ptr<Poly2> poly;
+    vector<Vec2> verts;
+
+    // For each set of polygon coordinates in the room's geometry
+    for (int k = 0; k < roomData->size(); k++) {
+        // Get polygon
+        poly = make_shared<Poly2>(roomData->at(k));
+        // Scale coordinates to default room size
+        poly->operator*=(ROOM_SCALE);
+        // Ensure that all points are integers
+        verts = poly->getVertices();
+        for (vector<Vec2>::iterator itr = verts.begin(); itr != verts.end(); ++itr) {
+            (*itr).x = floor((*itr).x);
+            (*itr).y = floor((*itr).y);
+        }
+
+        // Convert polygon into a scene graph node and add as a child to the room node
+        shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
+        polyNode->setPolygon(*poly);
+        polyNode->setColor(Color4::BLACK);
+        // Ensure that polygons are drawn to their absolute coordinates
+        polyNode->setAbsolute(true);
+        // Set position of polygon node accordingly
+        addChild(polyNode);
+        _geometry->push_back(polyNode);
+
+        // Generate PolygonObstacle and set the corresponding properties for level geometry
+        shared_ptr<physics2::PolygonObstacle> physPoly = physics2::PolygonObstacle::alloc(*poly, Vec2::ZERO);
+        physPoly->setBodyType(b2_staticBody);
+        // Store as part of the physics geometry
+        _physicsGeometry->push_back(physPoly);
+    }
+
+    // DEPRECATED: Old tile geometry, because it made things extremely laggy
 
     // get the geometry data from the JSON
-    vector<int> data= roomJSON->get("layers")->get(0)->get("data")->asIntArray();
+    //vector<int> data= roomJSON->get("layers")->get(0)->get("data")->asIntArray();
 
-    // The tile in the top left corner (indicates geometry to be created)
-    int tile = 1;
+    //// The tile in the top left corner (indicates geometry to be created)
+    //int tile = 1;
 
-    // room size
-    int width = roomJSON->get("width")->asInt();
-    int height = roomJSON->get("height")->asInt();
-    PolyFactory pf = PolyFactory();
-    Poly2 p;
+    //// room size
+    //int width = roomJSON->get("width")->asInt();
+    //int height = roomJSON->get("height")->asInt();
+    //PolyFactory pf = PolyFactory();
+    //Poly2 p;
 
-    // for each tile,
-    for(int i =  0; i < data.size(); i++){
+    //// for each tile,
+    //for(int i =  0; i < data.size(); i++){
 
-        // get the current tile and its position within the room
-        int current_tile = data.at(i);
-        int curr_row = (height-1) - (i / width);
-        int curr_col = i % width;
+    //    // get the current tile and its position within the room
+    //    int current_tile = data.at(i);
+    //    int curr_row = (height-1) - (i / width);
+    //    int curr_col = i % width;
 
-        // if the tile at this location should be created...
-        if(current_tile == tile){
+    //    // if the tile at this location should be created...
+    //    if(current_tile == tile){
 
-            // make a square in its position
-            p = pf.makeRect(float(curr_col)/float(width), float(curr_row)/float(height), 1.0/float(width), 1.0/float(height));
-            p *= ROOM_SCALE;
+    //        // make a square in its position
+    //        p = pf.makeRect(float(curr_col)/float(width), float(curr_row)/float(height), 1.0/float(width), 1.0/float(height));
+    //        p *= ROOM_SCALE;
 
-            // Convert polygon into a scene graph node and add as a child to the room node
-            shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
-            polyNode->setPolygon(p);
-            polyNode->setColor(geometryColor);
-            // Ensure that polygons are drawn to their absolute coordinates
-            polyNode->setAbsolute(true);
-            // Set position of polygon node accordingly
-            addChild(polyNode);
-            _geometry->push_back(polyNode);
+    //        // Convert polygon into a scene graph node and add as a child to the room node
+    //        shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
+    //        polyNode->setPolygon(p);
+    //        polyNode->setColor(geometryColor);
+    //        // Ensure that polygons are drawn to their absolute coordinates
+    //        polyNode->setAbsolute(true);
+    //        // Set position of polygon node accordingly
+    //        addChild(polyNode);
+    //        _geometry->push_back(polyNode);
 
-            // Generate PolygonObstacle and set the corresponding properties for level geometry
-            shared_ptr<physics2::PolygonObstacle> physPoly = physics2::PolygonObstacle::alloc(p, Vec2::ZERO);
-            physPoly->setBodyType(b2_staticBody);
-            // Store as part of the physics geometry
-            _physicsGeometry->push_back(physPoly);
+    //        // Generate PolygonObstacle and set the corresponding properties for level geometry
+    //        shared_ptr<physics2::PolygonObstacle> physPoly = physics2::PolygonObstacle::alloc(p, Vec2::ZERO);
+    //        physPoly->setBodyType(b2_staticBody);
+    //        // Store as part of the physics geometry
+    //        _physicsGeometry->push_back(physPoly);
 
-        }
-    }
+    //    }
+    //}
 
 }
 
@@ -151,7 +180,7 @@ void RoomModel::buildGeometry(shared_ptr<JsonValue> roomJSON) {
  * @param bg		Background texture to apply to the room (nullptr by default)
  * @return          true if the room is initialized properly, false otherwise.
  */
-bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {
+bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
     // Store room's original location
     _originalLoc = Vec2(x, y);
 
@@ -177,7 +206,7 @@ bool RoomModel::init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_pt
 	}
 
 	// Build geometry for the room type with the given ID
-	buildGeometry(roomJSON);
+	buildGeometry(roomID);
 
 	// Create path node for room boundary
 	Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), sizeof(BOUND) / 2);

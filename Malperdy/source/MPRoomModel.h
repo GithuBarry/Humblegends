@@ -110,13 +110,13 @@ private:
 
     /**
      * Creates all the polygons for any geometry for the room type with the given ID.
-     * If no room ID is given, then it defaults to a room with only floor.
+     * If no room ID is given, then it defaults to a solid room.
      * 
      * This is a private helper function that is only used within the class.
      *
      * @param roomID	ID of room type with the desired geometry
      */
-    void buildGeometry(shared_ptr<JsonValue> roomJSON);
+    void buildGeometry(string roomID);
 
 public:
 #pragma mark Constructors
@@ -143,7 +143,7 @@ public:
      * @param bg		Background texture to apply to the room (nullptr by default)
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg = nullptr);
+    bool init(float x, float y, string roomID, shared_ptr<Texture> bg = nullptr);
 
     bool initTrap(TrapModel::TrapType type);
 
@@ -166,9 +166,9 @@ public:
      * @param bg		Background texture to apply to the room (nullptr by default)
      * @return          A newly-allocated RoomModel
      */
-    static std::shared_ptr<RoomModel> alloc(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg = nullptr) {
+    static std::shared_ptr<RoomModel> alloc(float x, float y, string roomID, shared_ptr<Texture> bg = nullptr) {
         std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init(x, y, roomJSON, bg) ? result : nullptr);
+        return (result->init(x, y, roomID, bg) ? result : nullptr);
     }
 
 #pragma mark Destructors
