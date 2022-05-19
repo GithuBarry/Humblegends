@@ -35,12 +35,13 @@ protected:
     
     // NO CONTROLLER (ALL IN SEPARATE THREAD)
     
-    // VIEW
+    // LOADING VIEW
     /** The animated progress bar */
     std::shared_ptr<cugl::scene2::ProgressBar>  _bar;
     /** The game's name (to be replaced with the team logo) */
     std::shared_ptr<cugl::scene2::SceneNode>  _brand;
 
+    // MAIN MENU VIEW
     /** The game's name */
     std::shared_ptr<cugl::scene2::SceneNode>  _title;
     /** The "load game" button */
@@ -48,15 +49,28 @@ protected:
     /** The "new game" button */
     std::shared_ptr<cugl::scene2::Button>     _new;
     /** The "settings" button */
-    std::shared_ptr<cugl::scene2::Button>     _settings;
+    std::shared_ptr<cugl::scene2::Button>     _settingsButton;
     /** The "credits" button */
     std::shared_ptr<cugl::scene2::Button>     _credits;
+
+    // SETTINGS VIEW
+    /** The "done" button */
+    std::shared_ptr<cugl::scene2::Button>     _done;
 
     // MODEL
     /** The progress displayed on the screen */
     float _progress;
     /** Whether or not the player has pressed play to continue */
     bool  _completed;
+    /**
+    * State of the menu, so update can switch assets properly
+    * 
+    * 0 = loading
+    * 1 = main menu
+    * 2 = settings menu
+    * 3 = credits menu
+    */
+    int _state = 0;
     /**
     * How the user wants to start playing
     * 0: not yet chosen
@@ -159,6 +173,7 @@ private:
     * @param helper     0 if proceeding as normal
     *                   1 to not deactivate settings
     *                   2 to not deactivate credits
+    *                   3 to not deactivate done
     */
     void hideAll(int helper = 0);
 

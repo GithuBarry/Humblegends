@@ -42,15 +42,29 @@
       "minfilter": "linear",
       "magfilter": "linear"
     },
-    "settings": {
+    "settings-button": {
         "file": "textures/settings.png",
         "wrapS": "clamp",
         "wrapT": "clamp",
         "minfilter": "linear",
         "magfilter": "linear"
     },
-    "credits": {
+    "credits_button": {
         "file": "textures/Credits_Icon.png",
+        "wrapS": "clamp",
+        "wrapT": "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
+    },
+    "settings-bg": {
+        "file": "textures/settings-bg.png",
+        "wrapS": "clamp",
+        "wrapT": "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
+    },
+    "done": {
+        "file": "textures/done.png",
         "wrapS": "clamp",
         "wrapT": "clamp",
         "minfilter": "linear",
@@ -85,7 +99,7 @@
 			"type" : "Anchored"
         },
         "data" : {
-			"color": [46,61,90,255]
+			"color": [0,0,0,255]
         },
         "children"  : {
             "background"  : {
@@ -217,7 +231,7 @@
                     "absolute" : true
 		    	}
             },
-            "settings"  : {
+            "settings-button"  : {
 			    "type"   : "Button",
 			    "data"   : {
                     "upnode"   : "up",
@@ -231,7 +245,7 @@
                     "up"       : {
                         "type"   : "Image",
                         "data"   : {
-                            "texture"  : "settings"
+                            "texture"  : "settings-button"
                         }
                     }
                 },
@@ -257,7 +271,7 @@
                     "up"       : {
                         "type"   : "Image",
                         "data"   : {
-                            "texture"  : "credits"
+                            "texture"  : "credits_button"
                         }
                     }
                 },
@@ -266,6 +280,49 @@
                     "y_anchor" : "bottom",
                     "x_offset" : -25,
                     "y_offset" : 25,
+                    "absolute" : true
+		    	}
+            },
+            "settings-bg"  : {
+			    "type"   : "Image",
+			    "format"    : {
+				    "type" : "Anchored"
+			    },
+			    "data"   : {
+                    "visible"  : false,
+                    "texture"  : "title",
+                    "anchor"   : [1,0.5],
+                    "scale"    : 0.45
+			    },
+			    "layout" : {
+                    "x_anchor" : "right",
+                    "y_anchor" : "middle",
+                    "x_offset" : -25,
+                    "y_offset" : 160,
+                    "absolute" : true
+		    	}
+            },
+            "done"  : {
+			    "type"   : "Button",
+			    "data"   : {
+                    "upnode"   : "up",
+                    "visible"  : false,
+                    "anchor"   : [1,0.5],
+                    "scale"    : 0.4
+			    },
+                "children" : {
+                    "up"       : {
+                        "type"   : "Image",
+                        "data"   : {
+                            "texture"  : "done"
+                        }
+                    }
+                },
+			    "layout" : {
+                    "x_anchor" : "right",
+                    "y_anchor" : "middle",
+                    "x_offset" : -25,
+                    "y_offset" : 35,
                     "absolute" : true
 		    	}
             },
