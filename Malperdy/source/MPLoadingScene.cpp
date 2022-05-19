@@ -4,9 +4,9 @@
 //
 //  This file is based on the CS 4152 RocketDemo by Walker White, 2017
 // 
-//  Owner: TBD
-//  Contributors: Barry Wang
-//  Version: 2/21/2022
+//  Owner: Jordan Selin
+//  Contributors: Barry Wang, Jordan Selin
+//  Version: 5/14/2022
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -54,14 +54,28 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     layer->doLayout(); // This rearranges the children to fit the screen
     
     _bar = std::dynamic_pointer_cast<scene2::ProgressBar>(assets->get<scene2::SceneNode>("load_bar"));
-    _brand = assets->get<scene2::SceneNode>("load_name");
-    _button = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_play"));
-    _button->addListener([=](const std::string& name, bool down) {
+    _brand = assets->get<scene2::SceneNode>("load_logo");
+    _title = assets->get<scene2::SceneNode>("load_title");
+    _new = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new"));
+    _new->addListener([=](const std::string& name, bool down) {
+        this->_mode = 1;
         this->_active = down;
     });
-    
-    Application::get()->setClearColor(Color4(192,192,192,255));
+    if (saveFileExists()) {
+        _load = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_load-withSave"));
+        _load->addListener([=](const std::string& name, bool down) {
+            this->_mode = 2;
+            this->_active = down;
+        });
+    }else {
+        _load = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_load-noSave"));
+    }
+    Application::get()->setClearColor(Color4::BLACK);
     addChild(layer);
+
+    // Play title screen music
+    AudioController::playGivenMusic(_assets->get<Sound>("titlescreen_music"));
+
     return true;
 }
 
@@ -71,9 +85,12 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
 void LoadingScene::dispose() {
     // Deactivate the button (platform dependent)
     if (isPending()) {
-        _button->deactivate();
+        _new->deactivate();
+        _load->deactivate();
     }
-    _button = nullptr;
+    _new = nullptr;
+    _load = nullptr;
+    _title = nullptr;
     _brand = nullptr;
     _bar = nullptr;
     _assets = nullptr;
@@ -97,19 +114,33 @@ void LoadingScene::update(float progress) {
             _progress = 1.0f;
             _bar->setVisible(false);
             _brand->setVisible(false);
-            _button->setVisible(true);
-            _button->activate();
+            _new->setVisible(true);
+            _new->activate();
+            _title->setVisible(true);
+            _load->setVisible(true);
+            if (saveFileExists()) _load->activate();
         }
         _bar->setProgress(_progress);
     }
 }
 
 /**
- * Returns true if loading is complete, but the player has not pressed play
+ * Returns true if loading is complete, but the player has not started the game
  *
- * @return true if loading is complete, but the player has not pressed play
+ * @return true if loading is complete, but the player has not started the game
  */
 bool LoadingScene::isPending( ) const {
-    return _button != nullptr && _button->isVisible();
+    return _new != nullptr && _new->isVisible();
 }
 
+/*
+* Returns whether there is a save file to load
+*
+* @return whether there is a save file to load
+*/
+bool LoadingScene::saveFileExists() {
+    vector<std::string> file_path_list = vector<std::string>(2);
+    file_path_list[0] = Application::get()->getSaveDirectory();
+    file_path_list[1] = "state.json";
+    return filetool::file_exists(cugl::filetool::join_path(file_path_list));
+}

@@ -29,11 +29,26 @@ private:
     /* The row, column of the room to be swapped */
     Vec2 _toSwap;
 
-    /* Reynard's current room */
-    Vec2 _reyRoom;
+    /* Reynard's room the previous update */
+    Vec2 _reyPrev;
+
+    /* Enemies' rooms the previous update */
+    vector<Vec2> _enemyPrevs;
+
+    /* Whether the game was zoomed out the previous update */
+    bool _prevZoomOut;
 
     /* History of room swaps as a list of pairs of rooms that have been swapped */
     vector<vector<Vec2>> _swapHistory;
+public:
+    void setSwapHistory(const vector<vector<Vec2>> &swapHistory);
+
+private:
+
+    /**
+     * how many pairs of rooms finished swapping
+     */
+     int swapIndex = 0;
 public:
     const vector<vector<Vec2>> &getSwapHistory() const;
 
@@ -62,7 +77,7 @@ public:
     * @param reynard        Reynard's controller
     * @param enemies        the enemies' controllers
     */
-    void update(Vec2 dragCoords, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+    void update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
 
     /*
     * Selects the room at the given location
@@ -125,13 +140,13 @@ public:
             vector<Vec2> roomPair = _swapHistory[i];
             Vec2 room1 =roomPair[0];
             Vec2 room2 =roomPair[1];
-            _grid->swapRooms(room1, room2);
+            _grid->swapRooms(room1, room2,true);
         }
         _swapHistory = vector<vector<Vec2>>();
     }
     
-    void swapRoomOnGrid (Vec2 room1,Vec2  room2){
-        _grid->swapRooms(room1, room2);
+    void swapRoomOnGrid (Vec2 room1,Vec2  room2, bool forced){
+        _grid->swapRooms(room1, room2, forced);
     }
 
     virtual ~EnvController();
@@ -178,6 +193,15 @@ private:
     * @param room   the row and column of the central room
     */
     void defogSurrounding(Vec2 room);
+
+    /*
+    * Shows or hides the lock icons on locked rooms
+    * To be called when zooming out or in
+    *
+    * @param isVisible  true if the locks should be visible
+    */
+    void setLockVisibility(bool isVisible, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+
 
 #pragma mark Appearance Setters
 

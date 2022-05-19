@@ -43,6 +43,7 @@
 /** Debug color for the sensor */
 #define DEBUG_COLOR     Color4::RED
 
+#define MAX_VSPEED -8
 
 using namespace cugl;
 
@@ -72,6 +73,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Anima
     // Have Reynard be running by default
     _moveState = MovementState::RUNNING;
     // Set his health to full
+    _maxHearts = REYNARD_MAX_HEARTS;
     _hearts = _maxHearts;
 
     return true;
@@ -87,4 +89,8 @@ bool ReynardModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Anima
 void ReynardModel::update(float dt) {
     // Call parent update function
     CharacterModel::update(dt);
+    if (this->getVY() <= MAX_VSPEED)
+    {
+        this->setVY(MAX_VSPEED);
+    }
 }

@@ -7,7 +7,7 @@
 //
 //  Owner: Barry Wang
 //  Contributors: Barry Wang, Jordan Selin
-//  Version: 4/16/22
+//  Version: 5/06/22
 //
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -26,6 +26,15 @@
 #include "MPRoomModel.h"
 #include "MPGridModel.h"
 #include "MPEnvController.h"
+#include "MPAudioController.h"
+#include "MPTutorial.hpp"
+
+/** Reynard's start location */
+#define REYNARD_START Vec2(2, 16)
+
+/** Room dimensions in tiles */
+#define ROOM_WIDTH 12
+#define ROOM_HEIGHT 8
 
 /**
  * This class is the primary gameplay constroller for the demo.
@@ -35,7 +44,9 @@
  * so that we can have a separate mode for the loading screen.
  */
 class GameScene : public cugl::Scene2 {
-
+private:
+    /** Whether or not to load from a save file on start */
+    bool _loadFromSave = false;
 
 protected:
     /** The asset manager for this game mode. */
@@ -45,25 +56,32 @@ protected:
     /** Controller for abstracting out input across multiple platforms */
     InputController _input;
     GameStateController _gamestate;
-
+    Vec2 lastFramePos = Vec2();
 
     // VIEW
     /** Reference to the physics root of the scene graph */
     std::shared_ptr<cugl::scene2::ScrollPane> _worldnode;
 
-    /** Reference to the UI root of the scene graph */
-    std::shared_ptr<cugl::scene2::SceneNode> _UINode;
+    /** Reference to the debug root of the scene graph */
+    std::shared_ptr<cugl::scene2::ScrollPane> _debugnode;
 
+    /** Reference to the win root of the scene graph */
+    std::shared_ptr<cugl::scene2::Label> _winNode;
+
+    /** Reference to the health bar scene node */
+    std::shared_ptr<cugl::scene2::PolygonNode> _health;
+
+    /** Reference to the pause button */
+    std::shared_ptr<cugl::scene2::PolygonNode> _pause;
+
+    /** Reference to the pause button scene node */
+    std::shared_ptr<cugl::scene2::PolygonNode> _pauseButton;
+
+    // PHYSICS
     /** The Box2D world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
     float _scale;
-
-    // Physics objects for the game
-    /** Reference to the goalDoor (for collision detection) */
-    //std::shared_ptr<cugl::physics2::BoxObstacle> _goalDoor;
-    /** Reference to the rocket/player avatar */
-    //std::shared_ptr<RocketModel> _rocket;
 
     /** Reference to the Reynard controller */
     std::shared_ptr<ReynardController> _reynardController;
@@ -75,6 +93,10 @@ protected:
     /** References to all the enemy controllers */
     std::shared_ptr<vector<std::shared_ptr<EnemyController>>> _enemies;
 
+    /** References to all the tutorials */
+    std::shared_ptr<vector<std::shared_ptr<Tutorial>>> _tutorials;
+
+
     /** Whether we have completed this "game" */
     bool _complete;
     /** Whether or not debug mode is active */
@@ -83,7 +105,41 @@ protected:
     /** checkpoint for swap history length*/
     int _checkpointSwapLen = 0;
     vector<Vec2> _checkpointEnemyPos;
-    Vec2 _checkpointReynardPos;
+
+    /** A store position of reynard before reset*/
+    Vec2 _checkpointReynardPos = REYNARD_START;
+
+    /* Offset of scrolling */
+    Vec2 scrollingOffset = Vec2();
+
+    /** A store position of room swapping history */
+    vector<vector<Vec2>> _swapHistory;
+
+    /**Workaround for wall jump corner stuck*/
+    int corner_num_frames_workaround = 0;
+
+    /*
+     Remaining number of frames to color reynard red
+     */
+    int keepRedFrames = 0;
+
+public:
+
+    /*
+     Flag past from owner of this class to indicate whether to start a new game.
+     */
+    int _mode = 0;
+
+    void setMode(int mode){
+        _mode = mode;
+    }
+
+protected:
+
+    /**
+     * Last time reynard hurt
+     */
+     std::chrono::time_point<std::chrono::system_clock> _lastHurt = std::chrono::system_clock::now();
 
 
 
@@ -107,15 +163,136 @@ protected:
      */
     void populateChars();
 
+    /**
+     * Place all the tutorials at their correct locations in Region 1.
+     */
+    void populateTutorials();
 
     /**
-     Revert the game state to the last state
+     * Helper function that creates, transforms, and places the node for an environment image
+     * 
+     * @param x     x-coordinate in ROOM coordinates
+     * @param y     y-coordinate in ROOM coordinates
      */
-    void revert(){
-        //_envController->revertHistory();
-        _reynardController->revert();
+    void placeEnvImage(float x, float y, float scale, string TextureName);
+
+public:
+    /**
+     * Save all the states of the game to a file
+     */
+    void rewriteSaveFile(){
+        //Init a JSON file
+        vector<std::string> file_path_list =vector<std::string>(2);
+        file_path_list[0] = Application::get()->getSaveDirectory();
+        file_path_list[1] = "state.json";
+        if (filetool::file_exists(cugl::filetool::join_path(file_path_list))){
+            cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
+        }
+        shared_ptr<JsonWriter> jw = JsonWriter::alloc(cugl::filetool::join_path(file_path_list));
+        if (jw == nullptr){
+            CULog("GameScene.h: Saving failed");
+            return;
+        }
+
+        /**
+         * JSON structure:
+         * "state.json"
+         *  - "EnemyPos" :      [enemy1Pos's x, enemy1Pos's y, ...]
+         *  - "ReynardPos" :    [reynardPos's x, reynardPos's y]
+         *  - "RoomSwap" :     [Swap1-Room1-x, Swap1-Room1-y, Swap1-Room2-x, Swap1-Room2-y, Swap2....]
+         */
+        //Init json objects
+        std::shared_ptr<JsonValue> jsonRoot = JsonValue::alloc(JsonValue::Type::ObjectType);
+        jsonRoot->initObject();
+
+        // JSON - Enemy
+        std::shared_ptr<JsonValue> jsonEnemyPos = JsonValue::alloc(JsonValue::Type::ArrayType);
+        jsonEnemyPos->initArray();
+        for (auto thisEnemy: *_enemies){
+            jsonEnemyPos->appendValue(thisEnemy->getCharacter()->getPosition().x);
+            jsonEnemyPos->appendValue(thisEnemy->getCharacter()->getPosition().y);
+        }
+        jsonRoot->appendChild("EnemyPos",jsonEnemyPos);
+
+        // JSON - Reynard
+        std::shared_ptr<JsonValue> jsonReynardPos = JsonValue::alloc(JsonValue::Type::ArrayType);
+        jsonReynardPos->initArray();
+        jsonReynardPos->appendValue(_reynardController->getCharacter()->getPosition().x);
+        jsonReynardPos->appendValue(_reynardController->getCharacter()->getPosition().y);
+        jsonRoot->appendChild("ReynardPos",jsonReynardPos);
+
+        // JSON - Room Swapping
+        std::shared_ptr<JsonValue> jsonRoomSwap = JsonValue::alloc(JsonValue::Type::ArrayType);
+        jsonRoomSwap->initArray();
+        int hisotoryLen = static_cast<int>(_envController->getSwapHistory().size());
+        for(int i = 0; i < hisotoryLen; i++){
+            jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][0].x);
+            jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][0].y);
+            jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][1].x);
+            jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][1].y);
+        }
+        jsonRoot->appendChild("RoomSwap",jsonRoomSwap);
+
+        // Save JSON file
+        jw->writeJson(jsonRoot);
+        jw->flush();
+        jw->close();
     }
 
+    /**
+    * Save all the states of the game to a file
+    */
+    bool readSaveFile(){
+        //Init a JSON
+        vector<std::string> file_path_list =vector<std::string>(2);
+        file_path_list[0] = Application::get()->getSaveDirectory();
+        file_path_list[1] = "state.json";
+        if (!filetool::file_exists(cugl::filetool::join_path(file_path_list))){
+            return false;
+        }
+        shared_ptr<JsonReader> jr = JsonReader::alloc(cugl::filetool::join_path(file_path_list));
+        jr->reset();
+        if (!jr->ready()){
+            cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
+            return false;
+        }
+        std::shared_ptr<JsonValue> jsonRoot = jr->readJson();
+
+        //Read files
+        std::vector<float> enemyPos1D = jsonRoot->get("EnemyPos")->asFloatArray();
+        std::vector<float> reynardPos1D = jsonRoot->get("ReynardPos")->asFloatArray();
+        std::vector<float> swapHistory1D = jsonRoot->get("RoomSwap")->asFloatArray();
+        if (enemyPos1D.size() % 2 != 0 || reynardPos1D.size() != 2 || swapHistory1D.size() % 4 != 0){
+            cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
+            return false;
+        }
+
+        // JSON - Enemy
+        int index = 0;
+        _checkpointEnemyPos = vector<Vec2>();
+        for (int i  =0; i < enemyPos1D.size(); i+=2){
+            _checkpointEnemyPos.push_back(Vec2(enemyPos1D[index],enemyPos1D[index+1]));
+        }
+
+        // JSON - Reynard
+        _checkpointReynardPos = Vec2(reynardPos1D[0],reynardPos1D[1]);
+
+        // JSON - Room Swapping
+        std::shared_ptr<JsonValue> jsonRoomSwap = JsonValue::alloc(JsonValue::Type::ObjectType);
+        jsonRoomSwap->initArray();
+        _checkpointSwapLen = static_cast<int>(swapHistory1D.size() / 4);
+        int hisotoryLen = static_cast<int>(swapHistory1D.size());
+        _swapHistory = vector<vector<Vec2>>();
+        for(int i = 0; i < hisotoryLen; i+=4){
+            vector<Vec2> thisSwap = vector<Vec2>();
+            thisSwap.push_back(Vec2(swapHistory1D[i],swapHistory1D[i+1]));
+            thisSwap.push_back(Vec2(swapHistory1D[i+2],swapHistory1D[i+3]));
+            _swapHistory.push_back(thisSwap);
+        }
+
+        return true;
+    }
+protected:
     /**
      * Adds the physics object to the physics world and loosely couples it to the scene graph
      *
@@ -141,11 +318,6 @@ protected:
 public:
 #pragma mark -
 #pragma mark Constructors
-    /** Reference to the debug root of the scene graph */
-    std::shared_ptr<cugl::scene2::ScrollPane> _debugnode;
-
-    /** Reference to the debug root of the scene graph */
-    std::shared_ptr<cugl::scene2::Label> _winNode;
 
     /**
      * Creates a new game world with the default values.
@@ -280,6 +452,7 @@ public:
     void setComplete(bool value) {
         _complete = value;
         _winNode->setVisible(value);
+        //_health->setVisible(!value);
     }
 
 
@@ -396,7 +569,19 @@ public:
      * @return  trap type if one body is a trap
                 or UNTYPED if neither body is a trap
      */
-    TrapModel::TrapType isTrapCollision(b2Contact* contact);
+    shared_ptr<TrapModel> isTrapCollision(b2Contact* contact);
+
+    /**
+     * Detects if a collision includes a tutorial object, and if so returns the tutorial's pointer
+     *
+     * @param  contact  The two bodies that collided
+     *
+     * @return  trap type if one body is a trap
+                or UNTYPED if neither body is a trap
+     */
+    shared_ptr<Tutorial> isTutorialCollision(b2Contact* contact);
+
+
 
     /**
      * Helper function that checks if a contact event includes Reynard
@@ -438,7 +623,7 @@ public:
      * @param body  The body of the character to get the controller for
      * @return      Pointer to the enemy controller if it's in the collision, or nullptr otherwise
      */
-    shared_ptr<EnemyController> getEnemyControllerInCollision(b2Body* body);
+    shared_ptr<EnemyController> getEnemyControllerInCollision(b2Contact* contact);
 
     /**
      * Helper function that checks if a contact event is a Reynard <> Wall contact
@@ -535,6 +720,9 @@ public:
     bool isThisAEnemyGroundContact(b2Contact *contact, shared_ptr<EnemyController> enemy);
 
     void resolveEnemyGroundOnContact(shared_ptr<EnemyController> enemy);
+
+    void dealReynardDamage();
+
 
 #pragma mark Helper Functions
     /* Converts input coordinates to coordinates in the game world */

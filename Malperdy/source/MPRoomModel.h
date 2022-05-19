@@ -26,7 +26,7 @@
 //
 //  Owner: Kristina Gu
 //  Contributors: Kristina Gu, Jordan Selin
-//  Version: 4/16/22
+//  Version: 5/12/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -44,6 +44,7 @@
 #include "MPTrapModel.hpp"
 #include "MPSpikeTrap.hpp"
 #include "MPTrapDoorModel.hpp"
+#include "MPSapTrap.hpp"
 
 using namespace cugl;
 
@@ -53,20 +54,39 @@ using namespace cugl;
 #define DEFAULT_ROOM_HEIGHT 480
 /** The ID of the default room type */
 #define DEFAULT_ROOM_ID "leftrightupdown"
+/** The speed at which the rooms should swap, from 0.5001-0.9999, smaller is slower */
+#define swapSpeed 0.2f
+/** The rate at which a room should clear (background changes) */
+#define CLEAR_RATE 0.08f
 
 class RoomModel : public cugl::scene2::SceneNode {
+public:
+    /** Pointer to the node that displays the room background */
+    shared_ptr<scene2::PolygonNode> _bgNode;
+
 private:
+    /** The ordered node to ensure backgrounds are layered properly */
+    shared_ptr<scene2::OrderedNode> _bgOrderNode;
+    /** Pointer to the node that displays the cleared room background.
+    Nullptr if the room has not been cleared yet. */
+    shared_ptr<scene2::PolygonNode> _bgClearedNode = nullptr;
+    /** Whether the room has been cleared yet */
+    bool _isCleared = false;
+
     // ROOM LOADING
     /** Loads in room formats from a JSON and is used to look up geometries for rooms */
     static shared_ptr<RoomLoader> _roomLoader;
+
+    /** This room's original location */
+    Vec2 _originalLoc;
 
     // STATUS
     /** Whether this room is currently locked/unable to be swapped. False by default */
     bool locked = false;
     /* Whether this room's contents are currently hidden. False by default */
     bool fogged = true;
-    
-
+    /** Value to track original background opacity, from 0-1, starting at 1 */
+    float bgOpacity = 1.0f;
 
     // GEOMETRY
     /** Vector of polygon nodes forming the room's geometry */
@@ -75,8 +95,13 @@ private:
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> _physicsGeometry;
     /** Vector constant representing by how much the room geometry needs to be scaled */
     static const Vec2 ROOM_SCALE;
-    
+
     shared_ptr<TrapModel> _trap  = nullptr;
+
+    /** Reference to the scene node for the lock */
+    std::shared_ptr<cugl::scene2::PolygonNode> _lockIcon;
+
+    Vec2 destination;
 
     /**
      * Creates all the polygons for any geometry for the room type with the given ID.
@@ -94,79 +119,6 @@ public:
      * Creates a new, empty room.
      */
     RoomModel() {};
-
-//    /**
-//     * Initializes the default room at the origin, which is the lower left
-//     * corner of the grid.
-//     *
-//     * Rooms are automatically initialized to have the bounds given by
-//     * the default room width/height.
-//     *
-//     * @return  true if the room is initialized properly, false otherwise.
-//     */
-//    bool init() { return init(0, 0, ""); }
-
-//    /**
-//     * Initializes the default room at the given location in grid space,
-//     * where the location is given as a row and column to place the room
-//     * at. These coordinates will be scaled by the room width and height to
-//     * be placed in world space.
-//     *
-//     * Rooms are automatically initialized to have the bounds given by
-//     * the default room width/height.
-//     *
-//     * @param pos   The room's location in grid space in the form (column, row)
-//     * @return      true if the room is initialized properly, false otherwise.
-//     */
-//    bool init(const Vec2 pos) { return init(pos.x, pos.y, ""); }
-
-//    /**
-//     * Initializes the default room at the given location in grid space,
-//     * where the location is given as a row and column to place the room
-//     * at. These coordinates will be scaled by the room width and height to
-//     * be placed in world space.
-//     *
-//     * Rooms are automatically initialized to have the bounds given by
-//     * the default room width/height.
-//     *
-//     * @param x The column of the room in grid space
-//     * @param y The row of the room in grid space
-//     * @return  true if the room is initialized properly, false otherwise.
-//     */
-//    bool init(float x, float y) { return init(x, y, ""); }
-
-//    /**
-//     * Initializes the room with the type of the given ID at the origin, which
-//     * is the lower left corner of the grid.
-//     *
-//     * The geometry corresponding to the room type given by the room ID is
-//     * taken from the JSON file of rooms.
-//     *
-//     * Rooms are automatically initialized to have the bounds given by
-//     * the default room width/height.
-//     *
-//     * @param roomID    ID of room type with the desired geometry
-//     * @return          true if the room is initialized properly, false otherwise.
-//     */
-//    bool init(string roomID) { return init(0, 0, roomID); }
-
-//    /**
-//     * Initializes the room with the type of the given ID at the given
-//     * location in grid space, where the location is given as a row and
-//     * column to place the room at. These coordinates will be scaled by
-//     * the room width and height to be placed in world space.
-//     *
-//     * The geometry corresponding to the room type given by the room ID is
-//     * taken from the JSON file of rooms.
-//     *
-//     * Rooms are automatically initialized to have the bounds given by
-//     * the default room width/height.
-//     *
-//     * @param pos       The room's location in grid space in the form (column, row)
-//     * @param roomID    ID of room type with the desired geometry
-//     * @return          true if the room is initialized properly, false otherwise.
-//     */
-//    bool init(Vec2 pos, string roomID) { return init(pos.x, pos.y, roomID); }
 
     /**
      * Initializes the room with the type of the given ID at the given
@@ -187,99 +139,10 @@ public:
      * @return          true if the room is initialized properly, false otherwise.
      */
     bool init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg = nullptr);
-    
-    /** */
+
     bool initTrap(TrapModel::TrapType type);
 
 #pragma mark Static Constructors
-//    /**
-//     * Returns a default room at the origin, which is the lower left
-//     * corner of the grid.
-//     *
-//     * Rooms are automatically initialized to have the bounds given by
-//     * the default room width/height.
-//     *
-//     * @return  A newly-allocated RoomModel at the origin.
-//     */
-//    static std::shared_ptr<RoomModel> alloc() {
-//        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-//        return (result->init() ? result : nullptr);
-//    }
-
-//    /**
-//     * Returns a newly-allocated default room at the given location in
-//     * grid space, where the location is given as a row and column to place
-//     * the room at. These coordinates will be scaled by the room width and
-//     * height to be placed in world space.
-//     *
-//     * Rooms are automatically initialized to have the bounds given by
-//     * the default room width/height.
-//     *
-//     * @param pos   The room's location in grid space in the form (column, row)
-//     * @return      A newly-allocated RoomModel
-//     */
-//    static std::shared_ptr<RoomModel> alloc(const Vec2 pos) {
-//        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-//        return (result->init(pos) ? result : nullptr);
-//    }
-
-//    /**
-//     * Returns a newly-allocated default room at the given location in
-//     * grid space, where the location is given as a row and column to place
-//     * the room at. These coordinates will be scaled by the room width and
-//     * height to be placed in world space.
-//     *
-//     * Rooms are automatically initialized to have the bounds given by
-//     * the default room width/height.
-//     *
-//     * @param x The column of the room in grid space
-//     * @param y The row of the room in grid space
-//     * @return  A newly-allocated RoomModel
-//     */
-//    static std::shared_ptr<RoomModel> alloc(float x, float y) {
-//        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-//        return (result->init(x, y) ? result : nullptr);
-//    }
-
-//    /**
-//     * Returns a newly-allocated room with the type of the given ID at the
-//     * origin, which is the lower left corner of the grid.
-//     *
-//     * The geometry corresponding to the room type given by the room ID is
-//     * taken from the JSON file of rooms.
-//     *
-//     * Rooms are automatically initialized to have the bounds given by
-//     * the default room width/height.
-//     *
-//     * @param roomID    ID of room type with the desired geometry
-//     * @return          A newly-allocated RoomModel
-//     */
-//    static std::shared_ptr<RoomModel> alloc(string roomID) {
-//        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-//        return (result->init(roomID) ? result : nullptr);
-//    }
-
-//    /**
-//     * Returns a newly-allocated room with the type of the given ID at
-//     * the given location in grid space, where the location is given as
-//     * a row and column to place the room at. These coordinates will be
-//     * scaled by the room width and height to be placed in world space.
-//     *
-//     * The geometry corresponding to the room type given by the room ID is
-//     * taken from the JSON file of rooms.
-//     *
-//     * Rooms are automatically initialized to have the bounds given by
-//     * the default room width/height.
-//     *
-//     * @param pos       The room's location in grid space in the form (column, row)
-//     * @param roomID    ID of room type with the desired geometry
-//     * @return          A newly-allocated RoomModel
-//     */
-//    static std::shared_ptr<RoomModel> alloc(Vec2 pos, string roomID) {
-//        std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-//        return (result->init(pos, roomID) ? result : nullptr);
-//    }
-
     /**
      * Returns a newly-allocated room with the type of the given ID at
      * the given location in grid space, where the location is given as
@@ -319,9 +182,9 @@ public:
 
 #pragma mark -
 #pragma mark Getters
-    
+
     bool permlocked = false;
-    
+
     /**
      * Returns a shared pointer to the vector of physics objects that compose
      * the room geometry.
@@ -353,7 +216,7 @@ public:
      * @return  true if this room has fog of war
      */
     bool isFogged() { return fogged; }
-    
+
     shared_ptr<TrapModel> getTrap(){
         return _trap;
     }
@@ -370,6 +233,14 @@ public:
     void unlock() { locked = false; }
 
     /**
+     * Sets this room to be cleared, meaning the background will gradually
+     * change to the given background.
+     * 
+     * @param bg    The "cleared background" texture to change this room to.
+     */
+    void clear(shared_ptr<Texture> bg);
+
+    /**
      * Sets whether this room is fogged (contents hidden) or not.
      */
     void setFogged(bool isFogged) { fogged = isFogged; }
@@ -382,7 +253,13 @@ public:
      * 
      * @param value The room's desired location in grid space in the form (column, row)
      */
-    void setPosition(const Vec2 value) { this->setPosition(value.x, value.y); }
+    void setPosition(const Vec2 value, bool animated) {
+        if (!animated)
+            this->setPosition(value.x, value.y);
+        else{
+            destination = value;
+        }
+    }
 
     /**
      * Sets this room to be at the given location in grid space, which is
@@ -393,6 +270,24 @@ public:
      * @param y The row of the room in grid space
      */
     void setPosition(float x, float y) { this->SceneNode::setPosition(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT); }
+
+    /**
+    * Sets whether the room's lock icon is visible
+    * 
+    * @param isVisible  true if the lock icon should be visible
+    */
+    void setLockIcon(bool isVisible) { _lockIcon->setVisible(isVisible); }
+
+#pragma mark Updates
+    /**
+     * Change position gradually
+     * @return whether it finished and does not need any more updates
+     */
+    bool updateSwap();
+
+    
+    bool update(float dt);
+
 };
 
 #endif /* MPRoomModel_h */

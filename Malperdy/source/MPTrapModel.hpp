@@ -4,7 +4,7 @@
 //
 //  Owner: Spencer Hurst
 //  Contributors: Evan Azari, Abu Qader, Jordan Selin
-//  Version: 4/19/22
+//  Version: 5/6/22
 // 
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
@@ -14,9 +14,8 @@
 
 #include <stdio.h>
 #include <cugl/cugl.h>
-
-#pragma mark -
-#pragma mark Size Constants
+#include <cugl/physics2/CUCapsuleObstacle.h>
+#include <map>
 
 using namespace cugl;
 
@@ -28,6 +27,7 @@ public:
     
     /** The potential activation states of the trap. */
     enum class TrapState : int{
+        SPAWN,
         ACTIVATED,
         DEACTIVATED
     };
@@ -38,8 +38,10 @@ public:
         TRAPDOOR,
         SAP,
         BRAZIER,
-        CHECKPOINT
+        CHECKPOINT,
+        GOAL
     };
+    
 
 protected:
 #pragma mark -
@@ -47,7 +49,12 @@ protected:
 
     /** The texture for the TRAP   */
     const string TRAP_TEXTURE;
+    
+    /** The amount of time in between each frame update */
+    const float FRAME_TIME = 0.03;
 
+
+    
     
 #pragma mark Attributes
 
@@ -58,13 +65,20 @@ protected:
     TrapType _type;
 
     /** The current activation state of the trap. */
-    TrapState _trapState;
+    TrapState _trapState = TrapState::SPAWN;
         
     /** The obstacle representing the physical entity for the trap */
     shared_ptr<cugl::physics2::PolygonObstacle> _obstacle;
     
     /** The polynode (alternative for) representing the physical entity for the trap */
-    shared_ptr<cugl::scene2::PolygonNode> _polyNode;
+    shared_ptr<cugl::scene2::SpriteNode> _sceneNode;
+    
+    // ANIMATION RELATED ATTRIBUTES
+    /** The amount of time since last frame update */
+    float _elapsed = 0;
+
+    /** represents the actual frame of animation, invariant to texture flips */
+    int _currFrame = 0;
 
     
 
@@ -145,14 +159,13 @@ public:
      * @return      Whether the change happened successfully
      */
     Poly2 getImageBody(){
-        return _polyNode->getPolygon();
+        return _sceneNode->getPolygon();
         
     }
     
     shared_ptr<scene2::PolygonNode> getPolyNode(){
-        return _polyNode;
+        return _sceneNode;
     }
-
     
     // Trap State Section
     /**
@@ -170,15 +183,17 @@ public:
      * @param state The new state the trap should be in
      * @return      Whether the change happened successfully
      */
-    virtual void setTrapState(TrapState newState){
-        _trapState = newState;
-    }
+    virtual void setTrapState(TrapState newState);
+    
     
     TrapType getType() {
         return _type;
     }
     
-        
+#pragma mark -
+#pragma mark ANIMATION Methods
+
+    
     
 #pragma mark -
 #pragma mark Physics Methods
@@ -202,14 +217,14 @@ public:
      */
     virtual void releaseFixtures();
 
-//    /**
-//     * Updates the object's physics state (NOT GAME LOGIC).
-//     *
-//     * We use this method to reset cooldowns.
-//     *
-//     * @param delta Number of seconds since last animation frame
-//     */
-//    virtual void update(float dt);
+    /**
+     * Updates the object's physics state (NOT GAME LOGIC).
+     *
+     * We use this method to reset cooldowns.
+     *
+     * @param delta Number of seconds since last animation frame
+     */
+    void update(float dt);
 
     
 #pragma mark Destructors
@@ -228,9 +243,9 @@ public:
         removeAllChildren();
         _obstacle = nullptr;
     };
-
-
 };
+
+
 
 
 #endif /* MPTrapModel_hpp */

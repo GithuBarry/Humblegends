@@ -7,7 +7,7 @@
 //  Owner: Jordan Selin
 //  Contributors: Jordan Selin, Barry Wang
 //  Copyright (c) 2022 Humblegends. All rights reserved.
-//  Version: 4/23/22
+//  Version: 5/12/22
 //
 
 #include "MPEnvController.h"
@@ -20,27 +20,60 @@
 EnvController::EnvController() {
     _grid = std::make_shared<GridModel>();
     _toSwap = Vec2(-1, -1);
-    _reyRoom = Vec2(-1, -1);
+    _reyPrev = Vec2(-1, -1);
+    _prevZoomOut = false;
 }
 
 /* Updates the environment */
-void EnvController::update(Vec2 dragCoords, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
     Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getScenePosition());
-    // Defog rooms
-    if (!_reyRoom.equals(newReyRoom)) {
-        _reyRoom = newReyRoom;
-        defogSurrounding(_reyRoom);
-    }
     if (!isSwappable(_toSwap, reynard, enemies)) {
         deselectRoom();
     }
     // Apply fog to external objects
+    vector<Vec2> newEnemyPrevs = vector<Vec2>();
     for (auto i = enemies->begin(); i != enemies->end(); i++) {
-        Vec2 pos = (*i)->getScenePosition();
-        bool isFogged = _grid->isRoomFogged(_grid->worldSpaceToRoom(pos));
+        Vec2 enemyRoom = _grid->worldSpaceToRoom((*i)->getScenePosition());
+        bool isFogged = _grid->isRoomFogged(enemyRoom);
         if (isFogged) (*i)->getSceneNode()->setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
         else (*i)->getSceneNode()->setColor(Color4::WHITE);
+
+        newEnemyPrevs.push_back(enemyRoom);
     }
+    if (swapIndex <_swapHistory.size()){
+        for (int i = swapIndex; i < _swapHistory.size(); ++i) {
+            bool a = _grid->getRoom(_swapHistory[i][0])->updateSwap();
+            bool b = _grid->getRoom(_swapHistory[i][1])->updateSwap();
+            if (a && b){
+                swapIndex = i+1;
+            }
+        }
+    }
+    // Update lock icons
+    if (zoomedOut && !_prevZoomOut) setLockVisibility(true, reynard, enemies);
+    else if (!zoomedOut && _prevZoomOut) setLockVisibility(false, reynard, enemies);
+    else if (zoomedOut && _prevZoomOut) {
+        // Check if prevs should still be locked
+        bool isVisible = !isSwappable(_reyPrev, reynard, enemies);
+        _grid->getRoom(_reyPrev)->setLockIcon(isVisible);
+        for (auto i = _enemyPrevs.begin(); i != _enemyPrevs.end(); i++) {
+            isVisible = !isSwappable((*i), reynard, enemies);
+            _grid->getRoom(*i)->setLockIcon(isVisible);
+        }
+        // Lock currents
+        _grid->getRoom(newReyRoom)->setLockIcon(true);
+        for (auto i = newEnemyPrevs.begin(); i != newEnemyPrevs.end(); i++) {
+            _grid->getRoom(*i)->setLockIcon(true);
+        }
+    }
+
+    // Update previous variables & defog rooms
+    if (!_reyPrev.equals(newReyRoom)) {
+        _reyPrev = newReyRoom;
+        defogSurrounding(_reyPrev);
+    }
+    _prevZoomOut = zoomedOut;
+    _enemyPrevs = newEnemyPrevs;
 }
 
 /*
@@ -87,24 +120,26 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
     Vec2 room2 = _grid->screenSpaceToRoom(coords);
     bool invalid = !isSwappable(room2, reynard, enemies);
     invalid = invalid || !isSwappable(_toSwap, reynard, enemies);
-    invalid = invalid || room2.x == _toSwap.x && room2.y == _toSwap.y; // can't be the sam room
+    invalid = invalid || (room2.x == _toSwap.x && room2.y == _toSwap.y); // can't be the sam room
 
     if (invalid) {
         deselectRoom();
         return false;
     }
 
-    bool success = _grid->swapRooms(_toSwap, room2);
+    bool success = _grid->swapRooms(_toSwap, room2,false);
     if (success) {
-        //Sloppy code, fix when refactoring UI updates
-        _toSwap = room2;
-        deselectRoom();
-        
         // Record the room swapping
         vector<Vec2> l;
         l.push_back(room2);
         l.push_back(_toSwap);
         _swapHistory.push_back(l);
+
+        //Sloppy code, fix when refactoring UI updates
+        _toSwap = room2;
+        deselectRoom();
+        
+
     }
     return success;
 }
@@ -118,6 +153,20 @@ void EnvController::deselectRoom() {
 }
 
 #pragma mark Helper Functions
+
+/*
+* Shows or hides the lock icons on locked rooms
+* To be called when zooming out or in
+*
+* @param isVisible  true if the locks should be visible
+*/
+void EnvController::setLockVisibility(bool isVisible, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+    for (int x = 0; x < _grid->getWidth(); x++) {
+        for (int y = 0; y < _grid->getHeight(); y++) {
+            _grid->getRoom(Vec2(x, y))->setLockIcon(isVisible && !isSwappable(Vec2(x, y), reynard, enemies));
+        }
+    }
+}
 
 /*
 * Checks if the room satisfies the conditions to be swappable
@@ -210,7 +259,7 @@ void EnvController::animateSwap(Vec2 vec1, Vec2 vec2) {
 /* Sets the room to look selected */
 void EnvController::lookSelected(Vec2 room) {
     if (_grid->getRoom(room)) {
-        _grid->getRoom(room)->setColor(Color4::RED);
+        _grid->getRoom(room)->setColor(Color4::MAGENTA);
     }
 }
 
@@ -242,3 +291,9 @@ EnvController::~EnvController() {
 const vector<vector<Vec2>> &EnvController::getSwapHistory() const {
     return _swapHistory;
 }
+
+void EnvController::setSwapHistory(const vector<vector<Vec2>> &swapHistory) {
+    _swapHistory = swapHistory;
+}
+
+

@@ -8,7 +8,7 @@
 //  Owner: TBD
 //  Contributors: Barry Wang
 //  Version: 2/21/22
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
@@ -20,7 +20,12 @@
 class GameStateController {
 private:
     bool _zoomed_in;
+    bool paused = false;
     int SLOW_MO_SCALAR;
+    float maxZoom = 2.4;
+    float minZoom = 1;
+    std::chrono::duration<unsigned long long> fourSeconds = std::chrono::seconds(4);
+    std::chrono::time_point<std::chrono::system_clock> sinceResume = std::chrono::system_clock::now() - fourSeconds;
 public:
     /**
      * Change parameter as you need
@@ -63,11 +68,46 @@ public:
         _zoomed_in = !_zoomed_in;
     }
 
+    void pause(){
+        paused = true;
+    }
+
+    void unpause(){
+        paused = false;
+        sinceResume = std::chrono::system_clock::now();
+    }
+
+    void pauseSwitch(){
+        if (paused){
+            unpause();
+        }else{
+            pause();
+        }
+    }
+
+    bool isPaused(){
+        return paused;
+    }
+
+    bool finishedZooming(float currentScale){
+        return abs(currentScale - maxZoom)<0.05 || abs(currentScale - minZoom)<0.05;
+    }
+
+    float secondsAfterPause(){
+        std::chrono::duration<float> diff = std::chrono::system_clock::now() - sinceResume;
+        return diff.count();
+    }
+
+
+
     /**
      * @param dt the actual time past
      * @return the time for the physics simulation, based on the state of the game
      */
     float getScaledDtForPhysics(float dt) {
+        if (paused){
+            return 0;
+        }
         if (_zoomed_in) {
             return dt;
         } else {
@@ -81,8 +121,10 @@ public:
      * @return zoom to be applied for this frame
      */
     float getZoom(float currentZoom) {
-        float maxZoom = 2.4;
-        float minZoom = 1;
+        if (paused){
+            return 1;
+        }
+
         float result;
         if (_zoomed_in && currentZoom < maxZoom) {
             result = 1.0f + 0.02f * (maxZoom - currentZoom) * (maxZoom - currentZoom);
@@ -98,17 +140,18 @@ public:
     /**
      *
      * @param currentTranslation Current global translation of the scrollpane.
-     * @param reynardScreenPosition location of reynard to follow, on screen
+     * @param target location of reynard to follow, on screen
      * @param scale scale between drawing world and physics world
      * @param screenSize screen size
      * @param faceRight whether reynard is facing right.
      * @return Pan to be applied to nodes
      */
-    Vec2 getPan(Vec2 currentTranslation, Vec2 reynardScreenPosition, float scale, Size screenSize, bool faceRight, Vec2 reynardVelocity) {
+    Vec2 getPan(Vec2 currentTranslation, Vec2 target, float scale, Size screenSize, bool faceRight, Vec2 reynardVelocity) {
+        if (paused){
+            return Vec2();
+        }
         Vec2 result;
-        Vec2 target;
-        target = reynardScreenPosition;
-        int thr = 8;
+        int thr = 12;
         if (reynardVelocity.y<-thr){
             target = target + Vec2(0,(reynardVelocity.y+thr)*15);
         }
@@ -117,7 +160,7 @@ public:
             result = (Vec2(screenSize.width, screenSize.height) / 2 - target);
         } else {
             result = Vec2(screenSize.width, screenSize.height)/ 2  - target;
-            
+
             if (currentTranslation.x + result.x > 0) {
                 result = Vec2(-currentTranslation.x, result.y);
             }

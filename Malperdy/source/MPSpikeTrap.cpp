@@ -5,7 +5,7 @@
 //  Owner: Spencer Hurst
 //  Contributors: Evan Azari, Abu Qader, Jordan Selin
 //  Version: 4/16/22
-// 
+//
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 
@@ -15,10 +15,12 @@
 #include "MPTrapModel.hpp"
 #include "MPSpikeTrap.hpp"
 
+
 using namespace cugl;
 
 #pragma mark -
 #pragma mark Constructors
+
 
 /**
  * Initializes a new trap at the given position
@@ -27,14 +29,15 @@ using namespace cugl;
  *
  * @return  true if the trap is initialized properly, false otherwise.
  */
-bool SpikeTrap::init(){
-    _polyNode = make_shared<scene2::PolygonNode>();
-    _polyNode->initWithFile("textures/spikes.png");
+bool SpikeTrap::init(float roomWidth, float roomHeight){
+    _sceneNode = make_shared<scene2::SpriteNode>();
+    _sceneNode->initWithFile("textures/spikes.png");
     _type = TrapType::SPIKE;
-    
-    _polyNode->setAnchor(Vec2::ZERO);
-    _polyNode->setScale(720.0 / _polyNode->getPolygon().getBounds().getMaxX());
-    _polyNode->setScale(_polyNode->getScale() * Vec2(1,0.5));
-    _polyNode->setAbsolute(true);
+
+    _sceneNode->setAnchor(Vec2::ZERO);
+    _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX());
+    _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y);
+    _sceneNode->setAbsolute(true);
+
     return this->TrapModel::init();
 }

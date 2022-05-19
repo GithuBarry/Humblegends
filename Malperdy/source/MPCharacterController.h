@@ -8,11 +8,11 @@
 
 #include <cugl/cugl.h>
 #include "MPCharacterModel.h"
+#include "MPAudioController.h"
 #include <string>
 #include <map>
 
 using namespace std;
-
 
 // Type of the model that this character controller holds
 template<class ModelType, class ControllerType>
@@ -32,7 +32,6 @@ public:
         void* _controller;
     };
 
-protected:
     /** The model storing this character's data */
     shared_ptr<ModelType> _character;
 
@@ -155,7 +154,9 @@ public:
      *
      * @return the scene graph node representing the owned CharacterModel.
      */
+    [[deprecated("Use getCharacter()->_node instead.")]]
     const std::shared_ptr<cugl::scene2::SceneNode>& getSceneNode() const {
+        //CULog("Char Controller: BUGGY!! Use getCharacter()->_node if problemetic");
         return _character->_node;
     }
 
@@ -190,35 +191,15 @@ public:
     }
     
     /**
-     * The character dashes right at a set velocity.
+     * The character dashes in the given direction at a set velocity.
      *
-     * @return  Whether the character dashed successfully
+     * @param dashDir   The direction in which the character should dash (-1 for left, 1 for right)
+     * @return          Whether the character dashed successfully
      */
-    bool dashRight(){
-        if (_character->canDash()){
-            if (!_character->isFacingRight()){
-                _character->flipDirection();
-            }
-            return _character->setMoveState(CharacterModel::MovementState::DASHING);
-        }
-        return false;
+    bool dash(int dashDir){
+        return _character->setMoveState(CharacterModel::MovementState::DASHING, dashDir);
     }
     
-    /**
-     * The character dashes left at a set velocity.
-     *
-     * @return  Whether the character dashed successfully
-     */
-    bool dashLeft(){
-        if (_character->canDash()){
-            if (_character->isFacingRight()){
-                _character->flipDirection();
-            }
-            return _character->setMoveState(CharacterModel::MovementState::DASHING);
-        }
-        return false;
-    }
-
 #pragma mark Character Actions
     protected:
     /**
@@ -281,12 +262,17 @@ public:
     }
 
     /**
-     * Sets the character to be on the ground.
+     * Sets the character to be on the ground and plays the sound effect if
+     * the player landed properly.
      *
      * @return  Whether the character is successfully marked as being on the ground
      */
     bool land() {
-        return _character->setMoveState(CharacterModel::MovementState::RUNNING);
+        if (_character->setMoveState(CharacterModel::MovementState::RUNNING)) {
+            //AudioController::playSFX(LAND_SOUND);
+            return true;
+        }
+        return false;
     }
 
     public:
@@ -319,7 +305,7 @@ public:
         // character is still on ground
         if (_character->_groundedCounter > 0) return;
         // If the character didn't choose to jump, then they must be falling
-        if (!(_character->isJumping())) fall();
+        //if (!(_character->isJumping())) fall();
     }
 
     /**
