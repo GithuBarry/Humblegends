@@ -63,6 +63,8 @@ class RoomModel : public cugl::scene2::SceneNode {
 public:
     /** Pointer to the node that displays the room background */
     shared_ptr<scene2::PolygonNode> _bgNode;
+    /** Whether this room is permanently locked */
+    bool permlocked = false;
 
 private:
     /** The ordered node to ensure backgrounds are layered properly */
@@ -79,6 +81,9 @@ private:
 
     /** This room's original location */
     Vec2 _originalLoc;
+
+    /** Whether this room is a solid room */
+    bool isSolid = false;
 
     // STATUS
     /** Whether this room is currently locked/unable to be swapped. False by default */
@@ -105,13 +110,13 @@ private:
 
     /**
      * Creates all the polygons for any geometry for the room type with the given ID.
-     * If no room ID is given, then it defaults to a room with only floor.
+     * If no room ID is given, then it defaults to a solid room.
      * 
      * This is a private helper function that is only used within the class.
      *
      * @param roomID	ID of room type with the desired geometry
      */
-    void buildGeometry(shared_ptr<JsonValue> roomJSON);
+    void buildGeometry(string roomID);
 
 public:
 #pragma mark Constructors
@@ -135,10 +140,10 @@ public:
      * @param x         The column of the room in grid space
      * @param y         The row of the room in parent space
      * @param roomID    ID of room type with the desired geometry
-     * @param bg		Background texture to apply to the room
+     * @param bg		Background texture to apply to the room (nullptr by default)
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg = nullptr);
+    bool init(float x, float y, string roomID, shared_ptr<Texture> bg = nullptr);
 
     bool initTrap(TrapModel::TrapType type);
 
@@ -158,12 +163,12 @@ public:
      * @param x         The column of the room in grid space
      * @param y         The row of the room in grid space
      * @param roomID    ID of room type with the desired geometry
-     * @param bg		Background texture to apply to the room
+     * @param bg		Background texture to apply to the room (nullptr by default)
      * @return          A newly-allocated RoomModel
      */
-    static std::shared_ptr<RoomModel> alloc(float x, float y, shared_ptr<JsonValue> roomJSON, shared_ptr<Texture> bg) {
+    static std::shared_ptr<RoomModel> alloc(float x, float y, string roomID, shared_ptr<Texture> bg = nullptr) {
         std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init(x, y, roomJSON, bg) ? result : nullptr);
+        return (result->init(x, y, roomID, bg) ? result : nullptr);
     }
 
 #pragma mark Destructors
@@ -182,8 +187,6 @@ public:
 
 #pragma mark -
 #pragma mark Getters
-
-    bool permlocked = false;
 
     /**
      * Returns a shared pointer to the vector of physics objects that compose
@@ -272,11 +275,23 @@ public:
     void setPosition(float x, float y) { this->SceneNode::setPosition(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT); }
 
     /**
-    * Sets whether the room's lock icon is visible
-    * 
-    * @param isVisible  true if the lock icon should be visible
-    */
-    void setLockIcon(bool isVisible) { _lockIcon->setVisible(isVisible); }
+     * Sets whether the room's lock icon is visible
+     * 
+     * Only succeeds if this room is not a solid room
+     * 
+     * @param isVisible  true if the lock icon should be visible
+     */
+    void setLockIcon(bool isVisible) {
+        if (!isSolid) _lockIcon->setVisible(isVisible);
+    }
+
+    /**
+     * Set this room to be a solid room, which means it's permanently locked
+     */
+    void setSolid() {
+        isSolid = true;
+        permlocked = true;
+    }
 
 #pragma mark Updates
     /**

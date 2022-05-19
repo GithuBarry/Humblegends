@@ -158,10 +158,30 @@ protected:
     void populateEnv();
 
     /**
-     * Lays out the game characters. Part of populate()
-     *
+     * Places all the characters, including Reynard and enemies, in the game world.
      */
     void populateChars();
+
+    /**
+     * Places Reynard in the game world.
+     */
+    void populateReynard();
+
+    /**
+     * Places all the enemies for the active regions in the game world.
+     */
+    void populateEnemies();
+
+    /**
+     * Places the enemies for the given region in the game world.
+     * 
+     * Allows us to populate enemies on a per-region basis, instead
+     * of loading them all in at once and potentially causing runtime
+     * issues.
+     * 
+     * @param region    The region to populate the enemies for.
+     */
+    void populateEnemiesInRegion(shared_ptr<RegionModel> region);
 
     /**
      * Place all the tutorials at their correct locations in Region 1.
