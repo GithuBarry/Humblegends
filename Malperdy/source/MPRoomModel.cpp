@@ -48,7 +48,6 @@ const Vec2 RoomModel::ROOM_SCALE = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT)
 /** How big the boundary extrusion should be */
 #define BOUND_WIDTH 10
 
-
 // Create color for geometry
 Color4 geometryColor = Color4(20,20,20,255);
 
@@ -99,7 +98,7 @@ void RoomModel::buildGeometry(string roomID) {
         // Convert polygon into a scene graph node and add as a child to the room node
         shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
         polyNode->setPolygon(*poly);
-        polyNode->setColor(Color4::BLACK);
+        polyNode->setColor(geometryColor);
         // Ensure that polygons are drawn to their absolute coordinates
         polyNode->setAbsolute(true);
         // Set position of polygon node accordingly

@@ -176,21 +176,17 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // This means that we cannot change the aspect ratio of the physics world. Shift to center if a bad fit
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
     // Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
-    Vec2 offset;
 
     // CULog("Size: %f %f", getSize().width, getSize().height);
     //  Create the scene graph
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
-    _worldnode->setPosition(offset);
 
     _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale);                             // Debug node draws in PHYSICS coordinates
-    _debugnode->setPosition(offset / _scale);
     setDebug(false);
 
     _winNode = scene2::Label::allocWithText("VICTORY!", _assets->get<Font>(PRIMARY_FONT));
     _winNode->setAnchor(Vec2::ANCHOR_CENTER);
-    _winNode->setPosition(offset);
     _winNode->setBackground(Color4::BLACK);
     _winNode->setForeground(STATIC_COLOR);
     _winNode->setPadding(dimen.width / 2, dimen.height / 2, dimen.width / 2, dimen.height / 2);
@@ -199,13 +195,13 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _health = scene2::PolygonNode::allocWithFile("textures/Health_Bar_Full.png");
     _health->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     Vec2 padding = Vec2(30, -20);
-    _health->setPosition(offset + Vec2(0, getSize().height) + padding);
+    _health->setPosition(Vec2(0, getSize().height) + padding);
     _health->setScale(1.5);
 
     _pause = scene2::PolygonNode::allocWithFile("textures/PauseScreen/Pause_Button.png");
     _pause->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     padding = Vec2(computeActiveSize().width - 100, -10);
-    _pause->setPosition(offset + Vec2(0, getSize().height) + padding);
+    _pause->setPosition(Vec2(0, getSize().height) + padding);
     _pause->setScale(0.3);
 
     addChild(_worldnode);

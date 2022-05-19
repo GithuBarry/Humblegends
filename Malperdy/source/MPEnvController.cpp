@@ -187,16 +187,10 @@ void EnvController::setLockVisibility(bool isVisible, const shared_ptr<ReynardCo
 * @ return true if room doesn't contain Reynard, enemies or a checkpoint
 */
 bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
-    // check if the room number is valid
-    if (room.x == -1 || room.y == -1) return false;
-    if (_grid->getRoom(room) == nullptr) return false;
-    // check if the room is permalocked
-    if (_grid->getRoom(room)->permlocked) return false;
-    // check if the room is fogged
-    if (_grid->isRoomFogged(room)) return false;
-    // check if the room is occupied
-    if (containsEnemies(room, enemies)) return false;
-    if (containsReynard(room, reynard)) return false;
+    // Fail if room doesn't exist, is permalocked, fogged, or occupied
+    if (_grid->getRoom(room) == nullptr || _grid->getRoom(room)->permlocked ||
+        _grid->isRoomFogged(room) || containsEnemies(room, enemies) ||
+        containsReynard(room, reynard)) return false;
     // check if the room contains a checkpoint
     shared_ptr<TrapModel> trap = _grid->getRoom(room)->getTrap();
     if ((trap != nullptr) && (trap->getType() == TrapModel::TrapType::CHECKPOINT)) {

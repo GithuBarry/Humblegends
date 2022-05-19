@@ -157,6 +157,16 @@ public:
     }
 
     /**
+     * Returns the x-origin of the grid.
+     */
+    int getOriginX() const { return _originX; }
+
+    /**
+     * Returns the y-origin of the grid.
+     */
+    int getOriginY() const { return _originY; }
+
+    /**
      * Returns the ptr to the room located at the given coordinate,
      * where the x-coordinate is the column from the left and the
      * y-coordinate is the row from the bottom.
