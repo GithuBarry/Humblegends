@@ -159,12 +159,12 @@ bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
 	buildGeometry(roomID);
 
 	// Create path node for room boundary
-	Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), sizeof(BOUND) / 2);
+	/*Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), sizeof(BOUND) / 2);
 	boundPath.closed = true;
 	shared_ptr<scene2::PathNode> boundNode = scene2::PathNode::allocWithPath(boundPath, BOUND_WIDTH);
 	boundNode->setColor(Color4(Vec4(0.65, 0.65, 0.65, 0.5)));
 	boundNode->setClosed(true);
-	addChild(boundNode);
+	addChild(boundNode);*/
 
     //Fog of war
 	setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));

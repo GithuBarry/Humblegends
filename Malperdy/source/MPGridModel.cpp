@@ -532,7 +532,7 @@ bool GridModel::swapRooms(Vec2 pos1, Vec2 pos2, bool forced)
 
 /**
  *
- * Returns whether the two given rooms can be swapped.
+ * Returns whether the two rooms with the given HOUSE space coordinates can be swapped.
  *
  * Rooms can only be swapped if they are both in-bounds and within the same region
  * and sublevel.
@@ -543,6 +543,12 @@ bool GridModel::swapRooms(Vec2 pos1, Vec2 pos2, bool forced)
  */
 bool GridModel::canSwap(Vec2 room1, Vec2 room2)
 {
+    // Transform from HOUSE to GRID space
+    room1.x += _originX;
+    room1.y += _originY;
+    room2.x += _originX;
+    room2.y += _originY;
+
     // Can't swap if in different regions or in different sublevels within the same region
     for (auto itr = _regions->begin(); itr != _regions->end(); ++itr) {
         if ((*itr)->areInSameSublevel(room1.x, room1.y, room2.x, room2.y))
