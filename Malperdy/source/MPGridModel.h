@@ -336,6 +336,17 @@ public:
         if (getRoom(coord)) getRoom(coord)->setFogged(hasFog);
     }
 
+    /**
+     * Sets the physics objects of the given room in GRID coordinates.
+     *
+     * @param row   Row of the room in GRID coordinates
+     * @param col   Column of the room in GRID coordinates
+     * @param phys  Physics objects to put in the given room
+     */
+    void setPhysicsGeometryAt(int row, int col, shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> phys) {
+        _physicsGeometry->at(row)->at(col) = phys;
+    }
+
 #pragma mark Helpers
 
     Poly2 convertToScreen(Poly2 poly);

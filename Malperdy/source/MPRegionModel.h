@@ -185,12 +185,12 @@ private:
 	int _checkpointsToClear = 0;
 
 	/** Pointers to the SceneNodes that have the blocked exit textures */
-	shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> _blockedNodes =
+	shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> _blockades =
 		make_shared<vector<shared_ptr<scene2::PolygonNode>>>();
 
-	/** Physics objects for region exit blockades */
-	shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> _blockades =
-		make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
+	/** The exit rooms, which unblock when the region is cleared */
+	shared_ptr<vector<shared_ptr<RoomModel>>> _exitRooms =
+		make_shared<vector<shared_ptr<RoomModel>>>();
 
 	// BACKGROUNDS
 	/** Static reference to the background textures for all the regions */
@@ -312,6 +312,26 @@ public:
 	 * @return	The bounds of this region
 	 */
 	Rect getBounds() { return _bounds; }
+
+	/**
+	 * Returns the blockade textures, which block off the exit rooms until
+	 * this region is cleared.
+	 *
+	 * @return	Blockades in this region
+	 */
+	shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> getBlockades() {
+		return _blockades;
+	}
+
+	/**
+	 * Returns the exit rooms, which are rooms that are closed off until the
+	 * region is cleared.
+	 *
+	 * @return	Exit rooms in this region
+	 */
+	shared_ptr<vector<shared_ptr<RoomModel>>> getExitRooms() {
+		return _exitRooms;
+	}
 
 	/**
 	 * Returns whether the given GRID space coordinates are within this
@@ -437,10 +457,18 @@ public:
 	 * Clears all the rooms associated with the checkpoint with the given ID (backgrounds
 	 * are swapped to the "cleared" option for the associated region).
 	 *
+	 * Returns whether the full region has now been cleared or not.
+	 *
 	 * @param cID	The unique ID number for a specific checkpoint
-	 * @return		Whether the checkpoint's associated rooms were cleared successfully
+	 * @return		Whether the full region has now been cleared
 	 */
 	bool clearCheckpoint(int cID);
+
+	/**
+	 * Clears the region, meaning the blockades now disappear and the
+	 * player can move on to the next region.
+	 */
+	void clearRegion();
 
 private:
 #pragma mark Debug

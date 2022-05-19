@@ -293,15 +293,6 @@ public:
         permlocked = true;
     }
 
-    /**
-     * Adds the given polygon obstacle to the room's physics geometry.
-     * 
-     * @param ob    The obstacle to add to this room's physics geometry
-     */
-    void addToPhysics(shared_ptr<physics2::PolygonObstacle> ob) {
-        _physicsGeometry->push_back(ob);
-    }
-
 #pragma mark Updates
     /**
      * Change position gradually

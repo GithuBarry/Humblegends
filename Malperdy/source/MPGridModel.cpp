@@ -378,8 +378,6 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale)
         }
     }
 
-    calculatePhysicsGeometry();
-
     return this->scene2::SceneNode::init();
 };
 
@@ -493,8 +491,9 @@ bool GridModel::swapRooms(Vec2 pos1, Vec2 pos2, bool forced)
         itr != getPhysicsGeometryAt(pos1.y, pos1.x)->end(); ++itr)
     {
 
-        // convert the position from physics to grid space
+        // convert the position from physics to world space
         Vec2 newPos = (*itr)->getPosition() * _physics_scale;
+        // Now world space to grid node space
         newPos = this->worldToNodeCoords(newPos);
         // offset the obstacles in grid space
         newPos.x -= (pos1.x - pos2.x) * DEFAULT_ROOM_WIDTH;
@@ -525,8 +524,8 @@ bool GridModel::swapRooms(Vec2 pos1, Vec2 pos2, bool forced)
     // create a temp holder
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> tempPhysics =
         getPhysicsGeometryAt(pos1.y, pos1.x);
-    getPhysicsGeometryAt(pos1.y, pos1.x) = getPhysicsGeometryAt(pos2.y, pos2.x);
-    getPhysicsGeometryAt(pos2.y, pos2.x) = tempPhysics;
+    setPhysicsGeometryAt(pos1.y, pos1.x, getPhysicsGeometryAt(pos2.y, pos2.x));
+    setPhysicsGeometryAt(pos2.y, pos2.x, tempPhysics);
 
     return true;
 };
@@ -545,9 +544,8 @@ bool GridModel::swapRooms(Vec2 pos1, Vec2 pos2, bool forced)
 bool GridModel::canSwap(Vec2 room1, Vec2 room2)
 {
     // Can't swap if in different regions or in different sublevels within the same region
-    for (shared_ptr<RegionModel> region : *_regions)
-    {
-        if (region->areInSameSublevel(room1.x, room1.y, room2.x, room2.y))
+    for (auto itr = _regions->begin(); itr != _regions->end(); ++itr) {
+        if ((*itr)->areInSameSublevel(room1.x, room1.y, room2.x, room2.y))
             return true;
     }
     return false;
@@ -693,6 +691,36 @@ void GridModel::calculatePhysicsGeometry()
                 }
             }
         }
+    }
+
+    // Also do exit blockade geometry
+    Poly2 blockPoly;
+    shared_ptr<physics2::PolygonObstacle> obstacle;
+    shared_ptr<vector<shared_ptr<RoomModel>>> exitRooms;
+    int counter = 0;
+    // For each region
+    for (auto regItr = _regions->begin(); regItr != _regions->end(); ++regItr) {
+        exitRooms = (*regItr)->getExitRooms();
+        // Don't do this region if exit rooms = nullptr, meaning the region has been cleared
+        if (exitRooms == nullptr) continue;
+        // For each blockade in that region
+        for (auto blockItr = (*regItr)->getBlockades()->begin();
+            blockItr != (*regItr)->getBlockades()->end(); ++blockItr) {
+            blockPoly = (*blockItr)->getPolygon();
+            blockPoly *= (*blockItr)->getNodeToWorldTransform();
+            blockPoly /= _physics_scale;
+
+            // Create physics obstacle
+            obstacle = physics2::PolygonObstacle::alloc(blockPoly, Vec2::ZERO);
+            obstacle->setBodyType(b2_staticBody);
+
+            // Counter will let rooms/blockades align because they were added simultaneously
+            getPhysicsGeometryAt(exitRooms->at(counter)->getPositionX() / DEFAULT_ROOM_WIDTH,
+                exitRooms->at(counter)->getPositionY() / DEFAULT_ROOM_HEIGHT)->push_back(obstacle);
+
+            counter++;
+        }
+        counter = 0;
     }
 }
 

@@ -146,8 +146,10 @@ void RegionModel::addSublevel(int originX, int originY, int width, int height,
 }
 
 /**
- * Sets the exit room to be the onelocated in the xth column from the
- * left and the yth row from the bottom in GRID space coordinates.
+ * Sets the room located in the xth column from the left and the yth
+ * row from the bottom in GRID space coordinates to be an exit room.
+ * This will apply a texture to hide it and make it impassable until
+ * the region is cleared.
  *
  * @param x     The x-coordinate to place the room at in GRID space
  * @param y     The y-coordinate to place the room at in GRID space
@@ -158,20 +160,15 @@ bool RegionModel::setExitRoom(int x, int y, shared_ptr<Texture> tex) {
 	shared_ptr<RoomModel> exitRoom = getRoom(x, y);
 	if (exitRoom == nullptr) return false;
 
+	_exitRooms->push_back(exitRoom);
+
 	// Make SceneNode for the blocked texture
 	shared_ptr<scene2::PolygonNode> blockedNode = scene2::PolygonNode::allocWithTexture(tex);
 	blockedNode->setPolygon(Rect(0, 0, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT));
 	exitRoom->addChild(blockedNode);
-	_blockedNodes->push_back(blockedNode);
+	_blockades->push_back(blockedNode);
 
-	// Generate PolygonObstacle and set the corresponding properties for the blockade
-	shared_ptr<physics2::PolygonObstacle> physPoly =
-		physics2::PolygonObstacle::alloc(blockedNode->getPolygon(), Vec2::ZERO);
-	physPoly->setBodyType(b2_staticBody);
-	// Store as part of the physics geometry of the room
-	exitRoom->addToPhysics(physPoly);
-	// Also store a reference for later deletion
-	_blockades->push_back(physPoly);
+	// The physics are handled in GridModel's calculatePhysicsGeometry
 
 	return true;
 }
@@ -209,9 +206,11 @@ bool RegionModel::addCheckpoint(int cID, int cX, int cY) {
 /**
  * Clears all the rooms associated with the checkpoint with the given ID (backgrounds
  * are swapped to the "cleared" option for the associated region).
+ * 
+ * Returns whether the full region has now been cleared or not.
  *
  * @param cID	The unique ID number for a specific checkpoint
- * @return		Whether the checkpoint's associated rooms were cleared successfully
+ * @return		Whether the full region has now been cleared
  */
 bool RegionModel::clearCheckpoint(int cID) {
 	// Fail if this checkpoint is already cleared (not in the checkpoint map, so value is -1)
@@ -229,5 +228,23 @@ bool RegionModel::clearCheckpoint(int cID) {
 	// And reduce number of checkpoints left to clear in this region
 	_checkpointsToClear--;
 
-	return true;
+	// If there are no more checkpoints in the region, clear the region
+	if (_checkpointsToClear <= 0) {
+		clearRegion();
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Clears the region, meaning the blockades now disappear and the
+ * player can move on to the next region.
+ */
+void RegionModel::clearRegion() {
+	_exitRooms = nullptr;
+	for (auto itr = _blockades->begin(); itr != _blockades->end(); ++itr) {
+		(*itr)->setVisible(false);
+	}
+	_blockades = nullptr;
 }

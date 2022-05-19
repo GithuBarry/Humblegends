@@ -1265,8 +1265,7 @@ void GameScene::beginContact(b2Contact *contact)
                 }
                 rewriteSaveFile();
                 trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-                // trap->getPolyNode()->setColor(Color4::GREEN);
-                //  Clear all the associated rooms
+                // Clear all the associated rooms
                 _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
             }
             else if (trapType == TrapModel::TrapType::GOAL)
