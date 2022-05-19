@@ -56,6 +56,12 @@ protected:
     // SETTINGS VIEW
     /** The "done" button */
     std::shared_ptr<cugl::scene2::Button>     _done;
+    /** The background for volume settings */
+    std::shared_ptr<cugl::scene2::SceneNode>  _volumeBG;
+
+    // CREDITS VIEW
+    /** The credits content */
+    std::shared_ptr<cugl::scene2::SceneNode>  _creditsPage;
 
     // MODEL
     /** The progress displayed on the screen */
@@ -174,15 +180,8 @@ private:
     */
     bool saveFileExists();
 
-    /* 
-    * Hides all assets so it's safe to switch screens
-    * 
-    * @param helper     0 if proceeding as normal
-    *                   1 to not deactivate settings
-    *                   2 to not deactivate credits
-    *                   3 to not deactivate done
-    */
-    void hideAll(int helper = 0);
+    /* Hides all assets so it's safe to switch screens */
+    void hideAll();
 
     /* Switches to main menu screen */
     void showMainMenu();

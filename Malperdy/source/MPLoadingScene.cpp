@@ -103,6 +103,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     });
 
     // Settings Screen
+    _volumeBG = assets->get<scene2::SceneNode>("load_volume");
     _done = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_done"));
     _done->addListener([=](const std::string& name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
@@ -112,6 +113,9 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
             CULog("LoadingScene done pressed");
         }
     });
+
+    // Credits Screen
+    _creditsPage = assets->get<scene2::SceneNode>("load_credits-content");
 
     Application::get()->setClearColor(Color4::BLACK);
     addChild(layer);
@@ -137,6 +141,8 @@ void LoadingScene::dispose() {
     _settingsButton = nullptr;
     _credits = nullptr;
     _done = nullptr;
+    _volumeBG = nullptr;
+    _creditsPage = nullptr;
     _brand = nullptr;
     _bar = nullptr;
     _assets = nullptr;
@@ -190,15 +196,8 @@ bool LoadingScene::saveFileExists() {
     return filetool::file_exists(cugl::filetool::join_path(file_path_list));
 }
 
-/*
-* Hides all assets so it's safe to switch screens
-*
-* @param helper     0 if proceeding as normal
-*                   1 to not deactivate settings
-*                   2 to not deactivate credits
-*                   3 to not deactivate done
-*/
-void LoadingScene::hideAll(int helper) {
+/* Hides all assets so it's safe to switch screens */
+void LoadingScene::hideAll() {
     _bar->setVisible(false);
     _brand->setVisible(false);
 
@@ -207,11 +206,13 @@ void LoadingScene::hideAll(int helper) {
     _new->setVisible(false);
     _new->deactivate();
     _settingsButton->setVisible(false);
-    if (helper != 1) _settingsButton->deactivate();
+    _settingsButton->deactivate();
     _credits->setVisible(false);
-    if (helper != 2) _credits->deactivate();
+    _credits->deactivate();
+    _volumeBG->setVisible(false);
     _done->setVisible(false);
-    if (helper != 3) _done->deactivate();
+    _done->deactivate();
+    _creditsPage->setVisible(false);
 }
 
 /* Switches to main menu screen */
@@ -231,6 +232,7 @@ void LoadingScene::showMainMenu() {
 /* Switches to settings screen */
 void LoadingScene::showSettings() {
     hideAll();
+    _volumeBG->setVisible(true);
     _done->setVisible(true);
     _done->activate();
 }
@@ -238,6 +240,7 @@ void LoadingScene::showSettings() {
 /* Switches to credits screen */
 void LoadingScene::showCredits() {
     hideAll();
+    _creditsPage->setVisible(true);
     _done->setVisible(true);
     _done->activate();
 }
