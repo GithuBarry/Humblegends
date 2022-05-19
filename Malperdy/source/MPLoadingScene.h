@@ -72,6 +72,13 @@ protected:
     */
     int _state = 0;
     /**
+    * Button state, to avoid double detection of problematic buttons
+    *
+    * 0 = not yet pressed
+    * 1 = pressed once and ignored
+    */
+    int _buttonState = 0;
+    /**
     * How the user wants to start playing
     * 0: not yet chosen
     * 1: Start a new game

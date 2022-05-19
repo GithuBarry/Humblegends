@@ -59,9 +59,13 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     if (saveFileExists()) {
         _load = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_load-withSave"));
         _load->addListener([=](const std::string& name, bool down) {
-            this->_mode = 2;
-            this->_active = down;
-            CULog("LoadingScene load pressed");
+            if (_buttonState == 0) _buttonState = 1;
+            else {
+                _buttonState = 0;
+                this->_mode = 2;
+                this->_active = down;
+                CULog("LoadingScene load pressed");
+            }
         });
     }else {
         _load = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_load-noSave"));
@@ -71,26 +75,42 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     _title = assets->get<scene2::SceneNode>("load_title");
     _new = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new"));
     _new->addListener([=](const std::string& name, bool down) {
-        this->_mode = 1;
-        this->_active = down;
-        CULog("LoadingScene new pressed");
+        if (_buttonState == 0) _buttonState = 1;
+        else {
+            _buttonState = 0;
+            this->_mode = 1;
+            this->_active = down;
+            CULog("LoadingScene new pressed");
+        }
     });
     _settingsButton = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_settings-button"));
     _settingsButton->addListener([=](const std::string& name, bool down) {
-        this->_state = 2;
-        CULog("LoadingScene settings pressed");
+        if (_buttonState == 0) _buttonState = 1;
+        else {
+            _buttonState = 0;
+            this->_state = 2;
+            CULog("LoadingScene settings pressed");
+        }
     });
     _credits = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_credits"));
     _credits->addListener([=](const std::string& name, bool down) {
-        this->_state = 3;
-        CULog("LoadingScene credits pressed");
+        if (_buttonState == 0) _buttonState = 1;
+        else {
+            _buttonState = 0;
+            this->_state = 3;
+            CULog("LoadingScene credits pressed");
+        }
     });
 
     // Settings Screen
     _done = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_done"));
     _done->addListener([=](const std::string& name, bool down) {
-        this->_state = 1;
-        CULog("LoadingScene done pressed");
+        if (_buttonState == 0) _buttonState = 1;
+        else {
+            _buttonState = 0;
+            this->_state = 1;
+            CULog("LoadingScene done pressed");
+        }
     });
 
     Application::get()->setClearColor(Color4::BLACK);
