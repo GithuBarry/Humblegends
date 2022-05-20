@@ -27,24 +27,10 @@
 
 using namespace cugl;
 
-/** Total number of regions */
-#define NUM_REGIONS 1
-/** Total number of backgrounds each region has */
-#define NUM_BACKGROUNDS 7
-
-/** The names of the cleared backgrounds, indexed by region */
-#define BG_CLEARED {"bg-r1c-1", "bg-r1c-1", "bg-r1c-1"}
-/** All backgrounds for each region */
-#define R1_BGS {"bg-r1-1", "bg-r1-2", "bg-r1-3", "", "", "", ""}
-#define R2_BGS { "bg-r2-1", "bg-r2-2", "bg-r2-3", "bg-r2-4", "", "", "" }
-#define R3_BGS { "bg-r3-1", "bg-r3-2", "bg-r3-3", "bg-r3-4", "bg-r3-5", "bg-r3-6", "bg-r3-7" }
+#define NUM_BG_TYPES 3
 
 class RegionModel {
 private:
-	// Names of all the background assets, indexed by region
-	// See top of MPRegionModel.cpp for declaration
-	static const string BG_REGIONS[NUM_REGIONS][NUM_BACKGROUNDS];
-
 	/**
 	 * Nested class representing a sublevel inside a region.
 	 */
@@ -163,14 +149,20 @@ private:
 
 	// PROPERTIES
 
-	/** The number of this region, from 1-3 */
-	int _regionNumber;
+	/** The name of this region */
+	string _name;
+
+	/** Which background type the region uses (corresponds to 1-3 based on region) */
+	int _bgType = 0;
 
 	/** The width and height of this region in number of rooms */
 	int _width, _height;
 
 	/** The location of the lower left corner of this region in grid space */
 	int _originX, _originY;
+
+	/** The bounds of the region in GRID space as a rect */
+	Rect _bounds;
 
 	// CHECKPOINTS + SUBLEVELS
 
@@ -187,11 +179,18 @@ private:
 	 * 
 	 * Map is in the (key, value) format (checkpoint ID, index in _sublevels).
 	 */
-	shared_ptr<map<int, int>> _checkpointMap;
+	shared_ptr<map<int, int>> _checkpointMap = make_shared<map<int, int>>();
 
-	/** Number of uncleared checkpoints remaining in this region (initialize at 1 so that it
-	doesn't register as no checkpoints remaining before checkpoints have been added) */
-	int _checkpointsToClear = 1;
+	/** Number of uncleared checkpoints remaining in this region */
+	int _checkpointsToClear = 0;
+
+	/** Pointers to the SceneNodes that have the blocked exit textures */
+	shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> _blockades =
+		make_shared<vector<shared_ptr<scene2::PolygonNode>>>();
+
+	/** The exit rooms, which unblock when the region is cleared */
+	shared_ptr<vector<shared_ptr<RoomModel>>> _exitRooms =
+		make_shared<vector<shared_ptr<RoomModel>>>();
 
 	// BACKGROUNDS
 	/** Static reference to the background textures for all the regions */
@@ -203,35 +202,65 @@ private:
 public:
 #pragma mark Constructors
 	/**
-	 * Initializes a region with the given width, height, and number.
+	 * Initializes a region with the given width, height, number, and type.
+	 * 
+	 * Type is used to determine the background and should be from 1-3.
 	 *
-	 * @param regNumber	The number of this region, from 1-3
-	 * @param originX       The x-coordinate of the region origin in grid space
-	 * @param originY       The y-coordinate of the region origin in grid space
+	 * @param name		The name of this region
+	 * @param type		The type of this region, from 1-3
+	 * @param width		The width of this region in rooms
+	 * @param height	The height of this region in rooms
+	 * @param originX   The x-coordinate of the region origin in grid space
+	 * @param originY   The y-coordinate of the region origin in grid space
 	 * @return          true if the region is initialized properly, false otherwise.
 	 */
-	bool init(int regNumber, int originX, int originY) {
-		_regionNumber = regNumber;
+	bool init(string name, int type, int width, int height, int originX, int originY) {
+		_name = name;
+		_bgType = type;
+		_width = width;
+		_height = height;
 		_originX = originX;
 		_originY = originY;
+		_bounds = Rect(_originX, _originY, width, height);
 		return true;
 	}
 
 #pragma mark Static Constructors
 	/**
-	 * Returns a newly-allocated region with the given width, height, and number.
+	 * Returns a newly-allocated region with the given width, height, number, and type.
+	 * 
+	 * Type is used to determine the background and should be from 1-3.
 	 *
-	 * @param regNumber	The number of this region, from 1-3
-	 * @param originX       The x-coordinate of the region origin in grid space
-	 * @param originY       The y-coordinate of the region origin in grid space
-	 * @return          A newly-allocated RegionModel
+	 * @param name		The name of this region
+	 * @param type		The type of this region, from 1-3
+	 * @param width		The width of this region in rooms
+	 * @param height	The height of this region in rooms
+	 * @param originX   The x-coordinate of the region origin in grid space
+	 * @param originY   The y-coordinate of the region origin in grid space
+	 * @return          true if the region is initialized properly, false otherwise.
 	 */
-	static shared_ptr<RegionModel> alloc(int regNumber, int originX, int originY) {
+	static shared_ptr<RegionModel> alloc(string name, int type, int width, int height, int originX, int originY) {
 		shared_ptr<RegionModel> result = make_shared<RegionModel>();
-		return (result->init(regNumber, originX, originY) ? result : nullptr);
+		return (result->init(name, type, width, height, originX, originY) ? result : nullptr);
 	}
 
 #pragma mark Getters
+	/**
+	 * Returns the name of this region, which can be used to pull its corresponding
+	 * JSON file from assets.
+	 * 
+	 * @return	Name of this region
+	 */
+	string getName() { return _name; }
+
+	/**
+	 * Returns the "type" of this region, which is the number from 1-3 indicating
+	 * which background the region should use.
+	 * 
+	 * @return	The type of this region
+	 */
+	int getType() { return _bgType; }
+
 	/**
 	 * Returns the number of sublevels in this region.
 	 * 
@@ -275,6 +304,33 @@ public:
 	 */
 	int getGridOriginY() {
 		return _originY;
+	}
+
+	/**
+	 * Returns the bounds of this region as a Rect.
+	 * 
+	 * @return	The bounds of this region
+	 */
+	Rect getBounds() { return _bounds; }
+
+	/**
+	 * Returns the blockade textures, which block off the exit rooms until
+	 * this region is cleared.
+	 *
+	 * @return	Blockades in this region
+	 */
+	shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> getBlockades() {
+		return _blockades;
+	}
+
+	/**
+	 * Returns the exit rooms, which are rooms that are closed off until the
+	 * region is cleared.
+	 *
+	 * @return	Exit rooms in this region
+	 */
+	shared_ptr<vector<shared_ptr<RoomModel>>> getExitRooms() {
+		return _exitRooms;
 	}
 
 	/**
@@ -324,17 +380,6 @@ private:
 public:
 #pragma mark Setters
 	/**
-	 * Sets the dimensions of this region.
-	 *
-	 * @param width		The width of this region in rooms
-	 * @param height	The height of this region in rooms
-	 */
-	void setDims(int width, int height) {
-		_width = width;
-		_height = height;
-	}
-
-	/**
 	 * Sets the given room to be located in the xth column from the
 	 * left and the yth row from the bottom in GRID space coordinates.
 	 *
@@ -347,25 +392,37 @@ public:
 	 */
 	bool setRoom(int x, int y, shared_ptr<RoomModel> room);
 
+	/**
+	 * Sets the exit room to be the onelocated in the xth column from the
+	 * left and the yth row from the bottom in GRID space coordinates.
+	 *
+	 * @param x     The x-coordinate to place the room at in GRID space
+	 * @param y     The y-coordinate to place the room at in GRID space
+	 * @param tex	The texture to apply to an exit room
+	 * @return      Whether the room was set successfully
+	 */
+	bool setExitRoom(int x, int y, shared_ptr<Texture> tex);
+
 #pragma mark Backgrounds
 	/**
 	 * Stores static references to all the background options for all regions.
 	 *
 	 * @param assets	Asset manager where all the backgrounds are stored
+	 * @param world		The JSON that contains all the world metadata
 	 */
-	static void setBackgrounds(shared_ptr<cugl::AssetManager> assets);
+	static void setBackgrounds(shared_ptr<cugl::AssetManager> assets, shared_ptr<JsonValue> world);
 
 	/**
 	 * Returns a random background in the given region.
 	 *
-	 * @param regNum    Number of the region the background should be for
+	 * @param regType   Type of the region the background should be for
 	 * @return          Shared pointer to the texture for a background in the given region
 	 */
-	static shared_ptr<Texture> getRandBG(int regNum) {
+	static shared_ptr<Texture> getRandBG(int regType) {
 		// Get index from 0
-		regNum--;
+		regType--;
 		// Return random background from the ones available
-		return _backgrounds->at(regNum)->at(rand() % _backgrounds->at(regNum)->size());
+		return _backgrounds->at(regType)->at(rand() % _backgrounds->at(regType)->size());
 	}
 
 #pragma mark Sublevels
@@ -400,10 +457,18 @@ public:
 	 * Clears all the rooms associated with the checkpoint with the given ID (backgrounds
 	 * are swapped to the "cleared" option for the associated region).
 	 *
+	 * Returns whether the full region has now been cleared or not.
+	 *
 	 * @param cID	The unique ID number for a specific checkpoint
-	 * @return		Whether the checkpoint's associated rooms were cleared successfully
+	 * @return		Whether the full region has now been cleared
 	 */
 	bool clearCheckpoint(int cID);
+
+	/**
+	 * Clears the region, meaning the blockades now disappear and the
+	 * player can move on to the next region.
+	 */
+	void clearRegion();
 
 private:
 #pragma mark Debug

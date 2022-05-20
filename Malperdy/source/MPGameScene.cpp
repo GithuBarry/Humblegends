@@ -27,8 +27,6 @@ using namespace std;
 
 /** Whether or not the game will even bother loading from a save */
 #define LOAD_FROM_SAVE 0
-/** Reynard's start location */
-#define REYNARD_START Vec2(16, 16)
 
 #pragma mark -
 #pragma mark Level Geography
@@ -178,21 +176,17 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // This means that we cannot change the aspect ratio of the physics world. Shift to center if a bad fit
     _scale = dimen.width == SCENE_WIDTH ? dimen.width / rect.size.width : dimen.height / rect.size.height;
     // Vec2 offset((dimen.width - SCENE_WIDTH) / 2.0f, (dimen.height - SCENE_HEIGHT) / 2.0f); //BUGGY
-    Vec2 offset;
 
     // CULog("Size: %f %f", getSize().width, getSize().height);
     //  Create the scene graph
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
-    _worldnode->setPosition(offset);
 
     _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
     _debugnode->setScale(_scale);                             // Debug node draws in PHYSICS coordinates
-    _debugnode->setPosition(offset / _scale);
     setDebug(false);
 
     _winNode = scene2::Label::allocWithText("VICTORY!", _assets->get<Font>(PRIMARY_FONT));
     _winNode->setAnchor(Vec2::ANCHOR_CENTER);
-    _winNode->setPosition(offset);
     _winNode->setBackground(Color4::BLACK);
     _winNode->setForeground(STATIC_COLOR);
     _winNode->setPadding(dimen.width / 2, dimen.height / 2, dimen.width / 2, dimen.height / 2);
@@ -201,13 +195,13 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _health = scene2::PolygonNode::allocWithFile("textures/Health_Bar_Full.png");
     _health->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     Vec2 padding = Vec2(30, -20);
-    _health->setPosition(offset + Vec2(0, getSize().height) + padding);
+    _health->setPosition(Vec2(0, getSize().height) + padding);
     _health->setScale(1.5);
 
     _pause = scene2::PolygonNode::allocWithFile("textures/PauseScreen/Pause_Button.png");
     _pause->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     padding = Vec2(computeActiveSize().width - 100, -10);
-    _pause->setPosition(offset + Vec2(0, getSize().height) + padding);
+    _pause->setPosition(Vec2(0, getSize().height) + padding);
     _pause->setScale(0.3);
 
     addChild(_worldnode);
@@ -373,9 +367,19 @@ void GameScene::populateEnv()
     populateTutorials();
 }
 
-void GameScene::populateChars()
+/**
+ * Places all the characters, including Reynard and enemies, in the game world.
+ */
+void GameScene::populateChars() {
+    populateReynard();
+    populateEnemies();
+}
+
+/**
+ * Places Reynard in the game world.
+ */
+void GameScene::populateReynard()
 {
-#pragma mark Reynard
     Vec2 pos = _checkpointReynardPos;
 
     shared_ptr<Animation> reynard_animations = make_shared<Animation>(_assets->get<Texture>("reynard_all"), _assets->get<JsonValue>("framedata2")->get("reynard"));
@@ -387,17 +391,36 @@ void GameScene::populateChars()
     _reynardController->getCharacter()->setPosition(Vec2(4, 3));
     addObstacle(_reynardController->getCharacter(), _reynardController->getCharacter()->_node); // Put this at the very front
     _reynardController->getCharacter()->setPosition(pos_temp);
-    _reynardController->getCharacter()->setPosition(Vec2(4, 8));
+}
 
-#pragma mark Enemies
+/**
+ * Places all the enemies for the active regions in the game world.
+ */
+void GameScene::populateEnemies() {
+    shared_ptr<vector<shared_ptr<RegionModel>>> _activeRegions = _grid->getActiveRegions();
+    for (vector<shared_ptr<RegionModel>>::iterator itr = _activeRegions->begin();
+        itr != _activeRegions->end(); ++itr) {
+        populateEnemiesInRegion(*itr);
+    }
+}
 
+/**
+ * Places the enemies for the given region in the game world.
+ *
+ * Allows us to populate enemies on a per-region basis, instead
+ * of loading them all in at once and potentially causing runtime
+ * issues.
+ *
+ * @param region    The region to populate the enemies for.
+ */
+void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region) {
     shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
 
-    // Give all enemies a reference to Reynard's controller to handle detection
+    // Initialize new enemy
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
     // get Level data from the JSON
-    shared_ptr<JsonValue> levelJSON = _assets->get<JsonValue>("level");
+    shared_ptr<JsonValue> levelJSON = _assets->get<JsonValue>(region->getName());
     // get the layer containing entities
     shared_ptr<JsonValue> entityLayer;
     for (int i = 0; i < levelJSON->get("layers")->size(); i++)
@@ -447,6 +470,7 @@ void GameScene::populateChars()
                 _enemies->back()->setObstacleWorld(_world);
                 _enemies->back()->setReynardController(_reynardController);
                 addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
+
                 _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(3.5f, 1)) * Vec2(5, 5));
             }
             else if (temp.find("enemy") != string::npos)
@@ -457,7 +481,6 @@ void GameScene::populateChars()
                 int x = room % (levelJSON->get("width")->asInt() / ROOM_WIDTH);
                 int y = room / (levelJSON->get("width")->asInt() / ROOM_WIDTH);
                 Vec2 enemypos = Vec2(x, levelJSON->get("height")->asInt() / ROOM_HEIGHT - 1 - y);
-
 
                 // initialize it
                 //                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(ROOM_WIDTH,ROOM_HEIGHT), _scale, rabbit_animations));
@@ -566,6 +589,9 @@ void GameScene::addObstacle(const std::shared_ptr<physics2::Obstacle> &obj,
 
 #pragma mark -
 #pragma mark Physics Handling
+
+float frameAcc = 0;
+int fps = 0;
 
 /**
  * Executes the core gameplay loop of this world.
@@ -785,6 +811,7 @@ void GameScene::update(float dt)
         _reynardController->dash(_input.getDashDirection());
     }
 
+    // When zooming in
     if (_input.didZoomIn())
     {
         if (!_gamestate.isPaused())
@@ -795,7 +822,7 @@ void GameScene::update(float dt)
             }
             _gamestate.zoom_in();
         }
-        _envController->deselectRoom();
+        _envController->zoomIn();
     }
 
     if (_reynardController->getCharacter()->getHearts() <= 0)
@@ -820,7 +847,7 @@ void GameScene::update(float dt)
             }
             _gamestate.zoom_out();
         }
-        _envController->deselectRoom();
+        _envController->zoomOut();
     }
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
@@ -983,13 +1010,15 @@ shared_ptr<TrapModel> GameScene::isTrapCollision(b2Contact *contact)
         return nullptr;
     b2Body *body1 = contact->GetFixtureA()->GetBody();
     b2Body *body2 = contact->GetFixtureB()->GetBody();
-    for (int row = 0; row < _grid->getWidth(); row++)
+    shared_ptr<RoomModel> room;
+    for (int col = 0; col < _grid->getWidth(); col++)
     {
-        for (int col = 0; col < _grid->getHeight(); col++)
+        for (int row = 0; row < _grid->getHeight(); row++)
         {
-            if (_grid->getRoom(row, col)->getTrap() != nullptr)
+            room = _grid->getRoom(col, row);
+            if (room != nullptr && room->getTrap() != nullptr)
             {
-                shared_ptr<TrapModel> _trap = _grid->getRoom(row, col)->getTrap();
+                shared_ptr<TrapModel> _trap = _grid->getRoom(col, row)->getTrap();
                 b2Body *body = _trap->getObstacle()->getBody();
                 bool isCollision = body == body1 || body == body2;
                 if (isCollision)
@@ -1283,22 +1312,17 @@ void GameScene::beginContact(b2Contact *contact)
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT)
             {
-                // If Reynard has a key for the checkpoint, use it.
-                if (_reynardController->get_keys_count() > 0) {
-                    _reynardController->decrement_keys();
-                    _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
-                    _checkpointEnemyPos = vector<Vec2>();
-                    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                    for (auto thisEnemy : *_enemies)
-                    {
-                        _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
-                    }
-                    rewriteSaveFile();
-                    trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-                    // trap->getPolyNode()->setColor(Color4::GREEN);
-                    //  Clear all the associated rooms
-                    _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
+                _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
+                _checkpointEnemyPos = vector<Vec2>();
+                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                for (auto thisEnemy : *_enemies)
+                {
+                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
+                rewriteSaveFile();
+                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+                // Clear all the associated rooms
+                _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
             }
             else if (trapType == TrapModel::TrapType::GOAL)
             {
@@ -1388,6 +1412,7 @@ void GameScene::beginContact(b2Contact *contact)
         }
     }
     // Reynard-on-enemy collision
+    else
     {
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         if (isReynardCollision(contact) && enemy != nullptr)

@@ -3,26 +3,13 @@
     "framedata": "json/framedata.json",
     "framedata2": "json/framedatanew.json",
 
-    "level": "json/levels/MP_KeyTest.json",
+    "world": "json/levels/MP_WorldData.json",
+    "region1": "json/levels/MP_Region_1.json",
+    "region1-2": "json/levels/MP_Region_1-2.json",
 
     "tileset_geometry": "json/tilesets/geometry.tsj",
     "tileset_entities": "json/tilesets/entities.json",
-    "tileset_rooms": "json/tilesets/rooms.tsj",
-
-    "room_downleft": "json/rooms/room_downleft.tmj",
-    "room_downleftright": "json/rooms/room_downleftright.tmj",
-    "room_downright": "json/rooms/room_downright.tmj",
-    "room_leftright": "json/rooms/room_leftright.tmj",
-    "room_updown": "json/rooms/room_updown.tmj",
-    "room_updownleft": "json/rooms/room_updownleft.tmj",
-    "room_updownleftright": "json/rooms/room_updownleftright.tmj",
-    "room_updownright": "json/rooms/room_updownright.tmj",
-    "room_upleft": "json/rooms/room_upleft.tmj",
-    "room_upleftright": "json/rooms/room_upleftright.tmj",
-    "room_upright": "json/rooms/room_upright.tmj",
-    "room_solid": "json/rooms/solid.json",
-    "room_flooronly": "json/rooms/room_flooronly.tmj",
-    "room_ceilonly": "json/rooms/room_ceilonly.tmj"
+    "tileset_rooms": "json/tilesets/rooms.tsj"
   },
 
   "textures": {
@@ -65,6 +52,12 @@
     "ZoomOutTutorial": {
       "file": "textures/tutorial/TutorialZoomOut.png"
     },
+    "blocked": {
+      "file": "textures/environment/BG_Blocked.png"
+    },
+    "bg-r1-0": {
+      "file": "textures/environment/BG_R1_0.jpg"
+    },
     "bg-r1-1": {
       "file": "textures/environment/BG_R1_1.png"
     },
@@ -74,8 +67,8 @@
     "bg-r1-3": {
       "file": "textures/environment/BG_R1_3.png"
     },
-    "bg-r1c-1": {
-      "file": "textures/environment/BG_R1C_1.jpg"
+    "bg-r2-0": {
+      "file": "textures/environment/BG_R1_0.jpg"
     },
     "bg-r2-1": {
       "file": "textures/environment/BG_R2_1.jpg"
@@ -88,6 +81,9 @@
     },
     "bg-r2-4": {
       "file": "textures/environment/BG_R2_4.jpg"
+    },
+    "bg-r3-0": {
+      "file": "textures/environment/BG_R1_0.jpg"
     },
     "bg-r3-1": {
       "file": "textures/environment/BG_R3_1.jpg"
@@ -115,9 +111,6 @@
     },
     "rabbit_all": {
       "file": "textures/rabbit_all.png"
-    },
-    "key" : {
-        "file" : "textures/MP_Key.png"
     }
   },
   "sounds": {
@@ -191,29 +184,29 @@
     "level_music": {
       "type": "sample",
       "file": "sounds/levelmusic.ogg",
-      "volume": 0.3,
+      "volume": 0.2,
       "stream": true
     },
 
     "slowedlevel_music": {
       "type": "sample",
       "file": "sounds/slowedlevelmusic.ogg",
-      "volume": 0.3,
+      "volume": 0.2,
       "stream": true
     },
 
     "titlescreen_music": {
       "type": "sample",
       "file": "sounds/titlescreenmusic.ogg",
-      "volume": 0.3,
+      "volume": 0.2,
       "stream": true
     }
   },
 
-    "fonts": {
-        "retro": {
-            "file":     "fonts/RetroGame.ttf",
-            "size":     64
-        }
-    }
+	"fonts": {
+		"retro": {
+			"file":     "fonts/RetroGame.ttf",
+			"size":     64
+		}
+	}
 }

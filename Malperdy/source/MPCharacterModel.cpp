@@ -134,7 +134,8 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             break;
         case MovementState::DASHING:
             // Only allow breaking from dash if dash has ended or switching to wall slide OR jump (jump cancel)
-            if (!param && newState != MovementState::ONWALL && newState != MovementState::JUMPING) return false;
+            if (!param && newState != MovementState::ONWALL &&
+                newState != MovementState::JUMPING) return false;
             setGravityScale(1.0f);
             break;
         case MovementState::DEAD:
