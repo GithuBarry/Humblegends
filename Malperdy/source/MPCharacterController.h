@@ -330,7 +330,7 @@ public:
     void hurt(float dmg) {
         _character->setHearts(_character->getHearts() - dmg);
         // Kill if dead
-        if (_character->getHearts() <= 0) _character->setMoveState(MovementState::DEAD);
+        if (_character->getHearts() <= 0) _character->setMoveState(CharacterModel::MovementState::DEAD);
     }
 
     /**

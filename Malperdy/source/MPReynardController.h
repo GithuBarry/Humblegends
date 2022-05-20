@@ -28,6 +28,9 @@ protected:
     /** The moment in time that Reynard was last hit */
     Timestamp _lastHit = Timestamp();
 
+    /** Number of keys Reynard currently has */
+    int num_of_keys = 1;
+
 public:
 
     /**
@@ -76,6 +79,18 @@ public:
      * @param dir   Direction to apply knockback force in
      */
     void knockback(b2Vec2 dir);
+
+    void increment_keys() {
+        num_of_keys += 1;
+    }
+
+    void decrement_keys() {
+        num_of_keys -= 1;
+    }
+
+    int get_keys_count() {
+        return num_of_keys;
+    }
 };
 
 

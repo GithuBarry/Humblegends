@@ -1364,7 +1364,7 @@ void GameScene::beginContact(b2Contact *contact)
             if (trapType == TrapModel::TrapType::SPIKE) {
                 // TODO: Change this because enemy dies instantly on contact with spikes.
                 enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
-                if (enemy->getCharacter()->isDead()) {
+                if (enemy->isDead()) {
                     key = true;
                     enemyPos = enemy->getCharacter()->getPosition();
                 }
