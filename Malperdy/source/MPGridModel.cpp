@@ -583,11 +583,9 @@ shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> GridModel::getPhysicsO
         {
 
             // For each polygon in the room
-            for (vector<shared_ptr<physics2::PolygonObstacle>>::iterator itr =
-                getPhysicsGeometryAt(row, col)->begin();
+            for (auto itr = getPhysicsGeometryAt(row, col)->begin();
                 itr != getPhysicsGeometryAt(row, col)->end(); ++itr)
             {
-
                 // add the obstacle to the flat vector
                 obstacles->push_back(*itr);
             }
@@ -629,14 +627,12 @@ Poly2 GridModel::convertToScreen(Poly2 poly)
 
 void GridModel::calculatePhysicsGeometry()
 {
-    _physicsGeometry = make_shared<vector<shared_ptr<vector<shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>>>>>>();
+    _physicsGeometry = make_shared<vector<shared_ptr<vector<shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>>();
 
     // Trap cache
     shared_ptr<TrapModel> trap;
     // Room cache
     shared_ptr<RoomModel> room;
-    // Counter for which filler room is up next
-    int fillerInd = 0;
 
     // For each room in the world
     for (int row = 0; row < _size.y; row++)
@@ -713,7 +709,7 @@ void GridModel::calculatePhysicsGeometry()
     // For each region
     for (auto regItr = _regions->begin(); regItr != _regions->end(); ++regItr) {
         exitRooms = (*regItr)->getExitRooms();
-        // Don't do this region if exit rooms = nullptr, meaning the region has been cleared
+        // Don't do this region if exit rooms == nullptr, meaning the region has been cleared
         if (exitRooms == nullptr) continue;
         // For each blockade in that region
         for (auto blockItr = (*regItr)->getBlockades()->begin();
@@ -729,6 +725,7 @@ void GridModel::calculatePhysicsGeometry()
             // Counter will let rooms/blockades align because they were added simultaneously
             getPhysicsGeometryAt(exitRooms->at(counter)->getPositionX() / DEFAULT_ROOM_WIDTH,
                 exitRooms->at(counter)->getPositionY() / DEFAULT_ROOM_HEIGHT)->push_back(obstacle);
+            (*regItr)->addBlockadeObs(obstacle);
 
             counter++;
         }
@@ -739,17 +736,37 @@ void GridModel::calculatePhysicsGeometry()
 #pragma mark Checkpoints
 /**
  * Clears all the rooms associated with the checkpoint with the given ID (backgrounds
- * are swapped to the "cleared" option for the associated region).
+ * are swapped to the "cleared" option for the associated region). If this was the last
+ * checkpoint in the region, it then also clears the region blockades.
+ *
+ * Returns 0 if the checkpoint was not found, 1 if it cleared but the region is
+ * not fully cleared yet, and 2 if it cleared and it was the last checkpoint so
+ * so the region was also cleared.
  *
  * @param cID	The unique ID number for a specific checkpoint
- * @return		Whether the checkpoint's associated rooms were cleared successfully
+ * @return      An integer from 0-2 representing the outcome of the attempt
  */
-bool GridModel::clearCheckpoint(int cID)
+int GridModel::clearCheckpoint(int cID)
 {
-    for (shared_ptr<RegionModel> region : *_regions)
+    int outcome = -1;
+
+    for (auto regItr = _regions->begin(); regItr != _regions->end(); ++regItr)
     {
-        if (region->clearCheckpoint(cID))
-            return true;
+        outcome = (*regItr)->clearCheckpoint(cID);
+
+        // Succeed if checkpoint was found and cleared
+        if (outcome == 1) {
+            // Checkpoint cleared
+            return 1;
+        }
+        // If the region is now clear, clear it accordingly
+        else if (outcome == 2) {
+            (*regItr)->clearRegion();
+            // Checkpoint and region cleared
+            return 2;
+        }
     }
-    return false;
+
+    // Checkpoint not found
+    return 0;
 }
