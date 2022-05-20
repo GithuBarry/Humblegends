@@ -318,10 +318,10 @@ void GameScene::revert(bool totalReset)
             _envController->swapRoomOnGrid(_swapHistory[i][0], _swapHistory[i][1], true);
         }
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
-//        for (int i = 0; i < _enemies->size(); i++)
-//        {
-//            (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
-//        }
+        for (int i = 0; i < _enemies->size(); i++)
+        {
+            (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
+        }
     }
 }
 
@@ -503,11 +503,11 @@ void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region) {
     // Initialize EnemyController with the final animation map and store in vector of enemies
     //_enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
-    //    for(shared_ptr<EnemyController> enemy : *_enemies){
-    //        enemy->setObstacleWorld(_world);
-    //        enemy->setReynardController(_reynardController);
-    //        addObstacle(enemy->getCharacter(), enemy->getCharacter()->_node); // Put
-    //    }
+//        for(shared_ptr<EnemyController> enemy : *_enemies){
+//            enemy->setObstacleWorld(_world);
+//            enemy->setReynardController(_reynardController);
+//            addObstacle(enemy->getCharacter(), enemy->getCharacter()->_node); // Put
+//        }
 
     _checkpointEnemyPos = vector<Vec2>();
     _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
