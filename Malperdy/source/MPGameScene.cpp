@@ -609,6 +609,8 @@ void GameScene::update(float dt)
     Vec2 inputPos = inputToGameCoords(_input.getPosition());
 
     _envController->getGrid()->update(dt);
+    
+    _world->garbageCollect();
 
     // Process the toggled key commands
     if (_input.didDebug())
@@ -621,6 +623,8 @@ void GameScene::update(float dt)
             (*itr)->setDebug(true);
         }
     }
+    
+    
 
     // Reset Process toggled by key command
     if (_input.didReset())

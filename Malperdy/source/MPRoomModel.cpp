@@ -164,7 +164,7 @@ bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
 	addChild(boundNode);*/
 
     //Fog of war
-	setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
+	setColor(Color4(Vec4(0.5, 0.5, 0.5, 1)));
 
     // Initialize lock icon
     /*_lockIcon = scene2::PolygonNode::allocWithFile("textures/lock_icon.png");
