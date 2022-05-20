@@ -389,8 +389,9 @@ void GameScene::populateEnv()
     // Do regular keys first
     auto keyItr = _grid->_loneKeyLocs->begin();
     while (keyItr != _grid->_loneKeyLocs->end()) {
-        // Note that these are in HOUSE space
-        //createKey()
+        // Note that these are in GRID space
+        // Go to world space, then to physics
+        createKey(_grid->nodeToWorldCoords(*keyItr) / _scale, false, false);
         ++keyItr;
     }
 }
@@ -1365,7 +1366,9 @@ void GameScene::beginContact(b2Contact *contact)
                     shared_ptr<CheckpointKey> k = _keys.at(i);
                     b2Body *kBody = k->getBody();
                     if (kBody == body1 || kBody == body2) {
-                        removeKey(k);
+                        // Only remove the key if Reynard successfully picks it up
+                        if (_reynardController->pickupKey()) removeKey(k);
+                        // TODO: otherwise turn it into a regular key
                     };
                 }
                 
@@ -1373,7 +1376,9 @@ void GameScene::beginContact(b2Contact *contact)
                     shared_ptr<CheckpointKeyCrazy> k = _keysCrazy.at(i);
                     b2Body *kBody = k->getBody();
                     if (kBody == body1 || kBody == body2) {
-                        removeKeyCrazy(k);
+                        // Only remove the key if Reynard successfully picks it up
+                        if (_reynardController->pickupKey()) removeKeyCrazy(k);
+                        // TODO: otherwise turn it into a regular key
                     };
                 }
                 
@@ -1687,28 +1692,32 @@ Vec2 GameScene::inputToGameCoords(Vec2 inputCoords)
  * Create a key at the given location in PHYSICS space
  */
 void GameScene::createKey(Vec2 pos, bool isPossesed, bool isPathFinding) {
+    std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
+
     if (isPossesed) {
         std::shared_ptr<CheckpointKeyCrazy> k = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
-        std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
         k->setSceneNode(n);
         k->setDrawScale(_scale);
         n->setScale(.2);
         k->setPosition(pos);
         k->setIsPathFinding(isPathFinding);
         _keysCrazy.push_back(k);
+        n->setAbsolute(true);
         addObstacle(k, n);
     }
     else {
         std::shared_ptr<CheckpointKey> k  = CheckpointKey::alloc(Vec2(0,0),Size(1.0f, 1.0f));
-        std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
         k->setSceneNode(n);
         k->setDrawScale(_scale);
         n->setScale(.2);
         k->setPosition(pos);
         k->setIsPathFinding(isPathFinding);
         _keys.push_back(k);
+        n->setAbsolute(true);
         addObstacle(k, n);
-    };
+
+        CULog("Position: (%f, %f)", pos.x, pos.y);
+    }
 }
 
 void GameScene::removeKey(shared_ptr<CheckpointKey> k) {
