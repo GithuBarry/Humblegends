@@ -130,18 +130,12 @@ protected:
      */
     int keepRedFrames = 0;
 
-    bool key = false;
+    /** The enemy locations to spawn keys for next frame, in PHYSICS space */
+    shared_ptr<vector<Vec2>> deadKeyEnemyLocs = make_shared<vector<Vec2>>();
     
-    vector<std::shared_ptr<CheckpointKey>> _key;
+    vector<std::shared_ptr<CheckpointKey>> _keys;
     
-    vector<std::shared_ptr<CheckpointKeyCrazy>> _keyCrazy;
-    
-    // std::shared_ptr<CheckpointKey> _key;
-    
-    // Enemy's PHYSICS space location
-    Vec2 enemyPos;
-    
-    // std::shared_ptr<CheckpointKeyCrazy> _keyCrazy;
+    vector<std::shared_ptr<CheckpointKeyCrazy>> _keysCrazy;
 
 public:
 
