@@ -31,7 +31,10 @@ using namespace cugl;
  */
 bool SpikeTrap::init(float roomWidth, float roomHeight, bool big){
     _sceneNode = make_shared<scene2::SpriteNode>();
-    _sceneNode->initWithFile("textures/spikes.png");
+    
+    //_sceneNode->initWithFile("textures/spikes.png");
+    shared_ptr<Texture> s =TrapModel::ASSETS->get<Texture>("spikes");
+    _sceneNode->initWithSprite(s, 1, 1);
     _type = TrapType::SPIKE;
 
     _sceneNode->setAnchor(Vec2::ZERO);

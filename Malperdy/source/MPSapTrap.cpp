@@ -28,7 +28,9 @@ using namespace cugl;
  */
 bool SapTrap::init(float roomWidth, float roomHeight){
     _sceneNode = make_shared<scene2::SpriteNode>();
-    _sceneNode->initWithFile("textures/Sap_Trap.png");
+    
+    shared_ptr<Texture> s =TrapModel::ASSETS->get<Texture>("sap");
+    _sceneNode->initWithSprite(s, 1, 1);
     _type = TrapType::SAP;
     
     _sceneNode->setAnchor(Vec2::ZERO);

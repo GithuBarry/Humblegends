@@ -17,6 +17,8 @@ using namespace cugl::physics2;
 #pragma mark -
 #pragma mark Constructors
 
+shared_ptr<AssetManager> TrapModel::ASSETS = make_shared<AssetManager>();
+
 
 /**
  * Initializes a trap with the given characteristics in a given location in Room Space.
@@ -154,6 +156,8 @@ void TrapModel::update(float dt) {
                 // if on the last frame
                 if (_currFrame >= _sceneNode->getSize()-1){
                     // loop the animation if needed
+                    _sceneNode->setFrame(0);
+                    return;
    
                 }
                 // if not on the last frame, then increment
