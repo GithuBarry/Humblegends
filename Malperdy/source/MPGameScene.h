@@ -111,6 +111,8 @@ protected:
 
     /** checkpoint for swap history length*/
     int _checkpointSwapLen = 0;
+
+    vector<int> _checkpointActiatedCheckpoints;
     vector<Vec2> _checkpointEnemyPos;
 
     /** A store position of reynard before reset*/
