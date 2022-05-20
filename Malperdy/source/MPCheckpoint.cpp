@@ -10,7 +10,6 @@
 //
 
 #include <cugl/cugl.h>
-#include <cugl/physics2/CUBoxObstacle.h>
 
 #include "MPCheckpoint.h"
 

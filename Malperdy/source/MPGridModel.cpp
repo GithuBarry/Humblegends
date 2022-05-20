@@ -289,6 +289,8 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                         // Add checkpoint to the region
                         region->addCheckpoint(dynamic_cast<Checkpoint *>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap())))->getID(),
                                               curr_col, curr_row);
+                        // Lock it by default
+                        sublevel->at(curr_row)->at(curr_col)->setPermlocked();
                     }
                     else if (tile_to_traps[data.at(j)] == "sap")
                     {
@@ -298,7 +300,7 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                     else if (tile_to_traps[data.at(j)] == "locked")
                     {
                         // TODO: make sure this works
-                        sublevel->at(curr_row)->at(curr_col)->permlocked = true;
+                        sublevel->at(curr_row)->at(curr_col)->setPermlocked();
                     }
                     else if (tile_to_traps[data.at(j)] == "key")
                     {
@@ -373,8 +375,12 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale)
     for (int y = 0; y < _size.y; y++) {
         for (int x = 0; x < _size.x; x++) {
             // If there's no room there, put a solid one
-            if (getRoom(x, y) == nullptr)
-                _filler->push_back(RoomModel::alloc(x, y, "room_solid"));
+            if (getRoom(x, y) == nullptr) {
+                // Need to offset by grid origin to get GRID coordinates
+                shared_ptr<RoomModel> room = RoomModel::alloc(x + _originX, y + _originY, "room_solid");
+                setRoom(x, y, room);
+                _filler->push_back(room);
+            }
         }
     }
 
@@ -532,7 +538,7 @@ bool GridModel::swapRooms(Vec2 pos1, Vec2 pos2, bool forced)
 
 /**
  *
- * Returns whether the two given rooms can be swapped.
+ * Returns whether the two rooms with the given HOUSE space coordinates can be swapped.
  *
  * Rooms can only be swapped if they are both in-bounds and within the same region
  * and sublevel.
@@ -543,6 +549,12 @@ bool GridModel::swapRooms(Vec2 pos1, Vec2 pos2, bool forced)
  */
 bool GridModel::canSwap(Vec2 room1, Vec2 room2)
 {
+    // Transform from HOUSE to GRID space
+    room1.x += _originX;
+    room1.y += _originY;
+    room2.x += _originX;
+    room2.y += _originY;
+
     // Can't swap if in different regions or in different sublevels within the same region
     for (auto itr = _regions->begin(); itr != _regions->end(); ++itr) {
         if ((*itr)->areInSameSublevel(room1.x, room1.y, room2.x, room2.y))

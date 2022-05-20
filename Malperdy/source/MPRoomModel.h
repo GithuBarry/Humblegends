@@ -54,10 +54,15 @@ using namespace cugl;
 #define DEFAULT_ROOM_HEIGHT 480
 /** The ID of the default room type */
 #define DEFAULT_ROOM_ID "leftrightupdown"
-/** The speed at which the rooms should swap, from 0.5001-0.9999, smaller is slower */
-#define swapSpeed 0.2f
+/** The speed at which the rooms should swap, smaller is slower */
+#define SWAP_SPEED 0.1f
 /** The rate at which a room should clear (background changes) */
-#define CLEAR_RATE 0.08f
+#define CLEAR_RATE 0.05f
+/** The transparency value of a locked room */
+#define LOCKED_ALPHA 0.7f
+
+/** The color of the overlaid geometry */
+const Color4 GEOMETRY_COLOR = Color4(20, 20, 20, 255);
 
 class RoomModel : public cugl::scene2::SceneNode {
 public:
@@ -92,6 +97,10 @@ private:
     bool fogged = true;
     /** Value to track original background opacity, from 0-1, starting at 1 */
     float bgOpacity = 1.0f;
+    /** Whether this room is currently in a zoomed-out state or not */
+    bool isZoomedOut = false;
+    /** Whether the room's lock status has been changed and needs to be updated */
+    bool lockChangePending = false;
 
     // GEOMETRY
     /** Vector of polygon nodes forming the room's geometry */
@@ -208,9 +217,12 @@ public:
      * Returns whether or not this room is currently locked, meaning it cannot
      * be swapped.
      * 
+     * A room is locked if a character is in it, it is permanently locked, or
+     * it is fogged.
+     * 
      * @return  Whether this room is locked, meaning it can't be swapped
      */
-    bool isLocked() { return locked || permlocked; }
+    bool isLocked() { return locked || permlocked || fogged; }
 
     /**
      * Returns whether or not this room has fog of war, meaning its 
@@ -228,12 +240,29 @@ public:
     /**
      * Sets this room to be locked, meaning it can no longer be swapped.
      */
-    void lock() { locked = true; }
+    void lockRoom() {
+        locked = true;
+        lockChangePending = true;
+    }
 
     /**
-     * Sets this room to be unlocked, meaning it can now be swapped.
+     * Sets this room to be unlocked, meaning it can now be swapped,
+     * unless there is some factor that would prevent it from being
+     * unlocked (fogged, permalocked, etc).
      */
-    void unlock() { locked = false; }
+    void unlockRoom() {
+        locked = permlocked || fogged;
+        lockChangePending = true;
+    }
+
+    /**
+     * Sets this room to be permanently locked, so it can never be
+     * unlocked.
+     */
+    void setPermlocked() {
+        permlocked = true;
+        locked = true;
+    }
 
     /**
      * Sets this room to be cleared, meaning the background will gradually
@@ -275,14 +304,70 @@ public:
     void setPosition(float x, float y) { this->SceneNode::setPosition(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT); }
 
     /**
-     * Sets whether the room's lock icon is visible
+     * Updates the room's appearance depending on whether or not it's locked.
      * 
-     * Only succeeds if this room is not a solid room
-     * 
-     * @param isVisible  true if the lock icon should be visible
+     * This is only called by RoomModel itself within the update method,
+     * which it only does if the rooms have been zoomed out and there is
+     * a change in lock appearance pending.
      */
-    void setLockIcon(bool isVisible) {
-        if (!isSolid) _lockIcon->setVisible(isVisible);
+    void updateLockedAppearance() {
+        // Only modify background if it's not solid
+        if (!isSolid) {
+            if (locked) {
+                _bgOrderNode->setColor(Color4(Vec4(0.6f, 0.6f, 0.6f, 1)));
+            }
+            else {
+                _bgOrderNode->setColor(Color4(Vec4(1, 1, 1, 1)));
+            }
+        }
+
+        // Modify geometry
+        for (auto itr = _geometry->begin(); itr != _geometry->end(); ++itr) {
+            if (locked) {
+                (*itr)->setColor(Color4(40, 40, 40, 255 * LOCKED_ALPHA));
+            }
+            else {
+                (*itr)->setColor(Color4(20, 20, 20, 255));
+            }
+        }
+        
+        // Mark as having already updated lock appearance
+        lockChangePending = false;
+    }
+
+public:
+    /**
+     * Called when the camera has zoomed in, and handles changes to the room
+     * accordingly.
+     * 
+     * Specifically, it reverts the appearance of a locked room to a normal
+     * room.
+     */
+    void zoomIn() {
+        isZoomedOut = false;
+
+        // Revert appearance if room was locked
+        if (locked) {
+            // Only revert background if room isn't solid
+            if (!isSolid) _bgOrderNode->setColor(Color4(Vec4(1, 1, 1, 1)));
+            for (auto itr = _geometry->begin(); itr != _geometry->end(); ++itr) {
+                (*itr)->setColor(Color4(20, 20, 20, 255));
+            }
+        }
+    }
+
+    /**
+     * Called when the camera has zoomed out, and handles changes to the room
+     * accordingly.
+     *
+     * Specifically, it makes a locked room appear as such, but does not affect
+     * unlocked rooms.
+     */
+    void zoomOut() {
+        isZoomedOut = true;
+
+        // Prepare to update appearance next frame if the room is locked
+        lockChangePending = locked;
     }
 
     /**
