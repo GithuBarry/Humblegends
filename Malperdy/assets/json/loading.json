@@ -97,21 +97,35 @@
         "minfilter": "linear",
         "magfilter": "linear",
         "atlas": {
-            "background": [ 0, 0, 645, 54 ],
-            "foreground": [ 14, 54, 631, 108 ],
-            "leftcap": [ 0, 54, 14, 108 ],
-            "rightcap": [ 631, 54, 645, 108 ]
+            "background": [ 0, 0, 645, 75 ],
+            "foreground": [ 21, 75, 624, 150 ],
+            "leftcap": [ 0, 75, 21, 150 ],
+            "rightcap": [ 624, 75, 645, 150 ]
         }
     },
-    "volume-bar-fg": {
-        "file": "textures/volume_foreground.png",
+    "sound-on": {
+        "file": "textures/sound_on.png",
         "wrapS": "clamp",
         "wrapT": "clamp",
         "minfilter": "linear",
         "magfilter": "linear"
     },
-    "volume-bar-bg": {
-        "file": "textures/volume_foreground.png",
+    "sound-off": {
+        "file": "textures/sound_off.png",
+        "wrapS": "clamp",
+        "wrapT": "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
+    },
+    "plus-volume": {
+        "file": "textures/Plus_Volume.png",
+        "wrapS": "clamp",
+        "wrapT": "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
+    },
+    "minus-volume": {
+        "file": "textures/Minus_Volume.png",
         "wrapS": "clamp",
         "wrapT": "clamp",
         "minfilter": "linear",
@@ -374,6 +388,38 @@
                             "absolute" : true
                         }
                     },
+                    "music-mute"  : {
+                        "type"   : "Button",
+                        "data"   : {
+                            "upnode"   : "up",
+                            "pushable" : [0,0, 0,256, 256,256, 256,0],
+                            "pushsize" : true,
+                            "anchor"   : [0,1],
+                            "scale"    : 0.4
+                        },
+                        "children" : {
+                            "on"       : {
+                                "type"   : "Image",
+                                "data"   : {
+                                    "texture"  : "sound-on"
+                                }
+                            },
+                            "off"       : {
+                                "type"   : "Image",
+                                "data"   : {
+                                    "texture"  : "sound-off",
+                                    "visible"  : false     
+                                }
+                            }
+                        },
+                        "layout" : {
+                            "x_anchor" : "left",
+                            "y_anchor" : "top",
+                            "x_offset" : 20,
+                            "y_offset" : -165,
+                            "absolute" : true
+                        }
+                    },
                     "music-bar"  : {
                         "type"   : "Progress",
                         "data"   : {
@@ -382,7 +428,8 @@
                             "background" : "volume-bar_background",
                             "foreground" : "volume-bar_foreground",
                             "left_cap"   : "volume-bar_leftcap",
-                            "right_cap"  : "volume-bar_rightcap"
+                            "right_cap"  : "volume-bar_rightcap",
+                            "visible"  : false 
                         },
                         "layout" : {
                             "x_anchor" : "left",
@@ -403,6 +450,39 @@
                             "x_anchor" : "left",
                             "y_anchor" : "middle",
                             "x_offset" : 20,
+                            "y_offset" : -10,
+                            "absolute" : true
+                        }
+                    },
+                    "sfx-mute"  : {
+                        "type"   : "Button",
+                        "data"   : {
+                            "upnode"   : "up",
+                            "pushable" : [0,0, 0,256, 256,256, 256,0],
+                            "pushsize" : true,
+                            "anchor"   : [0,1],
+                            "scale"    : 0.4
+                        },
+                        "children" : {
+                            "on"       : {
+                                "type"   : "Image",
+                                "data"   : {
+                                    "texture"  : "sound-on"
+                                }
+                            },
+                            "off"       : {
+                                "type"   : "Image",
+                                "data"   : {
+                                    "texture"  : "sound-off",
+                                    "visible"  : false     
+                                }
+                            }
+                        },
+                        "layout" : {
+                            "x_anchor" : "left",
+                            "y_anchor" : "middle",
+                            "x_offset" : 20,
+                            "y_offset" : -150,
                             "absolute" : true
                         }
                     },
@@ -414,7 +494,8 @@
                             "background" : "volume-bar_background",
                             "foreground" : "volume-bar_foreground",
                             "left_cap"   : "volume-bar_leftcap",
-                            "right_cap"  : "volume-bar_rightcap"
+                            "right_cap"  : "volume-bar_rightcap",
+                            "visible"  : false 
                         },
                         "layout" : {
                             "x_anchor" : "left",

@@ -54,10 +54,18 @@ protected:
     std::shared_ptr<cugl::scene2::Button>     _credits;
 
     // SETTINGS VIEW
-    /** The "done" button */
-    std::shared_ptr<cugl::scene2::Button>     _done;
     /** The background for volume settings */
-    std::shared_ptr<cugl::scene2::SceneNode>  _volumeBG;
+    std::shared_ptr<cugl::scene2::SceneNode>    _volumeBG;
+    /** The button to mute and unmute music */
+    std::shared_ptr<cugl::scene2::Button>       _musicMute;
+    /** The animated progress bar */
+    std::shared_ptr<cugl::scene2::ProgressBar>  _musicVol;
+    /** The button to mute and unmute music */
+    std::shared_ptr<cugl::scene2::Button>       _sfxMute;
+    /** The animated progress bar */
+    std::shared_ptr<cugl::scene2::ProgressBar>  _sfxVol;
+    /** The "done" button */
+    std::shared_ptr<cugl::scene2::Button>        _done;
 
     // CREDITS VIEW
     /** The credits content */
@@ -77,6 +85,7 @@ protected:
     * 3 = credits menu
     */
     int _state = 0;
+    int _prevState = 0;
     /**
     * Button state, to avoid double detection of problematic buttons
     *

@@ -11,6 +11,7 @@
 //  Copyright (c) 2022 Humblegends. All rights reserved.
 //
 #include "MPLoadingScene.h"
+#include "MPAudioController.h"
 
 using namespace cugl;
 
@@ -100,6 +101,28 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
 
     // Settings Screen
     _volumeBG = assets->get<scene2::SceneNode>("load_volume");
+    _musicMute = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_music-mute"));
+    _musicMute->addListener([=](const std::string& name, bool down) {
+        if (_buttonState == 0) _buttonState = 1;
+        else {
+            _buttonState = 0;
+            AudioController::setMusicMute(!AudioController::getMusicMute());
+            assets->get<scene2::SceneNode>("load_volume_music-mute_on")->setVisible(!AudioController::getMusicMute());
+            assets->get<scene2::SceneNode>("load_volume_music-mute_off")->setVisible(AudioController::getMusicMute());
+        }
+    });
+    _musicVol = std::dynamic_pointer_cast<scene2::ProgressBar>(assets->get<scene2::SceneNode>("load_volume_music-bar"));
+    _sfxMute = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_sfx-mute"));
+    _sfxMute->addListener([=](const std::string& name, bool down) {
+        if (_buttonState == 0) _buttonState = 1;
+        else {
+            _buttonState = 0;
+            AudioController::setSfxMute(!AudioController::getSfxMute());
+            assets->get<scene2::SceneNode>("load_volume_sfx-mute_on")->setVisible(!AudioController::getSfxMute());
+            assets->get<scene2::SceneNode>("load_volume_sfx-mute_off")->setVisible(AudioController::getSfxMute());
+        }
+        });
+    _sfxVol = std::dynamic_pointer_cast<scene2::ProgressBar>(assets->get<scene2::SceneNode>("load_volume_sfx-bar"));
     _done = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_done"));
     _done->addListener([=](const std::string& name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
@@ -136,10 +159,14 @@ void LoadingScene::dispose() {
     _settingsButton = nullptr;
     _credits = nullptr;
     _done = nullptr;
+    _musicMute = nullptr;
+    _sfxMute = nullptr;
     _volumeBG = nullptr;
     _creditsPage = nullptr;
     _brand = nullptr;
     _bar = nullptr;
+    _musicVol = nullptr;
+    _sfxVol = nullptr;
     _assets = nullptr;
     _progress = 0.0f;
 }
@@ -162,9 +189,24 @@ void LoadingScene::update(float progress) {
         }
         _bar->setProgress(_progress);
     }
-    if (_state == 1) showMainMenu();
-    else if (_state == 2) showSettings();
-    else if (_state == 3) showCredits();
+    if (_state != _prevState) {
+        if (_state == 1) {
+            showMainMenu();
+            _prevState = 1;
+        }
+        else if (_state == 2) {
+            showSettings();
+            _prevState = 2;
+        }
+        else if (_state == 3) {
+            showCredits();
+            _prevState = 3;
+        }
+    }
+    if (_state == 2) {
+        _musicVol->setProgress(AudioController::getMusicVol());
+        _sfxVol->setProgress(AudioController::getSfxVol());
+    }
 }
 
 /**
@@ -205,6 +247,8 @@ void LoadingScene::hideAll() {
     _credits->setVisible(false);
     _credits->deactivate();
     _volumeBG->setVisible(false);
+    _musicMute->deactivate();
+    _sfxMute->deactivate();
     _done->setVisible(false);
     _done->deactivate();
     _creditsPage->setVisible(false);
@@ -228,6 +272,8 @@ void LoadingScene::showMainMenu() {
 void LoadingScene::showSettings() {
     hideAll();
     _volumeBG->setVisible(true);
+    _musicMute->activate();
+    _sfxMute->activate();
     _done->setVisible(true);
     _done->activate();
 }
