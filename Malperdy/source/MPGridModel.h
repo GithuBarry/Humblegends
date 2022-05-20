@@ -72,6 +72,9 @@ private:
     /** The regions that Reynard has already unlocked and therefore has access to */
     shared_ptr<vector<shared_ptr<RegionModel>>> _activeRegions = make_shared<vector<shared_ptr<RegionModel>>>();
 
+    /** Filler solid rooms for the empty spaces in the level */
+    shared_ptr<vector<shared_ptr<RoomModel>>> _filler = make_shared<vector<shared_ptr<RoomModel>>>();
+
 public:
 #pragma mark Constructors
 

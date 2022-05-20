@@ -627,13 +627,14 @@ Poly2 GridModel::convertToScreen(Poly2 poly)
 
 void GridModel::calculatePhysicsGeometry()
 {
-    _physicsGeometry = make_shared<vector<shared_ptr<vector<shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>>();
+    _physicsGeometry = make_shared<vector<shared_ptr<vector<shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>>>>>>();
 
     // Trap cache
     shared_ptr<TrapModel> trap;
     // Room cache
     shared_ptr<RoomModel> room;
 
+    int fillerInd = 0;
     // For each room in the world
     for (int row = 0; row < _size.y; row++)
     {
