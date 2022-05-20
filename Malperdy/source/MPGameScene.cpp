@@ -278,6 +278,10 @@ void GameScene::reset()
     revert(true);
 }
 
+/**
+ *
+ * @param totalReset Whether or not to start the game from the beginning
+ */
 void GameScene::revert(bool totalReset)
 {
     if (_envController != nullptr)
@@ -1268,10 +1272,11 @@ void GameScene::beginContact(b2Contact *contact)
                 {
                     _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                 }
-                rewriteSaveFile();
                 trap->setTrapState(TrapModel::TrapState::ACTIVATED);
                 // Clear all the associated rooms
                 _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
+
+                rewriteSaveFile();
             }
             else if (trapType == TrapModel::TrapType::GOAL)
             {
