@@ -55,6 +55,11 @@ private:
 
     float _physics_scale;
 
+    /**
+     * a list of checkpoints
+     */
+    vector<Checkpoint*> checkpoints;
+
     /*
      * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
      */
@@ -97,6 +102,10 @@ public:
     static std::shared_ptr<GridModel> alloc(shared_ptr<AssetManager> assets) {
         std::shared_ptr<GridModel> result = std::make_shared<GridModel>();
         return (result->init(assets) ? result : nullptr);
+    }
+
+    vector<Checkpoint*> getCheckpoints(){
+        return checkpoints;
     }
 
 private:
