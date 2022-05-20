@@ -161,12 +161,12 @@ public:
         } else {
             result = Vec2(screenSize.width, screenSize.height)/ 2  - target;
 
-            if (currentTranslation.x + result.x > 0) {
-                result = Vec2(-currentTranslation.x, result.y);
-            }
-            if (currentTranslation.y + result.y > 0) {
+            //if (currentTranslation.x + result.x > 0) {
+                //    result = Vec2(-currentTranslation.x, result.y);
+            //}
+            /*if (currentTranslation.y + result.y > 0) {
                 result = Vec2(result.x, -currentTranslation.y);
-            }
+            }*/
         }
         result = result * result.length() / 3000;
         return result;

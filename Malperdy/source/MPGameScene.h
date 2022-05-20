@@ -30,7 +30,9 @@
 #include "MPTutorial.hpp"
 
 /** Reynard's start location */
-#define REYNARD_START Vec2(2, 16)
+//#define REYNARD_START Vec2(70, 70)
+//old reynard start possition
+#define REYNARD_START Vec2(2,16)
 
 /** Room dimensions in tiles */
 #define ROOM_WIDTH 12
@@ -104,6 +106,8 @@ protected:
 
     /** checkpoint for swap history length*/
     int _checkpointSwapLen = 0;
+
+    vector<int> _checkpointActiatedCheckpoints;
     vector<Vec2> _checkpointEnemyPos;
 
     /** A store position of reynard before reset*/
@@ -158,10 +162,30 @@ protected:
     void populateEnv();
 
     /**
-     * Lays out the game characters. Part of populate()
-     *
+     * Places all the characters, including Reynard and enemies, in the game world.
      */
     void populateChars();
+
+    /**
+     * Places Reynard in the game world.
+     */
+    void populateReynard();
+
+    /**
+     * Places all the enemies for the active regions in the game world.
+     */
+    void populateEnemies();
+
+    /**
+     * Places the enemies for the given region in the game world.
+     * 
+     * Allows us to populate enemies on a per-region basis, instead
+     * of loading them all in at once and potentially causing runtime
+     * issues.
+     * 
+     * @param region    The region to populate the enemies for.
+     */
+    void populateEnemiesInRegion(shared_ptr<RegionModel> region);
 
     /**
      * Place all the tutorials at their correct locations in Region 1.
@@ -200,6 +224,7 @@ public:
          *  - "EnemyPos" :      [enemy1Pos's x, enemy1Pos's y, ...]
          *  - "ReynardPos" :    [reynardPos's x, reynardPos's y]
          *  - "RoomSwap" :     [Swap1-Room1-x, Swap1-Room1-y, Swap1-Room2-x, Swap1-Room2-y, Swap2....]
+         *  - "ActivatedCheckpoints": [checkpoint_index_at_getCheckpoint()list1, ...]
          */
         //Init json objects
         std::shared_ptr<JsonValue> jsonRoot = JsonValue::alloc(JsonValue::Type::ObjectType);
@@ -213,6 +238,15 @@ public:
             jsonEnemyPos->appendValue(thisEnemy->getCharacter()->getPosition().y);
         }
         jsonRoot->appendChild("EnemyPos",jsonEnemyPos);
+
+        
+        // JSON - Checkpoint
+        std::shared_ptr<JsonValue> jsonCheckpoints = JsonValue::alloc(JsonValue::Type::ArrayType);
+        for (int i:_checkpointActiatedCheckpoints){
+            float fi = i;
+            jsonCheckpoints->appendValue(fi);
+        }
+        jsonRoot->appendChild("ActivatedCheckpoints",jsonCheckpoints);
 
         // JSON - Reynard
         std::shared_ptr<JsonValue> jsonReynardPos = JsonValue::alloc(JsonValue::Type::ArrayType);
@@ -262,6 +296,7 @@ public:
         std::vector<float> enemyPos1D = jsonRoot->get("EnemyPos")->asFloatArray();
         std::vector<float> reynardPos1D = jsonRoot->get("ReynardPos")->asFloatArray();
         std::vector<float> swapHistory1D = jsonRoot->get("RoomSwap")->asFloatArray();
+        std::vector<int> activatedcheckpts1D = jsonRoot->get("ActivatedCheckpoints")->asIntArray();
         if (enemyPos1D.size() % 2 != 0 || reynardPos1D.size() != 2 || swapHistory1D.size() % 4 != 0){
             cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
             return false;
@@ -276,6 +311,9 @@ public:
 
         // JSON - Reynard
         _checkpointReynardPos = Vec2(reynardPos1D[0],reynardPos1D[1]);
+
+        _checkpointActiatedCheckpoints = activatedcheckpts1D;
+
 
         // JSON - Room Swapping
         std::shared_ptr<JsonValue> jsonRoomSwap = JsonValue::alloc(JsonValue::Type::ObjectType);

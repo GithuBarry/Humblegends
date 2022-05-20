@@ -17,7 +17,6 @@
 
 #include <cugl/cugl.h>
 #include "MPRoomModel.h"
-#include "MPGridLoader.h"
 #include "MPRegionModel.h"
 #include "MPCheckpoint.h"
 
@@ -32,15 +31,6 @@ private:
     shared_ptr<cugl::AssetManager> _assets;
 
     // GRID LOADING
-    /** Loads in grid format  from a JSON and is used to look up roomIDs for rooms */
-    static shared_ptr<GridLoader> _gridLoader;
-
-    /** Horizontal gap between rooms in SCREEN SPACE  */
-    float _horizontal_gap;
-
-    /** Vertical gap between rooms in SCREEN SPACE  */
-    float _vertical_gap;
-
     /** Dimensions of a room in tiles */
     int _roomWidth, _roomHeight;
 
@@ -54,9 +44,20 @@ private:
      * Size of the entire level, spanning all regions (in units of number of rooms )
      * _size[0] is the width, _size[1] is the height
      */
-    Vec2 _size = Vec2(3, 3);
+    Vec2 _size = Vec2(0, 0);
+
+    /** The origin of the grid, so location of the lower left corner */
+    int _originX = 0;
+    int _originY = 0;
+
+    Rect _bounds = Rect();
 
     float _physics_scale;
+
+    /**
+     * a list of checkpoints
+     */
+    vector<Checkpoint*> checkpoints;
 
     /*
      * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
@@ -66,10 +67,18 @@ private:
     /*
      * Holds all the physics objects of the grid
      */
-    vector<vector<vector<shared_ptr<physics2::PolygonObstacle>>>> _physicsGeometry;
+    shared_ptr<vector<shared_ptr<vector<shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>>>>>> _physicsGeometry;
+
+    // REGIONS
 
     /** The regions that form the entire level */
-    shared_ptr<vector<shared_ptr<RegionModel>>> _regions;
+    shared_ptr<vector<shared_ptr<RegionModel>>> _regions = make_shared<vector<shared_ptr<RegionModel>>>();
+
+    /** The regions that Reynard has already unlocked and therefore has access to */
+    shared_ptr<vector<shared_ptr<RegionModel>>> _activeRegions = make_shared<vector<shared_ptr<RegionModel>>>();
+
+    /** Filler solid rooms for the empty spaces in the level */
+    shared_ptr<vector<shared_ptr<RoomModel>>> _filler = make_shared<vector<shared_ptr<RoomModel>>>();
 
 public:
 #pragma mark Constructors
@@ -90,6 +99,10 @@ public:
         return (result->init(assets) ? result : nullptr);
     }
 
+    vector<Checkpoint*> getCheckpoints(){
+        return checkpoints;
+    }
+
 private:
     /**
      * Initializes and returns a grid of rooms with the given dimensions.
@@ -104,17 +117,15 @@ private:
      * Initializes a region for the game. The region is placed such that its
      * lower left corner, its region origin, is at the given coordinates in the
      * overall grid space.
-     * 
+     *
      * Note that everything here uses REGION space, not grid space. The only coordinates
      * in grid space are the region's origin, which will be used to organize the regions,
      * but otherwise regions only care about where things are relative to their origin.
      *
-     * @param regNum        The number of the region to initialize
-     * @param originX       The x-coordinate of the region origin in grid space
-     * @param originY       The y-coordinate of the region origin in grid space
-     * @param regionJSON    The JSON for the given region
+     * @param region    The JSONValue for the metadata of the region to be initialized
+
      */
-    void initRegion(int regNum, int originX, int originY, shared_ptr<JsonValue> regionJSON);
+    void initRegion(shared_ptr<JsonValue> region);
     
 public:
     /**
@@ -152,6 +163,16 @@ public:
     }
 
     /**
+     * Returns the x-origin of the grid.
+     */
+    int getOriginX() const { return _originX; }
+
+    /**
+     * Returns the y-origin of the grid.
+     */
+    int getOriginY() const { return _originY; }
+
+    /**
      * Returns the ptr to the room located at the given coordinate,
      * where the x-coordinate is the column from the left and the
      * y-coordinate is the row from the bottom.
@@ -179,6 +200,28 @@ public:
      */
     shared_ptr<RoomModel> getRoom(int x, int y);
 
+    /**
+     * Returns all the active regions, so the ones that Reynard has
+     * already unlocked and therefore has access to.
+     * 
+     * @return  The list of active regions
+     */
+    shared_ptr<vector<shared_ptr<RegionModel>>> getActiveRegions() { return _activeRegions; }
+
+    /**
+     * Returns the physics objects of the given room in GRID coordinates.
+     * 
+     * This handles the issue with adding extra solid rooms to surround the
+     * whole level.
+     * 
+     * @param row   Row of the room in GRID coordinates
+     * @param col   Column of the room in GRID coordinates
+     * @return      Physics objects in the given room
+     */
+    shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsGeometryAt(int row, int col) {
+        return (_physicsGeometry->at(row)->at(col));
+    }
+
 private:
     /**
      * Helper function that returns the number of the region that the given
@@ -200,8 +243,8 @@ public:
     shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> getPhysicsObjects();
 
     Vec2 gridSpaceToRoom(Vec2 coord) {
-        int x = static_cast<int>(coord.x) / DEFAULT_ROOM_WIDTH;
-        int y = static_cast<int>(coord.y) / DEFAULT_ROOM_HEIGHT;
+        int x = (static_cast<int>(coord.x) / DEFAULT_ROOM_WIDTH) - _originX;
+        int y = (static_cast<int>(coord.y) / DEFAULT_ROOM_HEIGHT) - _originY;
         // y-coordinate is in the wrong direction, so flip to be from bottom instead of top
         //y = getHeight() - y - 1;
         return Vec2(x, y);
@@ -280,10 +323,17 @@ public:
      */
     bool setRoom(int x, int y, shared_ptr<RoomModel> room);
 
-    /** Swaps two rooms given two room coordinates.
-     * room = (i,j) meaning the room at row i, col j
-     * returns true if the swap occurs successfully, returns false if rooms cannot be swapped */
-    bool swapRooms(Vec2 room1, Vec2 room2,bool forced);
+    /**
+     * Swaps the two rooms at the given coordinates, where the x-coordinate is
+     * the column from the left and the y-coordinate is the row from the bottom.
+     *
+     * Returns true if the swap was successfully performed.
+     *
+     * @param pos1  The coordinates of the first room to swap in (column, row) form
+     * @param pos2  The coordinates of the second room to swap in (column, row) form
+     * @return      Whether the swap was performed successfully
+     */
+    bool swapRooms(Vec2 pos1, Vec2 pos2, bool forced);
 
     /*
     * Sets the fog of war for the room at the given coordinates.
@@ -293,6 +343,17 @@ public:
     */
     void setRoomFog(Vec2 coord, bool hasFog) {
         if (getRoom(coord)) getRoom(coord)->setFogged(hasFog);
+    }
+
+    /**
+     * Sets the physics objects of the given room in GRID coordinates.
+     *
+     * @param row   Row of the room in GRID coordinates
+     * @param col   Column of the room in GRID coordinates
+     * @param phys  Physics objects to put in the given room
+     */
+    void setPhysicsGeometryAt(int row, int col, shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> phys) {
+        _physicsGeometry->at(row)->at(col) = phys;
     }
 
 #pragma mark Helpers
@@ -306,12 +367,17 @@ public:
 #pragma mark Checkpoints
     /**
      * Clears all the rooms associated with the checkpoint with the given ID (backgrounds
-     * are swapped to the "cleared" option for the associated region).
+     * are swapped to the "cleared" option for the associated region). If this was the last
+     * checkpoint in the region, it then also clears the region blockades.
+     * 
+     * Returns 0 if the checkpoint was not found, 1 if it cleared but the region is
+     * not fully cleared yet, and 2 if it cleared and it was the last checkpoint so
+     * so the region was also cleared.
      *
      * @param cID	The unique ID number for a specific checkpoint
-     * @return		Whether the checkpoint's associated rooms were cleared successfully
+     * @return      An integer from 0-2 representing the outcome of the attempt
      */
-    bool clearCheckpoint(int cID);
+    int clearCheckpoint(int cID);
 };
 
 
