@@ -72,9 +72,6 @@ private:
     /** The regions that Reynard has already unlocked and therefore has access to */
     shared_ptr<vector<shared_ptr<RegionModel>>> _activeRegions = make_shared<vector<shared_ptr<RegionModel>>>();
 
-    /** The filler rooms, so solid rooms placed in empty areas */
-    shared_ptr<vector<shared_ptr<RoomModel>>> _filler = make_shared<vector<shared_ptr<RoomModel>>>();
-
 public:
 #pragma mark Constructors
 
@@ -358,12 +355,17 @@ public:
 #pragma mark Checkpoints
     /**
      * Clears all the rooms associated with the checkpoint with the given ID (backgrounds
-     * are swapped to the "cleared" option for the associated region).
+     * are swapped to the "cleared" option for the associated region). If this was the last
+     * checkpoint in the region, it then also clears the region blockades.
+     * 
+     * Returns 0 if the checkpoint was not found, 1 if it cleared but the region is
+     * not fully cleared yet, and 2 if it cleared and it was the last checkpoint so
+     * so the region was also cleared.
      *
      * @param cID	The unique ID number for a specific checkpoint
-     * @return		Whether the checkpoint's associated rooms were cleared successfully
+     * @return      An integer from 0-2 representing the outcome of the attempt
      */
-    bool clearCheckpoint(int cID);
+    int clearCheckpoint(int cID);
 };
 
 
