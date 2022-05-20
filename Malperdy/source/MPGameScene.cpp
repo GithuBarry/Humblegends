@@ -1321,8 +1321,11 @@ void GameScene::beginContact(b2Contact *contact)
                 }
                 rewriteSaveFile();
                 trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-                // Clear all the associated rooms
-                _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
+                // Clear all the associated rooms if the checkpoint doesn't need to be unlocked
+                Checkpoint* cp = dynamic_cast<Checkpoint*>(&(*trap));
+                // If it's not locked or Reynard has a key, then clear
+                if (!cp->isLocked())
+                _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
             }
             else if (trapType == TrapModel::TrapType::GOAL)
             {
@@ -1565,18 +1568,25 @@ Vec2 GameScene::inputToGameCoords(Vec2 inputCoords)
     return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
 }
 
-void GameScene::createKey(Vec2 enemyPos) {
-    CULog("POS: %f %f", enemyPos.x, enemyPos.y);
+/**
+ * Create a key at the given location in PHYSICS space
+ */
+void GameScene::createKey(Vec2 pos) {
+    CULog("POS: %f %f", pos.x, pos.y);
     _key = CheckpointKey::alloc(Vec2(0,0),Size(1.0f, 1.0f));
     std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
     _key->setSceneNode(n);
     _key->setDrawScale(_scale);
     n->setScale(.2);
-    _key->setPosition(enemyPos);
+    _key->setPosition(pos);
     addObstacle(_key, n);
-    _reynardController->increment_keys();
 }
 
+/**
+ * Possessed key?
+ * 
+ * Document your shit, Abu
+ */
 void GameScene::createKeyCrazy(Vec2 enemyPos) {
     _keyCrazy = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
     std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
@@ -1589,7 +1599,7 @@ void GameScene::createKeyCrazy(Vec2 enemyPos) {
 }
 
 void GameScene::removeKey() {
-  // do not attempt to remove a bullet that has already been removed
+  // do not attempt to remove a key that has already been removed
     if (_keyCrazy != nullptr) {
         if (_keyCrazy->isRemoved()) {
             return;

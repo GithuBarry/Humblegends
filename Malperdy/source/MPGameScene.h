@@ -129,11 +129,10 @@ protected:
     
     std::shared_ptr<CheckpointKey> _key;
     
+    // Enemy's PHYSICS space location
     Vec2 enemyPos;
     
     std::shared_ptr<CheckpointKeyCrazy> _keyCrazy;
-    
-    Vec2 reynardPos;
 
 public:
 
@@ -760,6 +759,9 @@ public:
     /* Converts input coordinates to coordinates in the game world */
     Vec2 inputToGameCoords(Vec2 inputCoords);
     
+    /**
+     * Create a key at the given location in PHYSICS space
+     */
     void createKey(Vec2 enemyPos);
     
     void createKeyCrazy(Vec2 enemyPos);

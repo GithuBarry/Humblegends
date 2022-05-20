@@ -28,6 +28,9 @@ private:
     /** The unique ID number for this checkpoint */
     int _id;
 
+    /** Whether or not this checkpoint is a locked one */
+    bool _isLocked = false;
+
 public:
 #pragma mark Constructors
     /*
@@ -47,6 +50,14 @@ public:
      * @return  The unique ID number for this checkpoint
      */
     int getID() { return _id; }
+
+    /**
+     * Returns whether this checkpoint is locked and so requires
+     * a key.
+     * 
+     * @return  Whether this checkpoint is locked
+     */
+    bool isLocked() { return _isLocked; }
 
 };
 #endif /* MPCheckpoint_h */
