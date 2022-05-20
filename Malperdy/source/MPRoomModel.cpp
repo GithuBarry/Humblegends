@@ -184,7 +184,14 @@ bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
 bool RoomModel::initTrap(TrapModel::TrapType type) {
     if (type == TrapModel::TrapType::SPIKE) {
         shared_ptr<SpikeTrap> trap = make_shared<SpikeTrap>();
-        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
+        
+        if(_physicsGeometry->size() == 0){
+            trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT, true);
+        }
+        else{
+            trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT, false);
+        }
+
 
         _trap = trap;
 

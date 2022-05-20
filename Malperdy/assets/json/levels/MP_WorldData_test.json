@@ -20,8 +20,8 @@
         "originY": -2
       },
     {
-      "name": "regionEvan",
-      "type": 1,
+      "name": "region2",
+      "type": 2,
       "width": 16,
       "height": 12,
       "originX": -7,

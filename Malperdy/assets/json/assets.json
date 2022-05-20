@@ -6,7 +6,7 @@
     "world": "json/levels/MP_WorldData_test.json",
     "region1": "json/levels/MP_Region_1.json",
     "region1-2": "json/levels/MP_Region_1-2.json",
-    "regionEvan": "json/levels/MP_Region_2.json",
+    "region2": "json/levels/MP_Region_2.json",
 
     "tileset_geometry": "json/tilesets/geometry.tsj",
     "tileset_entities": "json/tilesets/entities.json",
