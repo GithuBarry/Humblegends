@@ -3,7 +3,7 @@
     "framedata": "json/framedata.json",
     "framedata2": "json/framedatanew.json",
 
-    "world": "json/levels/MP_WorldData_test.json",
+    "world": "json/levels/MP_WorldData.json",
     "region1": "json/levels/MP_Region_1.json",
     "region1-2": "json/levels/MP_Region_1-2.json",
     "region2": "json/levels/MP_Region_2.json",

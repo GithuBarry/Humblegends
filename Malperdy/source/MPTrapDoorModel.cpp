@@ -51,21 +51,23 @@ bool TrapDoor::init(float roomWidth, float roomHeight){
 //    shared_ptr<JsonValue> framedata = jr->readJson();
     
     shared_ptr<Texture> sheet = make_shared<Texture>();
-    sheet->initWithFile("textures/MP_TrapDoor-1.png");
+    sheet->initWithFile("textures/Trapdoor.png");
     
     _sceneNode = make_shared<scene2::SpriteNode>();
-    _sceneNode->initWithSprite(sheet, 1, 1);
+    _sceneNode->initWithSprite(sheet, 24, 5);
     
     _type = TrapType::TRAPDOOR;
     // Inherantly starts activated
     _trapState = TrapModel::TrapState::ACTIVATED;
     
+    
 //    FULL SIZE IS 720
     
     _sceneNode->setAnchor(Vec2::ZERO);
-    _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX());
-    _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y + (roomHeight/16));
+    _sceneNode->setScale((roomWidth/2) / _sceneNode->getPolygon().getBounds().getMaxX() * Vec2(1,1));
+    _sceneNode->setPosition(_sceneNode->getPosition().x +(roomWidth/4), _sceneNode->getPosition().y - (roomHeight/6));
     _sceneNode->setAbsolute(true);
+    _sceneNode->setFrame(0);
     
     _currFrame = 0;
     

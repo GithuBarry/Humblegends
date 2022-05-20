@@ -154,6 +154,8 @@ void TrapModel::update(float dt) {
                 // if on the last frame
                 if (_currFrame >= _sceneNode->getSize()-1){
                     // loop the animation if needed
+                    _sceneNode->setFrame(0);
+                    return;
    
                 }
                 // if not on the last frame, then increment
