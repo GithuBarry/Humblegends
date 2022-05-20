@@ -318,10 +318,10 @@ void GameScene::revert(bool totalReset)
             _envController->swapRoomOnGrid(_swapHistory[i][0], _swapHistory[i][1], true);
         }
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
-        for (int i = 0; i < _enemies->size(); i++)
-        {
-            (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
-        }
+//        for (int i = 0; i < _enemies->size(); i++)
+//        {
+//            (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
+//        }
     }
 }
 
