@@ -207,15 +207,17 @@ bool RegionModel::addCheckpoint(int cID, int cX, int cY) {
  * Clears all the rooms associated with the checkpoint with the given ID (backgrounds
  * are swapped to the "cleared" option for the associated region).
  * 
- * Returns whether the full region has now been cleared or not.
+ * Returns a 0 if the checkpoint failed to clear, a 1 if the checkpoint cleared successfully
+ * but the region is still not cleared, or a 2 if the checkpoint cleared and it was the
+ * last checkpoint in the region so the region cleared too.
  *
  * @param cID	The unique ID number for a specific checkpoint
- * @return		Whether the full region has now been cleared
+ * @return		An integer from 0-2 representing the outcome of the attempt
  */
-bool RegionModel::clearCheckpoint(int cID) {
+int RegionModel::clearCheckpoint(int cID) {
 	// Fail if this checkpoint is already cleared (not in the checkpoint map, so value is -1)
 	// or if checkpoint isn't in this region
-	if (_checkpointMap->count(cID) == 0 || _checkpointMap->at(cID) < 0) return false;
+	if (_checkpointMap->count(cID) == 0 || _checkpointMap->at(cID) < 0) return 0;
 
 	// Play checkpoint clear sound effect
 	AudioController::playSFX(CHECKPOINT_SOUND);
@@ -230,11 +232,12 @@ bool RegionModel::clearCheckpoint(int cID) {
 
 	// If there are no more checkpoints in the region, clear the region
 	if (_checkpointsToClear <= 0) {
-		clearRegion();
-		return true;
+		// Cleared checkpoint and region
+		return 2;
 	}
 
-	return false;
+	// Cleared checkpoint only
+	return 1;
 }
 
 /**
@@ -242,6 +245,13 @@ bool RegionModel::clearCheckpoint(int cID) {
  * player can move on to the next region.
  */
 void RegionModel::clearRegion() {
+	// Clear physics for blockades
+	for (auto itr = _blockadesObs->begin(); itr != _blockadesObs->end(); ++itr) {
+		(*itr)->deactivatePhysics();
+		// TODO: this needs a reference to the obstacle world
+	}
+
+	// Clear visuals for blockades
 	_exitRooms = nullptr;
 	for (auto itr = _blockades->begin(); itr != _blockades->end(); ++itr) {
 		(*itr)->setVisible(false);

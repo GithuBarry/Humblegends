@@ -188,6 +188,10 @@ private:
 	shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> _blockades =
 		make_shared<vector<shared_ptr<scene2::PolygonNode>>>();
 
+	/** Pointers to the physics obstacles that block the exits */
+	shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>> _blockadesObs =
+		make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>();
+
 	/** The exit rooms, which unblock when the region is cleared */
 	shared_ptr<vector<shared_ptr<RoomModel>>> _exitRooms =
 		make_shared<vector<shared_ptr<RoomModel>>>();
@@ -351,6 +355,7 @@ public:
 	 * @return		The RoomModel at the given coordinates, or nullptr if there is none
 	 */
 	shared_ptr<RoomModel> getRoom(int x, int y);
+	
 
 	/**
 	 * Returns whether the given pairs of coordinates are both within the same sublevel.
@@ -402,6 +407,16 @@ public:
 	 * @return      Whether the room was set successfully
 	 */
 	bool setExitRoom(int x, int y, shared_ptr<Texture> tex);
+
+	/**
+	 * Adds the given obstacle to the list of obstacles for this region's
+	 * exit blockades.
+	 * 
+	 * @param obs	A physics obstacle for an exit room blockade, created in GridModel
+	 */
+	void addBlockadeObs(shared_ptr<physics2::PolygonObstacle> obs) {
+		_blockadesObs->push_back(obs);
+	}
 
 #pragma mark Backgrounds
 	/**
@@ -457,12 +472,14 @@ public:
 	 * Clears all the rooms associated with the checkpoint with the given ID (backgrounds
 	 * are swapped to the "cleared" option for the associated region).
 	 *
-	 * Returns whether the full region has now been cleared or not.
+	 * Returns a 0 if the checkpoint failed to clear, a 1 if the checkpoint cleared successfully
+	 * but the region is still not cleared, or a 2 if the checkpoint cleared and it was the
+	 * last checkpoint in the region so the region cleared too.
 	 *
 	 * @param cID	The unique ID number for a specific checkpoint
-	 * @return		Whether the full region has now been cleared
+	 * @return		An integer from 0-2 representing the outcome of the attempt
 	 */
-	bool clearCheckpoint(int cID);
+	int clearCheckpoint(int cID);
 
 	/**
 	 * Clears the region, meaning the blockades now disappear and the
