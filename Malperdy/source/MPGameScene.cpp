@@ -317,6 +317,7 @@ void GameScene::revert(bool totalReset)
             _envController->swapRoomOnGrid(_swapHistory[i][0], _swapHistory[i][1], true);
         }
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
+
         for (int i = 0; i < _enemies->size(); i++)
         {
             (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
@@ -616,7 +617,7 @@ void GameScene::update(float dt)
     Vec2 inputPos = inputToGameCoords(_input.getPosition());
 
     _envController->getGrid()->update(dt);
-    
+
     _world->garbageCollect();
 
     // Process the toggled key commands
@@ -630,8 +631,8 @@ void GameScene::update(float dt)
             (*itr)->setDebug(true);
         }
     }
-    
-    
+
+
 
     // Reset Process toggled by key command
     if (_input.didReset())
@@ -1284,7 +1285,7 @@ void GameScene::beginContact(b2Contact *contact)
                     trap->setTrapState(TrapModel::TrapState::ACTIVATED);
                     // Clear all the associated rooms
                     _grid->clearCheckpoint(cp->getID());
-                    
+
                     vector<Checkpoint*> cps= _envController->getGrid()->getCheckpoints();
                     for (int i= 0; i < cps.size();i++){
                         if (cps[i] == cp){
