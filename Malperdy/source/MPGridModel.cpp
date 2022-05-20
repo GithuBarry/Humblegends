@@ -371,6 +371,19 @@ bool GridModel::init(shared_ptr<AssetManager> assets, float scale)
     // Set only first region to be active at start
     _activeRegions->push_back(_regions->at(0));
 
+    // Fill any empty spaces with solid rooms
+    for (int y = 0; y < _size.y; y++) {
+        for (int x = 0; x < _size.x; x++) {
+            // If there's no room there, put a solid one
+            if (getRoom(x, y) == nullptr) {
+                // Need to offset by grid origin to get GRID coordinates
+                shared_ptr<RoomModel> room = RoomModel::alloc(x + _originX, y + _originY, "room_solid");
+                setRoom(x, y, room);
+                _filler->push_back(room);
+            }
+        }
+    }
+
     return this->scene2::SceneNode::init();
 };
 
@@ -614,7 +627,7 @@ Poly2 GridModel::convertToScreen(Poly2 poly)
 
 void GridModel::calculatePhysicsGeometry()
 {
-    _physicsGeometry = make_shared<vector<shared_ptr<vector<shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>>>>>>();
+    _physicsGeometry = make_shared<vector<shared_ptr<vector<shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>>();
 
     // Trap cache
     shared_ptr<TrapModel> trap;
@@ -631,8 +644,13 @@ void GridModel::calculatePhysicsGeometry()
             _physicsGeometry->at(row)->push_back(make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>());
 
             room = getRoom(col, row);
-            // If there's no room here, don't do anything
-            if (room == nullptr) continue;
+
+            // If there's no room here, pull the corresponding solid one from the fillers
+            // This loop happens in the same order that the fillers were created, so we can just pop off
+            if (room == nullptr) {
+                room = _filler->at(fillerInd);
+                fillerInd++;
+            }
 
             // Get pointers to PolygonNodes with the room's geometry
             shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> geometry = room->getGeometry();
