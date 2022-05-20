@@ -144,11 +144,14 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             return false;
             break;
     }
+    
+
 
     // Do what needs to be done when switching into the new state
     switch (newState) {
         case MovementState::STOPPED:
             setAnimation("idle");
+            _jumped = false;
             break;
         case MovementState::RUNNING:
             // Set character moving in the given direction at the right speed
@@ -162,6 +165,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
 
             _speed = RUN_SPEED;
             setAnimation("run");
+            _jumped = false;
             break;
         case MovementState::JUMPING:
             // Disable double jump (jumping/falling to jumping)
@@ -174,6 +178,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             // If character is on a wall, then also give a horizontal velocity away
             //if (_moveState == MovementState::ONWALL) setVX((_faceRight ? 1 : -1) * JUMP_SPEED / 1.8);
             setAnimation("jump");
+            _jumped = true;
 
             break;
         case MovementState::FALLING:
@@ -185,6 +190,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             setGravityScale(WALL_SLIDE_GRAV_SCALE);
             // Stop moving temporarily as character sticks
             _currAnimation = "";
+            _jumped = false;
             break;
         case MovementState::DASHING:
             // Don't allow dashing if dash cooldown hasn't finished
@@ -216,6 +222,10 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             break;
     }
 
+//    if(_moveState == MovementState::DASHING && newState == MovementState::RUNNING){
+//        _jumped = true;
+//    }
+    
     // Officially change state
     _moveState = newState;
 
@@ -365,7 +375,7 @@ void CharacterModel::update(float dt) {
             break;
         case MovementState::DASHING:
             if (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION) {
-                setMoveState(MovementState::RUNNING, 1);
+                setMoveState(MovementState::FALLING, 1);
             }
             break;
         case MovementState::DEAD:
