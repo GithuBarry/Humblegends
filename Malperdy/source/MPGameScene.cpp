@@ -1378,7 +1378,6 @@ void GameScene::beginContact(b2Contact *contact)
                     if (kBody == body1 || kBody == body2) {
                         // Only remove the key if Reynard successfully picks it up
                         if (_reynardController->pickupKey()) removeKeyCrazy(k);
-                        // TODO: otherwise turn it into a regular key
                     };
                 }
                 
@@ -1406,12 +1405,14 @@ void GameScene::beginContact(b2Contact *contact)
                 // No helper is used because the abstraction is unnecessary
                 _reynardController->getCharacter()->slowCharacter();
             }
+            // CHECKPOINT COLLISIONS
             else if (trapType == TrapModel::TrapType::CHECKPOINT)
             {
                 Checkpoint* cp = dynamic_cast<Checkpoint*>(&(*trap));
 
                 // Only allow clearing if Reynard has enough keys and it's locked, or if it's not locked
-                if (!cp->isLocked() || (cp->isLocked() && _reynardController->useKey())) {
+                if (!cp->isLocked() || (cp->isLocked() && _reynardController->getKeysCount() > 0)) {
+
                     _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                     _checkpointEnemyPos = vector<Vec2>();
                     _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
@@ -1419,7 +1420,12 @@ void GameScene::beginContact(b2Contact *contact)
                     {
                         _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                     }
+
+                    // If the checkpoint is already activated, don't use a lock
+                    if (trap->) _reynardController->useKey();
+
                     trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+
                     // Clear all the associated rooms
                     _grid->clearCheckpoint(cp->getID());
 

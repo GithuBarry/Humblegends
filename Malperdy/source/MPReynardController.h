@@ -110,7 +110,7 @@ public:
      */
     bool useKey() {
         if (_keysCount <= 0) return false;
-        _keysCount -= 1;
+        _keysCount--;
         return true;
     }
 
