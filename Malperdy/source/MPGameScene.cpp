@@ -278,6 +278,10 @@ void GameScene::reset()
     revert(true);
 }
 
+/**
+ *
+ * @param totalReset Whether or not to start the game from the beginning
+ */
 void GameScene::revert(bool totalReset)
 {
     if (_envController != nullptr)
@@ -1335,13 +1339,25 @@ void GameScene::beginContact(b2Contact *contact)
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT)
             {
-                _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
-                _checkpointEnemyPos = vector<Vec2>();
-                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                for (auto thisEnemy : *_enemies)
-                {
-                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                Checkpoint* cp = dynamic_cast<Checkpoint*>(&(*trap));
+
+                // Only allow clearing if Reynard has enough keys and it's locked, or if it's not locked
+                // TODO: case for if Reynard has enough keys
+                if (!(cp->isLocked())) {
+                    _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
+                    _checkpointEnemyPos = vector<Vec2>();
+                    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                    for (auto thisEnemy : *_enemies)
+                    {
+                        _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                    }
+                    trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+                    // Clear all the associated rooms
+                    _grid->clearCheckpoint(cp->getID());
+
+                    rewriteSaveFile();
                 }
+<<<<<<< HEAD
                 rewriteSaveFile();
                 trap->setTrapState(TrapModel::TrapState::ACTIVATED);
                 // Clear all the associated rooms if the checkpoint doesn't need to be unlocked
@@ -1349,6 +1365,8 @@ void GameScene::beginContact(b2Contact *contact)
                 // If it's not locked or Reynard has a key, then clear
                 if (!cp->isLocked())
                 _grid->clearCheckpoint(dynamic_cast<Checkpoint*>(&(*trap))->getID());
+=======
+>>>>>>> main
             }
             else if (trapType == TrapModel::TrapType::GOAL)
             {
