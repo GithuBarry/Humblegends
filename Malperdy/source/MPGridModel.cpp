@@ -312,6 +312,7 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                     {
                         // TODO: add key in this room (using curr_col / curr_row)
                         // createKey();
+                        CULog("KEY");
 
                     }
                     // ADD KEY ENEMY IN GAMESCENE WHERE THE OTHER ENEMY IS INSTANTIATED

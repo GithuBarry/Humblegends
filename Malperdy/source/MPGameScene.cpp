@@ -705,11 +705,7 @@ void GameScene::update(float dt)
                 }
             }
         }
-    }
-
-    /*CULog("Reynard GRID Location: (%f, %f)", _reynardController->_character->getPosition().x / _scale,
-        _reynardController->_character->getPosition().y / _scale);*/
-    
+    }    
     
     // reynard red when hurt/dealt damage
     if (keepRedFrames > 0)
@@ -1710,6 +1706,9 @@ void GameScene::removeKey(shared_ptr<CheckpointKey> k) {
             _worldnode->removeChild(k->getSceneNode());
             (*itr)->markRemoved(true);
             itr = _keys.erase(itr);
+        }
+        else {
+            ++itr;
         }
     }
 }
