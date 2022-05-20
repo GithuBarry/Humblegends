@@ -505,7 +505,7 @@ void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region)
                 addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
                 //_enemies->back()->getCharacter()->setPosition((enemypos + Vec2::ZERO) * Vec2(20, 14));
-                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1, 1)) * Vec2(8.2, 5));
+                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1, 1)) * Vec2(8.2, 5.1));
             }
         }
     }

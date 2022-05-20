@@ -37,8 +37,6 @@
                 "loop" : "true",
                 "flip" : "false"
             },
-
-            
             "jump" : {
                 "start" : 240,
                 "last" :  324,
