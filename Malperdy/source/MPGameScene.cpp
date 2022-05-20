@@ -1421,8 +1421,8 @@ void GameScene::beginContact(b2Contact *contact)
                         _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                     }
 
-                    // If the checkpoint is already activated, don't use a lock
-                    if (trap->) _reynardController->useKey();
+                    // If the checkpoint is already activated, don't use a key
+                    if (!trap->isActivated()) _reynardController->useKey();
 
                     trap->setTrapState(TrapModel::TrapState::ACTIVATED);
 
