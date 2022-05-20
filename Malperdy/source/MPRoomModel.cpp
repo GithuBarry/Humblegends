@@ -48,6 +48,11 @@ const Vec2 RoomModel::ROOM_SCALE = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT)
 /** How big the boundary extrusion should be */
 #define BOUND_WIDTH 10
 
+
+// Create color for geometry
+Color4 geometryColor = Color4(20,20,20,255);
+Color4 fogColor = Color4(Color4(Vec4(0.2, 0.2, 0.2, 1)));
+
 #pragma mark Room Layout
 /** The vertices for the boundary of a room */
 // TODO: this is a dumb workaround to path not closing, fix it later
@@ -164,7 +169,7 @@ bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
 	addChild(boundNode);*/
 
     //Fog of war
-	setColor(Color4(Vec4(0.5, 0.5, 0.5, 1)));
+	setColor(fogColor);
 
     // Initialize lock icon
     /*_lockIcon = scene2::PolygonNode::allocWithFile("textures/lock_icon.png");
@@ -225,6 +230,7 @@ bool RoomModel::initTrap(TrapModel::TrapType type, bool param) {
 
         _trap = trap;
         addChild(_trap);
+        setColor(Color4::WHITE);
     }
     else if (type == TrapModel::TrapType::GOAL) {
         shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
