@@ -42,6 +42,8 @@ public:
         GOAL
     };
     
+    static shared_ptr<AssetManager> ASSETS;
+    
 
 protected:
 #pragma mark -

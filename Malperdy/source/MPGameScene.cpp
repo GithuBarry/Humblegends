@@ -155,6 +155,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _assets = assets;
     _input.init();
 
+    TrapModel::ASSETS = _assets;
+
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect, gravity);
     _world->activateCollisionCallbacks(true);
@@ -192,13 +194,13 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _winNode->setPadding(dimen.width / 2, dimen.height / 2, dimen.width / 2, dimen.height / 2);
     setComplete(false);
 
-    _health = scene2::PolygonNode::allocWithFile("textures/Health_Bar_Full.png");
+    _health = scene2::PolygonNode::allocWithTexture(_assets->get<Texture>("healthbar"));
     _health->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     Vec2 padding = Vec2(30, -20);
     _health->setPosition(Vec2(0, getSize().height) + padding);
     _health->setScale(1.5);
 
-    _pause = scene2::PolygonNode::allocWithFile("textures/PauseScreen/Pause_Button.png");
+    _pause = scene2::PolygonNode::allocWithTexture(_assets->get<Texture>("pause"));
     _pause->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     padding = Vec2(computeActiveSize().width - 100, -10);
     _pause->setPosition(Vec2(0, getSize().height) + padding);
@@ -317,12 +319,12 @@ void GameScene::revert(bool totalReset)
             _envController->swapRoomOnGrid(_swapHistory[i][0], _swapHistory[i][1], true);
         }
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
-
         for (int i = 0; i < _enemies->size(); i++)
         {
             (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
         }
-        for (int index: _checkpointActiatedCheckpoints){
+        for (int index : _checkpointActiatedCheckpoints)
+        {
             _envController->getGrid()->getCheckpoints()[index]->setTrapState(TrapModel::TrapState::ACTIVATED);
             _grid->clearCheckpoint(_envController->getGrid()->getCheckpoints()[index]->getID());
         }
@@ -378,7 +380,8 @@ void GameScene::populateEnv()
 /**
  * Places all the characters, including Reynard and enemies, in the game world.
  */
-void GameScene::populateChars() {
+void GameScene::populateChars()
+{
     populateReynard();
     populateEnemies();
 }
@@ -404,10 +407,12 @@ void GameScene::populateReynard()
 /**
  * Places all the enemies for the active regions in the game world.
  */
-void GameScene::populateEnemies() {
+void GameScene::populateEnemies()
+{
     shared_ptr<vector<shared_ptr<RegionModel>>> _activeRegions = _grid->getActiveRegions();
     for (vector<shared_ptr<RegionModel>>::iterator itr = _activeRegions->begin();
-        itr != _activeRegions->end(); ++itr) {
+         itr != _activeRegions->end(); ++itr)
+    {
         populateEnemiesInRegion(*itr);
     }
 }
@@ -421,7 +426,8 @@ void GameScene::populateEnemies() {
  *
  * @param region    The region to populate the enemies for.
  */
-void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region) {
+void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region)
+{
     shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
 
     // Initialize new enemy
@@ -498,7 +504,8 @@ void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region) {
                 _enemies->back()->setReynardController(_reynardController);
                 addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
-                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1, 1)) * Vec2(5, 5));
+                //_enemies->back()->getCharacter()->setPosition((enemypos + Vec2::ZERO) * Vec2(20, 14));
+                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1, 1)) * Vec2(8.2, 5));
             }
         }
     }
@@ -506,11 +513,11 @@ void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region) {
     // Initialize EnemyController with the final animation map and store in vector of enemies
     //_enemies->push_back(EnemyController::alloc(Vec2(3, 3), _scale, rabbit_animations));
 
-    //    for(shared_ptr<EnemyController> enemy : *_enemies){
-    //        enemy->setObstacleWorld(_world);
-    //        enemy->setReynardController(_reynardController);
-    //        addObstacle(enemy->getCharacter(), enemy->getCharacter()->_node); // Put
-    //    }
+    //        for(shared_ptr<EnemyController> enemy : *_enemies){
+    //            enemy->setObstacleWorld(_world);
+    //            enemy->setReynardController(_reynardController);
+    //            addObstacle(enemy->getCharacter(), enemy->getCharacter()->_node); // Put
+    //        }
 
     _checkpointEnemyPos = vector<Vec2>();
     _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
@@ -631,8 +638,6 @@ void GameScene::update(float dt)
             (*itr)->setDebug(true);
         }
     }
-
-
 
     // Reset Process toggled by key command
     if (_input.didReset())
@@ -1269,12 +1274,12 @@ void GameScene::beginContact(b2Contact *contact)
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT)
             {
-                Checkpoint* cp = dynamic_cast<Checkpoint*>(&(*trap));
-
+                Checkpoint *cp = dynamic_cast<Checkpoint *>(&(*trap));
 
                 // Only allow clearing if Reynard has enough keys and it's locked, or if it's not locked
                 // TODO: case for if Reynard has enough keys
-                if (!(cp->isLocked())) {
+                if (!(cp->isLocked()))
+                {
                     _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                     _checkpointEnemyPos = vector<Vec2>();
                     _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
@@ -1286,10 +1291,13 @@ void GameScene::beginContact(b2Contact *contact)
                     // Clear all the associated rooms
                     _grid->clearCheckpoint(cp->getID());
 
-                    vector<Checkpoint*> cps= _envController->getGrid()->getCheckpoints();
-                    for (int i= 0; i < cps.size();i++){
-                        if (cps[i] == cp){
-                            if (_checkpointActiatedCheckpoints[_checkpointActiatedCheckpoints.size()-1]!= i){
+                    vector<Checkpoint *> cps = _envController->getGrid()->getCheckpoints();
+                    for (int i = 0; i < cps.size(); i++)
+                    {
+                        if (cps[i] == cp)
+                        {
+                            if (_checkpointActiatedCheckpoints.size()!=0 && _checkpointActiatedCheckpoints[_checkpointActiatedCheckpoints.size() - 1] != i)
+                            {
                                 _checkpointActiatedCheckpoints.push_back(i);
                             }
                             break;
