@@ -247,8 +247,7 @@ int RegionModel::clearCheckpoint(int cID) {
 void RegionModel::clearRegion() {
 	// Clear physics for blockades
 	for (auto itr = _blockadesObs->begin(); itr != _blockadesObs->end(); ++itr) {
-		(*itr)->deactivatePhysics();
-		// TODO: this needs a reference to the obstacle world
+		(*itr)->markRemoved(true);
 	}
 
 	// Clear visuals for blockades
