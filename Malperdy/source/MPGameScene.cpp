@@ -608,6 +608,51 @@ void GameScene::update(float dt)
         Application::get()->quit();
     }
 
+    if (key) {
+        // Create a key object and place at enemy position
+        // int v2 = rand() % 100 + 1;
+        int v2 = 1;
+        if (v2 > 50) {
+            createKey(enemyPos);
+            enemyPos = Vec2(0,0);
+            key = false;
+        }
+        else {
+            Vec2 reyPos = _reynardController->getCharacter()->getPosition();
+            createKeyCrazy(Vec2(reyPos.x+3, reyPos.y));
+            enemyPos = Vec2(0,0);
+            key = false;
+        }
+    }
+    
+    // Update code for Key pathfinding to Reynard
+    if (_key != nullptr) {
+        Vec2 reyPos = _reynardController->getCharacter()->getPosition();
+        Vec2 currPos = _key->getPosition();
+        float x = reyPos.x - currPos.x;
+        float y = reyPos.y - currPos.y;
+        _key->setVX(x);
+        _key->setVY(y);
+    }
+    
+    // Update code for CrazyKey pathfinding away from Reynard
+    if (_keyCrazy != nullptr) {
+        Vec2 reyPos = _reynardController->getCharacter()->getPosition();
+        bool isFacingRight = _reynardController->getCharacter()->isFacingRight();
+        Vec2 currPos = _keyCrazy->getPosition();
+        //_keyCrazy->setVX(3.0f);
+        float x = reyPos.x - currPos.x;
+        float y = reyPos.y - currPos.y;
+        if (isFacingRight) {
+            _keyCrazy->setVX(-x);
+            _keyCrazy->setVY(-y);
+        }
+        else {
+            _keyCrazy->setVX(x);
+            _keyCrazy->setVY(y);
+        }
+    }
+    
     // reynard red when hurt/dealt damage
     if (keepRedFrames > 0)
     {
@@ -782,6 +827,7 @@ void GameScene::update(float dt)
     // TODO: Why does both these updates exist you only need the _world one
     _reynardController->update(scaled_dt);
     _world->update(scaled_dt);
+    _world->garbageCollect();
 
     // TODO debugging area. Disable for releases
     if ((!_reynardController->getCharacter()->isOnWall()) && abs(_reynardController->getCharacter()->getLinearVelocity().x) <= 0.5)
@@ -1203,6 +1249,15 @@ void GameScene::beginContact(b2Contact *contact)
 #pragma mark REYNARD COLLISION SECTION
         if (enemy == nullptr)
         {
+            if (_key != nullptr || _keyCrazy != nullptr) {
+                b2Body *body1 = contact->GetFixtureA()->GetBody();
+                b2Body *body2 = contact->GetFixtureB()->GetBody();
+                b2Body *keyBody = _key != nullptr ? _key->getBody() : _keyCrazy->getBody();
+                bool isKeyCollision = keyBody == body1 || keyBody == body2;
+                if (isKeyCollision) {
+                    removeKey();
+                }
+            }
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
 #pragma mark TRAP COLLISION CODE
             shared_ptr<TrapModel> trap = isTrapCollision(contact);
@@ -1228,18 +1283,22 @@ void GameScene::beginContact(b2Contact *contact)
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT)
             {
-                _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
-                _checkpointEnemyPos = vector<Vec2>();
-                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                for (auto thisEnemy : *_enemies)
-                {
-                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                // If Reynard has a key for the checkpoint, use it.
+                if (_reynardController->get_keys_count() > 0) {
+                    _reynardController->decrement_keys();
+                    _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
+                    _checkpointEnemyPos = vector<Vec2>();
+                    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                    for (auto thisEnemy : *_enemies)
+                    {
+                        _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                    }
+                    rewriteSaveFile();
+                    trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+                    // trap->getPolyNode()->setColor(Color4::GREEN);
+                    //  Clear all the associated rooms
+                    _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
                 }
-                rewriteSaveFile();
-                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-                // trap->getPolyNode()->setColor(Color4::GREEN);
-                //  Clear all the associated rooms
-                _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
             }
             else if (trapType == TrapModel::TrapType::GOAL)
             {
@@ -1278,16 +1337,15 @@ void GameScene::beginContact(b2Contact *contact)
             {
                 trapType = trap->getType();
             }
-            if (trapType == TrapModel::TrapType::SPIKE)
-            {
-                float enemyVY = enemy->getCharacter()->getVY();
-                if (enemyVY < 0)
-                {
-                    resolveEnemyTrapOnContact(enemy);
-                    if (!enemy->getCharacter()->isDead())
-                    {
-                        resolveEnemyWallJumpOntoTrap(enemyVY, enemy);
-                    }
+            if (trapType == TrapModel::TrapType::SPIKE) {
+                // TODO: Change this because enemy dies instantly on contact with spikes.
+                enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
+                if (enemy->getCharacter()->isDead()) {
+                    key = true;
+                    enemyPos = enemy->getCharacter()->getPosition();
+                }
+                else {
+                    CULog("NOT DEAD");
                 }
             }
             else if (trapType == TrapModel::TrapType::SAP)
@@ -1319,8 +1377,17 @@ void GameScene::beginContact(b2Contact *contact)
             }
         }
     }
+    // Random key collisions
+    else if (_key != nullptr || _keyCrazy != nullptr) {
+        b2Body *body1 = contact->GetFixtureA()->GetBody();
+        b2Body *body2 = contact->GetFixtureB()->GetBody();
+        b2Body *keyBody = _key != nullptr ? _key->getBody() : _keyCrazy->getBody();
+        bool isKeyCollision = keyBody == body1 || keyBody == body2;
+        if (isKeyCollision) {
+            return;
+        }
+    }
     // Reynard-on-enemy collision
-    else
     {
         shared_ptr<EnemyController> enemy = getEnemyControllerInCollision(contact);
         if (isReynardCollision(contact) && enemy != nullptr)
@@ -1471,4 +1538,50 @@ void GameScene::render(const std::shared_ptr<SpriteBatch> &batch)
 Vec2 GameScene::inputToGameCoords(Vec2 inputCoords)
 {
     return inputCoords - Application::get()->getDisplaySize().height / SCENE_HEIGHT * (_worldnode->getPaneTransform().getTranslation() - Vec2(0, _worldnode->getPaneTransform().getTranslation().y) * 2);
+}
+
+void GameScene::createKey(Vec2 enemyPos) {
+    CULog("POS: %f %f", enemyPos.x, enemyPos.y);
+    _key = CheckpointKey::alloc(Vec2(0,0),Size(1.0f, 1.0f));
+    std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
+    _key->setSceneNode(n);
+    _key->setDrawScale(_scale);
+    n->setScale(.2);
+    _key->setPosition(enemyPos);
+    addObstacle(_key, n);
+    _reynardController->increment_keys();
+}
+
+void GameScene::createKeyCrazy(Vec2 enemyPos) {
+    _keyCrazy = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
+    std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
+    _keyCrazy->setSceneNode(n);
+    _keyCrazy->setDrawScale(_scale);
+    n->setScale(.2);
+    _keyCrazy->setPosition(enemyPos);
+    addObstacle(_keyCrazy, n);
+    // _reynardController->increment_keys();
+}
+
+void GameScene::removeKey() {
+  // do not attempt to remove a bullet that has already been removed
+    if (_keyCrazy != nullptr) {
+        if (_keyCrazy->isRemoved()) {
+            return;
+        }
+        _worldnode->removeChild(_keyCrazy->getSceneNode());
+        _keyCrazy->markRemoved(true);
+        _keyCrazy = nullptr;
+    }
+    else if (_key != nullptr) {
+        if (_key->isRemoved()) {
+            return;
+        }
+        _worldnode->removeChild(_key->getSceneNode());
+        _key->markRemoved(true);
+        _key = nullptr;
+    }
+    else {
+        return;
+    }
 }

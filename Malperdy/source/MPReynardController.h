@@ -29,7 +29,7 @@ protected:
     Timestamp _lastHit = Timestamp();
 
 public:
-
+    int num_of_keys = 1;
     /**
      * Initializes a new controller for the character at the given position.
      *
@@ -76,6 +76,18 @@ public:
      * @param dir   Direction to apply knockback force in
      */
     void knockback(b2Vec2 dir);
+    
+    void increment_keys() {
+        num_of_keys += 1;
+    }
+    
+    void decrement_keys() {
+        num_of_keys -= 1;
+    }
+    
+    int get_keys_count() {
+        return num_of_keys;
+    }
 };
 
 
