@@ -51,6 +51,7 @@ bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal, bool lock
 
     // Also display the lock asset if the checkpoint requires a key
     if (locked) {
+        _isLocked = locked;
         _lockNode = scene2::PolygonNode::allocWithTexture(Texture::allocWithFile("textures/MP_CheckpointLock.png"));
         _lockNode->setVisible(true);
         _sceneNode->addChild(_lockNode);

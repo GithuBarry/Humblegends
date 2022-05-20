@@ -1265,8 +1265,7 @@ void GameScene::beginContact(b2Contact *contact)
 
                 // Only allow clearing if Reynard has enough keys and it's locked, or if it's not locked
                 // TODO: case for if Reynard has enough keys
-                if (!cp->isLocked()) {
-                    CULog("Hit success");
+                if (!(cp->isLocked())) {
                     _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                     _checkpointEnemyPos = vector<Vec2>();
                     _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
@@ -1279,9 +1278,6 @@ void GameScene::beginContact(b2Contact *contact)
                     _grid->clearCheckpoint(cp->getID());
 
                     rewriteSaveFile();
-                }
-                else {
-                    CULog("Hit fail");
                 }
             }
             else if (trapType == TrapModel::TrapType::GOAL)

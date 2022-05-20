@@ -291,7 +291,7 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                     {
                         // Add locked checkpoint to the region
                         sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::CHECKPOINT,
-                            tile_to_traps[data.at(j)].find("key") == string::npos);
+                            tile_to_traps[data.at(j)].find("key") != string::npos);
                         // Add checkpoint to the region
                         region->addCheckpoint(dynamic_cast<Checkpoint*>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap())))->getID(),
                             curr_col, curr_row);
