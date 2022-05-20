@@ -106,6 +106,8 @@ protected:
 
     /** checkpoint for swap history length*/
     int _checkpointSwapLen = 0;
+
+    vector<int> _checkpointActiatedCheckpoints;
     vector<Vec2> _checkpointEnemyPos;
 
     /** A store position of reynard before reset*/
@@ -222,6 +224,7 @@ public:
          *  - "EnemyPos" :      [enemy1Pos's x, enemy1Pos's y, ...]
          *  - "ReynardPos" :    [reynardPos's x, reynardPos's y]
          *  - "RoomSwap" :     [Swap1-Room1-x, Swap1-Room1-y, Swap1-Room2-x, Swap1-Room2-y, Swap2....]
+         *  - "ActivatedCheckpoints": [checkpoint_index_at_getCheckpoint()list1, ...]
          */
         //Init json objects
         std::shared_ptr<JsonValue> jsonRoot = JsonValue::alloc(JsonValue::Type::ObjectType);
@@ -235,6 +238,15 @@ public:
             jsonEnemyPos->appendValue(thisEnemy->getCharacter()->getPosition().y);
         }
         jsonRoot->appendChild("EnemyPos",jsonEnemyPos);
+
+        
+        // JSON - Checkpoint
+        std::shared_ptr<JsonValue> jsonCheckpoints = JsonValue::alloc(JsonValue::Type::ArrayType);
+        for (int i:_checkpointActiatedCheckpoints){
+            float fi = i;
+            jsonCheckpoints->appendValue(fi);
+        }
+        jsonRoot->appendChild("ActivatedCheckpoints",jsonCheckpoints);
 
         // JSON - Reynard
         std::shared_ptr<JsonValue> jsonReynardPos = JsonValue::alloc(JsonValue::Type::ArrayType);
@@ -284,6 +296,7 @@ public:
         std::vector<float> enemyPos1D = jsonRoot->get("EnemyPos")->asFloatArray();
         std::vector<float> reynardPos1D = jsonRoot->get("ReynardPos")->asFloatArray();
         std::vector<float> swapHistory1D = jsonRoot->get("RoomSwap")->asFloatArray();
+        std::vector<int> activatedcheckpts1D = jsonRoot->get("ActivatedCheckpoints")->asIntArray();
         if (enemyPos1D.size() % 2 != 0 || reynardPos1D.size() != 2 || swapHistory1D.size() % 4 != 0){
             cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
             return false;
@@ -298,6 +311,9 @@ public:
 
         // JSON - Reynard
         _checkpointReynardPos = Vec2(reynardPos1D[0],reynardPos1D[1]);
+
+        _checkpointActiatedCheckpoints = activatedcheckpts1D;
+
 
         // JSON - Room Swapping
         std::shared_ptr<JsonValue> jsonRoomSwap = JsonValue::alloc(JsonValue::Type::ObjectType);
