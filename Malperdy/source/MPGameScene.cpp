@@ -306,7 +306,6 @@ void GameScene::revert(bool totalReset)
     setComplete(false);
     if (totalReset)
     {
-
         populate();
     }
     else
@@ -321,6 +320,10 @@ void GameScene::revert(bool totalReset)
         for (int i = 0; i < _enemies->size(); i++)
         {
             (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
+        }
+        for (int index: _checkpointActiatedCheckpoints){
+            _envController->getGrid()->getCheckpoints()[index]->setTrapState(TrapModel::TrapState::ACTIVATED);
+            _grid->clearCheckpoint(_envController->getGrid()->getCheckpoints()[index]->getID());
         }
     }
 }
@@ -1267,6 +1270,7 @@ void GameScene::beginContact(b2Contact *contact)
             {
                 Checkpoint* cp = dynamic_cast<Checkpoint*>(&(*trap));
 
+
                 // Only allow clearing if Reynard has enough keys and it's locked, or if it's not locked
                 // TODO: case for if Reynard has enough keys
                 if (!(cp->isLocked())) {
@@ -1280,7 +1284,16 @@ void GameScene::beginContact(b2Contact *contact)
                     trap->setTrapState(TrapModel::TrapState::ACTIVATED);
                     // Clear all the associated rooms
                     _grid->clearCheckpoint(cp->getID());
-
+                    
+                    vector<Checkpoint*> cps= _envController->getGrid()->getCheckpoints();
+                    for (int i= 0; i < cps.size();i++){
+                        if (cps[i] == cp){
+                            if (_checkpointActiatedCheckpoints[_checkpointActiatedCheckpoints.size()-1]!= i){
+                                _checkpointActiatedCheckpoints.push_back(i);
+                            }
+                            break;
+                        }
+                    }
                     rewriteSaveFile();
                 }
             }
