@@ -64,7 +64,6 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
                 _buttonState = 0;
                 this->_mode = 2;
                 this->_active = down;
-                CULog("LoadingScene load pressed");
             }
         });
     }else {
@@ -80,7 +79,6 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
             _buttonState = 0;
             this->_mode = 1;
             this->_active = down;
-            CULog("LoadingScene new pressed");
         }
     });
     _settingsButton = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_settings-button"));
@@ -89,7 +87,6 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         else {
             _buttonState = 0;
             this->_state = 2;
-            CULog("LoadingScene settings pressed");
         }
     });
     _credits = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_credits"));
@@ -98,7 +95,6 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         else {
             _buttonState = 0;
             this->_state = 3;
-            CULog("LoadingScene credits pressed");
         }
     });
 
@@ -110,7 +106,6 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         else {
             _buttonState = 0;
             this->_state = 1;
-            CULog("LoadingScene done pressed");
         }
     });
 
