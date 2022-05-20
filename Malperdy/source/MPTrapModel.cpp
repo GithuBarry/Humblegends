@@ -17,6 +17,8 @@ using namespace cugl::physics2;
 #pragma mark -
 #pragma mark Constructors
 
+shared_ptr<AssetManager> TrapModel::ASSETS = make_shared<AssetManager>();
+
 
 /**
  * Initializes a trap with the given characteristics in a given location in Room Space.

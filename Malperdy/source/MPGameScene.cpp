@@ -154,6 +154,8 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // Start up the input handler
     _assets = assets;
     _input.init();
+    
+    TrapModel::ASSETS = _assets;
 
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect, gravity);

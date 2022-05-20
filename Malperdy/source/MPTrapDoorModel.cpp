@@ -49,12 +49,9 @@ using namespace cugl;
 bool TrapDoor::init(float roomWidth, float roomHeight){
 //    shared_ptr<JsonReader> jr = JsonReader::allocWithAsset("jsons/framedata");
 //    shared_ptr<JsonValue> framedata = jr->readJson();
-    
-    shared_ptr<Texture> sheet = make_shared<Texture>();
-    sheet->initWithFile("textures/Trapdoor.png");
-    
     _sceneNode = make_shared<scene2::SpriteNode>();
-    _sceneNode->initWithSprite(sheet, 24, 5);
+    shared_ptr<Texture> s =TrapModel::ASSETS->get<Texture>("trapdoor");
+    _sceneNode->initWithSprite(s, 24, 5);
     
     _type = TrapType::TRAPDOOR;
     // Inherantly starts activated

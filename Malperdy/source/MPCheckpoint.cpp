@@ -34,11 +34,9 @@ bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal, bool lock
     _id = ID_COUNTER;
     ID_COUNTER++;
 
-    shared_ptr<Texture> sheet = make_shared<Texture>();
-    sheet->initWithFile("textures/checkpoint_sheet.png");
-    
     _sceneNode = make_shared<scene2::SpriteNode>();
-    _sceneNode->initWithSprite(sheet, 6, 5);
+    shared_ptr<Texture> s = TrapModel::ASSETS->get<Texture>("checkpoint");
+    _sceneNode->initWithSprite(s, 6, 5);
     if (isFinal) _type = TrapType::GOAL;
     else _type = TrapType::CHECKPOINT;
 
@@ -52,7 +50,8 @@ bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal, bool lock
     // Also display the lock asset if the checkpoint requires a key
     if (locked) {
         _isLocked = locked;
-        _lockNode = scene2::PolygonNode::allocWithTexture(Texture::allocWithFile("textures/MP_CheckpointLock.png"));
+        shared_ptr<Texture> temp =TrapModel::ASSETS->get<Texture>("checkpoint_lock");
+        _lockNode = scene2::PolygonNode::allocWithTexture(temp);
         _lockNode->setVisible(true);
         _sceneNode->addChild(_lockNode);
     }

@@ -15,6 +15,21 @@
   },
 
   "textures": {
+    "sap":{
+        "file" : "textures/Sap_Trap.png"
+    },
+    "spikes":{
+        "file" : "textures/spikes.png"
+    },
+    "trapdoor":{
+        "file" : "textures/Trapdoor.png"
+    },
+    "checkpoint":{
+        "file" : "textures/checkpoint_sheet.png"
+    },
+    "checkpoint_lock":{
+        "file" : "textures/MP_CheckpointLock.png"
+    },
     "goal": {
       "file": "textures/goaldoor.png"
     },
