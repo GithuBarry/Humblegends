@@ -700,6 +700,10 @@ void GridModel::calculatePhysicsGeometry()
                 {
                     trap->getObstacle()->setSensor(true);
                 }
+                if (trap->getType() == TrapModel::TrapType::SAP)
+                {
+                    trap->getObstacle()->setSensor(true);
+                }
                 if (trap->getType() == TrapModel::TrapType::CHECKPOINT)
                 {
                     trap->getObstacle()->setSensor(true);
