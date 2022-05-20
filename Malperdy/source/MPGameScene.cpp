@@ -1296,7 +1296,7 @@ void GameScene::beginContact(b2Contact *contact)
                     {
                         if (cps[i] == cp)
                         {
-                            if (_checkpointActiatedCheckpoints[_checkpointActiatedCheckpoints.size() - 1] != i)
+                            if (_checkpointActiatedCheckpoints.size()!=0 && _checkpointActiatedCheckpoints[_checkpointActiatedCheckpoints.size() - 1] != i)
                             {
                                 _checkpointActiatedCheckpoints.push_back(i);
                             }
