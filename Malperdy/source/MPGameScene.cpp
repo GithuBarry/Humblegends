@@ -475,7 +475,7 @@ void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region) {
                 _enemies->back()->setReynardController(_reynardController);
                 addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
-                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(3.5f, 1)) * Vec2(5, 5));
+                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2::ZERO) * Vec2(20, 14));
             }
             else if (temp.find("enemy") != string::npos)
             {
@@ -613,6 +613,8 @@ void GameScene::update(float dt)
     Vec2 inputPos = inputToGameCoords(_input.getPosition());
 
     _envController->getGrid()->update(dt);
+    
+    _world->garbageCollect();
 
     // Process the toggled key commands
     if (_input.didDebug())
@@ -625,6 +627,8 @@ void GameScene::update(float dt)
             (*itr)->setDebug(true);
         }
     }
+    
+    
 
     // Reset Process toggled by key command
     if (_input.didReset())

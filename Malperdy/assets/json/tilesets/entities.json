@@ -1,12 +1,4 @@
 { "columns":0,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json",
-         "target":"..\/..\/..\/..\/..\/Design\/LevelEditor\/jsons\/entities.tsj"
-        }
-    },
  "grid":
     {
      "height":1,
@@ -17,72 +9,72 @@
  "name":"entities",
  "spacing":0,
  "tilecount":11,
- "tiledversion":"1.8.4",
+ "tiledversion":"1.8.2",
  "tileheight":22,
  "tiles":[
         {
          "id":1,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/reynard.png",
+         "image":"..\/images\/reynard.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":2,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/spike.png",
+         "image":"..\/images\/spike.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":3,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/trapdoor.png",
+         "image":"..\/images\/trapdoor.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":4,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/enemy.png",
+         "image":"..\/images\/enemy.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":5,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/checkpoint.png",
+         "image":"..\/images\/checkpoint.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":6,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/key.png",
+         "image":"..\/images\/key.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":7,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/keyenemy.png",
+         "image":"..\/images\/keyenemy.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":8,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/locked.png",
+         "image":"..\/images\/locked.png",
          "imageheight":22,
          "imagewidth":12
         }, 
         {
          "id":9,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/sap.png",
+         "image":"..\/images\/sap.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":10,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/keycheckpoint.png",
+         "image":"..\/images\/keycheckpoint.png",
          "imageheight":10,
          "imagewidth":10
         }, 
         {
          "id":11,
-         "image":"..\/..\/..\/..\/..\/Design\/LevelEditor\/images\/exit.png",
+         "image":"..\/images\/exit.png",
          "imageheight":10,
          "imagewidth":10
         }],
