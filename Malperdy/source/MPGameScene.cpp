@@ -1711,22 +1711,6 @@ void GameScene::createKey(Vec2 pos, bool isPossesed, bool isPathFinding) {
     };
 }
 
-/**
- * Possessed key?
- * 
- * Document your shit, Abu
- */
-//void GameScene::createKeyCrazy(Vec2 enemyPos) {
-//    _keyCrazy = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
-//    std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
-//    _keyCrazy->setSceneNode(n);
-//    _keyCrazy->setDrawScale(_scale);
-//    n->setScale(.2);
-//    _keyCrazy->setPosition(enemyPos);
-//    addObstacle(_keyCrazy, n);
-//    // _reynardController->increment_keys();
-// }
-
 void GameScene::removeKey(shared_ptr<CheckpointKey> k) {
   // do not attempt to remove a key that has already been removed
     if (_keys.size() <= 0) return;
