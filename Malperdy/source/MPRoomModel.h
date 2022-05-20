@@ -154,7 +154,13 @@ public:
      */
     bool init(float x, float y, string roomID, shared_ptr<Texture> bg = nullptr);
 
-    bool initTrap(TrapModel::TrapType type);
+    /**
+     * Initializes a trap of the given type in this room.
+     * 
+     * @param type  The type of the trap to instantiate
+     * @param param An extra parameter that may do something different based on the trap type
+     */
+    bool initTrap(TrapModel::TrapType type, bool param = false);
 
 #pragma mark Static Constructors
     /**

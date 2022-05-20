@@ -26,9 +26,10 @@ int Checkpoint::ID_COUNTER = 0;
  * @param roomWidth     The width of the room the checkpoint is in
  * @param roomHeight    The height of the room the checkpoint is in
  * @param isFinal       Whether this is a "final" checkpoint, meaning a goal
+ * @param locked        Whether this checkpoint requires a key
  * @return  true if the trap is initialized properly, false otherwise.
  */
-bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal) {
+bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal, bool locked) {
     // Give this checkpoint an ID number that is unique among all checkpoints
     _id = ID_COUNTER;
     ID_COUNTER++;
@@ -47,6 +48,13 @@ bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal) {
     _sceneNode->setAbsolute(true);
     
     _currFrame = 29;
+
+    // Also display the lock asset if the checkpoint requires a key
+    if (locked) {
+        _lockNode = scene2::PolygonNode::allocWithTexture(Texture::allocWithFile("textures/MP_CheckpointLock.png"));
+        _lockNode->setVisible(true);
+        _sceneNode->addChild(_lockNode);
+    }
 
     return this->TrapModel::init();
 }

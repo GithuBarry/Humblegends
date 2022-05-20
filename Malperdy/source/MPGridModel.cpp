@@ -225,6 +225,10 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
         {
             tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "trapdoor";
         }
+        else if (the_tile->get("image")->asString().find("keycheckpoint") != string::npos)
+        {
+            tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "keycheckpoint";
+        }
         else if (the_tile->get("image")->asString().find("checkpoint") != string::npos)
         {
             tile_to_traps[the_tile->get("id")->asInt() + entity_offset] = "checkpoint";
@@ -283,12 +287,14 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                     {
                         sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::SPIKE);
                     }
-                    else if (tile_to_traps[data.at(j)] == "checkpoint")
+                    else if (tile_to_traps[data.at(j)].find("checkpoint") != string::npos)
                     {
-                        sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::CHECKPOINT);
+                        // Add locked checkpoint to the region
+                        sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::CHECKPOINT,
+                            tile_to_traps[data.at(j)].find("key") == string::npos);
                         // Add checkpoint to the region
-                        region->addCheckpoint(dynamic_cast<Checkpoint *>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap())))->getID(),
-                                              curr_col, curr_row);
+                        region->addCheckpoint(dynamic_cast<Checkpoint*>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap())))->getID(),
+                            curr_col, curr_row);
                         // Lock it by default
                         sublevel->at(curr_row)->at(curr_col)->setPermlocked();
                     }
