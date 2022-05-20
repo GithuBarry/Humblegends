@@ -17,6 +17,9 @@
 #include "MPCharacterController.h"
 #include "MPReynardModel.h"
 
+/** The maximum number of keys that Reynard can carry */
+#define MAX_KEYS 3
+
 class ReynardController : public CharacterController<ReynardModel, ReynardController> {
     
 protected:
@@ -81,10 +84,19 @@ public:
     void knockback(b2Vec2 dir);
 
     /**
-     * Called when Reynard obtains a key, which increments the number of keys he has
+     * Called when Reynard obtains a key, which increments the number of keys he has. If he
+     * cannot carry any more keys (capacity is full), then returns false, but otherwise it
+     * returns true.
+     * 
+     * @return  Whether Reynard picked the key up successfully
      */
-    void addKey() {
-        _keysCount += 1;
+    bool pickupKey() {
+        // Only pick up if Reynard can carry more keys
+        if (_keysCount < MAX_KEYS) {
+            _keysCount++;
+            return true;
+        }
+        return false;
     }
 
     /**
