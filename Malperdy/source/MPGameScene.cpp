@@ -660,12 +660,13 @@ void GameScene::update(float dt)
             if (v2 > 50) {
                 CULog("TRYING TO MAKE KEY");
                 createKey(*itr, false, true);
-                itr = deadKeyEnemyLocs->erase(itr);
             }
             else {
                 Vec2 reyPos = _reynardController->getCharacter()->getPosition();
                 createKey(Vec2(reyPos.x + 3, reyPos.y), true, true);
             }
+            // Untrack now that it's been spawned
+            itr = deadKeyEnemyLocs->erase(itr);
         }
     }
     
@@ -683,6 +684,7 @@ void GameScene::update(float dt)
         }
     }
     
+    // Spawn key to chase Reynard
     if (_keysCrazy.size() > 0) {
         for (int i = 0; i < _keysCrazy.size(); i++){
             shared_ptr<CheckpointKeyCrazy> k = _keysCrazy.at(i);
@@ -704,6 +706,9 @@ void GameScene::update(float dt)
             }
         }
     }
+
+    /*CULog("Reynard GRID Location: (%f, %f)", _reynardController->_character->getPosition().x / _scale,
+        _reynardController->_character->getPosition().y / _scale);*/
     
     
     // reynard red when hurt/dealt damage
@@ -820,9 +825,6 @@ void GameScene::update(float dt)
 
         if (i || j)
         {
-            // TODO: DELETE THIS DEBUGGING STUFF
-            cout << "Grounded: %d" + i << endl;
-            cout << "Walled: %d" + j << endl;
             AudioController::playSFX(JUMP_SOUND);
         }
 
