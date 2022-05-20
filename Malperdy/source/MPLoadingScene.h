@@ -35,24 +35,55 @@ protected:
     
     // NO CONTROLLER (ALL IN SEPARATE THREAD)
     
-    // VIEW
+    // LOADING VIEW
     /** The animated progress bar */
     std::shared_ptr<cugl::scene2::ProgressBar>  _bar;
     /** The game's name (to be replaced with the team logo) */
     std::shared_ptr<cugl::scene2::SceneNode>  _brand;
 
+    // MAIN MENU VIEW
     /** The game's name */
     std::shared_ptr<cugl::scene2::SceneNode>  _title;
-    /** The "new game" button */
-    std::shared_ptr<cugl::scene2::Button>       _new;
     /** The "load game" button */
-    std::shared_ptr<cugl::scene2::Button>      _load;
+    std::shared_ptr<cugl::scene2::Button>     _load;
+    /** The "new game" button */
+    std::shared_ptr<cugl::scene2::Button>     _new;
+    /** The "settings" button */
+    std::shared_ptr<cugl::scene2::Button>     _settingsButton;
+    /** The "credits" button */
+    std::shared_ptr<cugl::scene2::Button>     _credits;
+
+    // SETTINGS VIEW
+    /** The "done" button */
+    std::shared_ptr<cugl::scene2::Button>     _done;
+    /** The background for volume settings */
+    std::shared_ptr<cugl::scene2::SceneNode>  _volumeBG;
+
+    // CREDITS VIEW
+    /** The credits content */
+    std::shared_ptr<cugl::scene2::SceneNode>  _creditsPage;
 
     // MODEL
     /** The progress displayed on the screen */
     float _progress;
     /** Whether or not the player has pressed play to continue */
     bool  _completed;
+    /**
+    * State of the menu, so update can switch assets properly
+    * 
+    * 0 = loading
+    * 1 = main menu
+    * 2 = settings menu
+    * 3 = credits menu
+    */
+    int _state = 0;
+    /**
+    * Button state, to avoid double detection of problematic buttons
+    *
+    * 0 = not yet pressed
+    * 1 = pressed once and ignored
+    */
+    int _buttonState = 0;
     /**
     * How the user wants to start playing
     * 0: not yet chosen
@@ -141,13 +172,26 @@ public:
 
 private:
 #pragma mark -
-#pragma mark Progress Monitoring
+#pragma mark Helper Functions
     /*
     * Returns whether there is a save file to load
     *
     * @return whether there is a save file to load
     */
     bool saveFileExists();
+
+    /* Hides all assets so it's safe to switch screens */
+    void hideAll();
+
+    /* Switches to main menu screen */
+    void showMainMenu();
+
+    /* Switches to settings screen */
+    void showSettings();
+
+    /* Switches to credits screen */
+    void showCredits();
+
 };
 
 #endif /* __MP_LOADING_SCENE_H__ */

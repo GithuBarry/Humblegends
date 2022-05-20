@@ -295,10 +295,8 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                         // Add checkpoint to the region
                         region->addCheckpoint(dynamic_cast<Checkpoint*>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap())))->getID(),
                             curr_col, curr_row);
-                        checkpoints.push_back(dynamic_cast<Checkpoint*>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap()))));
                         // Lock it by default
                         sublevel->at(curr_row)->at(curr_col)->setPermlocked();
-                        
                     }
                     else if (tile_to_traps[data.at(j)] == "sap")
                     {
@@ -313,6 +311,9 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                     else if (tile_to_traps[data.at(j)] == "key")
                     {
                         // TODO: add key in this room (using curr_col / curr_row)
+                        // createKey();
+                        CULog("KEY");
+
                     }
                     // ADD KEY ENEMY IN GAMESCENE WHERE THE OTHER ENEMY IS INSTANTIATED
                     // Gamescene line 401

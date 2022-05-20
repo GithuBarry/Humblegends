@@ -53,23 +53,65 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     layer->setContentSize(dimen);
     layer->doLayout(); // This rearranges the children to fit the screen
     
+    // Load screen
     _bar = std::dynamic_pointer_cast<scene2::ProgressBar>(assets->get<scene2::SceneNode>("load_bar"));
     _brand = assets->get<scene2::SceneNode>("load_logo");
-    _title = assets->get<scene2::SceneNode>("load_title");
-    _new = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new"));
-    _new->addListener([=](const std::string& name, bool down) {
-        this->_mode = 1;
-        this->_active = down;
-    });
     if (saveFileExists()) {
         _load = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_load-withSave"));
         _load->addListener([=](const std::string& name, bool down) {
-            this->_mode = 2;
-            this->_active = down;
+            if (_buttonState == 0) _buttonState = 1;
+            else {
+                _buttonState = 0;
+                this->_mode = 2;
+                this->_active = down;
+            }
         });
     }else {
         _load = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_load-noSave"));
     }
+
+    // Main Menu
+    _title = assets->get<scene2::SceneNode>("load_title");
+    _new = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new"));
+    _new->addListener([=](const std::string& name, bool down) {
+        if (_buttonState == 0) _buttonState = 1;
+        else {
+            _buttonState = 0;
+            this->_mode = 1;
+            this->_active = down;
+        }
+    });
+    _settingsButton = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_settings-button"));
+    _settingsButton->addListener([=](const std::string& name, bool down) {
+        if (_buttonState == 0) _buttonState = 1;
+        else {
+            _buttonState = 0;
+            this->_state = 2;
+        }
+    });
+    _credits = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_credits"));
+    _credits->addListener([=](const std::string& name, bool down) {
+        if (_buttonState == 0) _buttonState = 1;
+        else {
+            _buttonState = 0;
+            this->_state = 3;
+        }
+    });
+
+    // Settings Screen
+    _volumeBG = assets->get<scene2::SceneNode>("load_volume");
+    _done = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_done"));
+    _done->addListener([=](const std::string& name, bool down) {
+        if (_buttonState == 0) _buttonState = 1;
+        else {
+            _buttonState = 0;
+            this->_state = 1;
+        }
+    });
+
+    // Credits Screen
+    _creditsPage = assets->get<scene2::SceneNode>("load_credits-content");
+
     Application::get()->setClearColor(Color4::BLACK);
     addChild(layer);
 
@@ -88,9 +130,14 @@ void LoadingScene::dispose() {
         _new->deactivate();
         _load->deactivate();
     }
+    _title = nullptr;
     _new = nullptr;
     _load = nullptr;
-    _title = nullptr;
+    _settingsButton = nullptr;
+    _credits = nullptr;
+    _done = nullptr;
+    _volumeBG = nullptr;
+    _creditsPage = nullptr;
     _brand = nullptr;
     _bar = nullptr;
     _assets = nullptr;
@@ -111,17 +158,13 @@ void LoadingScene::update(float progress) {
     if (_progress < 1) {
         _progress = _assets->progress();
         if (_progress >= 1) {
-            _progress = 1.0f;
-            _bar->setVisible(false);
-            _brand->setVisible(false);
-            _new->setVisible(true);
-            _new->activate();
-            _title->setVisible(true);
-            _load->setVisible(true);
-            if (saveFileExists()) _load->activate();
+            _state = 1;
         }
         _bar->setProgress(_progress);
     }
+    if (_state == 1) showMainMenu();
+    else if (_state == 2) showSettings();
+    else if (_state == 3) showCredits();
 }
 
 /**
@@ -133,6 +176,9 @@ bool LoadingScene::isPending( ) const {
     return _new != nullptr && _new->isVisible();
 }
 
+#pragma mark -
+#pragma mark Helper Functions
+
 /*
 * Returns whether there is a save file to load
 *
@@ -143,4 +189,53 @@ bool LoadingScene::saveFileExists() {
     file_path_list[0] = Application::get()->getSaveDirectory();
     file_path_list[1] = "state.json";
     return filetool::file_exists(cugl::filetool::join_path(file_path_list));
+}
+
+/* Hides all assets so it's safe to switch screens */
+void LoadingScene::hideAll() {
+    _bar->setVisible(false);
+    _brand->setVisible(false);
+
+    _load->setVisible(false);
+    if (saveFileExists()) _load->deactivate();
+    _new->setVisible(false);
+    _new->deactivate();
+    _settingsButton->setVisible(false);
+    _settingsButton->deactivate();
+    _credits->setVisible(false);
+    _credits->deactivate();
+    _volumeBG->setVisible(false);
+    _done->setVisible(false);
+    _done->deactivate();
+    _creditsPage->setVisible(false);
+}
+
+/* Switches to main menu screen */
+void LoadingScene::showMainMenu() {
+    hideAll();
+    _title->setVisible(true);
+    _load->setVisible(true);
+    if (saveFileExists()) _load->activate();
+    _new->setVisible(true);
+    _new->activate();
+    _settingsButton->setVisible(true);
+    _settingsButton->activate();
+    _credits->setVisible(true);
+    _credits->activate();
+}
+
+/* Switches to settings screen */
+void LoadingScene::showSettings() {
+    hideAll();
+    _volumeBG->setVisible(true);
+    _done->setVisible(true);
+    _done->activate();
+}
+
+/* Switches to credits screen */
+void LoadingScene::showCredits() {
+    hideAll();
+    _creditsPage->setVisible(true);
+    _done->setVisible(true);
+    _done->activate();
 }

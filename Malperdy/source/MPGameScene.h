@@ -22,6 +22,8 @@
 #include "MPCharacterModel.h"
 #include "MPEnemyController.h"
 #include "MPInput.h"
+#include "MPCheckpointKey.h"
+#include "MPCheckpointKeyCrazy.hpp"
 #include "MPGameStateController.h"
 #include "MPRoomModel.h"
 #include "MPGridModel.h"
@@ -72,6 +74,9 @@ protected:
 
     /** Reference to the health bar scene node */
     std::shared_ptr<cugl::scene2::PolygonNode> _health;
+
+    /** Reference to the key count icon scene node */
+    std::shared_ptr<cugl::scene2::PolygonNode> _keyUI;
 
     /** Reference to the pause button */
     std::shared_ptr<cugl::scene2::PolygonNode> _pause;
@@ -126,6 +131,13 @@ protected:
      Remaining number of frames to color reynard red
      */
     int keepRedFrames = 0;
+
+    /** The enemy locations to spawn keys for next frame, in PHYSICS space */
+    shared_ptr<vector<Vec2>> deadKeyEnemyLocs = make_shared<vector<Vec2>>();
+    
+    vector<std::shared_ptr<CheckpointKey>> _keys;
+    
+    vector<std::shared_ptr<CheckpointKeyCrazy>> _keysCrazy;
 
 public:
 
@@ -224,7 +236,6 @@ public:
          *  - "EnemyPos" :      [enemy1Pos's x, enemy1Pos's y, ...]
          *  - "ReynardPos" :    [reynardPos's x, reynardPos's y]
          *  - "RoomSwap" :     [Swap1-Room1-x, Swap1-Room1-y, Swap1-Room2-x, Swap1-Room2-y, Swap2....]
-         *  - "ActivatedCheckpoints": [checkpoint_index_at_getCheckpoint()list1, ...]
          */
         //Init json objects
         std::shared_ptr<JsonValue> jsonRoot = JsonValue::alloc(JsonValue::Type::ObjectType);
@@ -238,15 +249,6 @@ public:
             jsonEnemyPos->appendValue(thisEnemy->getCharacter()->getPosition().y);
         }
         jsonRoot->appendChild("EnemyPos",jsonEnemyPos);
-
-        
-        // JSON - Checkpoint
-        std::shared_ptr<JsonValue> jsonCheckpoints = JsonValue::alloc(JsonValue::Type::ArrayType);
-        for (int i:_checkpointActiatedCheckpoints){
-            float fi = i;
-            jsonCheckpoints->appendValue(fi);
-        }
-        jsonRoot->appendChild("ActivatedCheckpoints",jsonCheckpoints);
 
         // JSON - Reynard
         std::shared_ptr<JsonValue> jsonReynardPos = JsonValue::alloc(JsonValue::Type::ArrayType);
@@ -296,7 +298,6 @@ public:
         std::vector<float> enemyPos1D = jsonRoot->get("EnemyPos")->asFloatArray();
         std::vector<float> reynardPos1D = jsonRoot->get("ReynardPos")->asFloatArray();
         std::vector<float> swapHistory1D = jsonRoot->get("RoomSwap")->asFloatArray();
-        std::vector<int> activatedcheckpts1D = jsonRoot->get("ActivatedCheckpoints")->asIntArray();
         if (enemyPos1D.size() % 2 != 0 || reynardPos1D.size() != 2 || swapHistory1D.size() % 4 != 0){
             cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
             return false;
@@ -311,9 +312,6 @@ public:
 
         // JSON - Reynard
         _checkpointReynardPos = Vec2(reynardPos1D[0],reynardPos1D[1]);
-
-        _checkpointActiatedCheckpoints = activatedcheckpts1D;
-
 
         // JSON - Room Swapping
         std::shared_ptr<JsonValue> jsonRoomSwap = JsonValue::alloc(JsonValue::Type::ObjectType);
@@ -765,6 +763,18 @@ public:
 #pragma mark Helper Functions
     /* Converts input coordinates to coordinates in the game world */
     Vec2 inputToGameCoords(Vec2 inputCoords);
+    
+    /**
+     * Create a key at the given location in PHYSICS space
+     */
+    void createKey(Vec2 pos, bool isPossesed, bool isPathFinding);
+
+    void createKeyCrazy(Vec2 enemyPos);
+    
+    void removeKey(shared_ptr<CheckpointKey> k);
+    
+    void removeKeyCrazy(shared_ptr<CheckpointKeyCrazy> k);
+    
 };
 
 #endif /* __MP_GAME_MODE_H__ */

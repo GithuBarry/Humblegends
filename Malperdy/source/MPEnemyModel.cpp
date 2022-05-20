@@ -111,6 +111,9 @@ void EnemyModel::update(float dt) {
             break;
         case (EnemyModel::BehaviorState::RETURNING):
             break;
+        case (EnemyModel::BehaviorState::DEAD):
+            setMoveState(MovementState::DEAD);
+            break;
     }
 
     // Call parent method at end
