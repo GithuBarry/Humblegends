@@ -278,6 +278,10 @@ void GameScene::reset()
     revert(true);
 }
 
+/**
+ *
+ * @param totalReset Whether or not to start the game from the beginning
+ */
 void GameScene::revert(bool totalReset)
 {
     if (_envController != nullptr)
@@ -471,7 +475,7 @@ void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region) {
                 _enemies->back()->setReynardController(_reynardController);
                 addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
-                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(3.5f, 1)) * Vec2(5, 5));
+                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2::ZERO) * Vec2(20, 14));
             }
             else if (temp.find("enemy") != string::npos)
             {
@@ -609,6 +613,8 @@ void GameScene::update(float dt)
     Vec2 inputPos = inputToGameCoords(_input.getPosition());
 
     _envController->getGrid()->update(dt);
+    
+    _world->garbageCollect();
 
     // Process the toggled key commands
     if (_input.didDebug())
@@ -621,6 +627,8 @@ void GameScene::update(float dt)
             (*itr)->setDebug(true);
         }
     }
+    
+    
 
     // Reset Process toggled by key command
     if (_input.didReset())
@@ -1257,17 +1265,24 @@ void GameScene::beginContact(b2Contact *contact)
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT)
             {
-                _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
-                _checkpointEnemyPos = vector<Vec2>();
-                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                for (auto thisEnemy : *_enemies)
-                {
-                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                Checkpoint* cp = dynamic_cast<Checkpoint*>(&(*trap));
+
+                // Only allow clearing if Reynard has enough keys and it's locked, or if it's not locked
+                // TODO: case for if Reynard has enough keys
+                if (!(cp->isLocked())) {
+                    _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
+                    _checkpointEnemyPos = vector<Vec2>();
+                    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                    for (auto thisEnemy : *_enemies)
+                    {
+                        _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                    }
+                    trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+                    // Clear all the associated rooms
+                    _grid->clearCheckpoint(cp->getID());
+
+                    rewriteSaveFile();
                 }
-                rewriteSaveFile();
-                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-                // Clear all the associated rooms
-                _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
             }
             else if (trapType == TrapModel::TrapType::GOAL)
             {

@@ -49,7 +49,7 @@ public:
      *
      * @return  true if the trap is initialized properly, false otherwise.
      */
-    bool init(float roomWidth, float roomHeight);
+    bool init(float roomWidth, float roomHeight, bool big = false);
 
 
 
