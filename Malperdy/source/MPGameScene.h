@@ -32,7 +32,9 @@
 #include "MPTutorial.hpp"
 
 /** Reynard's start location */
-#define REYNARD_START Vec2(2, 16)
+//#define REYNARD_START Vec2(70, 70)
+//old reynard start possition
+#define REYNARD_START Vec2(2,16)
 
 /** Room dimensions in tiles */
 #define ROOM_WIDTH 12

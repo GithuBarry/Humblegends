@@ -647,7 +647,7 @@ void GridModel::calculatePhysicsGeometry()
     for (int row = 0; row < _size.y; row++)
     {
         _physicsGeometry->push_back(make_shared<vector<shared_ptr<vector<shared_ptr<physics2::PolygonObstacle>>>>>());
-        
+
         for (int col = 0; col < _size.x; col++)
         {
             _physicsGeometry->at(row)->push_back(make_shared<vector<shared_ptr<physics2::PolygonObstacle>>>());
@@ -699,6 +699,10 @@ void GridModel::calculatePhysicsGeometry()
                 getPhysicsGeometryAt(row, col)->push_back(obstacle);
                 trap->initObstacle(obstacle);
                 if (trap->getType() == TrapModel::TrapType::TRAPDOOR)
+                {
+                    trap->getObstacle()->setSensor(true);
+                }
+                if (trap->getType() == TrapModel::TrapType::SAP)
                 {
                     trap->getObstacle()->setSensor(true);
                 }

@@ -56,10 +56,9 @@ public:
     int getID() { return _id; }
 
     /**
-     * Returns whether this checkpoint is locked and so requires
-     * a key.
+     * Returns whether this checkpoint is locked and requires a key or not.
      * 
-     * @return  Whether this checkpoint is locked
+     * @return  Whether this checkpoint requires a key to activate
      */
     bool isLocked() { return _isLocked; }
 

@@ -91,6 +91,9 @@ protected:
 
     /** the time that the last dash started */
     Timestamp _dashStart = Timestamp();
+    
+    /** whether the character jumped since leaving the ground */
+    bool _jumped = false;
 
 #pragma mark -
 #pragma mark Attributes
@@ -267,6 +270,10 @@ public:
 
     void restoreSpeed() {
         _speed = RUN_SPEED;
+    }
+    
+    bool canJump(){
+        return !_jumped;
     }
 
     /**
