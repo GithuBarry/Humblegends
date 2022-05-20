@@ -963,38 +963,38 @@ void GameScene::update(float dt)
     }
 
     // Update the key UI
-    /*if (_reynardController->getCharacter()->getHearts() >= 3)
+    if (_reynardController->getKeysCount() >= 3)
     {
         if (_health->getName() != "3")
         {
-            _health->setTexture("textures/Health_Bar_Full.png");
+            _health->setTexture("textures/keys_three.png");
             _health->setName("3");
         }
     }
-    else if (_reynardController->getCharacter()->getHearts() == 2)
+    else if (_reynardController->getKeysCount() == 2)
     {
-        if (_health->getName() != "2")
+        if (_keyUI->getName() != "2")
         {
-            _health->setTexture("textures/Health_Bar_Two_Third.png");
-            _health->setName("2");
+            _keyUI->setTexture("textures/keys_two.png");
+            _keyUI->setName("2");
         }
     }
-    else if (_reynardController->getCharacter()->getHearts() == 1)
+    else if (_reynardController->getKeysCount() == 1)
     {
-        if (_health->getName() != "1")
+        if (_keyUI->getName() != "1")
         {
-            _health->setTexture("textures/Health_Bar_One_Third.png");
-            _health->setName("1");
+            _keyUI->setTexture("textures/keys_one.png");
+            _keyUI->setName("1");
         }
     }
-    else if (_reynardController->getCharacter()->getHearts() <= 0)
+    else if (_reynardController->getKeysCount() <= 0)
     {
-        if (_health->getName() != "0")
+        if (_keyUI->getName() != "0")
         {
-            _health->setTexture("textures/Health_Bar_None.png");
-            _health->setName("0");
+            _keyUI->setTexture("textures/keys_none.png");
+            _keyUI->setName("0");
         }
-    }*/
+    }
 
     lastFramePos = _input.getPosition();
 }
