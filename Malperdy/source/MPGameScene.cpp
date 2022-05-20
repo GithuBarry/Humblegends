@@ -659,7 +659,7 @@ void GameScene::update(float dt)
     if (_key.size() > 0) {
         for (int i = 0; i < _key.size(); i++){
             shared_ptr<CheckpointKey> k = _key.at(i);
-            if (k != nullptr and k->isPathFinding()) {
+            if (k != nullptr && k->isPathFinding()) {
                 Vec2 reyPos = _reynardController->getCharacter()->getPosition();
                 Vec2 currPos = k->getPosition();
                 float x = reyPos.x - currPos.x;
@@ -673,7 +673,7 @@ void GameScene::update(float dt)
     if (_keyCrazy.size() > 0) {
         for (int i = 0; i < _keyCrazy.size(); i++){
             shared_ptr<CheckpointKeyCrazy> k = _keyCrazy.at(i);
-            if (k != nullptr and k->isPathFinding()) {
+            if (k != nullptr && k->isPathFinding()) {
                 Vec2 reyPos = _reynardController->getCharacter()->getPosition();
                 bool isFacingRight = _reynardController->getCharacter()->isFacingRight();
                 Vec2 currPos = k->getPosition();
@@ -1673,7 +1673,7 @@ void GameScene::removeKey(shared_ptr<CheckpointKey> k) {
             shared_ptr<CheckpointKey> base = *itr; //_key.at(i);
             if (base == k) {
                 if (base != nullptr) {
-                    if (not base->isRemoved()) {
+                    if (!base->isRemoved()) {
                         _worldnode->removeChild(k->getSceneNode());
                         base->markRemoved(true);
                         base = nullptr;
@@ -1692,7 +1692,7 @@ void GameScene::removeKeyCrazy(shared_ptr<CheckpointKeyCrazy> k) {
             shared_ptr<CheckpointKeyCrazy> base = *itr; //_key.at(i);
             if (base == k) {
                 if (base != nullptr) {
-                    if (not base->isRemoved()) {
+                    if (!base->isRemoved()) {
                         _worldnode->removeChild(k->getSceneNode());
                         base->markRemoved(true);
                         base = nullptr;

@@ -28,18 +28,12 @@ private:
     /** The unique ID number for this checkpoint */
     int _id;
 
-<<<<<<< HEAD
-    /** Whether or not this checkpoint is a locked one */
-    bool _isLocked = false;
-
-=======
     /** Whether this checkpoint requires a key (false by default) */
     bool _isLocked = false;
 
     /** Pointer to the SceneNode with the lock asset */
     shared_ptr<scene2::PolygonNode> _lockNode;
 
->>>>>>> main
 public:
 #pragma mark Constructors
     /*
@@ -62,16 +56,10 @@ public:
     int getID() { return _id; }
 
     /**
-<<<<<<< HEAD
      * Returns whether this checkpoint is locked and so requires
      * a key.
      * 
      * @return  Whether this checkpoint is locked
-=======
-     * Returns whether this checkpoint is locked and requires a key or not.
-     * 
-     * @return  Whether this checkpoint requires a key to activate
->>>>>>> main
      */
     bool isLocked() { return _isLocked; }
 

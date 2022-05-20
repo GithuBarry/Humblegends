@@ -775,12 +775,7 @@ int GridModel::clearCheckpoint(int cID)
             return 2;
         }
     }
-<<<<<<< HEAD
-    return false;
-}
-=======
 
     // Checkpoint not found
     return 0;
 }
->>>>>>> main

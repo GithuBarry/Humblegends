@@ -27,16 +27,17 @@ int Checkpoint::ID_COUNTER = 0;
  * @param roomWidth     The width of the room the checkpoint is in
  * @param roomHeight    The height of the room the checkpoint is in
  * @param isFinal       Whether this is a "final" checkpoint, meaning a goal
+ * @param locked        Whether this checkpoint requires a key
  * @return  true if the trap is initialized properly, false otherwise.
  */
-bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal) {
+bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal, bool locked) {
     // Give this checkpoint an ID number that is unique among all checkpoints
     _id = ID_COUNTER;
     ID_COUNTER++;
 
     shared_ptr<Texture> sheet = make_shared<Texture>();
     sheet->initWithFile("textures/checkpoint_sheet.png");
-    
+
     _sceneNode = make_shared<scene2::SpriteNode>();
     _sceneNode->initWithSprite(sheet, 6, 5);
     if (isFinal) _type = TrapType::GOAL;
@@ -46,7 +47,7 @@ bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal) {
     _sceneNode->setScale((roomWidth / 4) / _sceneNode->getPolygon().getBounds().getMaxX());
     _sceneNode->setPosition(_sceneNode->getPosition().x + (roomWidth / 4), _sceneNode->getPosition().y + (roomHeight / 8));
     _sceneNode->setAbsolute(true);
-    
+
     _currFrame = 29;
 
     return this->TrapModel::init();
