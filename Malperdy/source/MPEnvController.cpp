@@ -31,15 +31,26 @@ void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<Rey
     if (!isSwappable(_toSwap, reynard, enemies)) {
         deselectRoom();
     }
+
     // Apply fog to external objects
     vector<Vec2> newEnemyPrevs = vector<Vec2>();
+    int enemyInd = 0;
     for (auto i = enemies->begin(); i != enemies->end(); i++) {
         Vec2 enemyRoom = _grid->worldSpaceToRoom((*i)->getScenePosition());
         bool isFogged = _grid->isRoomFogged(enemyRoom);
         if (isFogged) (*i)->getSceneNode()->setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
         else (*i)->getSceneNode()->setColor(Color4::WHITE);
 
+        // If this enemy is in a new room, handle lock changes accordingly
+        if (_enemyPrevs.size() != 0 && enemyRoom != _enemyPrevs[enemyInd]) {
+            // Unlock old room
+            _grid->getRoom(_enemyPrevs[enemyInd])->unlockRoom();
+            // Lock new room
+            _grid->getRoom(enemyRoom)->lockRoom();
+        }
+
         newEnemyPrevs.push_back(enemyRoom);
+        enemyInd++;
     }
     if (swapIndex <_swapHistory.size()){
         for (int i = swapIndex; i < _swapHistory.size(); ++i) {
@@ -51,31 +62,38 @@ void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<Rey
         }
     }
     // Update lock icons
-    if (zoomedOut && !_prevZoomOut) setLockVisibility(true, reynard, enemies);
-    else if (!zoomedOut && _prevZoomOut) setLockVisibility(false, reynard, enemies);
-    else if (zoomedOut && _prevZoomOut) {
-        shared_ptr<RoomModel> room;
+    //if (zoomedOut && !_prevZoomOut) setLockVisibility(true, reynard, enemies);
+    //else if (!zoomedOut && _prevZoomOut) setLockVisibility(false, reynard, enemies);
+    //else if (zoomedOut && _prevZoomOut) {
+    //    shared_ptr<RoomModel> room;
 
-        // Check if prevs should still be locked
-        bool isVisible = !isSwappable(_reyPrev, reynard, enemies);
-        room = _grid->getRoom(_reyPrev);
-        if (room != nullptr) room->setLockIcon(isVisible);
-        for (auto i = _enemyPrevs.begin(); i != _enemyPrevs.end(); i++) {
-            isVisible = !isSwappable((*i), reynard, enemies);
-            room = _grid->getRoom(*i);
-            if (room != nullptr) room->setLockIcon(isVisible);
-        }
-        // Lock currents
-        room = _grid->getRoom(newReyRoom);
-        if (room != nullptr) room->setLockIcon(isVisible);
-        for (auto i = newEnemyPrevs.begin(); i != newEnemyPrevs.end(); i++) {
-            room = _grid->getRoom(*i);
-            if (room != nullptr) room->setLockIcon(true);
-        }
-    }
+    //    // Check if prevs should still be locked
+    //    bool isVisible = !isSwappable(_reyPrev, reynard, enemies);
+    //    room = _grid->getRoom(_reyPrev);
+    //    if (room != nullptr) room->showLocks(isVisible);
+    //    for (auto i = _enemyPrevs.begin(); i != _enemyPrevs.end(); i++) {
+    //        isVisible = !isSwappable((*i), reynard, enemies);
+    //        room = _grid->getRoom(*i);
+    //        if (room != nullptr) room->showLocks(isVisible);
+    //    }
+    //    // Lock currents
+    //    room = _grid->getRoom(newReyRoom);
+    //    if (room != nullptr) room->showLocks(isVisible);
+    //    for (auto i = newEnemyPrevs.begin(); i != newEnemyPrevs.end(); i++) {
+    //        room = _grid->getRoom(*i);
+    //        if (room != nullptr) room->showLocks(true);
+    //    }
+    //}
 
     // Update previous variables & defog rooms
     if (!_reyPrev.equals(newReyRoom)) {
+        // Change lock status of rooms Reynard was/is in, as necessary
+        if (_grid->getRoom(_reyPrev) != nullptr && _grid->getRoom(newReyRoom) != nullptr) {
+            _grid->getRoom(_reyPrev)->unlockRoom();
+            _grid->getRoom(newReyRoom)->lockRoom();
+        }
+        
+        // Defog
         _reyPrev = newReyRoom;
         defogSurrounding(_reyPrev);
     }
@@ -162,29 +180,13 @@ void EnvController::deselectRoom() {
 #pragma mark Helper Functions
 
 /*
-* Shows or hides the lock icons on locked rooms, but not solid ones
-* To be called when zooming out or in
-*
-* @param isVisible  true if the locks should be visible
-*/
-void EnvController::setLockVisibility(bool isVisible, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {    
-    for (int x = 0; x < _grid->getWidth(); x++) {
-        for (int y = 0; y < _grid->getHeight(); y++) {
-            if (_grid->getRoom(x, y) == nullptr) break;
-
-            _grid->getRoom(x, y)->setLockIcon(isVisible && !isSwappable(Vec2(x, y), reynard, enemies));
-        }
-    }
-}
-
-/*
-* Checks if the room satisfies the conditions to be swappable
-*
-* @param room       the row and column of the room to check
-* @param reynard    the controller for reynard
-* @param enemies    the controllers for the enemies
-*
-* @ return true if room doesn't contain Reynard, enemies or a checkpoint
+ * Checks if the room satisfies the conditions to be swappable
+ *
+ * @param room       the row and column of the room to check
+ * @param reynard    the controller for reynard
+ * @param enemies    the controllers for the enemies
+ *
+ * @ return true if room doesn't contain Reynard, enemies or a checkpoint
 */
 bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
     // Fail if room doesn't exist, is permalocked, fogged, or occupied

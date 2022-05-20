@@ -48,9 +48,6 @@ const Vec2 RoomModel::ROOM_SCALE = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT)
 /** How big the boundary extrusion should be */
 #define BOUND_WIDTH 10
 
-// Create color for geometry
-Color4 geometryColor = Color4(20,20,20,255);
-
 #pragma mark Room Layout
 /** The vertices for the boundary of a room */
 // TODO: this is a dumb workaround to path not closing, fix it later
@@ -98,7 +95,7 @@ void RoomModel::buildGeometry(string roomID) {
         // Convert polygon into a scene graph node and add as a child to the room node
         shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
         polyNode->setPolygon(*poly);
-        polyNode->setColor(geometryColor);
+        polyNode->setColor(GEOMETRY_COLOR);
         // Ensure that polygons are drawn to their absolute coordinates
         polyNode->setAbsolute(true);
         // Set position of polygon node accordingly
@@ -170,14 +167,14 @@ bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
 	setColor(Color4(Vec4(0.2, 0.2, 0.2, 1)));
 
     // Initialize lock icon
-    _lockIcon = scene2::PolygonNode::allocWithFile("textures/lock_icon.png");
+    /*_lockIcon = scene2::PolygonNode::allocWithFile("textures/lock_icon.png");
     _lockIcon->setAnchor(Vec2::ANCHOR_TOP_RIGHT);
     Vec2 roomCorner = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
     Vec2 padding = Vec2(-20, -20);
     _lockIcon->setPosition(roomCorner + padding);
     _lockIcon->setScale(3);
     _lockIcon->setVisible(false);
-    addChild(_lockIcon);
+    addChild(_lockIcon);*/
 
     destination = Vec2(x,y);
 	// Initialize with the default room width/height and given position
@@ -229,30 +226,6 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
     return true;
 }
 
-bool RoomModel::update(float dt){
-    // BACKGROUND CLEAR TRANSITION
-    // When a room is being cleared, transition smoothly between backgrounds
-
-    // Only transition if the room is being cleared, so bgClear isn't nullptr
-    if (_isCleared) {
-        bgOpacity -= CLEAR_RATE;
-        // If old background is now fully clear
-        if (bgOpacity < 0.0f) {
-            _bgNode = _bgClearedNode;
-            _bgClearedNode = nullptr;
-        }
-        else _bgNode->setColor(Color4(Vec4(1, 1, 1, bgOpacity)));
-    }
-
-    // traps
-    if (_trap != nullptr) {
-        _trap->update(dt);
-        return true;
-    }
-
-    return false;
-}
-
 #pragma mark Destructors
 /**
  * Disposes all resources and assets of this room.
@@ -283,6 +256,33 @@ void RoomModel::clear(shared_ptr<Texture> bg) {
 }
 
 #pragma mark Updates
+bool RoomModel::update(float dt) {
+    // SHOWING LOCKS
+    // Only show if the rooms are zoomed out and there's a pending lock state update
+    if (isZoomedOut && lockChangePending) updateLockedAppearance();
+
+    // BACKGROUND CLEAR TRANSITION
+    // When a room is being cleared, transition smoothly between backgrounds
+
+    // Only transition if the room is being cleared, so bgClear isn't nullptr
+    if (_isCleared) {
+        bgOpacity -= CLEAR_RATE;
+        // If old background is now fully clear
+        if (bgOpacity < 0.0f) {
+            _bgNode = _bgClearedNode;
+            _bgClearedNode = nullptr;
+        }
+        else _bgNode->setColor(Color4(Vec4(1, 1, 1, bgOpacity)));
+    }
+
+    // traps
+    if (_trap != nullptr) {
+        _trap->update(dt);
+        return true;
+    }
+
+    return false;
+}
 
 /**
  * Execute animations
@@ -303,12 +303,12 @@ bool RoomModel::updateSwap() {
 
         if (abs(destination.x * DEFAULT_ROOM_WIDTH - cur_x) < 5) {
             this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH,
-                destination.y * DEFAULT_ROOM_HEIGHT * (swapSpeed)+cur_y * (1 - swapSpeed));
+                destination.y * DEFAULT_ROOM_HEIGHT * (SWAP_SPEED)+cur_y * (1 - SWAP_SPEED));
         }
         else {
             float yfactor = 1 / (abs(diff_x) / 100 + 1);
 
-            this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH * (swapSpeed)+cur_x * (1 - swapSpeed),
+            this->SceneNode::setPosition(destination.x * DEFAULT_ROOM_WIDTH * (SWAP_SPEED)+cur_x * (1 - SWAP_SPEED),
                 destination.y * (yfactor)*DEFAULT_ROOM_HEIGHT + cur_y * (1 - yfactor));
         }
     }

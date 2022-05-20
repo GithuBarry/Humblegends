@@ -151,6 +151,38 @@ public:
 
     virtual ~EnvController();
 
+#pragma mark Zoom
+    /**
+     * Called when the camera zooms out
+     * 
+     * Deselects any selected rooms then handles the zoom for each room
+     */
+    void zoomOut() {
+        deselectRoom();
+        for (int x = 0; x < _grid->getWidth(); x++) {
+            for (int y = 0; y < _grid->getHeight(); y++) {
+                if (_grid->getRoom(x, y) == nullptr) continue;
+
+                _grid->getRoom(x, y)->zoomOut();
+            }
+        }
+    }
+
+    /**
+     * Called when the camera zooms in
+     * 
+     * Deselects any selected rooms then handles the zoom for each room
+     */
+    void zoomIn() {
+        deselectRoom();
+        for (int x = 0; x < _grid->getWidth(); x++) {
+            for (int y = 0; y < _grid->getHeight(); y++) {
+                if (_grid->getRoom(x, y) == nullptr) continue;
+
+                _grid->getRoom(x, y)->zoomIn();
+            }
+        }
+    }
 
 private:
 #pragma mark Helper Functions
@@ -193,15 +225,6 @@ private:
     * @param room   the row and column of the central room
     */
     void defogSurrounding(Vec2 room);
-
-    /*
-    * Shows or hides the lock icons on locked rooms
-    * To be called when zooming out or in
-    *
-    * @param isVisible  true if the locks should be visible
-    */
-    void setLockVisibility(bool isVisible, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
-
 
 #pragma mark Appearance Setters
 

@@ -766,6 +766,7 @@ void GameScene::update(float dt)
         _reynardController->dash(_input.getDashDirection());
     }
 
+    // When zooming in
     if (_input.didZoomIn())
     {
         if (!_gamestate.isPaused())
@@ -776,7 +777,7 @@ void GameScene::update(float dt)
             }
             _gamestate.zoom_in();
         }
-        _envController->deselectRoom();
+        _envController->zoomIn();
     }
 
     if (_reynardController->getCharacter()->getHearts() <= 0)
@@ -801,7 +802,7 @@ void GameScene::update(float dt)
             }
             _gamestate.zoom_out();
         }
-        _envController->deselectRoom();
+        _envController->zoomOut();
     }
 
     float scaled_dt = _gamestate.getScaledDtForPhysics(dt);
