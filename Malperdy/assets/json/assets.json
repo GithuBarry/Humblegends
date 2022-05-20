@@ -30,6 +30,12 @@
     "checkpoint_lock":{
         "file" : "textures/MP_CheckpointLock.png"
     },
+    "healthbar" :{
+        "file": "textures/Health_Bar_Full.png"
+    },
+    "pause" :{
+        "file": "textures/PauseScreen/Pause_Button.png"
+    },
     "goal": {
       "file": "textures/goaldoor.png"
     },

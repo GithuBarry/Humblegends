@@ -194,13 +194,13 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _winNode->setPadding(dimen.width / 2, dimen.height / 2, dimen.width / 2, dimen.height / 2);
     setComplete(false);
 
-    _health = scene2::PolygonNode::allocWithFile("textures/Health_Bar_Full.png");
+    _health = scene2::PolygonNode::allocWithTexture(_assets->get<Texture>("healthbar"));
     _health->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     Vec2 padding = Vec2(30, -20);
     _health->setPosition(Vec2(0, getSize().height) + padding);
     _health->setScale(1.5);
 
-    _pause = scene2::PolygonNode::allocWithFile("textures/PauseScreen/Pause_Button.png");
+    _pause = scene2::PolygonNode::allocWithTexture(_assets->get<Texture>("pause"));
     _pause->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     padding = Vec2(computeActiveSize().width - 100, -10);
     _pause->setPosition(Vec2(0, getSize().height) + padding);
@@ -497,7 +497,7 @@ void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region) {
                 addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
                 //_enemies->back()->getCharacter()->setPosition((enemypos + Vec2::ZERO) * Vec2(20, 14));
-                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1, 1)) * Vec2(7.75,9.5));
+                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1, 1)) * Vec2(8.2,5));
             }
         }
     }
