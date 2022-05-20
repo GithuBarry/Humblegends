@@ -196,7 +196,13 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _health->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     Vec2 padding = Vec2(30, -20);
     _health->setPosition(Vec2(0, getSize().height) + padding);
-    _health->setScale(1.5);
+    _health->setScale(0.75);
+
+    _keyUI = scene2::PolygonNode::allocWithFile("textures/keys_none.png");
+    _keyUI->setAnchor(Vec2::ANCHOR_TOP_LEFT);
+    padding = Vec2(30, -80);
+    _keyUI->setPosition(Vec2(0, getSize().height) + padding);
+    _keyUI->setScale(0.75);
 
     _pause = scene2::PolygonNode::allocWithFile("textures/PauseScreen/Pause_Button.png");
     _pause->setAnchor(Vec2::ANCHOR_TOP_LEFT);
@@ -207,6 +213,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     addChild(_worldnode);
     addChild(_debugnode);
     addChild(_health);
+    addChild(_keyUI);
 
     addChild(_pause);
 
@@ -258,6 +265,7 @@ void GameScene::dispose()
         _debugnode = nullptr;
         _winNode = nullptr;
         _health = nullptr;
+        _keyUI = nullptr;
         _pause = nullptr;
         _complete = false;
         _debug = false;
@@ -920,7 +928,7 @@ void GameScene::update(float dt)
     // Update the environment
     _envController->update(progressCoords, !_gamestate.zoomed_in(), _reynardController, _enemies);
 
-    // Update the UI
+    // Update the health UI
     if (_reynardController->getCharacter()->getHearts() >= 3)
     {
         if (_health->getName() != "3")
@@ -953,6 +961,41 @@ void GameScene::update(float dt)
             _health->setName("0");
         }
     }
+
+    // Update the key UI
+    /*if (_reynardController->getCharacter()->getHearts() >= 3)
+    {
+        if (_health->getName() != "3")
+        {
+            _health->setTexture("textures/Health_Bar_Full.png");
+            _health->setName("3");
+        }
+    }
+    else if (_reynardController->getCharacter()->getHearts() == 2)
+    {
+        if (_health->getName() != "2")
+        {
+            _health->setTexture("textures/Health_Bar_Two_Third.png");
+            _health->setName("2");
+        }
+    }
+    else if (_reynardController->getCharacter()->getHearts() == 1)
+    {
+        if (_health->getName() != "1")
+        {
+            _health->setTexture("textures/Health_Bar_One_Third.png");
+            _health->setName("1");
+        }
+    }
+    else if (_reynardController->getCharacter()->getHearts() <= 0)
+    {
+        if (_health->getName() != "0")
+        {
+            _health->setTexture("textures/Health_Bar_None.png");
+            _health->setName("0");
+        }
+    }*/
+
     lastFramePos = _input.getPosition();
 }
 
