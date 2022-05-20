@@ -4,10 +4,10 @@
   "tileSize": 10,
   "regions": [
       {
-        "name": "region_test",
+        "name": "region1",
         "type": 1,
         "width": 3,
-        "height": 4,
+        "height": 3,
         "originX": 0,
         "originY": 0
       }

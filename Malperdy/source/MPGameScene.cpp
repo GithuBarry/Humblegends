@@ -318,10 +318,10 @@ void GameScene::revert(bool totalReset)
             _envController->swapRoomOnGrid(_swapHistory[i][0], _swapHistory[i][1], true);
         }
         _reynardController->getCharacter()->setPosition(_checkpointReynardPos);
-        for (int i = 0; i < _enemies->size(); i++)
+        /*for (int i = 0; i < _enemies->size(); i++)
         {
             (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
-        }
+        }*/
     }
 }
 
@@ -475,7 +475,7 @@ void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region) {
                 _enemies->back()->setReynardController(_reynardController);
                 addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
-                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2::ZERO) * Vec2(20, 14));
+                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2::ZERO) * Vec2(23, 12));
             }
             else if (temp.find("enemy") != string::npos)
             {
@@ -1304,7 +1304,6 @@ void GameScene::beginContact(b2Contact *contact)
                     shared_ptr<CheckpointKey> k = _key.at(i);
                     b2Body *kBody = k->getBody();
                     if (kBody == body1 || kBody == body2) {
-                        // TODO: Kristina: Bad access here. 
                         removeKey(k);
                     };
                 }
@@ -1346,8 +1345,7 @@ void GameScene::beginContact(b2Contact *contact)
                 Checkpoint* cp = dynamic_cast<Checkpoint*>(&(*trap));
 
                 // Only allow clearing if Reynard has enough keys and it's locked, or if it's not locked
-                // TODO: case for if Reynard has enough keys
-                if (!(cp->isLocked())) {
+                if (!cp->isLocked() || (cp->isLocked() && _reynardController->useKey())) {
                     _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                     _checkpointEnemyPos = vector<Vec2>();
                     _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
@@ -1662,19 +1660,14 @@ void GameScene::createKey(Vec2 pos, bool isPossesed, bool isPathFinding) {
 
 void GameScene::removeKey(shared_ptr<CheckpointKey> k) {
   // do not attempt to remove a key that has already been removed
-    if (_key.size() > 0){
-        for (auto itr=_key.begin(); itr != _key.end(); ++itr){
-            shared_ptr<CheckpointKey> base = *itr; //_key.at(i);
-            if (base == k) {
-                if (base != nullptr) {
-                    if (!base->isRemoved()) {
-                        _worldnode->removeChild(k->getSceneNode());
-                        base->markRemoved(true);
-                        base = nullptr;
-                        _key.erase(itr);
-                    }
-                }
-            }
+    if (_key.size() <= 0) return;
+
+    auto itr = _key.begin();
+    while (itr != _key.end()) {
+        if ((*itr) == k && (*itr) != nullptr && !((*itr)->isRemoved())) {
+            _worldnode->removeChild(k->getSceneNode());
+            (*itr)->markRemoved(true);
+            itr = _key.erase(itr);
         }
     }
 }

@@ -29,7 +29,7 @@ protected:
     Timestamp _lastHit = Timestamp();
 
     /** Number of keys Reynard currently has */
-    int num_of_keys = 1;
+    int _keysCount = 0;
 
 public:
 
@@ -80,16 +80,33 @@ public:
      */
     void knockback(b2Vec2 dir);
 
-    void increment_keys() {
-        num_of_keys += 1;
+    /**
+     * Called when Reynard obtains a key, which increments the number of keys he has
+     */
+    void addKey() {
+        _keysCount += 1;
     }
 
-    void decrement_keys() {
-        num_of_keys -= 1;
+    /**
+     * Called when Reynard uses a key to unlock a checkpoint, which decrements the number
+     * of keys he has.
+     * 
+     * Returns true if the key was used successfully, or false if Reynard has no keys and
+     * so one was not taken from him.
+     * 
+     * @return  Whether a key was used successfully
+     */
+    bool useKey() {
+        if (_keysCount <= 0) return false;
+        _keysCount -= 1;
+        return true;
     }
 
-    int get_keys_count() {
-        return num_of_keys;
+    /**
+     * Returns the number of keys Reynard is currently carrying
+     */
+    int getKeysCount() {
+        return _keysCount;
     }
 };
 
