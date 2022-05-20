@@ -76,15 +76,42 @@
         "minfilter": "linear",
         "magfilter": "linear"
     },
+    "music-txt": {
+        "file": "textures/music_text.png",
+        "wrapS": "clamp",
+        "wrapT": "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
+    },
+    "sfx-txt": {
+        "file": "textures/sound_effects_text.png",
+        "wrapS": "clamp",
+        "wrapT": "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear"
+    },
+    "volume-bar": {
+        "file": "textures/volume_bar.png",
+        "wrapS": "clamp",
+        "wrapT": "clamp",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "atlas": {
+            "background": [ 0, 0, 645, 54 ],
+            "foreground": [ 14, 54, 631, 108 ],
+            "leftcap": [ 0, 54, 14, 108 ],
+            "rightcap": [ 631, 54, 645, 108 ]
+        }
+    },
     "volume-bar-fg": {
-        "file": "textures/volume-foreground.png",
+        "file": "textures/volume_foreground.png",
         "wrapS": "clamp",
         "wrapT": "clamp",
         "minfilter": "linear",
         "magfilter": "linear"
     },
     "volume-bar-bg": {
-        "file": "textures/volume-foreground.png",
+        "file": "textures/volume_foreground.png",
         "wrapS": "clamp",
         "wrapT": "clamp",
         "minfilter": "linear",
@@ -331,6 +358,73 @@
                     "anchor"   : [1,0.5],
                     "scale"    : 0.45
 			    },
+                "children" : {
+                    "music"       : {
+                        "type"   : "Image",
+                        "data"   : {
+                            "texture"  : "music-txt",
+                            "anchor"   : [0,1],
+                            "scale"    : 0.45
+                        },
+                        "layout" : {
+                            "x_anchor" : "left",
+                            "y_anchor" : "top",
+                            "x_offset" : 20,
+                            "y_offset" : -20,
+                            "absolute" : true
+                        }
+                    },
+                    "music-bar"  : {
+                        "type"   : "Progress",
+                        "data"   : {
+                            "anchor"   : [0,1],
+                            "scale"    : 0.7,
+                            "background" : "volume-bar_background",
+                            "foreground" : "volume-bar_foreground",
+                            "left_cap"   : "volume-bar_leftcap",
+                            "right_cap"  : "volume-bar_rightcap"
+                        },
+                        "layout" : {
+                            "x_anchor" : "left",
+                            "y_anchor" : "top",
+                            "x_offset" : 20,
+                            "y_offset" : -80,
+                            "absolute" : true
+                        }
+                    },
+                    "sfx"       : {
+                        "type"   : "Image",
+                        "data"   : {
+                            "texture"  : "sfx-txt",
+                            "anchor"   : [0,1],
+                            "scale"    : 0.45
+                        },
+                        "layout" : {
+                            "x_anchor" : "left",
+                            "y_anchor" : "middle",
+                            "x_offset" : 20,
+                            "absolute" : true
+                        }
+                    },
+                    "sfx-bar"  : {
+                        "type"   : "Progress",
+                        "data"   : {
+                            "anchor"   : [0,1],
+                            "scale"    : 0.7,
+                            "background" : "volume-bar_background",
+                            "foreground" : "volume-bar_foreground",
+                            "left_cap"   : "volume-bar_leftcap",
+                            "right_cap"  : "volume-bar_rightcap"
+                        },
+                        "layout" : {
+                            "x_anchor" : "left",
+                            "y_anchor" : "middle",
+                            "x_offset" : 20,
+                            "y_offset" : -60,
+                            "absolute" : true
+                        }
+                    }
+                },
 			    "layout" : {
                     "x_anchor" : "right",
                     "y_anchor" : "middle",
@@ -338,22 +432,6 @@
                     "y_offset" : -10,
                     "absolute" : true
 		    	}
-            },
-            "volume-bar"  : {
-                "type"   : "Progress",
-                "data"   : {
-                    "anchor"     : [0.5,0.5],
-                    "background" : "volume-bar-bg",
-                    "foreground" : "volume-bar-fg",
-                    "left_cap"   : [ 0, 45, 24, 90 ],
-                    "right_cap"  : [ 296, 45, 320, 90 ]
-                },
-                "layout" : {
-                    "x_anchor" : "center",
-                    "y_anchor" : "middle",
-                    "y_offset" : -175,
-                    "absolute" : true
-                }
             },
             "done"  : {
 			    "type"   : "Button",
