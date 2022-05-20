@@ -20,12 +20,19 @@
 #include "MPRegionModel.h"
 #include "MPCheckpoint.h"
 #include "MPCheckpointKey.h"
+#include "MPCheckpointKeyCrazy.hpp"
 
 #define DEFAULT_REGION 1
 
 using namespace cugl;
 
 class GridModel : public cugl::scene2::SceneNode {
+public:
+    /** Spawn locations of all standalone regular keys in the game in HOUSE space (row, col) */
+    shared_ptr<vector<Vec2>> _loneKeyLocs = make_shared<vector<Vec2>>();
+
+    /** Spawn locations of all standalone possessed keys in the game in HOUSE space (row, col) */
+    shared_ptr<vector<Vec2>> _lonePossessedKeyLocs = make_shared<vector<Vec2>>();
 
 private:
     /** Reference to asset manager */
@@ -82,10 +89,6 @@ private:
     shared_ptr<vector<shared_ptr<RoomModel>>> _filler = make_shared<vector<shared_ptr<RoomModel>>>();
 
 public:
-
-    /** All the keys in the grid */
-    shared_ptr<vector<shared_ptr<CheckpointKey>>> _keys;
-
 #pragma mark Constructors
 
     /**

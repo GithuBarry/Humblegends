@@ -384,6 +384,15 @@ void GameScene::populateEnv()
 
     // Add tutorial icons
     populateTutorials();
+
+    // POPULATE KEYS
+    // Do regular keys first
+    auto keyItr = _grid->_loneKeyLocs->begin();
+    while (keyItr != _grid->_loneKeyLocs->end()) {
+        // Note that these are in HOUSE space
+        //createKey()
+        ++keyItr;
+    }
 }
 
 /**
