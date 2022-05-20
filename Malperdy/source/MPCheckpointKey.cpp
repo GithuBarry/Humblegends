@@ -26,11 +26,20 @@ bool CheckpointKey::init(const Vec2 pos, const Size size) {
         //setFriction(0.0f);
         //setFixedRotation(true);
         //setSensor(false);
+        _isPathFinding = true;
         return true;
     };
     return false;
 }
 
+void CheckpointKey::setIsPathFinding(bool isPathFinding) {
+    _isPathFinding = isPathFinding;
+    return;
+}
+
+bool CheckpointKey::isPathFinding() {
+    return _isPathFinding;
+}
 
 /**
  * Updates the object's physics state (NOT GAME LOGIC).

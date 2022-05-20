@@ -30,6 +30,8 @@ protected:
     std::shared_ptr<cugl::scene2::SceneNode> _node;
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
     float _drawScale;
+    /** If pathfinding should be enabled */
+    bool _isPathFinding;
 
 public:
 #pragma mark Constructors
@@ -53,6 +55,10 @@ public:
     virtual bool init(const cugl::Vec2 pos) override { return init(pos,cugl::Size(1,1)); }
     
     bool init(const cugl::Vec2 pos, const cugl::Size size) override;
+    
+    void setIsPathFinding(bool isPathFinding);
+    
+    bool isPathFinding();
     
     static std::shared_ptr<CheckpointKey> alloc() {
         std::shared_ptr<CheckpointKey> result = std::make_shared<CheckpointKey>();

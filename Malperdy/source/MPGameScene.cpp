@@ -633,51 +633,61 @@ void GameScene::update(float dt)
         CULog("Shutting down");
         Application::get()->quit();
     }
-
+    
     if (key) {
         // Create a key object and place at enemy position
         // int v2 = rand() % 100 + 1;
-        int v2 = 1;
+        int v2 = 51;
         if (v2 > 50) {
-            createKey(enemyPos);
+            CULog("TRYING TO MAKE KEY");
+            createKey(enemyPos, false, true);
             enemyPos = Vec2(0,0);
             key = false;
         }
         else {
             Vec2 reyPos = _reynardController->getCharacter()->getPosition();
-            createKeyCrazy(Vec2(reyPos.x+3, reyPos.y));
+            createKey(Vec2(reyPos.x+3, reyPos.y), true, true);
             enemyPos = Vec2(0,0);
             key = false;
         }
     }
     
-    // Update code for Key pathfinding to Reynard
-    if (_key != nullptr) {
-        Vec2 reyPos = _reynardController->getCharacter()->getPosition();
-        Vec2 currPos = _key->getPosition();
-        float x = reyPos.x - currPos.x;
-        float y = reyPos.y - currPos.y;
-        _key->setVX(x);
-        _key->setVY(y);
+    if (_key.size() > 0) {
+        for (int i = 0; i < _key.size(); i++){
+            shared_ptr<CheckpointKey> k = _key.at(i);
+            if (k != nullptr and k->isPathFinding()) {
+                Vec2 reyPos = _reynardController->getCharacter()->getPosition();
+                Vec2 currPos = k->getPosition();
+                float x = reyPos.x - currPos.x;
+                float y = reyPos.y - currPos.y;
+                k->setVX(x);
+                k->setVY(y);
+            }
+        }
     }
     
-    // Update code for CrazyKey pathfinding away from Reynard
-    if (_keyCrazy != nullptr) {
-        Vec2 reyPos = _reynardController->getCharacter()->getPosition();
-        bool isFacingRight = _reynardController->getCharacter()->isFacingRight();
-        Vec2 currPos = _keyCrazy->getPosition();
-        //_keyCrazy->setVX(3.0f);
-        float x = reyPos.x - currPos.x;
-        float y = reyPos.y - currPos.y;
-        if (isFacingRight) {
-            _keyCrazy->setVX(-x);
-            _keyCrazy->setVY(-y);
-        }
-        else {
-            _keyCrazy->setVX(x);
-            _keyCrazy->setVY(y);
+    if (_keyCrazy.size() > 0) {
+        for (int i = 0; i < _keyCrazy.size(); i++){
+            shared_ptr<CheckpointKeyCrazy> k = _keyCrazy.at(i);
+            if (k != nullptr and k->isPathFinding()) {
+                Vec2 reyPos = _reynardController->getCharacter()->getPosition();
+                bool isFacingRight = _reynardController->getCharacter()->isFacingRight();
+                Vec2 currPos = k->getPosition();
+                //_keyCrazy->setVX(3.0f);
+                float x = reyPos.x - currPos.x;
+                float y = reyPos.y - currPos.y;
+                if (isFacingRight) {
+                    k->setVX(-x);
+                    k->setVY(-y);
+                }
+                else {
+                    k->setVX(x);
+                    k->setVY(y);
+                }
+            }
         }
     }
+    
     
     // reynard red when hurt/dealt damage
     if (keepRedFrames > 0)
@@ -1278,14 +1288,27 @@ void GameScene::beginContact(b2Contact *contact)
 #pragma mark REYNARD COLLISION SECTION
         if (enemy == nullptr)
         {
-            if (_key != nullptr || _keyCrazy != nullptr) {
+            if (_key.size()>0 || _keyCrazy.size()>0) {
                 b2Body *body1 = contact->GetFixtureA()->GetBody();
                 b2Body *body2 = contact->GetFixtureB()->GetBody();
-                b2Body *keyBody = _key != nullptr ? _key->getBody() : _keyCrazy->getBody();
-                bool isKeyCollision = keyBody == body1 || keyBody == body2;
-                if (isKeyCollision) {
-                    removeKey();
+                
+                for (int i = 0; i < _key.size(); i++){
+                    shared_ptr<CheckpointKey> k = _key.at(i);
+                    b2Body *kBody = k->getBody();
+                    if (kBody == body1 || kBody == body2) {
+                        // TODO: Kristina: Bad access here. 
+                        removeKey(k);
+                    };
                 }
+                
+                for (int i = 0; i < _keyCrazy.size(); i++){
+                    shared_ptr<CheckpointKeyCrazy> k = _keyCrazy.at(i);
+                    b2Body *kBody = k->getBody();
+                    if (kBody == body1 || kBody == body2) {
+                        removeKeyCrazy(k);
+                    };
+                }
+                
             }
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
 #pragma mark TRAP COLLISION CODE
@@ -1366,7 +1389,8 @@ void GameScene::beginContact(b2Contact *contact)
             }
             if (trapType == TrapModel::TrapType::SPIKE) {
                 // TODO: Change this because enemy dies instantly on contact with spikes.
-                enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
+                enemy->getCharacter()->setHearts(0);
+                //enemy->getCharacter()->setMoveState(CharacterModel::MovementState::DEAD);
                 if (enemy->isDead()) {
                     key = true;
                     enemyPos = enemy->getCharacter()->getPosition();
@@ -1405,14 +1429,26 @@ void GameScene::beginContact(b2Contact *contact)
         }
     }
     // Random key collisions
-    else if (_key != nullptr || _keyCrazy != nullptr) {
+    else if (_key.size()>0 || _keyCrazy.size()>0) {
         b2Body *body1 = contact->GetFixtureA()->GetBody();
         b2Body *body2 = contact->GetFixtureB()->GetBody();
-        b2Body *keyBody = _key != nullptr ? _key->getBody() : _keyCrazy->getBody();
-        bool isKeyCollision = keyBody == body1 || keyBody == body2;
-        if (isKeyCollision) {
-            return;
+        
+        for (int i = 0; i < _key.size(); i++){
+            shared_ptr<CheckpointKey> k = _key.at(i);
+            b2Body *kBody = k->getBody();
+            if (kBody == body1 || kBody == body2) {
+                return;
+            };
         }
+        
+        for (int i = 0; i < _keyCrazy.size(); i++){
+            shared_ptr<CheckpointKeyCrazy> k = _keyCrazy.at(i);
+            b2Body *kBody = k->getBody();
+            if (kBody == body1 || kBody == body2) {
+                return;
+            };
+        }
+        
     }
     // Reynard-on-enemy collision
     else
@@ -1571,15 +1607,29 @@ Vec2 GameScene::inputToGameCoords(Vec2 inputCoords)
 /**
  * Create a key at the given location in PHYSICS space
  */
-void GameScene::createKey(Vec2 pos) {
-    CULog("POS: %f %f", pos.x, pos.y);
-    _key = CheckpointKey::alloc(Vec2(0,0),Size(1.0f, 1.0f));
-    std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
-    _key->setSceneNode(n);
-    _key->setDrawScale(_scale);
-    n->setScale(.2);
-    _key->setPosition(pos);
-    addObstacle(_key, n);
+void GameScene::createKey(Vec2 pos, bool isPossesed, bool isPathFinding) {
+    if (isPossesed) {
+        std::shared_ptr<CheckpointKeyCrazy> k = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
+        std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
+        k->setSceneNode(n);
+        k->setDrawScale(_scale);
+        n->setScale(.2);
+        k->setPosition(pos);
+        k->setIsPathFinding(isPathFinding);
+        _keyCrazy.push_back(k);
+        addObstacle(k, n);
+    }
+    else {
+        std::shared_ptr<CheckpointKey> k  = CheckpointKey::alloc(Vec2(0,0),Size(1.0f, 1.0f));
+        std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
+        k->setSceneNode(n);
+        k->setDrawScale(_scale);
+        n->setScale(.2);
+        k->setPosition(pos);
+        k->setIsPathFinding(isPathFinding);
+        _key.push_back(k);
+        addObstacle(k, n);
+    };
 }
 
 /**
@@ -1587,36 +1637,52 @@ void GameScene::createKey(Vec2 pos) {
  * 
  * Document your shit, Abu
  */
-void GameScene::createKeyCrazy(Vec2 enemyPos) {
-    _keyCrazy = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
-    std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
-    _keyCrazy->setSceneNode(n);
-    _keyCrazy->setDrawScale(_scale);
-    n->setScale(.2);
-    _keyCrazy->setPosition(enemyPos);
-    addObstacle(_keyCrazy, n);
-    // _reynardController->increment_keys();
+//void GameScene::createKeyCrazy(Vec2 enemyPos) {
+//    _keyCrazy = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
+//    std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
+//    _keyCrazy->setSceneNode(n);
+//    _keyCrazy->setDrawScale(_scale);
+//    n->setScale(.2);
+//    _keyCrazy->setPosition(enemyPos);
+//    addObstacle(_keyCrazy, n);
+//    // _reynardController->increment_keys();
+// }
+
+void GameScene::removeKey(shared_ptr<CheckpointKey> k) {
+  // do not attempt to remove a key that has already been removed
+    if (_key.size() > 0){
+        for (auto itr=_key.begin(); itr != _key.end(); ++itr){
+            shared_ptr<CheckpointKey> base = *itr; //_key.at(i);
+            if (base == k) {
+                if (base != nullptr) {
+                    if (not base->isRemoved()) {
+                        _worldnode->removeChild(k->getSceneNode());
+                        base->markRemoved(true);
+                        base = nullptr;
+                        _key.erase(itr);
+                    }
+                }
+            }
+        }
+    }
 }
 
-void GameScene::removeKey() {
+void GameScene::removeKeyCrazy(shared_ptr<CheckpointKeyCrazy> k) {
   // do not attempt to remove a key that has already been removed
-    if (_keyCrazy != nullptr) {
-        if (_keyCrazy->isRemoved()) {
-            return;
+    if (_keyCrazy.size() > 0){
+        for (auto itr=_keyCrazy.begin(); itr != _keyCrazy.end(); ++itr){
+            shared_ptr<CheckpointKeyCrazy> base = *itr; //_key.at(i);
+            if (base == k) {
+                if (base != nullptr) {
+                    if (not base->isRemoved()) {
+                        _worldnode->removeChild(k->getSceneNode());
+                        base->markRemoved(true);
+                        base = nullptr;
+                        _keyCrazy.erase(itr);
+                    }
+                }
+            }
         }
-        _worldnode->removeChild(_keyCrazy->getSceneNode());
-        _keyCrazy->markRemoved(true);
-        _keyCrazy = nullptr;
-    }
-    else if (_key != nullptr) {
-        if (_key->isRemoved()) {
-            return;
-        }
-        _worldnode->removeChild(_key->getSceneNode());
-        _key->markRemoved(true);
-        _key = nullptr;
-    }
-    else {
-        return;
     }
 }
+

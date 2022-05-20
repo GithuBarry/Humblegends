@@ -127,12 +127,16 @@ protected:
 
     bool key = false;
     
-    std::shared_ptr<CheckpointKey> _key;
+    vector<std::shared_ptr<CheckpointKey>> _key;
+    
+    vector<std::shared_ptr<CheckpointKeyCrazy>> _keyCrazy;
+    
+    // std::shared_ptr<CheckpointKey> _key;
     
     // Enemy's PHYSICS space location
     Vec2 enemyPos;
     
-    std::shared_ptr<CheckpointKeyCrazy> _keyCrazy;
+    // std::shared_ptr<CheckpointKeyCrazy> _keyCrazy;
 
 public:
 
@@ -762,13 +766,14 @@ public:
     /**
      * Create a key at the given location in PHYSICS space
      */
-    void createKey(Vec2 enemyPos);
-    
+    void createKey(Vec2 pos, bool isPossesed, bool isPathFinding);
+
     void createKeyCrazy(Vec2 enemyPos);
     
-    void removeKey();
+    void removeKey(shared_ptr<CheckpointKey> k);
     
-
+    void removeKeyCrazy(shared_ptr<CheckpointKeyCrazy> k);
+    
 };
 
 #endif /* __MP_GAME_MODE_H__ */

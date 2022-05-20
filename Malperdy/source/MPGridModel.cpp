@@ -305,7 +305,7 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                     else if (tile_to_traps[data.at(j)] == "key")
                     {
                         // TODO: add key in this room (using curr_col / curr_row)
-                        createKey()
+                        // createKey();
 
                     }
                     // ADD KEY ENEMY IN GAMESCENE WHERE THE OTHER ENEMY IS INSTANTIATED

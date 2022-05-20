@@ -66,5 +66,14 @@ void CheckpointKeyCrazy::releaseFixtures() {
     BoxObstacle::releaseFixtures();
 }
 
+void CheckpointKeyCrazy::setIsPathFinding(bool isPathFinding) {
+    _isPathFinding = isPathFinding;
+    return;
+}
+
+bool CheckpointKeyCrazy::isPathFinding() {
+    return _isPathFinding;
+}
+
 
 #endif

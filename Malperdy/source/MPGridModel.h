@@ -19,6 +19,7 @@
 #include "MPRoomModel.h"
 #include "MPRegionModel.h"
 #include "MPCheckpoint.h"
+#include "MPCheckpointKey.h"
 
 #define DEFAULT_REGION 1
 
@@ -120,7 +121,7 @@ private:
      * @param region    The JSONValue for the metadata of the region to be initialized
 
      */
-    void GridModel::initRegion(shared_ptr<JsonValue> region);
+    void initRegion(shared_ptr<JsonValue> region);
     
 public:
     /**
