@@ -297,6 +297,7 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                             curr_col, curr_row);
                         // Lock it by default
                         sublevel->at(curr_row)->at(curr_col)->setPermlocked();
+                        checkpoints.push_back(dynamic_cast<Checkpoint*>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap()))));
                     }
                     else if (tile_to_traps[data.at(j)] == "sap")
                     {

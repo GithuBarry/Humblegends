@@ -107,7 +107,7 @@ void Malperdy::onShutdown() {
 void Malperdy::onSuspend() {
     AudioEngine::get()->pause();
     if (_gameplay._mode != 0){
-        _gameplay.rewriteSaveFile();
+        _gameplay.pause();
     }
 
 }
