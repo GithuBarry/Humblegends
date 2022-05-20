@@ -244,4 +244,6 @@ private:
     void lookUnfogged(Vec2 room);
 };
 
+
+
 #endif /* MPEnvController_h */
