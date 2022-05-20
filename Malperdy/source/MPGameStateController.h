@@ -93,7 +93,7 @@ public:
         return abs(currentScale - maxZoom)<0.05 || abs(currentScale - minZoom)<0.05;
     }
 
-    float secondsAfterPause(){
+    float secondsAfterResume(){
         std::chrono::duration<float> diff = std::chrono::system_clock::now() - sinceResume;
         return diff.count();
     }

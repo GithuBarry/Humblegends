@@ -149,6 +149,10 @@ public:
     void setMode(int mode){
         _mode = mode;
     }
+    
+    void pause(){
+        _gamestate.pause();
+    }
 
 protected:
 

@@ -736,17 +736,13 @@ void GameScene::update(float dt)
     bool triedSwap = false;
     Vec2 progressCoords = Vec2(-1, -1);
     // Room swap by click
-    if (_input.didPress() && (_gamestate.secondsAfterPause() > 3))
+    if (_input.didPress() && (_gamestate.secondsAfterResume() > 3))
     {
         Vec2 node_coord = _pause->screenToNodeCoords(_input.getPosition());
         if ((node_coord - Vec2(123, 123)).length() < 150)
         {
             _gamestate.pauseSwitch();
-            if (_gamestate.isPaused())
-            {
-                _pause->setTexture("textures/PauseScreen/Play_Button.png");
-            }
-            return;
+            
         }
     }
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress())
@@ -768,22 +764,25 @@ void GameScene::update(float dt)
             _envController->selectRoom(inputPos, _reynardController, _enemies);
         }
     }
-    if (_gamestate.secondsAfterPause() < 1)
+    if (_gamestate.isPaused()){
+        _pause->setTexture("textures/PauseScreen/Play_Button.png");
+    }
+    if (_gamestate.secondsAfterResume() < 1)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_3.png");
         return;
     }
-    if (_gamestate.secondsAfterPause() < 2)
+    if (_gamestate.secondsAfterResume() < 2)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_2.png");
         return;
     }
-    if (_gamestate.secondsAfterPause() < 3)
+    if (_gamestate.secondsAfterResume() < 3)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_1.png");
         return;
     }
-    if (_gamestate.secondsAfterPause() < 4)
+    if (_gamestate.secondsAfterResume() < 4)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Button.png");
     }
@@ -904,6 +903,7 @@ void GameScene::update(float dt)
         {
             _reynardController->getCharacter()->setLinearVelocity((3.7 * (_reynardController->getCharacter()->isFacingRight() ? 1 : -1)), 0);
             corner_num_frames_workaround = 0;
+            _reynardController->getCharacter()->setMoveState(CharacterModel::MovementState::RUNNING);
         }
     }
     if (_reynardController->getCharacter()->isJumping() && abs(_reynardController->getCharacter()->getLinearVelocity().x) < 7)
@@ -974,10 +974,10 @@ void GameScene::update(float dt)
     // Update the key UI
     if (_reynardController->getKeysCount() >= 3)
     {
-        if (_health->getName() != "3")
+        if (_keyUI->getName() != "3")
         {
-            _health->setTexture("textures/keys_three.png");
-            _health->setName("3");
+            _keyUI->setTexture("textures/keys_three.png");
+            _keyUI->setName("3");
         }
     }
     else if (_reynardController->getKeysCount() == 2)
