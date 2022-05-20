@@ -1265,18 +1265,24 @@ void GameScene::beginContact(b2Contact *contact)
             }
             else if (trapType == TrapModel::TrapType::CHECKPOINT)
             {
-                _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
-                _checkpointEnemyPos = vector<Vec2>();
-                _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
-                for (auto thisEnemy : *_enemies)
-                {
-                    _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
-                }
-                trap->setTrapState(TrapModel::TrapState::ACTIVATED);
-                // Clear all the associated rooms
-                _grid->clearCheckpoint(dynamic_cast<Checkpoint *>(&(*trap))->getID());
+                Checkpoint* cp = dynamic_cast<Checkpoint*>(&(*trap));
 
-                rewriteSaveFile();
+                // Only allow clearing if Reynard has enough keys and it's locked, or if it's not locked
+                // TODO: case for if Reynard has enough keys
+                if (!(cp->isLocked())) {
+                    _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
+                    _checkpointEnemyPos = vector<Vec2>();
+                    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+                    for (auto thisEnemy : *_enemies)
+                    {
+                        _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
+                    }
+                    trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+                    // Clear all the associated rooms
+                    _grid->clearCheckpoint(cp->getID());
+
+                    rewriteSaveFile();
+                }
             }
             else if (trapType == TrapModel::TrapType::GOAL)
             {

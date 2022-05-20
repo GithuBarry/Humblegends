@@ -28,6 +28,12 @@ private:
     /** The unique ID number for this checkpoint */
     int _id;
 
+    /** Whether this checkpoint requires a key (false by default) */
+    bool _isLocked = false;
+
+    /** Pointer to the SceneNode with the lock asset */
+    shared_ptr<scene2::PolygonNode> _lockNode;
+
 public:
 #pragma mark Constructors
     /*
@@ -36,9 +42,10 @@ public:
      * @param roomWidth     The width of the room the checkpoint is in
      * @param roomHeight    The height of the room the checkpoint is in
      * @param isFinal       Whether this is a "final" checkpoint, meaning a goal
+     * @param locked        Whether this checkpoint requires a key
      * @return  true if the trap is initialized properly, false otherwise.
      */
-    bool init(float roomWidth, float roomHeight, bool isFinal);
+    bool init(float roomWidth, float roomHeight, bool isFinal, bool locked = false);
 
 #pragma mark Getters
     /**
@@ -47,6 +54,13 @@ public:
      * @return  The unique ID number for this checkpoint
      */
     int getID() { return _id; }
+
+    /**
+     * Returns whether this checkpoint is locked and requires a key or not.
+     * 
+     * @return  Whether this checkpoint requires a key to activate
+     */
+    bool isLocked() { return _isLocked; }
 
 };
 #endif /* MPCheckpoint_h */

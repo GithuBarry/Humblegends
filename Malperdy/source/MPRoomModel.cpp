@@ -181,7 +181,13 @@ bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
 	return this->initWithBounds(x * DEFAULT_ROOM_WIDTH, y * DEFAULT_ROOM_HEIGHT, DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
 }
 
-bool RoomModel::initTrap(TrapModel::TrapType type) {
+/**
+ * Initializes a trap of the given type in this room.
+ *
+ * @param type  The type of the trap to instantiate
+ * @param param An extra parameter that may do something different based on the trap type
+ */
+bool RoomModel::initTrap(TrapModel::TrapType type, bool param) {
     if (type == TrapModel::TrapType::SPIKE) {
         shared_ptr<SpikeTrap> trap = make_shared<SpikeTrap>();
         
@@ -215,7 +221,7 @@ bool RoomModel::initTrap(TrapModel::TrapType type) {
     }
     else if (type == TrapModel::TrapType::CHECKPOINT) {
         shared_ptr<Checkpoint> trap = make_shared<Checkpoint>();
-        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT, false);
+        trap->init(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT, false, param);
 
         _trap = trap;
         addChild(_trap);
