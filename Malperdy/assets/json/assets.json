@@ -3,7 +3,7 @@
     "framedata": "json/framedata.json",
     "framedata2": "json/framedatanew.json",
 
-    "world": "json/levels/MP_WorldData_test.json",
+    "world": "json/levels/MP_WorldData.json",
     "region1": "json/levels/MP_Region_1.json",
     "region1-2": "json/levels/MP_Region_1-2.json",
     "region2": "json/levels/MP_Region_2.json",
@@ -15,6 +15,27 @@
   },
 
   "textures": {
+    "sap":{
+        "file" : "textures/Sap_Trap.png"
+    },
+    "spikes":{
+        "file" : "textures/spikes.png"
+    },
+    "trapdoor":{
+        "file" : "textures/Trapdoor.png"
+    },
+    "checkpoint":{
+        "file" : "textures/checkpoint_sheet.png"
+    },
+    "checkpoint_lock":{
+        "file" : "textures/MP_CheckpointLock.png"
+    },
+    "healthbar" :{
+        "file": "textures/Health_Bar_Full.png"
+    },
+    "pause" :{
+        "file": "textures/PauseScreen/Pause_Button.png"
+    },
     "goal": {
       "file": "textures/goaldoor.png"
     },

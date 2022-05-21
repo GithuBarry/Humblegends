@@ -19,6 +19,7 @@
 #include "MPRoomModel.h"
 #include "MPRegionModel.h"
 #include "MPCheckpoint.h"
+#include "MPCheckpointKey.h"
 
 #define DEFAULT_REGION 1
 
@@ -81,6 +82,10 @@ private:
     shared_ptr<vector<shared_ptr<RoomModel>>> _filler = make_shared<vector<shared_ptr<RoomModel>>>();
 
 public:
+
+    /** All the keys in the grid */
+    shared_ptr<vector<shared_ptr<CheckpointKey>>> _keys;
+
 #pragma mark Constructors
 
     /**
@@ -99,7 +104,7 @@ public:
         return (result->init(assets) ? result : nullptr);
     }
 
-    vector<Checkpoint*> getCheckpoints(){
+    vector<Checkpoint*> getCheckpoints() {
         return checkpoints;
     }
 
@@ -232,6 +237,18 @@ private:
      * @return      The region # (1-3) that these coordinates are in, or 0 if not found
      */
     int getRegion(int x, int y);
+
+    /**
+     * Spawns a key in the level at the given location
+     */
+    void createKey(Vec2 pos) {
+        shared_ptr<CheckpointKey> _key = CheckpointKey::alloc(Vec2(0, 0), Size(1.0f, 1.0f));
+        std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
+        _key->setSceneNode(n);
+        _key->setDrawScale(_physics_scale);
+        n->setScale(.2);
+        _key->setPosition(pos);
+    }
 
 public:
     /**

@@ -197,6 +197,13 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             if (Timestamp().ellapsedMillis(_dashStart) <= DASH_COOLDOWN) {
                 return false;
             }
+            
+            if ((param > 0) != _faceRight){
+                flipDirection();
+                // Return so that flip direction does not incur colddown for player flexibility
+                return true;
+            }
+            _dashStart = Timestamp();
 
             // Play dash sound since we can actually perform a dash.
             //(this->getPosition() - _worldnode->getPaneTransform().transform(Vec2()) / _scale).norm()
@@ -206,9 +213,8 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             setVY(0);
             setGravityScale(0);
             // Flip the direction to dash direction
-            if ((param > 0) != _faceRight) flipDirection();
             setVX(param * RUN_SPEED * DASH_MULTIPLIER * x_scale());
-            _dashStart = Timestamp();
+            
             // Freeze animation while dashing
             _currAnimation = "";
             break;

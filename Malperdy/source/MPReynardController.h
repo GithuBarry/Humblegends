@@ -17,6 +17,9 @@
 #include "MPCharacterController.h"
 #include "MPReynardModel.h"
 
+/** The maximum number of keys that Reynard can carry */
+#define MAX_KEYS 3
+
 class ReynardController : public CharacterController<ReynardModel, ReynardController> {
     
 protected:
@@ -27,6 +30,9 @@ protected:
     Vec2 lastCheckPointPosition = Vec2(-1,-1);
     /** The moment in time that Reynard was last hit */
     Timestamp _lastHit = Timestamp();
+
+    /** Number of keys Reynard currently has */
+    int _keysCount = 0;
 
 public:
 
@@ -76,6 +82,44 @@ public:
      * @param dir   Direction to apply knockback force in
      */
     void knockback(b2Vec2 dir);
+
+    /**
+     * Called when Reynard obtains a key, which increments the number of keys he has. If he
+     * cannot carry any more keys (capacity is full), then returns false, but otherwise it
+     * returns true.
+     * 
+     * @return  Whether Reynard picked the key up successfully
+     */
+    bool pickupKey() {
+        // Only pick up if Reynard can carry more keys
+        if (_keysCount < MAX_KEYS) {
+            _keysCount++;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Called when Reynard uses a key to unlock a checkpoint, which decrements the number
+     * of keys he has.
+     * 
+     * Returns true if the key was used successfully, or false if Reynard has no keys and
+     * so one was not taken from him.
+     * 
+     * @return  Whether a key was used successfully
+     */
+    bool useKey() {
+        if (_keysCount <= 0) return false;
+        _keysCount -= 1;
+        return true;
+    }
+
+    /**
+     * Returns the number of keys Reynard is currently carrying
+     */
+    int getKeysCount() {
+        return _keysCount;
+    }
 };
 
 

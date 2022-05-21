@@ -129,6 +129,9 @@ void EnemyController::update(float delta) {
             // For now, just stay in place
             _character->setMoveState(CharacterModel::MovementState::STOPPED);
             break;
+        case (EnemyModel::BehaviorState::DEAD):
+            _character->setMoveState(CharacterModel::MovementState::DEAD);
+            break;
     }
 }
 
