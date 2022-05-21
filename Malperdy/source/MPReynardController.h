@@ -21,13 +21,13 @@
 #define MAX_KEYS 3
 
 class ReynardController : public CharacterController<ReynardModel, ReynardController> {
-    
+
 protected:
-    
+
     /** The length of time in miliseconds that Reynard is invincible for after being damaged  */
     Uint64 _damageBufferLength = 1000;
 
-    Vec2 lastCheckPointPosition = Vec2(-1,-1);
+    Vec2 lastCheckPointPosition = Vec2(-1, -1);
     /** The moment in time that Reynard was last hit */
     Timestamp _lastHit = Timestamp();
 
@@ -56,16 +56,16 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation);
-    
+    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation);
+
     /**  This method checks if the the difference between _lastHit and the current time exceeds
      *      the damageBufferLength. If it does, then the _lastHit is set to be the current time, and the function
      *      returns true. Otherwise, the function returns false.
      */
-    bool canBeHit(){
+    bool canBeHit() {
         Timestamp now = Timestamp();
-        
-        if(now.ellapsedMillis(_lastHit) > _damageBufferLength){
+
+        if (now.ellapsedMillis(_lastHit) > _damageBufferLength) {
             _lastHit = now;
             return true;
         }

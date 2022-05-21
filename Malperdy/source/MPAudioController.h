@@ -31,110 +31,119 @@ using namespace cugl;
 
 class AudioController {
 private:
-	/** Store a reference to the assets for easy access */
-	static std::shared_ptr<AssetManager> _assets;
+    /** Store a reference to the assets for easy access */
+    static std::shared_ptr<AssetManager> _assets;
 
-	static void playAudio(string sound, bool loop, float vol, bool isMusic);
+    static void playAudio(string sound, bool loop, float vol, bool isMusic);
 
-	// Volume Settings Variables
-	/** The value to scale music volume by */
-	static float musicVol;
-	/** Whether music is muted */
-	static bool musicMuted;
+    // Volume Settings Variables
+    /** The value to scale music volume by */
+    static float musicVol;
+    /** Whether music is muted */
+    static bool musicMuted;
 
-	/** The value to scale sfx volume by */
-	static float sfxVol;
-	/** Whether sfx is muted */
-	static bool sfxMuted;
+    /** The value to scale sfx volume by */
+    static float sfxVol;
+    /** Whether sfx is muted */
+    static bool sfxMuted;
 
 public:
 
-	/**
-	 * Initializes the audio controller by giving it a reference to the sound assets
-	 * it will be using.
-	 * 
-	 * @param assets	Reference to the asset manager with the sounds
-	 */
-	static void init(std::shared_ptr<cugl::AssetManager>& assets) {
-		_assets = assets;
-	}
+    /**
+     * Initializes the audio controller by giving it a reference to the sound assets
+     * it will be using.
+     *
+     * @param assets	Reference to the asset manager with the sounds
+     */
+    static void init(std::shared_ptr<cugl::AssetManager> &assets) {
+        _assets = assets;
+    }
 
 #pragma mark Playing/Stopping
-	/**
-	 * Plays a sound effect with the given volume. A sound effect plays once and
-	 * then stops, and does not loop.
-	 * 
-	 * @param sound	The name of the sound to play (USE THE MACROS IN AUDIOCONTROLLER)
-	 * @param vol	The relative volume at which to play the sound (1 by default)
-	 */
-	static void playSFX(string sound, float vol=1.0f) {
-		playAudio(sound, false, vol, false);
-	}
 
-	/**
-	 * Plays a music track with the given volume. A music track plays once and then
-	 * loops.
-	 *
-	 * @param sound	The name of the music to play (USE THE MACROS IN AUDIOCONTROLLER)
-	 * @param vol	The relative volume at which to play the music (1 by default)
-	 */
-	static void playMusic(string sound, float vol=1.0f) {
-		playAudio(sound, true, vol, true);
-	}
+    /**
+     * Plays a sound effect with the given volume. A sound effect plays once and
+     * then stops, and does not loop.
+     *
+     * @param sound	The name of the sound to play (USE THE MACROS IN AUDIOCONTROLLER)
+     * @param vol	The relative volume at which to play the sound (1 by default)
+     */
+    static void playSFX(string sound, float vol = 1.0f) {
+        playAudio(sound, false, vol, false);
+    }
 
-	/**
-	 * Plays the given music track with the given volume. A music track plays once and
-	 * then loops.
-	 *
-	 * @param sound	The music asset to play
-	 * @param vol	The relative volume at which to play the music (1 by default)
-	 */
-	static void playGivenMusic(std::shared_ptr<Sound> sound, float vol = 1.0f) {
-		AudioEngine::get()->getMusicQueue()->play(sound, true, vol);
-	}
+    /**
+     * Plays a music track with the given volume. A music track plays once and then
+     * loops.
+     *
+     * @param sound	The name of the music to play (USE THE MACROS IN AUDIOCONTROLLER)
+     * @param vol	The relative volume at which to play the music (1 by default)
+     */
+    static void playMusic(string sound, float vol = 1.0f) {
+        playAudio(sound, true, vol, true);
+    }
 
-	static bool isPlaying(string sound, bool isMusic);
+    /**
+     * Plays the given music track with the given volume. A music track plays once and
+     * then loops.
+     *
+     * @param sound	The music asset to play
+     * @param vol	The relative volume at which to play the music (1 by default)
+     */
+    static void playGivenMusic(std::shared_ptr<Sound> sound, float vol = 1.0f) {
+        AudioEngine::get()->getMusicQueue()->play(sound, true, vol);
+    }
 
-	static void stopAudio(string sound, bool isMusic, float fadeAmount);
+    static bool isPlaying(string sound, bool isMusic);
 
-	static void setVolume(string sound, bool isMusic, float vol, bool isRel);
+    static void stopAudio(string sound, bool isMusic, float fadeAmount);
 
-	// Getters & Setters for Volume Settings Variables
-	static float getMusicVol(bool inclMuted = true) {
+    static void setVolume(string sound, bool isMusic, float vol, bool isRel);
 
-		if (inclMuted)
-		{
-			return (musicMuted ? 0.0f : musicVol);
-		}
-		else
-		{
-			return musicVol;
-		}
+    // Getters & Setters for Volume Settings Variables
+    static float getMusicVol(bool inclMuted = true) {
 
-	}
-	static void setMusicVol( float vol ) {
-		if(vol >= 0.0 && vol <=1.001) musicVol = vol; 
-	}
-	static bool getMusicMute() { return musicMuted; }
-	static void setMusicMute(bool muted) { musicMuted = muted; }
+        if (inclMuted) {
+            return (musicMuted ? 0.0f : musicVol);
+        } else {
+            return musicVol;
+        }
 
-	static float getSfxVol(bool inclMuted = true) { 
-		
-		if (inclMuted)
-		{
-			return (sfxMuted ? 0.0f : sfxVol);
-		}
-		else
-		{
-			return sfxVol;
-		}
-	
-	}
-	static void setSfxVol(float vol) { 
-		if (vol >= 0.0 && vol <= 1.001) sfxVol = vol;
-	}
-	static bool getSfxMute() { return sfxMuted; }
-	static void setSfxMute(bool muted) { sfxMuted = muted; }
+    }
+
+    static void setMusicVol(float vol) {
+        if (vol >= 0.0 && vol <= 1.001) musicVol = vol;
+    }
+
+    static bool getMusicMute() {
+        return musicMuted;
+    }
+
+    static void setMusicMute(bool muted) {
+        musicMuted = muted;
+    }
+
+    static float getSfxVol(bool inclMuted = true) {
+
+        if (inclMuted) {
+            return (sfxMuted ? 0.0f : sfxVol);
+        } else {
+            return sfxVol;
+        }
+
+    }
+
+    static void setSfxVol(float vol) {
+        if (vol >= 0.0 && vol <= 1.001) sfxVol = vol;
+    }
+
+    static bool getSfxMute() {
+        return sfxMuted;
+    }
+
+    static void setSfxMute(bool muted) {
+        sfxMuted = muted;
+    }
 };
 
 #endif 

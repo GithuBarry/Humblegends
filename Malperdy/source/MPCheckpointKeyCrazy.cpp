@@ -7,6 +7,7 @@
 //
 #ifndef MPKeyCrazy_hpp
 #define MPKeyCrazy_hpp
+
 #include "MPCheckpointKeyCrazy.hpp"
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUBoxObstacle.h>
@@ -22,7 +23,7 @@ using namespace cugl;
 int CheckpointKeyCrazy::_idCounter = 1;
 
 bool CheckpointKeyCrazy::init(const Vec2 pos, const Size size) {
-    if (physics2::BoxObstacle::init(pos,size)) {
+    if (physics2::BoxObstacle::init(pos, size)) {
         // ABU: Below gives physics object weight
         setDensity(10.0f);
         setFriction(0.0f);
@@ -47,10 +48,10 @@ bool CheckpointKeyCrazy::init(const Vec2 pos, const Size size) {
  * @param delta Number of seconds since last animation frame
  */
 void CheckpointKeyCrazy::update(float dt) {
-    
+
     BoxObstacle::update(dt);
     if (_node != nullptr) {
-        _node->setPosition(getPosition()*_drawScale);
+        _node->setPosition(getPosition() * _drawScale);
         _node->setAngle(getAngle());
     }
 }

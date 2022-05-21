@@ -21,13 +21,14 @@
 #include "MPRoomModel.h"
 
 #include <stdio.h>
+
 using namespace cugl;
 
 #pragma mark -
 #pragma mark SpikeTrap
 
 
-class SpikeTrap : public TrapModel{
+class SpikeTrap : public TrapModel {
 
 public:
 
@@ -41,7 +42,7 @@ public:
 //     * @return  true if the trap is initialized properly, false otherwise.
 //     */
 //    bool init();
-    
+
     /**
      * Initializes a new trap at the given position
      *
@@ -50,7 +51,6 @@ public:
      * @return  true if the trap is initialized properly, false otherwise.
      */
     bool init(float roomWidth, float roomHeight, bool big = false);
-
 
 
 };

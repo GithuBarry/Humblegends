@@ -29,7 +29,7 @@ public:
         // Type of character
         CharacterType _type;
         // Pointer to self
-        void* _controller;
+        void *_controller;
     };
 
     /** The model storing this character's data */
@@ -46,7 +46,8 @@ public:
      * This constructor does not initialize any of the character values beyond
      * the defaults. To use a CharacterController, you must call init().
      */
-    CharacterController() {};
+    CharacterController() {
+    };
 
     /**
      * Initializes a new controller for the character at the given position.
@@ -64,7 +65,7 @@ public:
      *
      * @return  true if the character is initialized properly, false otherwise.
      */
-    virtual bool init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
+    virtual bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation) {
         // Get model cast to subclass type
         _character = make_shared<ModelType>();
         _character->init(pos, drawScale, animation);
@@ -91,15 +92,18 @@ public:
      * 
      * @return  A newly allocated CharacterController for the character at the given position with the given scale
      */
-    static shared_ptr<ControllerType> alloc(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
+    static shared_ptr<ControllerType> alloc(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation) {
         std::shared_ptr<ControllerType> result = std::make_shared<ControllerType>();
         return (result->init(pos, drawScale, animation) ? result : nullptr);
     }
 
 #pragma mark -
 #pragma mark Attribute Methods
+
     /**This allows someone to grab the instantiated CharacterModel from this controller**/
-    shared_ptr<ModelType> getCharacter() { return _character; }
+    shared_ptr<ModelType> getCharacter() {
+        return _character;
+    }
 
     /**
      * Returns the position of the character's center in world space.
@@ -155,7 +159,7 @@ public:
      * @return the scene graph node representing the owned CharacterModel.
      */
     [[deprecated("Use getCharacter()->_node instead.")]]
-    const std::shared_ptr<cugl::scene2::SceneNode>& getSceneNode() const {
+    const std::shared_ptr<cugl::scene2::SceneNode> &getSceneNode() const {
         //CULog("Char Controller: BUGGY!! Use getCharacter()->_node if problemetic");
         return _character->_node;
     }
@@ -175,39 +179,39 @@ public:
      *
      * @param node  The scene graph node representing this CharacterModel, which has been added to the world node already.
      */
-    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode>& node) {
+    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode> &node) {
         _character->setSceneNode(node);
     }
 
 #pragma mark -
 #pragma mark Player Input Actions
+
     /**
      * The character jumps upwards at a set velocity.
      *
      * @return  Whether the character jumped successfully
      */
     bool jump() {
-        if (_character->canJump()){
-            return  _character->setMoveState(CharacterModel::MovementState::JUMPING);
-        }
-        else{
+        if (_character->canJump()) {
+            return _character->setMoveState(CharacterModel::MovementState::JUMPING);
+        } else {
             return false;
         }
-        
+
     }
-    
+
     /**
      * The character dashes in the given direction at a set velocity.
      *
      * @param dashDir   The direction in which the character should dash (-1 for left, 1 for right)
      * @return          Whether the character dashed successfully
      */
-    bool dash(int dashDir){
+    bool dash(int dashDir) {
         return _character->setMoveState(CharacterModel::MovementState::DASHING, dashDir);
     }
-    
+
 #pragma mark Character Actions
-    protected:
+protected:
     /**
      * Turns the character around to face the opposite direction.
      *
@@ -281,9 +285,10 @@ public:
         return false;
     }
 
-    public:
+public:
 
 #pragma mark Collision
+
     /**
      * Called when the character's feet sensor begins contact with the
      * ground.
@@ -361,7 +366,7 @@ public:
      * @param delta The amount of time that has passed since the last frame
      */
     virtual void update(float delta) {
-        if (_character->getHearts()<=0){
+        if (_character->getHearts() <= 0) {
             _character->setMoveState(CharacterModel::MovementState::DEAD);
         }
         // Update model
@@ -370,6 +375,7 @@ public:
 
 #pragma mark -
 #pragma mark Getters
+
     /**
      * Returns whether this character is dead (no health remaining).
      */

@@ -428,7 +428,7 @@ private:
      * @param previous  The previous position of the mouse (UNUSED)
      * @param focus     Whether this device has focus (UNUSED)
      */
-    void mouseDragCB(const cugl::MouseEvent& event, const cugl::Vec2 previous, bool focus);
+    void mouseDragCB(const cugl::MouseEvent &event, const cugl::Vec2 previous, bool focus);
 
     /**
      * Callback to execute when a mouse button is first released.
