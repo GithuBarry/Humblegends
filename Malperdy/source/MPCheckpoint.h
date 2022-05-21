@@ -20,7 +20,7 @@
 
 using namespace cugl;
 
-#define LOCK_FADE_TIME 0.8f
+#define LOCK_FADE_TIME 0.6f
 
 class Checkpoint : public TrapModel {
 private:
