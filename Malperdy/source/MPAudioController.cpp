@@ -1,6 +1,7 @@
 #include "MPAudioController.h"
 #include <cugl/cugl.h>
 #include <string>
+#include <cmath>
 
 //shared_ptr<AssetManager> AudioController::_assets = make_shared<AssetManager>();
 
@@ -71,12 +72,14 @@ bool AudioController::sfxMuted = false;
 	}
 		
 	void AudioController::setVolume(string sound, bool isMusic, float vol, bool isRel) {
-		if (isMusic)
+		if (!isMusic)
 		{
 			AudioEngine::get()->setVolume(sound, isRel ? (AudioEngine::get()->AudioEngine::getVolume(sound) + vol) : vol);
 		}
 		else
 		{
-			AudioEngine::get()->getMusicQueue()->setVolume(isRel ? (AudioEngine::get()->getMusicQueue()->getVolume() + vol) : vol);
+			float volume = max(min(isRel ? (AudioEngine::get()->getMusicQueue()->getVolume() + vol) : vol, 1.0f), 0.0f);
+
+			AudioEngine::get()->getMusicQueue()->setVolume(volume);
 		}
 	}
