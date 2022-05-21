@@ -388,8 +388,8 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                     {
                         // TODO: add key in this room (using curr_col / curr_row)
                         // Need to transform by region origin to get coords in HOUSE space
-                        _loneKeyLocs->push_back(Vec2(curr_col + originX, curr_row + originY));
-                        //CULog("Key: %d, %d", curr_col + originX, curr_row + originY);
+                        _loneKeyLocs->push_back(Vec2(curr_col, curr_row));
+                        CULog("Key: %d, %d", curr_col, curr_row);
                     }
                     // ADD KEY ENEMY IN GAMESCENE WHERE THE OTHER ENEMY IS INSTANTIATED
                     // Gamescene line 401
@@ -679,20 +679,22 @@ void GridModel::calculatePhysicsGeometry()
             shared_ptr<vector<shared_ptr<scene2::PolygonNode>>> geometry = room->getGeometry();
 
             // For each polygon in the room
-            for (vector<shared_ptr<scene2::PolygonNode>>::iterator itr = geometry->begin(); itr != geometry->end(); ++itr)
-            {
-                // Copy polygon data
-                Poly2 poly = (*itr)->getPolygon();
-                // Get node to world transformation and apply to the polygon
-                poly *= (*itr)->getNodeToWorldTransform();
-                // Scale to physics space
-                poly /= _physics_scale;
+            if (geometry) {
+                for (vector<shared_ptr<scene2::PolygonNode>>::iterator itr = geometry->begin(); itr != geometry->end(); ++itr)
+                {
+                    // Copy polygon data
+                    Poly2 poly = (*itr)->getPolygon();
+                    // Get node to world transformation and apply to the polygon
+                    poly *= (*itr)->getNodeToWorldTransform();
+                    // Scale to physics space
+                    poly /= _physics_scale;
 
-                // Create physics obstacle
-                shared_ptr<physics2::PolygonObstacle> obstacle = physics2::PolygonObstacle::alloc(poly, Vec2::ZERO);
-                obstacle->setBodyType(b2_staticBody);
+                    // Create physics obstacle
+                    shared_ptr<physics2::PolygonObstacle> obstacle = physics2::PolygonObstacle::alloc(poly, Vec2::ZERO);
+                    obstacle->setBodyType(b2_staticBody);
 
-                getPhysicsGeometryAt(row, col)->push_back(obstacle);
+                    getPhysicsGeometryAt(row, col)->push_back(obstacle);
+                }
             }
 
             // TODO: Inspect code for bug

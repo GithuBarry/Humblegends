@@ -394,6 +394,8 @@ void GameScene::populateEnv()
         // Note that these are in HOUSE space, so first go to ROOM? space
         keyCoords.x = (*keyItr).x - _grid->getOriginX() + 0.5f;
         keyCoords.y = (*keyItr).y - _grid->getOriginY() + 0.5f;
+
+        CULog("KEY: (%f, %f)", keyCoords.x, keyCoords.y);
         // Then ROOM to GRID space?
         keyCoords = _grid->roomSpaceToGrid(keyCoords);
         // Then go from GRID space to WORLD space

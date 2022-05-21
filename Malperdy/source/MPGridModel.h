@@ -245,18 +245,6 @@ private:
      */
     int getRegion(int x, int y);
 
-    /**
-     * Spawns a key in the level at the given location
-     */
-    void createKey(Vec2 pos) {
-        shared_ptr<CheckpointKey> _key = CheckpointKey::alloc(Vec2(0, 0), Size(1.0f, 1.0f));
-        std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
-        _key->setSceneNode(n);
-        _key->setDrawScale(_physics_scale);
-        n->setScale(.2);
-        _key->setPosition(pos);
-    }
-
 public:
     /**
      * Returns a shared pointer to the vector of physics objects that compose
