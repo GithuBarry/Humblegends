@@ -182,9 +182,10 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     // CULog("Size: %f %f", getSize().width, getSize().height);
     //  Create the scene graph
     _worldnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
-
+    _worldnode->setMinZoom(0.5);
     _debugnode = scene2::ScrollPane::allocWithBounds(10, 10); // Number does not matter when constraint is false
-    _debugnode->setScale(_scale);                             // Debug node draws in PHYSICS coordinates
+    _debugnode->setScale(_scale);
+    _debugnode->setMinZoom(0.5);// Debug node draws in PHYSICS coordinates
     setDebug(false);
 
     _winNode = scene2::Label::allocWithText("VICTORY!", _assets->get<Font>(PRIMARY_FONT));
@@ -399,7 +400,7 @@ void GameScene::populateEnv()
         keyCoords = _grid->nodeToWorldCoords(keyCoords);
         // Then go to PHYSICS space
         keyCoords /= _scale;
-        
+
         // Create key with transformed coordinates
         createKey(keyCoords, false, false);
 
@@ -422,7 +423,7 @@ void GameScene::populateChars()
 void GameScene::populateReynard()
 {
     Vec2 pos = _checkpointReynardPos;
-        
+
     Vec2 temp = pos;
     temp *= _scale; // To world
     // Now world to grid
@@ -517,7 +518,7 @@ void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region)
     // Initialize new enemy
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
-    
+
     // get Level data from the JSON
     shared_ptr<JsonValue> levelJSON = _assets->get<JsonValue>(region->getName());
     // get the layer containing entities
@@ -711,7 +712,7 @@ void GameScene::update(float dt)
     Vec2 inputPos = inputToGameCoords(_input.getPosition());
 
     _envController->getGrid()->update(dt);
-    
+
     _world->garbageCollect();
 
     // Clear regions if we hit the debug key
@@ -746,7 +747,7 @@ void GameScene::update(float dt)
         CULog("Shutting down");
         Application::get()->quit();
     }
-    
+
     // If a key enemy died since last frame and needs to spawn a key
     if (deadKeyEnemyLocs->size() > 0) {
         // Create a key object and place at enemy position
@@ -766,7 +767,7 @@ void GameScene::update(float dt)
             itr = deadKeyEnemyLocs->erase(itr);
         }
     }
-    
+
     if (_keys.size() > 0) {
         for (int i = 0; i < _keys.size(); i++){
             shared_ptr<CheckpointKey> k = _keys.at(i);
@@ -780,7 +781,7 @@ void GameScene::update(float dt)
             }
         }
     }
-    
+
     // Spawn key to chase Reynard
     if (_keysCrazy.size() > 0) {
         for (int i = 0; i < _keysCrazy.size(); i++){
@@ -802,8 +803,8 @@ void GameScene::update(float dt)
                 }
             }
         }
-    }    
-    
+    }
+
     // reynard red when hurt/dealt damage
     if (keepRedFrames > 0)
     {
@@ -829,7 +830,7 @@ void GameScene::update(float dt)
         if ((node_coord - Vec2(123, 123)).length() < 150)
         {
             _gamestate.pauseSwitch();
-            
+
         }
     }
     if (usingClick && !_gamestate.zoomed_in() && _input.didPress())
@@ -897,7 +898,7 @@ void GameScene::update(float dt)
         }
     }
 
-    if (_input.isScrolling() && !_gamestate.zoomed_in())
+    if ((_input.isScrolling()||(_gamestate.isSuperZoomOut()&& _input.isDragging()))&& !_gamestate.zoomed_in())
     {
         Vec2 incrementalOffset = _input.getPosition() - lastFramePos;
         scrollingOffset = scrollingOffset + Vec2(incrementalOffset.x, -incrementalOffset.y);
@@ -940,7 +941,7 @@ void GameScene::update(float dt)
             {
                 AudioController::playSFX(ZOOMIN_SOUND);
             }
-            _gamestate.zoom_in();
+            _gamestate.zoom_in(_worldnode->getZoom());
         }
         _envController->zoomIn();
     }
@@ -952,20 +953,15 @@ void GameScene::update(float dt)
     }
 
     // When zooming out
-    else if (_input.didZoomOut())
+    if (_input.didZoomOut())
     {
-        if (!_gamestate.zoomed_in() && _gamestate.finishedZooming(_worldnode->getZoom()))
-        {
-            //_gamestate.pauseSwitch();
-        }
-
         if (!_gamestate.isPaused())
         {
             if (_gamestate.zoomed_in())
             {
                 AudioController::playSFX(ZOOMOUT_SOUND);
             }
-            _gamestate.zoom_out();
+            _gamestate.zoom_out(_worldnode->getZoom());
         }
         _envController->zoomOut();
     }
@@ -1090,8 +1086,8 @@ void GameScene::update(float dt)
             _keyUI->setName("0");
         }
     }
-
     lastFramePos = _input.getPosition();
+
 }
 
 #pragma mark -
@@ -1439,7 +1435,7 @@ void GameScene::beginContact(b2Contact *contact)
                 b2Body *body1 = contact->GetFixtureA()->GetBody();
                 b2Body *body2 = contact->GetFixtureB()->GetBody();
                 b2Body* kBody;
-                
+
                 // Regular keys
                 for (int i = 0; i < _keys.size(); i++){
                     shared_ptr<CheckpointKey> k = _keys.at(i);
@@ -1451,7 +1447,7 @@ void GameScene::beginContact(b2Contact *contact)
                         else { k->setIsPathFinding(false); }
                     }
                 }
-                
+
                 // Now do possessed keys
                 for (int i = 0; i < _keysCrazy.size(); i++){
                     shared_ptr<CheckpointKeyCrazy> k = _keysCrazy.at(i);
@@ -1461,7 +1457,7 @@ void GameScene::beginContact(b2Contact *contact)
                         if (_reynardController->pickupKey(k->getID())) removeKeyCrazy(k);
                     }
                 }
-                
+
             }
             bool reynardIsRight = _reynardController->getCharacter()->isFacingRight();
 #pragma mark TRAP COLLISION CODE
@@ -1607,7 +1603,7 @@ void GameScene::beginContact(b2Contact *contact)
     else if (_keys.size()>0 || _keysCrazy.size()>0) {
         b2Body *body1 = contact->GetFixtureA()->GetBody();
         b2Body *body2 = contact->GetFixtureB()->GetBody();
-        
+
         for (int i = 0; i < _keys.size(); i++){
             shared_ptr<CheckpointKey> k = _keys.at(i);
             b2Body *kBody = k->getBody();
@@ -1615,7 +1611,7 @@ void GameScene::beginContact(b2Contact *contact)
                 return;
             };
         }
-        
+
         for (int i = 0; i < _keysCrazy.size(); i++){
             shared_ptr<CheckpointKeyCrazy> k = _keysCrazy.at(i);
             b2Body *kBody = k->getBody();
@@ -1623,7 +1619,7 @@ void GameScene::beginContact(b2Contact *contact)
                 return;
             };
         }
-        
+
     }
     // Reynard-on-enemy collision
     else
