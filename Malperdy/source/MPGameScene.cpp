@@ -201,7 +201,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _health->setPosition(Vec2(0, getSize().height) + padding);
     _health->setScale(0.75);
 
-    _keyUI = scene2::PolygonNode::allocWithTexture(_assets->get<Texture>("keys_none.png"));
+    _keyUI = scene2::PolygonNode::allocWithFile("textures/keys_none.png");
     _keyUI->setAnchor(Vec2::ANCHOR_TOP_LEFT);
     padding = Vec2(30, -80);
     _keyUI->setPosition(Vec2(0, getSize().height) + padding);
