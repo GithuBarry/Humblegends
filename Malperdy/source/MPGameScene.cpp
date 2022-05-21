@@ -299,7 +299,7 @@ void GameScene::revert(bool totalReset)
         _swapHistory = _envController->getSwapHistory();
     }
 
-    totalReset = !readSaveFile())
+    totalReset = !readSaveFile();
     scrollingOffset = Vec2();
 
     _reynardController = nullptr;
