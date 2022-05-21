@@ -141,6 +141,9 @@ protected:
     /** All the possessed keys in the level */
     vector<std::shared_ptr<CheckpointKeyCrazy>> _keysCrazy;
 
+    /** Whether we're showing the region exit or not */
+    bool showingRegExit = false;
+
 public:
 
     /*

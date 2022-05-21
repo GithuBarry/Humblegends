@@ -481,6 +481,13 @@ public:
 	 */
 	int clearCheckpoint(int cID);
 
+	void clearAllCheckpoints() {
+		for (auto itr = _checkpointMap->begin(); itr != _checkpointMap->end();
+			++itr) {
+			clearCheckpoint((*itr).first);
+		}
+	}
+
 	/**
 	 * Clears the region, meaning the blockades now disappear and the
 	 * player can move on to the next region.

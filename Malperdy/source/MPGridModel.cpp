@@ -129,6 +129,8 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
     {
         shared_ptr<JsonValue> layer = layers->get(i);
 
+        CULog("%s", layer->get("name"));
+
         // Parse each sublevel if the layer name contains "sublevel"
         if (layer->get("name")->asString().find("sublevel") != string::npos) {
             // Set min coords to high values and max coords to low values
@@ -777,6 +779,8 @@ int GridModel::clearCheckpoint(int cID)
         // If the region is now clear, clear it accordingly
         else if (outcome == 2) {
             (*regItr)->clearRegion();
+            // Play sound effect
+            AudioController::playSFX(VINE_SOUND);
             // Checkpoint and region cleared
             return 2;
         }

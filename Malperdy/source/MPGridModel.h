@@ -383,6 +383,14 @@ public:
         _physicsGeometry->at(row)->at(col) = phys;
     }
 
+    /**
+     * Clear the given region for debug purposes
+     */
+    void clearRegion(int r) {
+        _regions->at(r - 1)->clearAllCheckpoints();
+        _regions->at(r - 1)->clearRegion();
+    }
+
 #pragma mark Helpers
 
     Poly2 convertToScreen(Poly2 poly);

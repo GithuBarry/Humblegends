@@ -40,6 +40,8 @@ using namespace cugl;
 #define DEBUG_KEY KeyCode::P
 /** The key for exiting the game */
 #define EXIT_KEY  KeyCode::ESCAPE
+/** The key for clearing the first region automatically */
+#define REGION_1_CLEAR_KEY KeyCode::NUM_1
 
 /** The key to dash right */
 #define DASH_RIGHT_KEY  KeyCode::D
@@ -110,7 +112,9 @@ InputController::InputController() :
         _dashRightPressed(false),
         _dashLeftPressed(false),
         _zoomInPressed(false),
-        _zoomOutPressed(false) {
+        _zoomOutPressed(false),
+//DEBUG
+        _clearReg1Pressed(false) {
 }
 
 /**
@@ -252,6 +256,8 @@ void InputController::update(float dt) {
     _dragEnd = _mouseDragEnd;
 
     keys->keyDown(KeyCode::ARROW_DOWN);
+
+    _clearReg1Pressed = keys->keyPressed(REGION_1_CLEAR_KEY);
 
     // USE INTERNAL PRIVATE VARIABLES TO CHANGE THE EXTERNAL FLAGS
     _resetPressed = _keyReset;

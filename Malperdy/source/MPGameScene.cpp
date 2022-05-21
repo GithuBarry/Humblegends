@@ -664,6 +664,11 @@ void GameScene::update(float dt)
     
     _world->garbageCollect();
 
+    // Clear region 1 if we hit the debug key
+    if (_input.didClearRegion1()) {
+        _grid->clearRegion(1);
+    }
+
     // Process the toggled key commands
     if (_input.didDebug())
     {
@@ -1450,7 +1455,7 @@ void GameScene::beginContact(b2Contact *contact)
                     trap->setTrapState(TrapModel::TrapState::ACTIVATED);
 
                     // Clear all the associated rooms
-                    _grid->clearCheckpoint(cp->getID());
+                    int outcome = _grid->clearCheckpoint(cp->getID());
                     cp->unlock();
 
                     vector<Checkpoint *> cps = _envController->getGrid()->getCheckpoints();

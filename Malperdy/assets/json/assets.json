@@ -7,6 +7,8 @@
     "region1": "json/levels/MP_Region_1.json",
     "region1-2": "json/levels/MP_Region_1-2.tmj",
     "region2": "json/levels/MP_Region_2.json",
+    "region2-3": "json/levels/MP_Region_2-3.json",
+    "region3": "json/levels/MP_Region_3.json",
     "region_test": "json/levels/MP_evan_test2.json",
     "key_test": "json/levels/MP_KeyTest.json",
 
@@ -202,7 +204,7 @@
       "volume": 0.45
     },
 
-    "vines": {
+    "vine": {
       "type": "sample",
       "file": "sounds/vine.wav",
       "volume": 0.5
