@@ -5,6 +5,17 @@
 //shared_ptr<AssetManager> AudioController::_assets = make_shared<AssetManager>();
 
 using namespace cugl;
+
+/** The value to scale music volume by */
+float AudioController::musicVol = 0.5;
+/** Whether music is muted */
+bool AudioController::musicMuted = false;
+
+/** The value to scale sfx volume by */
+float AudioController::sfxVol = 0.5;
+/** Whether sfx is muted */
+bool AudioController::sfxMuted = false;
+
 	//static bool init() {
 	//	AudioEngine::start(24);
 

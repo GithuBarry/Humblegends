@@ -33,6 +33,17 @@ private:
 
 	static void playAudio(string sound, bool loop, float vol, bool isMusic);
 
+	// Volume Settings Variables
+	/** The value to scale music volume by */
+	static float musicVol;
+	/** Whether music is muted */
+	static bool musicMuted;
+
+	/** The value to scale sfx volume by */
+	static float sfxVol;
+	/** Whether sfx is muted */
+	static bool sfxMuted;
+
 public:
 
 	/**
@@ -84,6 +95,21 @@ public:
 	static void stopAudio(string sound, bool isMusic, float fadeAmount);
 
 	static void setVolume(string sound, bool isMusic, float vol, bool isRel);
+
+	// Getters & Setters for Volume Settings Variables
+	static float getMusicVol() { return musicVol; }
+	static void setMusicVol( float vol ) {
+		if(vol >= 0.0 && vol <=1.001) musicVol = vol; 
+	}
+	static bool getMusicMute() { return musicMuted; }
+	static void setMusicMute(bool muted) { musicMuted = muted; }
+
+	static float getSfxVol() { return sfxVol; }
+	static void setSfxVol(float vol) { 
+		if (vol >= 0.0 && vol <= 1.001) sfxVol = vol;
+	}
+	static bool getSfxMute() { return sfxMuted; }
+	static void setSfxMute(bool muted) { sfxMuted = muted; }
 };
 
 #endif 
