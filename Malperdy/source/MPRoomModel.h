@@ -59,12 +59,12 @@ using namespace cugl;
 /** The rate at which a room should clear (background changes) */
 #define CLEAR_RATE 0.05f
 /** The transparency value of a locked room */
-#define LOCKED_ALPHA 0.7f
+#define LOCKED_ALPHA 0.85f
 
 /** The color of the overlaid geometry */
 //const Color4 GEOMETRY_COLOR = Color4(20, 20, 20, 255);
 
-class RoomModel : public cugl::scene2::SceneNode {
+class RoomModel : public cugl::scene2::OrderedNode {
 public:
     /** Pointer to the node that displays the room background */
     shared_ptr<scene2::PolygonNode> _bgNode;
@@ -323,9 +323,11 @@ public:
         if (!isSolid) {
             if (locked) {
                 _bgOrderNode->setColor(Color4(Vec4(0.6f, 0.6f, 0.6f, 1)));
+                _lockIcon->setVisible(true);
             }
             else {
                 _bgOrderNode->setColor(Color4(Vec4(1, 1, 1, 1)));
+                _lockIcon->setVisible(false);
             }
 
             // Modify geometry
@@ -357,7 +359,10 @@ public:
         // Revert appearance if room was locked
         if (locked) {
             // Only revert background if room isn't solid
-            if (!isSolid) _bgOrderNode->setColor(Color4(Vec4(1, 1, 1, 1)));
+            if (!isSolid) {
+                _bgOrderNode->setColor(Color4(Vec4(1, 1, 1, 1)));
+                _lockIcon->setVisible(false);
+            }
             for (auto itr = _geometry->begin(); itr != _geometry->end(); ++itr) {
                 (*itr)->setColor(GEOMETRY_COLOR);
             }

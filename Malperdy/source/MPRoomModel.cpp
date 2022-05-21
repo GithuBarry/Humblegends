@@ -135,6 +135,7 @@ void RoomModel::buildGeometry(string roomID, int region) {
  * @return          true if the room is initialized properly, false otherwise.
  */
 bool RoomModel::init(float x, float y, string roomID, int region, shared_ptr<Texture> bg) {
+    this->setOrder(scene2::OrderedNode::Order::ASCEND);
     // Store room's original location
     _originalLoc = Vec2(x, y);
 
@@ -159,6 +160,19 @@ bool RoomModel::init(float x, float y, string roomID, int region, shared_ptr<Tex
         _bgClearedNode = bgClearedNode;
 	}
 
+    // Initialize lock icon
+    _lockIcon = scene2::PolygonNode::allocWithFile("textures/lock_icon.png");
+    _lockIcon->setAnchor(Vec2::ANCHOR_CENTER);
+    Vec2 roomCorner = Vec2(DEFAULT_ROOM_WIDTH / 2, DEFAULT_ROOM_HEIGHT / 2);
+    Vec2 padding = Vec2(-20, -20);
+    _lockIcon->setPosition(roomCorner);
+    _lockIcon->setColor(Color4(Vec4(1, 1, 1, .75)));
+    _lockIcon->setScale(8);
+    _lockIcon->setVisible(false);
+    _lockIcon->setPriority(1);
+    addChild(_lockIcon);
+
+    
 	// Build geometry for the room type with the given ID
 	buildGeometry(roomID, region);
 
@@ -172,16 +186,6 @@ bool RoomModel::init(float x, float y, string roomID, int region, shared_ptr<Tex
 
     //Fog of war
 	setColor(fogColor);
-
-    // Initialize lock icon
-    /*_lockIcon = scene2::PolygonNode::allocWithFile("textures/lock_icon.png");
-    _lockIcon->setAnchor(Vec2::ANCHOR_TOP_RIGHT);
-    Vec2 roomCorner = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT);
-    Vec2 padding = Vec2(-20, -20);
-    _lockIcon->setPosition(roomCorner + padding);
-    _lockIcon->setScale(3);
-    _lockIcon->setVisible(false);
-    addChild(_lockIcon);*/
 
     destination = Vec2(x,y);
 	// Initialize with the default room width/height and given position
