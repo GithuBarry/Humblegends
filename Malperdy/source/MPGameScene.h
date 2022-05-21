@@ -114,7 +114,7 @@ protected:
     /** checkpoint for swap history length*/
     int _checkpointSwapLen = 0;
 
-    vector<int> _checkpointActiatedCheckpoints;
+    vector<int> _checkpointActivatedCheckpoints;
     vector<Vec2> _checkpointEnemyPos;
 
     /** A store position of reynard before reset*/
@@ -268,6 +268,14 @@ public:
         jsonReynardPos->appendValue(_reynardController->getCharacter()->getPosition().y);
         jsonRoot->appendChild("ReynardPos",jsonReynardPos);
 
+        // JSON - Checkpoint
+        std::shared_ptr<JsonValue> jsonCheckpoints = JsonValue::alloc(JsonValue::Type::ArrayType);
+        for (int i:_checkpointActivatedCheckpoints){
+            float fi = i;
+            jsonCheckpoints->appendValue(fi);
+        }
+        jsonRoot->appendChild("ActivatedCheckpoints",jsonCheckpoints);
+
         // JSON - Room Swapping
         std::shared_ptr<JsonValue> jsonRoomSwap = JsonValue::alloc(JsonValue::Type::ArrayType);
         jsonRoomSwap->initArray();
@@ -306,9 +314,17 @@ public:
         std::shared_ptr<JsonValue> jsonRoot = jr->readJson();
 
         //Read files
+        if (jsonRoot->get("EnemyPos") == nullptr
+        || jsonRoot->get("ReynardPos") == nullptr
+        || jsonRoot->get("RoomSwap") == nullptr
+        || jsonRoot->get("ActivatedCheckpoints") == nullptr ){
+            cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
+            return false;
+        }
         std::vector<float> enemyPos1D = jsonRoot->get("EnemyPos")->asFloatArray();
         std::vector<float> reynardPos1D = jsonRoot->get("ReynardPos")->asFloatArray();
         std::vector<float> swapHistory1D = jsonRoot->get("RoomSwap")->asFloatArray();
+        std::vector<int> activatedcheckpts1D = jsonRoot->get("ActivatedCheckpoints")->asIntArray();
         if (enemyPos1D.size() % 2 != 0 || reynardPos1D.size() != 2 || swapHistory1D.size() % 4 != 0){
             cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
             return false;
@@ -320,6 +336,9 @@ public:
         for (int i  =0; i < enemyPos1D.size(); i+=2){
             _checkpointEnemyPos.push_back(Vec2(enemyPos1D[index],enemyPos1D[index+1]));
         }
+
+        // JSON - Checkpoint
+        _checkpointActivatedCheckpoints = activatedcheckpts1D;
 
         // JSON - Reynard
         _checkpointReynardPos = Vec2(reynardPos1D[0],reynardPos1D[1]);

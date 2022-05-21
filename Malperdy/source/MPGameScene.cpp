@@ -299,10 +299,7 @@ void GameScene::revert(bool totalReset)
         _swapHistory = _envController->getSwapHistory();
     }
 
-    if (!readSaveFile())
-    {
-        totalReset = true;
-    }
+    totalReset = !readSaveFile();
     scrollingOffset = Vec2();
 
     _reynardController = nullptr;
@@ -331,7 +328,7 @@ void GameScene::revert(bool totalReset)
         {
             (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
         }
-        for (int index : _checkpointActiatedCheckpoints)
+        for (int index : _checkpointActivatedCheckpoints)
         {
             _envController->getGrid()->getCheckpoints()[index]->setTrapState(TrapModel::TrapState::ACTIVATED);
             _grid->clearCheckpoint(_envController->getGrid()->getCheckpoints()[index]->getID());
@@ -860,22 +857,21 @@ void GameScene::update(float dt)
     if (_gamestate.secondsAfterResume() < 1)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_3.png");
-        return;
     }
     if (_gamestate.secondsAfterResume() < 2)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_2.png");
-        return;
     }
     if (_gamestate.secondsAfterResume() < 3)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_1.png");
-        return;
     }
     if (_gamestate.secondsAfterResume() < 4)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Button.png");
     }
+    if (_gamestate.isPaused() || _gamestate.secondsAfterResume() < 3)
+        return;
 
     // Room swap by drag
     if (usingDrag && !_gamestate.zoomed_in())
@@ -1520,9 +1516,9 @@ void GameScene::beginContact(b2Contact *contact)
                     {
                         if (cps[i] == cp)
                         {
-                            if (_checkpointActiatedCheckpoints.size()==0 || _checkpointActiatedCheckpoints[_checkpointActiatedCheckpoints.size() - 1] != i)
+                            if (_checkpointActivatedCheckpoints.size()==0 || _checkpointActivatedCheckpoints[_checkpointActivatedCheckpoints.size() - 1] != i)
                             {
-                                _checkpointActiatedCheckpoints.push_back(i);
+                                _checkpointActivatedCheckpoints.push_back(i);
                             }
                             break;
                         }

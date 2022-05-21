@@ -179,10 +179,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
 
             _dashedOnGround = _moveState == MovementState::RUNNING;
             
-            if ((param > 0) != _faceRight){
-                flipDirection();
-                return true;
-            }
+            if ((param > 0) != _faceRight) flipDirection();
 
             _dashStart = Timestamp();
 
