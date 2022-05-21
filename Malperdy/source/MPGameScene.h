@@ -135,8 +135,10 @@ protected:
     /** The enemy locations to spawn keys for next frame, in PHYSICS space */
     shared_ptr<vector<Vec2>> deadKeyEnemyLocs = make_shared<vector<Vec2>>();
     
+    /** All the regular keys in the level */
     vector<std::shared_ptr<CheckpointKey>> _keys;
     
+    /** All the possessed keys in the level */
     vector<std::shared_ptr<CheckpointKeyCrazy>> _keysCrazy;
 
 public:
@@ -775,8 +777,14 @@ public:
 
     void createKeyCrazy(Vec2 enemyPos);
     
+    /**
+     * Mark a key to be removed from the game during the next update
+     */
     void removeKey(shared_ptr<CheckpointKey> k);
     
+    /**
+     * Mark a possessed key to be removed from the game during the next update
+     */
     void removeKeyCrazy(shared_ptr<CheckpointKeyCrazy> k);
     
 };

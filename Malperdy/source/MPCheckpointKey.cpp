@@ -18,6 +18,8 @@
 
 using namespace cugl;
 
+// ALWAYS EVEN
+int CheckpointKey::_idCounter = 0;
 
 bool CheckpointKey::init(const Vec2 pos, const Size size) {
     if (physics2::BoxObstacle::init(pos,size)) {
@@ -26,6 +28,11 @@ bool CheckpointKey::init(const Vec2 pos, const Size size) {
         //setFriction(0.0f);
         //setFixedRotation(true);
         //setSensor(false);
+
+        // Set ID number and increment for next key
+        _keyID = _idCounter;
+        _idCounter += 2;
+
         _isPathFinding = true;
         return true;
     };

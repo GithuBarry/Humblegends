@@ -34,6 +34,10 @@ protected:
     /** Number of keys Reynard currently has */
     int _keysCount = 0;
 
+    /** ID numbers of the keys Reynard has (used to avoid repeat collisions) */
+    shared_ptr<vector<int>> _keyIDs = make_shared<vector<int>>();
+
+
 public:
 
     /**
@@ -85,18 +89,25 @@ public:
 
     /**
      * Called when Reynard obtains a key, which increments the number of keys he has. If he
-     * cannot carry any more keys (capacity is full), then returns false, but otherwise it
-     * returns true.
+     * cannot carry any more keys (capacity is full) or he's picked up this key already,
+     * then returns false, but otherwise it returns true.
+     * 
      * 
      * @return  Whether Reynard picked the key up successfully
      */
-    bool pickupKey() {
-        // Only pick up if Reynard can carry more keys
-        if (_keysCount < MAX_KEYS) {
-            _keysCount++;
-            return true;
+    bool pickupKey(int keyID) {
+        // Fail if Reynard already has this key
+        for (auto itr = _keyIDs->begin(); itr != _keyIDs->end(); ++itr) {
+            if ((*itr) == keyID) return false;
         }
-        return false;
+
+        // Fail if Reynard can't carry more keys
+        if (_keysCount >= MAX_KEYS) return false;
+
+        // Otherwise, pick up the key
+        _keyIDs->push_back(keyID);
+        _keysCount++;
+        return true;
     }
 
     /**
@@ -109,7 +120,11 @@ public:
      * @return  Whether a key was used successfully
      */
     bool useKey() {
+        // Fail if Reynard has no keys to use
         if (_keysCount <= 0) return false;
+
+        // Otherwise use the last key Reynard picked up
+        _keyIDs->pop_back();
         _keysCount--;
         return true;
     }

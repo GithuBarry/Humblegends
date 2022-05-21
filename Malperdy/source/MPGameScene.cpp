@@ -678,7 +678,7 @@ void GameScene::update(float dt)
         int v2 = 51;
         while (itr != deadKeyEnemyLocs->end()) {
             if (v2 > 50) {
-                CULog("TRYING TO MAKE KEY");
+                //CULog("TRYING TO MAKE KEY");
                 createKey(*itr, false, true);
             }
             else {
@@ -1358,27 +1358,31 @@ void GameScene::beginContact(b2Contact *contact)
 #pragma mark REYNARD COLLISION SECTION
         if (enemy == nullptr)
         {
+            // KEY COLLISIONS
             if (_keys.size()>0 || _keysCrazy.size()>0) {
                 b2Body *body1 = contact->GetFixtureA()->GetBody();
                 b2Body *body2 = contact->GetFixtureB()->GetBody();
+                b2Body* kBody;
                 
+                // Regular keys
                 for (int i = 0; i < _keys.size(); i++){
                     shared_ptr<CheckpointKey> k = _keys.at(i);
-                    b2Body *kBody = k->getBody();
+                    kBody = k->getBody();
                     if (kBody == body1 || kBody == body2) {
                         // Only remove the key if Reynard successfully picks it up
-                        if (_reynardController->pickupKey()) removeKey(k);
+                        if (_reynardController->pickupKey(k->getID())) removeKey(k);
                         // TODO: otherwise turn it into a regular key
-                    };
+                    }
                 }
                 
+                // Now do possessed keys
                 for (int i = 0; i < _keysCrazy.size(); i++){
                     shared_ptr<CheckpointKeyCrazy> k = _keysCrazy.at(i);
-                    b2Body *kBody = k->getBody();
+                    kBody = k->getBody();
                     if (kBody == body1 || kBody == body2) {
                         // Only remove the key if Reynard successfully picks it up
-                        if (_reynardController->pickupKey()) removeKeyCrazy(k);
-                    };
+                        if (_reynardController->pickupKey(k->getID())) removeKeyCrazy(k);
+                    }
                 }
                 
             }
@@ -1481,7 +1485,9 @@ void GameScene::beginContact(b2Contact *contact)
             {
                 trapType = trap->getType();
             }
-            if (trapType == TrapModel::TrapType::SPIKE) {
+            // ENEMY-SPIKE COLLISION
+            // Only bother if the enemy isn't already dead
+            if (trapType == TrapModel::TrapType::SPIKE && !enemy->isDead()) {
                 // TODO: Change this because enemy dies instantly on contact with spikes.
                 enemy->getCharacter()->setHearts(0);
                 if (enemy->isDead()) {
@@ -1708,7 +1714,6 @@ void GameScene::createKey(Vec2 pos, bool isPossesed, bool isPathFinding) {
         k->setPosition(pos);
         k->setIsPathFinding(isPathFinding);
         _keysCrazy.push_back(k);
-        n->setAbsolute(true);
         addObstacle(k, n);
     }
     else {
@@ -1719,15 +1724,12 @@ void GameScene::createKey(Vec2 pos, bool isPossesed, bool isPathFinding) {
         k->setPosition(pos);
         k->setIsPathFinding(isPathFinding);
         _keys.push_back(k);
-        n->setAbsolute(true);
         addObstacle(k, n);
-
-        CULog("Position: (%f, %f)", pos.x, pos.y);
     }
 }
 
 void GameScene::removeKey(shared_ptr<CheckpointKey> k) {
-  // do not attempt to remove a key that has already been removed
+    // do not attempt to remove a key that has already been removed
     if (_keys.size() <= 0) return;
 
     auto itr = _keys.begin();

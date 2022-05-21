@@ -33,6 +33,12 @@ protected:
     float _drawScale;
     bool _isPathFinding;
 
+    /** Static variable to track the ID number across classes (must be odd) */
+    static int _idCounter;
+
+    /** A unique ID number for this key (must be odd) */
+    int _keyID = -1;
+
 public:
 #pragma mark Constructors
     /**
@@ -77,6 +83,14 @@ public:
 
 
     void dispose();
+
+#pragma mark Getters
+    /**
+     * Returns the unique ID number for this key. For possessed keys, the ID number is always ODD.
+     *
+     * @return  The unique odd ID number for this key
+     */
+    int getID() { return _keyID; }
   
 #pragma mark -
 #pragma mark Animation
