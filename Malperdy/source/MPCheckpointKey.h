@@ -33,6 +33,12 @@ protected:
     /** If pathfinding should be enabled */
     bool _isPathFinding;
 
+    /** Static variable to track the ID number across classes (must be even) */
+    static int _idCounter;
+
+    /** A unique ID number for this key (must be even) */
+    int _keyID = -1;
+
 public:
 #pragma mark Constructors
     /**
@@ -77,6 +83,14 @@ public:
 
 
     void dispose();
+
+#pragma mark Getters
+    /**
+     * Returns the unique ID number for this key. For normal keys, the ID number is always EVEN.
+     * 
+     * @return  The unique even ID number for this key
+     */
+    int getID() { return _keyID; }
   
 #pragma mark -
 #pragma mark Animation

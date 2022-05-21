@@ -35,11 +35,30 @@ using namespace cugl;
 
 #pragma Movement Constants
 /** The default speed at which this character runs */
-#define RUN_SPEED 3.7f
+#define RUN_SPEED 4.0f
 /** The default speed at which this character runs */
 #define DELAY_SPEED 1.0f
 /** The speed at which this character jumps */
-#define JUMP_SPEED 12.5f
+#define JUMP_SPEED_X 7.0f
+#define JUMP_SPEED_Y 11.2f
+/** By how much to decelerate Reynard's movement */
+#define DECELERATION 0.3f
+/** Cooldown (in animation frames) for jumping */
+#define JUMP_COOLDOWN   5
+/** Amount of time (in seconds) for wall slide duration */
+#define WALL_SLIDE_DURATION 1.5f
+/** Any character's width*/
+#define DUDE_WIDTH  1.0f
+/** The amount to shrink the sensor fixture (horizontally) relative to the image */
+#define DUDE_SSHRINK  0.3f
+/** Height of the sensor attached to the player's feet */
+#define SENSOR_HEIGHT   0.1f
+/** The density of the character */
+#define DUDE_DENSITY    1.0f
+/** Debug color for the sensor */
+#define DEBUG_COLOR     Color4::RED
+/** The multiplier for the character dash */
+#define DASH_MULTIPLIER 5
 
 class CharacterModel : public cugl::physics2::CapsuleObstacle {
 private:
@@ -53,7 +72,7 @@ private:
 
     /** The duration in milliseconds of a dash */
     const Uint64 DASH_DURATION = 120;
-    const Uint64 DASH_COOLDOWN = 950;
+    const Uint64 DASH_COOLDOWN = 900;
 
 public:
     /** Enum representing the current state of movement that the character is in */

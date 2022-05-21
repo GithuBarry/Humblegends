@@ -18,6 +18,8 @@
 
 using namespace cugl;
 
+// ALWAYS ODD
+int CheckpointKeyCrazy::_idCounter = 1;
 
 bool CheckpointKeyCrazy::init(const Vec2 pos, const Size size) {
     if (physics2::BoxObstacle::init(pos,size)) {
@@ -26,6 +28,11 @@ bool CheckpointKeyCrazy::init(const Vec2 pos, const Size size) {
         setFriction(0.0f);
         setFixedRotation(true);
         setSensor(false);
+
+        // Set ID number and increment for next key
+        _keyID = _idCounter;
+        _idCounter += 2;
+
         return true;
     };
     return false;

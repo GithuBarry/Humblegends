@@ -226,7 +226,7 @@ public:
      *
      * @param delta Number of seconds since last animation frame
      */
-    void update(float dt);
+    virtual void update(float dt);
 
     
 #pragma mark Destructors

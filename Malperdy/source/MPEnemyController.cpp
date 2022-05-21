@@ -82,7 +82,7 @@ void EnemyController::update(float delta) {
             // If enough time has passed that enemy realizes Reynard's there
             if (_detectTime > DETECTION_TIME) {
                 // Do a little jump
-                _character->setVY(JUMP_SPEED / 1.5f);
+                _character->setVY(JUMP_SPEED_Y / 1.5f);
                 // Reset detection time
                 _detectTime = 0;
                 // Start chasing

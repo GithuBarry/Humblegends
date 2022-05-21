@@ -4,7 +4,7 @@
   "tileSize": 10,
   "regions": [
       {
-        "name": "region1",
+        "name": "key_test",
         "type": 1,
         "width": 3,
         "height": 3,

@@ -19,27 +19,6 @@
 #include <cugl/assets/CUAssetManager.h>
 #include <map>
 
-#pragma mark -
-#pragma mark Physics Constants
-/** Cooldown (in animation frames) for jumping */
-#define JUMP_COOLDOWN   5
-/** Amount of time (in seconds) for wall slide duration */
-#define WALL_SLIDE_DURATION 1.5f
-/** Any character's width*/
-#define DUDE_WIDTH  1.0f
-/** The amount to shrink the sensor fixture (horizontally) relative to the image */
-#define DUDE_SSHRINK  0.3f
-/** Height of the sensor attached to the player's feet */
-#define SENSOR_HEIGHT   0.1f
-/** The density of the character */
-#define DUDE_DENSITY    1.0f
-/** Debug color for the sensor */
-#define DEBUG_COLOR     Color4::RED
-/** The multiplier for the character dash */
-#define DASH_MULTIPLIER 5
-
-/** The distance **/
-
 using namespace cugl;
 
 #pragma mark -
@@ -171,8 +150,8 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             // Disable double jump (jumping/falling to jumping)
             if (_moveState == MovementState::FALLING) return false;
             // Jump up
-            //setVX(JUMP_SPEED/1.8);
-            setVY(JUMP_SPEED);
+            //setVX((JUMP_SPEED_X + RUN_SPEED) * (_faceRight ? 1 : -1));
+            setVY(JUMP_SPEED_Y);
             setPosition(getPosition() + Vec2(0, 0.1));
 
             // If character is on a wall, then also give a horizontal velocity away
@@ -198,11 +177,8 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
                 return false;
             }
             
-            if ((param > 0) != _faceRight){
-                flipDirection();
-                // Return so that flip direction does not incur colddown for player flexibility
-                return true;
-            }
+            if ((param > 0) != _faceRight) flipDirection();
+
             _dashStart = Timestamp();
 
             // Play dash sound since we can actually perform a dash.
@@ -222,6 +198,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             // TODO: any changes for swapping into DEAD state
             setVX(0);
             setVY(0);
+            setBodyType(b2_staticBody);
 
             setAnimation("dead");
 
@@ -345,38 +322,36 @@ void CharacterModel::dispose() {
  * @param delta Number of seconds since last animation frame
  */
 void CharacterModel::update(float dt) {
-
-    float jump_x = JUMP_SPEED/1.8 ;
+    float jump_x = JUMP_SPEED_X;
 
     // Handle any necessary behavior for the current move state
     switch (_moveState) {
         case MovementState::STOPPED:
             break;
-        case MovementState::RUNNING:
+        case MovementState::RUNNING: {
+            _speed = RUN_SPEED;
             // Continue moving if in the run state
-            if (_speed>RUN_SPEED){
-                //_speed -= 0.1;
-            }
-            if (isRunning()) setVX((_faceRight ? 1 : -1) * _speed);
+            setVX((_faceRight ? 1 : -1) * _speed);
             break;
-        case MovementState::JUMPING:
+        }
+        case MovementState::JUMPING: {
+            if (_speed > RUN_SPEED) {
+                _speed -= DECELERATION;
+                jump_x = _speed;
+            }
+            setVX((_faceRight ? 1 : -1) * jump_x);
             // If vertical velocity becomes negative, transition to Falling
-
-            if (_speed>JUMP_SPEED/1.8){
-                _speed -= 0.1;
-                jump_x = _speed;
-            }
-            setVX((_faceRight ? 1 : -1) * jump_x);
-            if (getVY() <= -0.2)
-                setMoveState(MovementState::FALLING);
+            if (getVY() <= -0.2f) setMoveState(MovementState::FALLING);
             break;
-        case MovementState::FALLING:
-            if (_speed>JUMP_SPEED/1.8){
-                _speed -= 0.1;
+        }
+        case MovementState::FALLING: {
+            if (_speed > RUN_SPEED) {
+                _speed -= DECELERATION;
                 jump_x = _speed;
             }
             setVX((_faceRight ? 1 : -1) * jump_x);
             break;
+        }
         case MovementState::ONWALL:
             break;
         case MovementState::DASHING:
@@ -386,7 +361,6 @@ void CharacterModel::update(float dt) {
             break;
         case MovementState::DEAD:
             // TODO: any updates for when in DEAD state
-            setBodyType(b2_staticBody);
             break;
     }
 

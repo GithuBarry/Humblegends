@@ -335,6 +335,7 @@ void GameScene::revert(bool totalReset)
         {
             _envController->getGrid()->getCheckpoints()[index]->setTrapState(TrapModel::TrapState::ACTIVATED);
             _grid->clearCheckpoint(_envController->getGrid()->getCheckpoints()[index]->getID());
+            _envController->getGrid()->getCheckpoints()[index]->unlock();
         }
     }
 }
@@ -383,6 +384,26 @@ void GameScene::populateEnv()
 
     // Add tutorial icons
     populateTutorials();
+
+    // POPULATE KEYS
+    // Do regular keys first
+    Vec2 keyCoords;
+
+    auto keyItr = _grid->_loneKeyLocs->begin();
+    while (keyItr != _grid->_loneKeyLocs->end()) {
+        // Note that these are in HOUSE space, so first go to GRID space
+        keyCoords.x = (*keyItr).x + _grid->getOriginX();
+        keyCoords.y = (*keyItr).y + _grid->getOriginY();
+        // Then go from GRID space to WORLD space
+        keyCoords = _grid->nodeToWorldCoords(keyCoords);
+        // Then go to PHYSICS space
+        keyCoords *= _scale;
+        
+        // Create key with transformed coordinates
+        createKey(keyCoords, false, false);
+
+        ++keyItr;
+    }
 }
 
 /**
@@ -667,7 +688,7 @@ void GameScene::update(float dt)
         int v2 = 51;
         while (itr != deadKeyEnemyLocs->end()) {
             if (v2 > 50) {
-                CULog("TRYING TO MAKE KEY");
+                //CULog("TRYING TO MAKE KEY");
                 createKey(*itr, false, true);
             }
             else {
@@ -1347,24 +1368,32 @@ void GameScene::beginContact(b2Contact *contact)
 #pragma mark REYNARD COLLISION SECTION
         if (enemy == nullptr)
         {
+            // KEY COLLISIONS
             if (_keys.size()>0 || _keysCrazy.size()>0) {
                 b2Body *body1 = contact->GetFixtureA()->GetBody();
                 b2Body *body2 = contact->GetFixtureB()->GetBody();
+                b2Body* kBody;
                 
+                // Regular keys
                 for (int i = 0; i < _keys.size(); i++){
                     shared_ptr<CheckpointKey> k = _keys.at(i);
-                    b2Body *kBody = k->getBody();
+                    kBody = k->getBody();
                     if (kBody == body1 || kBody == body2) {
-                        removeKey(k);
-                    };
+                        // Only remove the key if Reynard successfully picks it up
+                        if (_reynardController->pickupKey(k->getID())) removeKey(k);
+                        // Otherwise turn it into a regular key
+                        else { k->setIsPathFinding(false); }
+                    }
                 }
                 
+                // Now do possessed keys
                 for (int i = 0; i < _keysCrazy.size(); i++){
                     shared_ptr<CheckpointKeyCrazy> k = _keysCrazy.at(i);
-                    b2Body *kBody = k->getBody();
+                    kBody = k->getBody();
                     if (kBody == body1 || kBody == body2) {
-                        removeKeyCrazy(k);
-                    };
+                        // Only remove the key if Reynard successfully picks it up
+                        if (_reynardController->pickupKey(k->getID())) removeKeyCrazy(k);
+                    }
                 }
                 
             }
@@ -1391,12 +1420,14 @@ void GameScene::beginContact(b2Contact *contact)
                 // No helper is used because the abstraction is unnecessary
                 _reynardController->getCharacter()->slowCharacter();
             }
+            // CHECKPOINT COLLISIONS
             else if (trapType == TrapModel::TrapType::CHECKPOINT)
             {
                 Checkpoint* cp = dynamic_cast<Checkpoint*>(&(*trap));
 
                 // Only allow clearing if Reynard has enough keys and it's locked, or if it's not locked
-                if (!cp->isLocked() || (cp->isLocked() && _reynardController->useKey())) {
+                if (!cp->isLocked() || (cp->isLocked() && _reynardController->getKeysCount() > 0)) {
+
                     _checkpointSwapLen = static_cast<int>(_envController->getSwapHistory().size());
                     _checkpointEnemyPos = vector<Vec2>();
                     _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
@@ -1404,9 +1435,15 @@ void GameScene::beginContact(b2Contact *contact)
                     {
                         _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                     }
+
+                    // Only use a key if the checkpoint isn't already activated
+                    if (!trap->isActivated()) _reynardController->useKey();
+
                     trap->setTrapState(TrapModel::TrapState::ACTIVATED);
+
                     // Clear all the associated rooms
                     _grid->clearCheckpoint(cp->getID());
+                    cp->unlock();
 
                     vector<Checkpoint *> cps = _envController->getGrid()->getCheckpoints();
                     for (int i = 0; i < cps.size(); i++)
@@ -1460,7 +1497,9 @@ void GameScene::beginContact(b2Contact *contact)
             {
                 trapType = trap->getType();
             }
-            if (trapType == TrapModel::TrapType::SPIKE) {
+            // ENEMY-SPIKE COLLISION
+            // Only bother if the enemy isn't already dead
+            if (trapType == TrapModel::TrapType::SPIKE && !enemy->isDead()) {
                 // TODO: Change this because enemy dies instantly on contact with spikes.
                 enemy->getCharacter()->setHearts(0);
                 if (enemy->isDead()) {
@@ -1677,48 +1716,34 @@ Vec2 GameScene::inputToGameCoords(Vec2 inputCoords)
  * Create a key at the given location in PHYSICS space
  */
 void GameScene::createKey(Vec2 pos, bool isPossesed, bool isPathFinding) {
+    std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
+
     if (isPossesed) {
         std::shared_ptr<CheckpointKeyCrazy> k = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
-        std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
         k->setSceneNode(n);
+        addObstacle(k, n);
+        k->setPosition(pos);
         k->setDrawScale(_scale);
         n->setScale(.2);
-        k->setPosition(pos);
         k->setIsPathFinding(isPathFinding);
         _keysCrazy.push_back(k);
-        addObstacle(k, n);
     }
     else {
         std::shared_ptr<CheckpointKey> k  = CheckpointKey::alloc(Vec2(0,0),Size(1.0f, 1.0f));
-        std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
         k->setSceneNode(n);
+        addObstacle(k, n);
+        k->setPosition(pos);
         k->setDrawScale(_scale);
         n->setScale(.2);
-        k->setPosition(pos);
         k->setIsPathFinding(isPathFinding);
         _keys.push_back(k);
-        addObstacle(k, n);
-    };
+
+        //CULog("Position: (%f, %f)", pos.x, pos.y);
+    }
 }
 
-/**
- * Possessed key?
- * 
- * Document your shit, Abu
- */
-//void GameScene::createKeyCrazy(Vec2 enemyPos) {
-//    _keyCrazy = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
-//    std::shared_ptr<cugl::scene2::PolygonNode> n = cugl::scene2::SpriteNode::allocWithTexture(_assets->get<Texture>("key"));
-//    _keyCrazy->setSceneNode(n);
-//    _keyCrazy->setDrawScale(_scale);
-//    n->setScale(.2);
-//    _keyCrazy->setPosition(enemyPos);
-//    addObstacle(_keyCrazy, n);
-//    // _reynardController->increment_keys();
-// }
-
 void GameScene::removeKey(shared_ptr<CheckpointKey> k) {
-  // do not attempt to remove a key that has already been removed
+    // do not attempt to remove a key that has already been removed
     if (_keys.size() <= 0) return;
 
     auto itr = _keys.begin();
