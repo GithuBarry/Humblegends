@@ -750,8 +750,8 @@ void GridModel::calculatePhysicsGeometry()
             obstacle->setBodyType(b2_staticBody);
 
             // Counter will let rooms/blockades align because they were added simultaneously
-            getPhysicsGeometryAt(exitRooms->at(counter)->getPositionX() / DEFAULT_ROOM_WIDTH,
-                exitRooms->at(counter)->getPositionY() / DEFAULT_ROOM_HEIGHT)->push_back(obstacle);
+            getPhysicsGeometryAt(exitRooms->at(counter)->getPositionY() / DEFAULT_ROOM_HEIGHT,
+                exitRooms->at(counter)->getPositionX() / DEFAULT_ROOM_WIDTH)->push_back(obstacle);
             (*regItr)->addBlockadeObs(obstacle);
 
             counter++;

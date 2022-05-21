@@ -720,7 +720,8 @@ void GameScene::update(float dt)
         _grid->clearRegion(1);
     }
     if (_input.didClearRegion2()) {
-        _grid->clearRegion(2);
+        // Actually region 3, "region 2" is the first transitional region
+        _grid->clearRegion(3);
     }
 
     // Process the toggled key commands

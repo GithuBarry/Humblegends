@@ -157,10 +157,6 @@ void RegionModel::addSublevel(int originX, int originY, int width, int height,
  * @return      Whether the room was set successfully
  */
 bool RegionModel::setExitRoom(int x, int y, shared_ptr<Texture> tex) {
-	// Transform these GRID coordinates to REGION space
-	x -= _originX;
-	y -= _originY;
-
 	shared_ptr<RoomModel> exitRoom = getRoom(x, y);
 	if (exitRoom == nullptr) return false;
 
