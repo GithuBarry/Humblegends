@@ -339,7 +339,7 @@
 			    "type"   : "Button",
 			    "data"   : {
                     "upnode"   : "up",
-                    "pushable" : [0,0, 0,523, 803,523, 803,0],
+                    "pushable" : [0,0, 0,131, 200,131, 200,0],
                     "pushsize" : true,
                     "visible"  : false,
                     "anchor"   : [1,0],
@@ -608,7 +608,7 @@
                     "x_anchor" : "right",
                     "y_anchor" : "middle",
                     "x_offset" : -25,
-                    "y_offset" : -10,
+                    "y_offset" : -20,
                     "absolute" : true
 		    	}
             },
@@ -632,7 +632,7 @@
                     "x_anchor" : "right",
                     "y_anchor" : "middle",
                     "x_offset" : -25,
-                    "y_offset" : -145,
+                    "y_offset" : -185,
                     "absolute" : true
 		    	}
             },
@@ -651,7 +651,7 @@
                     "x_anchor" : "right",
                     "y_anchor" : "middle",
                     "x_offset" : -25,
-                    "y_offset" : -10,
+                    "y_offset" : -30,
                     "absolute" : true
 		    	}
             }
