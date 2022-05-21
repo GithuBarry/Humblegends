@@ -331,7 +331,7 @@ void GameScene::revert(bool totalReset)
         {
             (*_enemies)[i]->getCharacter()->setPosition(_checkpointEnemyPos[i]);
         }
-        for (int index : _checkpointActiatedCheckpoints)
+        for (int index : _checkpointActivatedCheckpoints)
         {
             _envController->getGrid()->getCheckpoints()[index]->setTrapState(TrapModel::TrapState::ACTIVATED);
             _grid->clearCheckpoint(_envController->getGrid()->getCheckpoints()[index]->getID());
@@ -1520,9 +1520,9 @@ void GameScene::beginContact(b2Contact *contact)
                     {
                         if (cps[i] == cp)
                         {
-                            if (_checkpointActiatedCheckpoints.size()==0 || _checkpointActiatedCheckpoints[_checkpointActiatedCheckpoints.size() - 1] != i)
+                            if (_checkpointActivatedCheckpoints.size()==0 || _checkpointActivatedCheckpoints[_checkpointActivatedCheckpoints.size() - 1] != i)
                             {
-                                _checkpointActiatedCheckpoints.push_back(i);
+                                _checkpointActivatedCheckpoints.push_back(i);
                             }
                             break;
                         }
