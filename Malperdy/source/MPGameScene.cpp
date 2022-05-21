@@ -393,6 +393,7 @@ void GameScene::populateEnv()
         keyCoords.x = (*keyItr).x - _grid->getOriginX() + 0.5f;
         keyCoords.y = (*keyItr).y - _grid->getOriginY() + 0.5f;
 
+        CULog("KEY: (%f, %f)", keyCoords.x, keyCoords.y);
         // Then ROOM to GRID space?
         keyCoords = _grid->roomSpaceToGrid(keyCoords);
         // Then go from GRID space to WORLD space
@@ -458,12 +459,13 @@ void GameScene::populateEnemies()
     // Initialize new enemy
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
+    Vec2 enemyCoords;
+
     // For each enemy to spawn
     for (auto itr = _grid->_enemySpawnInfo->begin(); itr != _grid->_enemySpawnInfo->end();
         ++itr) {
-        Vec2 enemyCoords;
         // Note that these are in HOUSE space, so first go to ROOM? space
-        enemyCoords.x = ((*itr).first).x - _grid->getOriginX() + 0;
+        enemyCoords.x = ((*itr).first).x - _grid->getOriginX() + 0.5f;
         enemyCoords.y = ((*itr).first).y - _grid->getOriginY() + 0.5f;
         // Then ROOM to GRID space?
         enemyCoords = _grid->roomSpaceToGrid(enemyCoords);
@@ -472,22 +474,19 @@ void GameScene::populateEnemies()
         // Then go to PHYSICS space
         enemyCoords /= _scale;
 
-        CULog("Enemy: %f, %f", enemyCoords.x, enemyCoords.y);
-
         // Now create the actual enemy
-        _enemies->push_back(EnemyController::alloc(enemyCoords, _scale, rabbit_animations));
 
-        // Add enemy to physics world
-        Vec2 posTemp = _enemies->back()->getCharacter()->getPosition();
-        _enemies->back()->getCharacter()->setPosition(Vec2(4, 3));
+        // initialize it
+        //                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(12,8), _scale, rabbit_animations));
+        _enemies->push_back(EnemyController::alloc(Vec2::ZERO, _scale, rabbit_animations));
 
         _enemies->back()->setObstacleWorld(_world);
         _enemies->back()->setReynardController(_reynardController);
         _enemies->back()->_isKeyed = (*itr).second;
 
-        addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
+        //addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
-        _enemies->back()->getCharacter()->setPosition(posTemp);
+        //_enemies->back()->getCharacter()->setPosition(enemyCoords);
     }
 
     _checkpointEnemyPos = vector<Vec2>();
@@ -591,9 +590,8 @@ void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region)
                 _enemies->back()->setReynardController(_reynardController);
                 addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
 
-                //_enemies->back()->getCharacter()->setPosition(enemypos);
-                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2::ZERO) * Vec2(20, 14));
-                //_enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1, 1)) * Vec2(8.2, 5.1));
+                //_enemies->back()->getCharacter()->setPosition((enemypos + Vec2::ZERO) * Vec2(20, 14));
+                _enemies->back()->getCharacter()->setPosition((enemypos + Vec2(1, 1)) * Vec2(8.2, 5.1));
             }
         }
     }
@@ -644,24 +642,7 @@ void GameScene::populateTutorials()
  */
 void GameScene::placeEnvImage(float x, float y, float scale, string TextureName)
 {
-    x = x * ROOM_WIDTH * _scale;
-    y = y * ROOM_HEIGHT * _scale;
-
-    // Transform tutorial offset to physics space
-    Vec2 offset = Vec2(0, TUTORIAL_Y_OFFSET);
-
-    // Note that these are in HOUSE space, so first go to ROOM? space
-    offset.x = offset.x - _grid->getOriginX();
-    offset.y = offset.y - _grid->getOriginY();
-    // Then ROOM to GRID space?
-    offset = _grid->roomSpaceToGrid(offset);
-    // Then go from GRID space to WORLD space
-    offset = _grid->nodeToWorldCoords(offset);
-    // Then go to PHYSICS space
-    //offset /= _scale;
-
-    x += offset.x;
-    y += offset.y;
+    y += TUTORIAL_Y_OFFSET;
 
     // Make scene node for the given tutorial image
     shared_ptr<scene2::PolygonNode> tutorialNode =
@@ -669,7 +650,7 @@ void GameScene::placeEnvImage(float x, float y, float scale, string TextureName)
 
     // Scale and place node
     tutorialNode->setScale(scale);
-    tutorialNode->setPosition(x, y);
+    tutorialNode->setPosition(x * ROOM_WIDTH * _scale, y * ROOM_HEIGHT * _scale);
     tutorialNode->setAbsolute(true);
 
     // Attach to the world node
@@ -1015,7 +996,6 @@ void GameScene::update(float dt)
     // Camera following reynard, with some non-linear smoothing
     Vec2 currentTranslation = _worldnode->getPaneTransform().getTranslation();
     Vec2 reynardScreenPosition = _worldnode->getPaneTransform().transform(_reynardController->getSceneNode()->getPosition());
-    //Vec2 reynardScreenPosition = _worldnode->getPaneTransform().transform(_enemies->back()->getSceneNode()->getPosition());
 
     bool faceRight = _reynardController->getCharacter()->isFacingRight();
     Vec2 reynardVelocity = _reynardController->getCharacter()->getLinearVelocity();
