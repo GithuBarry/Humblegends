@@ -22,7 +22,7 @@
 #include "MPReynardController.h"
 
 /** How many seconds Reynard must be within an enemy's detection radius before the enemy realizes that he is there */
-#define DETECTION_TIME 1.0f
+#define DETECTION_TIME 0.8f
 
 class EnemyController : public CharacterController<EnemyModel, EnemyController> {
 

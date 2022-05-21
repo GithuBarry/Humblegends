@@ -32,12 +32,14 @@ using namespace cugl;
 /** The amount to reduce gravity by when the character is sliding down a wall */
 // TODO: fix this to use friction instead of gravity
 #define WALL_SLIDE_GRAV_SCALE 0.3f
+/** How long a character should be sapped for */
+#define SAPPED_DURATION 1.5f
 
 #pragma Movement Constants
 /** The default speed at which this character runs */
 #define RUN_SPEED 4.0f
-/** The default speed at which this character runs */
-#define DELAY_SPEED 1.0f
+/** By how much to slow a sapped character */
+#define SAPPED_MULT 0.5f
 /** The speed at which this character jumps */
 #define JUMP_SPEED_X 7.0f
 #define JUMP_SPEED_Y 12.8f
@@ -73,6 +75,9 @@ private:
     /** The duration in milliseconds of a dash */
     const Uint64 DASH_DURATION = 120;
     const Uint64 DASH_COOLDOWN = 900;
+
+    bool isSapped = false;
+    Timestamp sappedTime;
 
 public:
     /** Enum representing the current state of movement that the character is in */
@@ -287,12 +292,13 @@ public:
 
 
     void slowCharacter() {
-        _speed = DELAY_SPEED;
+        isSapped = true;
+        sappedTime = Timestamp();
     }
 
-    void restoreSpeed() {
+    /*void restoreSpeed() {
         _speed = RUN_SPEED;
-    }
+    }*/
     
     bool canJump(){
         return !_jumped;

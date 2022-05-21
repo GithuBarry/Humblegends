@@ -325,17 +325,17 @@ public:
             else {
                 _bgOrderNode->setColor(Color4(Vec4(1, 1, 1, 1)));
             }
-        }
 
-        // Modify geometry
-        for (auto itr = _geometry->begin(); itr != _geometry->end(); ++itr) {
-            if (locked) {
-                (*itr)->setColor(Color4(40, 40, 40, 255 * LOCKED_ALPHA));
+            // Modify geometry
+            for (auto itr = _geometry->begin(); itr != _geometry->end(); ++itr) {
+                if (locked) {
+                    (*itr)->setColor(Color4(40, 40, 40, 255 * LOCKED_ALPHA));
+                }
+                else {
+                    (*itr)->setColor(Color4(20, 20, 20, 255));
+                }
             }
-            else {
-                (*itr)->setColor(Color4(20, 20, 20, 255));
-            }
-        }
+        }        
         
         // Mark as having already updated lock appearance
         lockChangePending = false;

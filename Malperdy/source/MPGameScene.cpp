@@ -1605,6 +1605,10 @@ void GameScene::beginContact(b2Contact *contact)
                 Vec2 v = enemy->getCharacter()->getLinearVelocity();
                 enemy->getCharacter()->setLinearVelocity(Vec2(v.x, -abs(v.y) / 3));
             }
+            else if (trapType == TrapModel::TrapType::CHECKPOINT)
+            {
+                // Do nothing
+            }
             else if (isThisAEnemyWallContact(contact, enemyIsRight, enemy))
             {
                 resolveEnemyWallOnContact(enemy);
@@ -1623,28 +1627,28 @@ void GameScene::beginContact(b2Contact *contact)
             }
         }
     }
-    // Random key collisions
-    else if (_keys.size()>0 || _keysCrazy.size()>0) {
-        b2Body *body1 = contact->GetFixtureA()->GetBody();
-        b2Body *body2 = contact->GetFixtureB()->GetBody();
-        
-        for (int i = 0; i < _keys.size(); i++){
-            shared_ptr<CheckpointKey> k = _keys.at(i);
-            b2Body *kBody = k->getBody();
-            if (kBody == body1 || kBody == body2) {
-                return;
-            };
-        }
-        
-        for (int i = 0; i < _keysCrazy.size(); i++){
-            shared_ptr<CheckpointKeyCrazy> k = _keysCrazy.at(i);
-            b2Body *kBody = k->getBody();
-            if (kBody == body1 || kBody == body2) {
-                return;
-            };
-        }
-        
-    }
+    //// Random key collisions
+    //else if (_keys.size()>0 || _keysCrazy.size()>0) {
+    //    b2Body *body1 = contact->GetFixtureA()->GetBody();
+    //    b2Body *body2 = contact->GetFixtureB()->GetBody();
+    //    
+    //    for (int i = 0; i < _keys.size(); i++){
+    //        shared_ptr<CheckpointKey> k = _keys.at(i);
+    //        b2Body *kBody = k->getBody();
+    //        if (kBody == body1 || kBody == body2) {
+    //            return;
+    //        };
+    //    }
+    //    
+    //    for (int i = 0; i < _keysCrazy.size(); i++){
+    //        shared_ptr<CheckpointKeyCrazy> k = _keysCrazy.at(i);
+    //        b2Body *kBody = k->getBody();
+    //        if (kBody == body1 || kBody == body2) {
+    //            return;
+    //        };
+    //    }
+    //    
+    //}
     // Reynard-on-enemy collision
     else
     {
@@ -1652,7 +1656,7 @@ void GameScene::beginContact(b2Contact *contact)
         if (isReynardCollision(contact) && enemy != nullptr)
         {
             // Collision between Reynard and an enemy
-            CULog("Enemy makes contact with Reynard");
+            //CULog("Enemy makes contact with Reynard");
             dealReynardDamage();
         }
     }
@@ -1686,7 +1690,7 @@ void GameScene::endContact(b2Contact *contact)
                 // This line of code is sufficient to slow Reynard
                 // No helper is used because the abstraction is unnecessary
                 // RESTORE REYNARDS NORMAL RUNNING SPEED THROUGH THIS LINE
-                _reynardController->getCharacter()->restoreSpeed();
+                //_reynardController->getCharacter()->restoreSpeed();
             }
         }
         else
@@ -1702,7 +1706,7 @@ void GameScene::endContact(b2Contact *contact)
                 // This line of code is sufficient to slow Reynard
                 // No helper is used because the abstraction is unnecessary
                 // RESTORE ENEMY NORMAL RUNNING SPEED THROUGH THIS LINE
-                enemy->getCharacter()->restoreSpeed();
+                //enemy->getCharacter()->restoreSpeed();
             }
             if (isThisAEnemyGroundContact(contact, enemy))
             {

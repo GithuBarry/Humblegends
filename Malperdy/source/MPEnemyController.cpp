@@ -17,7 +17,7 @@
 #define DUDE_JUMP   5.5f
 
 /** Radius within which an enemy will detect Reynard, squared */
-#define DETECTION_RADIUS_SQUARED 100000.0f
+#define DETECTION_RADIUS_SQUARED 115000.0f
 
 #include "MPEnemyController.h"
 
