@@ -202,6 +202,12 @@
       "volume": 0.45
     },
 
+    "vines": {
+      "type": "sample",
+      "file": "sounds/vines.wav",
+      "volume": 0.5
+    },
+
     "pause_ui": {
       "type": "sample",
       "file": "sounds/pause_ui.wav",

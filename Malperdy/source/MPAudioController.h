@@ -16,6 +16,7 @@ using namespace cugl;
 #define SWAP_SOUND "swap_room"
 #define NOSWAP_SOUND "noswap"
 #define CHECKPOINT_SOUND "checkpoint"
+#define VINE_SOUND "vine"
 
 #define ZOOMIN_SOUND "zoom_in"
 #define ZOOMOUT_SOUND "zoom_out"
