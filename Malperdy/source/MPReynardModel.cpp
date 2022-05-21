@@ -66,7 +66,7 @@ using namespace cugl;
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool ReynardModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
+bool ReynardModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation) {
     // If initialization of parent class failed, return immediately
     if (!(CharacterModel::init(pos, drawScale, animation))) return false;
 
@@ -89,8 +89,7 @@ bool ReynardModel::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Anima
 void ReynardModel::update(float dt) {
     // Call parent update function
     CharacterModel::update(dt);
-    if (this->getVY() <= MAX_VSPEED)
-    {
+    if (this->getVY() <= MAX_VSPEED) {
         this->setVY(MAX_VSPEED);
     }
 }

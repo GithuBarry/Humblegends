@@ -27,7 +27,7 @@ using namespace cugl;
 #pragma mark SapTrap
 
 
-class StatueTrap : public TrapModel{
+class StatueTrap : public TrapModel {
 
 public:
 

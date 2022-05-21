@@ -17,69 +17,55 @@ float AudioController::sfxVol = 0.5;
 /** Whether sfx is muted */
 bool AudioController::sfxMuted = false;
 
-	//static bool init() {
-	//	AudioEngine::start(24);
+//static bool init() {
+//	AudioEngine::start(24);
 
-	//	//Just making sure
-	//	if (AudioEngine::get() != nullptr)
-	//	{
-	//		return false;
-	//	}
-	//	return true;
-	//}
+//	//Just making sure
+//	if (AudioEngine::get() != nullptr)
+//	{
+//		return false;
+//	}
+//	return true;
+//}
 
-	//static void del() {
-	//	AudioEngine::stop();
-	//}
-	shared_ptr<AssetManager> AudioController::_assets = make_shared<AssetManager>();
+//static void del() {
+//	AudioEngine::stop();
+//}
+shared_ptr<AssetManager> AudioController::_assets = make_shared<AssetManager>();
 
-	void AudioController::playAudio(string sound, bool loop, float vol, bool isMusic)
-	{
-		std::shared_ptr<Sound> source = _assets->get<Sound>(sound);
-			
-		if (isMusic)
-		{
-			AudioEngine::get()->getMusicQueue()->play(source, loop, getMusicVol() * vol);
-		}
-		else
-		{
-			AudioEngine::get()->play(sound, source, loop, getSfxVol() * vol, true);
-		}
-	}
+void AudioController::playAudio(string sound, bool loop, float vol, bool isMusic) {
+    std::shared_ptr<Sound> source = _assets->get<Sound>(sound);
 
-	bool AudioController::isPlaying(string sound, bool isMusic)
-	{
-		if (isMusic)
-		{
-			return (AudioEngine::get()->getMusicQueue()->current() == sound);
-		}
-		else
-		{
-			return AudioEngine::get()->isActive(sound);
-		}
-	}
+    if (isMusic) {
+        AudioEngine::get()->getMusicQueue()->play(source, loop, getMusicVol() * vol);
+    } else {
+        AudioEngine::get()->play(sound, source, loop, getSfxVol() * vol, true);
+    }
+}
 
-	void AudioController::stopAudio(string sound, bool isMusic, float fadeAmount)
-	{
-		if (isMusic) {
-			//TODO: make it not clear the queue???
-			AudioEngine::get()->getMusicQueue()->clear(fadeAmount);
-		}
-		else
-		{
-			AudioEngine::get()->clear(sound, fadeAmount);
-		}
-	}
-		
-	void AudioController::setVolume(string sound, bool isMusic, float vol, bool isRel) {
-		if (!isMusic)
-		{
-			AudioEngine::get()->setVolume(sound, isRel ? (AudioEngine::get()->AudioEngine::getVolume(sound) + vol) : vol);
-		}
-		else
-		{
-			float volume = max(min(isRel ? (AudioEngine::get()->getMusicQueue()->getVolume() + vol) : vol, 1.0f), 0.0f);
+bool AudioController::isPlaying(string sound, bool isMusic) {
+    if (isMusic) {
+        return (AudioEngine::get()->getMusicQueue()->current() == sound);
+    } else {
+        return AudioEngine::get()->isActive(sound);
+    }
+}
 
-			AudioEngine::get()->getMusicQueue()->setVolume(volume);
-		}
-	}
+void AudioController::stopAudio(string sound, bool isMusic, float fadeAmount) {
+    if (isMusic) {
+        //TODO: make it not clear the queue???
+        AudioEngine::get()->getMusicQueue()->clear(fadeAmount);
+    } else {
+        AudioEngine::get()->clear(sound, fadeAmount);
+    }
+}
+
+void AudioController::setVolume(string sound, bool isMusic, float vol, bool isRel) {
+    if (!isMusic) {
+        AudioEngine::get()->setVolume(sound, isRel ? (AudioEngine::get()->AudioEngine::getVolume(sound) + vol) : vol);
+    } else {
+        float volume = max(min(isRel ? (AudioEngine::get()->getMusicQueue()->getVolume() + vol) : vol, 1.0f), 0.0f);
+
+        AudioEngine::get()->getMusicQueue()->setVolume(volume);
+    }
+}

@@ -25,7 +25,7 @@ EnvController::EnvController() {
 }
 
 /* Updates the environment */
-void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>> &enemies) {
     Vec2 newReyRoom = _grid->worldSpaceToRoom(reynard->getScenePosition());
 
     if (!isSwappable(_toSwap, reynard, enemies)) {
@@ -52,12 +52,12 @@ void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<Rey
         newEnemyPrevs.push_back(enemyRoom);
         enemyInd++;
     }
-    if (swapIndex <_swapHistory.size()){
+    if (swapIndex < _swapHistory.size()) {
         for (int i = swapIndex; i < _swapHistory.size(); ++i) {
             bool a = _grid->getRoom(_swapHistory[i][0])->updateSwap();
             bool b = _grid->getRoom(_swapHistory[i][1])->updateSwap();
-            if (a && b){
-                swapIndex = i+1;
+            if (a && b) {
+                swapIndex = i + 1;
             }
         }
     }
@@ -92,7 +92,7 @@ void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<Rey
             _grid->getRoom(_reyPrev)->unlockRoom();
             _grid->getRoom(newReyRoom)->lockRoom();
         }
-        
+
         // Defog
         _reyPrev = newReyRoom;
         defogSurrounding(_reyPrev);
@@ -111,15 +111,14 @@ void EnvController::update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<Rey
 *
 * @return true if room was successfully selected, and false otherwise
 */
-bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>> &enemies) {
     Vec2 room = _grid->screenSpaceToRoom(coords);
 
     if (isSwappable(room, reynard, enemies)) {
         lookSelected(room);
         _toSwap = room;
         return true;
-    } 
-    else {
+    } else {
         deselectRoom();
         return false;
     }
@@ -137,7 +136,7 @@ bool EnvController::selectRoom(Vec2 coords, const shared_ptr<ReynardController> 
 *			false if room was the same as selected room & is now deselected
 *			false if no swap occurred
 */
-bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>> &enemies) {
     if (!hasSelected()) {
         return false;
     }
@@ -152,7 +151,7 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
         return false;
     }
 
-    bool success = _grid->swapRooms(_toSwap, room2,false);
+    bool success = _grid->swapRooms(_toSwap, room2, false);
     if (success) {
         // Record the room swapping
         vector<Vec2> l;
@@ -163,7 +162,7 @@ bool EnvController::swapWithSelected(Vec2 coords, const shared_ptr<ReynardContro
         //Sloppy code, fix when refactoring UI updates
         _toSwap = room2;
         deselectRoom();
-        
+
 
     }
     return success;
@@ -188,11 +187,12 @@ void EnvController::deselectRoom() {
  *
  * @ return true if room doesn't contain Reynard, enemies or a checkpoint
 */
-bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+bool EnvController::isSwappable(Vec2 room, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>> &enemies) {
     // Fail if room doesn't exist, is permalocked, fogged, or occupied
     if (_grid->getRoom(room) == nullptr || _grid->getRoom(room)->permlocked ||
-        _grid->isRoomFogged(room) || containsEnemies(room, enemies) ||
-        containsReynard(room, reynard)) return false;
+            _grid->isRoomFogged(room) || containsEnemies(room, enemies) ||
+            containsReynard(room, reynard))
+        return false;
     // check if the room contains a checkpoint
     shared_ptr<TrapModel> trap = _grid->getRoom(room)->getTrap();
     if ((trap != nullptr) && (trap->getType() == TrapModel::TrapType::CHECKPOINT)) {
@@ -223,14 +223,14 @@ bool EnvController::containsReynard(Vec2 room, const shared_ptr<ReynardControlle
 *
 * @return true if at least one enemy is inside the given room
 */
-bool EnvController::containsEnemies(Vec2 room, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies) {
+bool EnvController::containsEnemies(Vec2 room, const shared_ptr<vector<shared_ptr<EnemyController>>> &enemies) {
     bool isTrue = false;
     for (auto i = enemies->begin(); i != enemies->end(); i++) {
         Vec2 pos = (*i)->getScenePosition();
         Vec2 cRoom = _grid->worldSpaceToRoom(pos);
         isTrue = isTrue || room.equals(cRoom);
     }
-    
+
     return isTrue;
 }
 
@@ -270,7 +270,7 @@ void EnvController::lookSelected(Vec2 room) {
 
 /* Sets the room to look deselected */
 void EnvController::lookDeselected(Vec2 room) {
-    if (_grid->getRoom(room)){
+    if (_grid->getRoom(room)) {
         _grid->getRoom(room)->setColor(Color4::WHITE);
     }
 }

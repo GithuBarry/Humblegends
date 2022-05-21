@@ -34,8 +34,7 @@ shared_ptr<AssetManager> TrapModel::ASSETS = make_shared<AssetManager>();
  *
  * @return     Returns True if the space is initialized properly.
  */
-bool TrapModel::init()
-{
+bool TrapModel::init() {
 
     addChild(_sceneNode);
 
@@ -66,7 +65,7 @@ void TrapModel::releaseFixtures() {
     _obstacle->releaseFixtures();
 }
 
-void TrapModel::setTrapState(TrapState newState){
+void TrapModel::setTrapState(TrapState newState) {
     //In case we ever want actions based on current state --> new state.
     switch (_trapState) {
         case TrapState::SPAWN:
@@ -76,14 +75,14 @@ void TrapModel::setTrapState(TrapState newState){
         case TrapState::ACTIVATED:
             break;
     }
-    
+
     //In case we ever want actions based on current state --> new state.
     switch (newState) {
         case TrapState::SPAWN:
-            
+
             break;
         case TrapModel::TrapState::DEACTIVATED:
-            
+
 //            _obstacle->setSensor(false);
             break;
         case TrapModel::TrapState::ACTIVATED:
@@ -91,7 +90,7 @@ void TrapModel::setTrapState(TrapState newState){
 //            _obstacle->setSensor(true);
             break;
     }
-    
+
     _trapState = newState;
 }
 
@@ -117,54 +116,52 @@ void TrapModel::update(float dt) {
     if (_sceneNode->getSize()) {
 //        cout << "activated";
     }
-    
-    if(_type == TrapType::CHECKPOINT){
+
+    if (_type == TrapType::CHECKPOINT) {
         if (_trapState == TrapState::ACTIVATED && _sceneNode->getSize()) {
             // update time since last frame update
 
 
-                // if it is time to update the frame...
-                float frame_time = FRAME_TIME;
-                if (_elapsed > frame_time ) {
+            // if it is time to update the frame...
+            float frame_time = FRAME_TIME;
+            if (_elapsed > frame_time) {
 
-                    // if on the last frame
-                    if (_currFrame == 0){
-                        // loop the animation if needed
-       
-                    }
-                    // if not on the last frame, then increment
-                    else{
-                        _currFrame = _currFrame - 1;
-                        
-                    }
-                    _sceneNode->setFrame(_currFrame);
-                    // reset time since last frame update
-                    _elapsed = 0;
+                // if on the last frame
+                if (_currFrame == 0) {
+                    // loop the animation if needed
+
                 }
+                    // if not on the last frame, then increment
+                else {
+                    _currFrame = _currFrame - 1;
+
+                }
+                _sceneNode->setFrame(_currFrame);
+                // reset time since last frame update
+                _elapsed = 0;
             }
-    }
-    
-    else{
-    if (_trapState == TrapState::ACTIVATED && _sceneNode->getSize()) {
-        // update time since last frame update
+        }
+    } else {
+        if (_trapState == TrapState::ACTIVATED && _sceneNode->getSize()) {
+            // update time since last frame update
 
 
             // if it is time to update the frame...
             float frame_time = FRAME_TIME;
-            if (_elapsed > frame_time ) {
+            if (_elapsed > frame_time) {
 
                 // if on the last frame
-                if (_currFrame >= _sceneNode->getSize()-1){
+                if (_currFrame >= _sceneNode->getSize() - 1) {
                     // loop the animation if needed
                     _sceneNode->setFrame(0);
                     _trapState = TrapState::DEACTIVATED;
                     return;
-   
+
                 }
-                // if not on the last frame, then increment
-                else{
+                    // if not on the last frame, then increment
+                else {
                     _currFrame = _currFrame + 1;
-                    
+
                 }
                 _sceneNode->setFrame(_currFrame);
                 // reset time since last frame update

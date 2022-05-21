@@ -48,7 +48,7 @@ private:
     /**
      * how many pairs of rooms finished swapping
      */
-     int swapIndex = 0;
+    int swapIndex = 0;
 public:
     const vector<vector<Vec2>> &getSwapHistory() const;
 
@@ -65,7 +65,9 @@ public:
         _grid = grid;
     }
 
-    shared_ptr<GridModel> getGrid(){ return _grid; }
+    shared_ptr<GridModel> getGrid() {
+        return _grid;
+    }
 
     /*  
     * Updates the environment
@@ -77,7 +79,7 @@ public:
     * @param reynard        Reynard's controller
     * @param enemies        the enemies' controllers
     */
-    void update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+    void update(Vec2 dragCoords, bool zoomedOut, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>> &enemies);
 
     /*
     * Selects the room at the given location
@@ -89,7 +91,7 @@ public:
     *
     * @return true if room was successfully selected, and false otherwise
     */
-    bool selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+    bool selectRoom(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>> &enemies);
 
     /*
     * Returns whether there is currently a room selected
@@ -115,7 +117,7 @@ public:
     *           false if room was the same as selected room
     *           false if no swap occurred
     */
-    bool swapWithSelected(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+    bool swapWithSelected(Vec2 coords, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>> &enemies);
 
     /* Deselects the currently selected room, if one is selected */
     void deselectRoom();
@@ -128,30 +130,31 @@ public:
     *           History is returned as a list of room pairs that have been swapped
     *           (i.e. [[room1, room2], [room2, room3] ... ])
     */
-    vector<vector<Vec2>> checkPoint(){
-        vector<vector<Vec2>> result =_swapHistory;
+    vector<vector<Vec2>> checkPoint() {
+        vector<vector<Vec2>> result = _swapHistory;
         _swapHistory = vector<vector<Vec2>>();
         return result;
     }
 
     /** Restore the room order according to the current history (since last checkpoint) */
-    void revertHistory(){
-        for(int i = _swapHistory.size() - 1; i >= 0; i--){
+    void revertHistory() {
+        for (int i = _swapHistory.size() - 1; i >= 0; i--) {
             vector<Vec2> roomPair = _swapHistory[i];
-            Vec2 room1 =roomPair[0];
-            Vec2 room2 =roomPair[1];
-            _grid->swapRooms(room1, room2,true);
+            Vec2 room1 = roomPair[0];
+            Vec2 room2 = roomPair[1];
+            _grid->swapRooms(room1, room2, true);
         }
         _swapHistory = vector<vector<Vec2>>();
     }
-    
-    void swapRoomOnGrid (Vec2 room1,Vec2  room2, bool forced){
+
+    void swapRoomOnGrid(Vec2 room1, Vec2 room2, bool forced) {
         _grid->swapRooms(room1, room2, forced);
     }
 
     virtual ~EnvController();
 
 #pragma mark Zoom
+
     /**
      * Called when the camera zooms out
      * 
@@ -196,7 +199,7 @@ private:
     * 
     * @ return true if room doesn't contain Reynard, enemies or a checkpoint
     */
-    bool isSwappable(Vec2 room, const shared_ptr<ReynardController>& reynard, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+    bool isSwappable(Vec2 room, const shared_ptr<ReynardController> &reynard, const shared_ptr<vector<shared_ptr<EnemyController>>> &enemies);
 
     /*
     * Checks whether Reynard is inside the indicated room
@@ -216,7 +219,7 @@ private:
     *
     * @return true if at least one enemy is inside the given room
     */
-    bool containsEnemies(Vec2 room, const shared_ptr<vector<shared_ptr<EnemyController>>>& enemies);
+    bool containsEnemies(Vec2 room, const shared_ptr<vector<shared_ptr<EnemyController>>> &enemies);
 
     /*
     * Removes fog of war from the eight rooms adjacent to this one, if they exist
@@ -230,7 +233,7 @@ private:
 
     /* Animates a room swap */
     void animateSwap(Vec2 room1, Vec2 room2);
-    
+
     /* Sets the room to look selected */
     void lookSelected(Vec2 room);
 
@@ -243,7 +246,6 @@ private:
     /* Sets the room to have no fog of war */
     void lookUnfogged(Vec2 room);
 };
-
 
 
 #endif /* MPEnvController_h */

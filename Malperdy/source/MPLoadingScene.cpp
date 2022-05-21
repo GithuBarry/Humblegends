@@ -35,34 +35,34 @@ using namespace cugl;
  *
  * @return true if the controller is initialized properly, false otherwise.
  */
-bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
+bool LoadingScene::init(const std::shared_ptr<AssetManager> &assets) {
     // Initialize the scene to a locked width
     Size dimen = Application::get()->getDisplaySize();
     // Lock the scene to a reasonable resolution
     if (dimen.width > dimen.height) {
-        dimen *= SCENE_SIZE/dimen.width;
+        dimen *= SCENE_SIZE / dimen.width;
     } else {
-        dimen *= SCENE_SIZE/dimen.height;
+        dimen *= SCENE_SIZE / dimen.height;
     }
     if (assets == nullptr) {
         return false;
     } else if (!Scene2::init(dimen)) {
         return false;
     }
-    
+
     // IMMEDIATELY load the splash screen assets
     _assets = assets;
     _assets->loadDirectory("json/loading.json");
     auto layer = assets->get<scene2::SceneNode>("load");
     layer->setContentSize(dimen);
     layer->doLayout(); // This rearranges the children to fit the screen
-    
+
     // Load screen
     _bar = std::dynamic_pointer_cast<scene2::ProgressBar>(assets->get<scene2::SceneNode>("load_bar"));
     _brand = assets->get<scene2::SceneNode>("load_logo");
     if (saveFileExists()) {
         _load = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_load-withSave"));
-        _load->addListener([=](const std::string& name, bool down) {
+        _load->addListener([=](const std::string &name, bool down) {
             if (_buttonState == 0) _buttonState = 1;
             else {
                 _buttonState = 0;
@@ -70,14 +70,14 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
                 this->_active = down;
             }
         });
-    }else {
+    } else {
         _load = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_load-noSave"));
     }
 
     // Main Menu
     _title = assets->get<scene2::SceneNode>("load_title");
     _new = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_new"));
-    _new->addListener([=](const std::string& name, bool down) {
+    _new->addListener([=](const std::string &name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
@@ -86,7 +86,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         }
     });
     _settingsButton = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_settings-button"));
-    _settingsButton->addListener([=](const std::string& name, bool down) {
+    _settingsButton->addListener([=](const std::string &name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
@@ -94,7 +94,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         }
     });
     _credits = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_credits"));
-    _credits->addListener([=](const std::string& name, bool down) {
+    _credits->addListener([=](const std::string &name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
@@ -105,7 +105,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     // Settings Screen
     _volumeBG = assets->get<scene2::SceneNode>("load_volume");
     _musicMute = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_music-mute"));
-    _musicMute->addListener([=](const std::string& name, bool down) {
+    _musicMute->addListener([=](const std::string &name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
@@ -117,7 +117,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     _musicVol = std::dynamic_pointer_cast<scene2::ProgressBar>(assets->get<scene2::SceneNode>("load_volume_music-bar"));
     _musicVol->setProgress(AudioController::getMusicVol());
     _musicMinus = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_music-minus"));
-    _musicMinus->addListener([=](const std::string& name, bool down) {
+    _musicMinus->addListener([=](const std::string &name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
@@ -128,7 +128,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         }
     });
     _musicPlus = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_music-plus"));
-    _musicPlus->addListener([=](const std::string& name, bool down) {
+    _musicPlus->addListener([=](const std::string &name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
@@ -139,7 +139,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     });
 
     _sfxMute = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_sfx-mute"));
-    _sfxMute->addListener([=](const std::string& name, bool down) {
+    _sfxMute->addListener([=](const std::string &name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
@@ -151,7 +151,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     _sfxVol = std::dynamic_pointer_cast<scene2::ProgressBar>(assets->get<scene2::SceneNode>("load_volume_sfx-bar"));
     _sfxVol->setProgress(AudioController::getSfxVol());
     _sfxMinus = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_sfx-minus"));
-    _sfxMinus->addListener([=](const std::string& name, bool down) {
+    _sfxMinus->addListener([=](const std::string &name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
@@ -162,7 +162,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         }
     });
     _sfxPlus = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_sfx-plus"));
-    _sfxPlus->addListener([=](const std::string& name, bool down) {
+    _sfxPlus->addListener([=](const std::string &name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
@@ -172,7 +172,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         }
     });
     _done = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_done"));
-    _done->addListener([=](const std::string& name, bool down) {
+    _done->addListener([=](const std::string &name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
@@ -226,6 +226,7 @@ void LoadingScene::dispose() {
 
 #pragma mark -
 #pragma mark Progress Monitoring
+
 /**
  * The method called to update the game mode.
  *
@@ -247,12 +248,10 @@ void LoadingScene::update(float progress) {
         if (_state == 1) {
             showMainMenu();
             _prevState = 1;
-        }
-        else if (_state == 2) {
+        } else if (_state == 2) {
             showSettings();
             _prevState = 2;
-        }
-        else if (_state == 3) {
+        } else if (_state == 3) {
             showCredits();
             _prevState = 3;
         }
@@ -264,7 +263,7 @@ void LoadingScene::update(float progress) {
  *
  * @return true if loading is complete, but the player has not started the game
  */
-bool LoadingScene::isPending( ) const {
+bool LoadingScene::isPending() const {
     return _new != nullptr && _new->isVisible();
 }
 

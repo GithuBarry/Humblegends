@@ -44,6 +44,7 @@ private:
 
 public:
 #pragma mark Constructors
+
     /*
      * Initializes a new checkpoint for a level in the given region.
      *
@@ -56,21 +57,27 @@ public:
     bool init(float roomWidth, float roomHeight, bool isFinal, bool locked = false);
 
 #pragma mark Getters
+
     /**
      * Returns the unique ID number for this checkpoint.
      * 
      * @return  The unique ID number for this checkpoint
      */
-    int getID() { return _id; }
+    int getID() {
+        return _id;
+    }
 
     /**
      * Returns whether this checkpoint is locked and requires a key or not.
      * 
      * @return  Whether this checkpoint requires a key to activate
      */
-    bool isLocked() { return _isLocked; }
+    bool isLocked() {
+        return _isLocked;
+    }
 
 #pragma mark Setters
+
     /**
      * Unlocks the checkpoint if it is locked, allowing the lock asset to
      * fade away.
@@ -78,7 +85,9 @@ public:
     void unlock();
 
 #pragma mark Update
+
     void update(float dt) override;
 
 };
+
 #endif /* MPCheckpoint_h */

@@ -361,7 +361,7 @@ void InputController::mouseDownCB(const cugl::MouseEvent &event, Uint8 clicks, b
 * @param previous  The previous position of the mouse (UNUSED)
 * @param focus     Whether this device has focus (UNUSED)
 */
-void InputController::mouseDragCB(const cugl::MouseEvent& event, const cugl::Vec2 previous, bool focus){
+void InputController::mouseDragCB(const cugl::MouseEvent &event, const cugl::Vec2 previous, bool focus) {
     if (event.buttons.hasLeft()) {
         float dist = std::abs((event.position - _mouseDragStart).length());
         _mouseDragging = dist >= EVENT_DRAG_LENGTH;
@@ -458,8 +458,7 @@ void InputController::multiChangeCB(const cugl::CoreGestureEvent &event, bool fo
         float spreadDiff = event.currSpread - event.origSpread;
         _pinchGesture = spreadDiff < -EVENT_SPREAD_LENGTH;
         _zoomGesture = spreadDiff > EVENT_SPREAD_LENGTH;
-    }
-    else if (event.type == CoreGestureType::PAN) {
+    } else if (event.type == CoreGestureType::PAN) {
         Vec2 scrollVec = event.currPosition - event.origPosition;
         _panGesture = true;
         _panGesture = scrollVec.length() > EVENT_SWIPE_LENGTH;

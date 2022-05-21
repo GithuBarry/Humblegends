@@ -48,12 +48,12 @@ bool CharacterModel::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Ani
 
     setSceneNode(scene2::SpriteNode::alloc(_animation->getSheet(), _animation->getRows(), _animation->getCols()));
 
-    _node->setScale(Vec2(-0.2,0.2));
+    _node->setScale(Vec2(-0.2, 0.2));
 
     Size nsize = _animation->getSheet()->getSize() / drawScale / Vec2(_animation->getCols(), _animation->getRows());
     auto s = _animation->getSheet();
 
-    nsize = nsize *DUDE_WIDTH/nsize.width; //!! drawScale is effective ignored!
+    nsize = nsize * DUDE_WIDTH / nsize.width; //!! drawScale is effective ignored!
     _drawScale = drawScale;
 
     setAnimation("run");
@@ -114,7 +114,8 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
         case MovementState::DASHING:
             // Only allow breaking from dash if dash has ended or switching to wall slide OR jump (jump cancel)
             if (!param && newState != MovementState::ONWALL &&
-                newState != MovementState::JUMPING) return false;
+                    newState != MovementState::JUMPING)
+                return false;
             setGravityScale(1.0f);
             break;
         case MovementState::DEAD:
@@ -123,7 +124,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             return false;
             break;
     }
-    
+
 
 
     // Do what needs to be done when switching into the new state
@@ -137,8 +138,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             //setVX(0);
             //setVX((_faceRight ? 1 : -1) * RUN_SPEED);
 
-            if (_moveState == MovementState::JUMPING || _moveState == MovementState::FALLING || _moveState == MovementState::ONWALL)
-            {
+            if (_moveState == MovementState::JUMPING || _moveState == MovementState::FALLING || _moveState == MovementState::ONWALL) {
                 AudioController::playSFX(LAND_SOUND);
             }
 
@@ -178,7 +178,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             }
 
             _dashedOnGround = _moveState == MovementState::RUNNING;
-            
+
             if ((param > 0) != _faceRight) flipDirection();
 
             _dashStart = Timestamp();
@@ -192,7 +192,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             setGravityScale(0);
             // Flip the direction to dash direction
             setVX(param * RUN_SPEED * DASH_MULTIPLIER * (isSapped ? SAPPED_MULT : 1) * x_scale());
-            
+
             // Freeze animation while dashing
             _currAnimation = "";
             break;
@@ -210,7 +210,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
 //    if(_moveState == MovementState::DASHING && newState == MovementState::RUNNING){
 //        _jumped = true;
 //    }
-    
+
     // Officially change state
     _moveState = newState;
 
@@ -387,37 +387,36 @@ void CharacterModel::update(float dt) {
 
     //if (true && (_moveState == MovementState::RUNNING || _moveState == MovementState::JUMPING)) {
 
-        // if it is time to update the frame...
-        float frame_time = FRAME_TIME;
+    // if it is time to update the frame...
+    float frame_time = FRAME_TIME;
 
-        switch (_moveState)
-        {
-            case MovementState::JUMPING:
-                frame_time *= 2;
-                break;
-            case MovementState::DASHING:
-                frame_time *= 0.1;
-                break;
-        }
+    switch (_moveState) {
+        case MovementState::JUMPING:
+            frame_time *= 2;
+            break;
+        case MovementState::DASHING:
+            frame_time *= 0.1;
+            break;
+    }
 
-        if (_elapsed > frame_time ) {
+    if (_elapsed > frame_time) {
 
-            // if on the last frame
-            if ((_animation->isReversed() ? _currFrame <= _startframe : _currFrame >= _lastframe)){
-                // loop the animation if needed
+        // if on the last frame
+        if ((_animation->isReversed() ? _currFrame <= _startframe : _currFrame >= _lastframe)) {
+            // loop the animation if needed
 
-                if(_loop){
-                    _currFrame = (_animation->isReversed()  ? _lastframe : _startframe);
-                }
+            if (_loop) {
+                _currFrame = (_animation->isReversed() ? _lastframe : _startframe);
             }
+        }
             // if not on the last frame, then increment
-            else{
-                _currFrame = (_animation->isReversed() ? _currFrame - 1 : _currFrame + 1);
-            }
-            _node->setFrame(_currFrame);
-            // reset time since last frame update
-            _elapsed = 0;
+        else {
+            _currFrame = (_animation->isReversed() ? _currFrame - 1 : _currFrame + 1);
         }
+        _node->setFrame(_currFrame);
+        // reset time since last frame update
+        _elapsed = 0;
+    }
     //}
 
 }

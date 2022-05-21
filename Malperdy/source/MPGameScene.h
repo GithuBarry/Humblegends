@@ -136,10 +136,10 @@ protected:
 
     /** The enemy locations to spawn keys for next frame, in PHYSICS space */
     shared_ptr<vector<Vec2>> deadKeyEnemyLocs = make_shared<vector<Vec2>>();
-    
+
     /** All the regular keys in the level */
     vector<std::shared_ptr<CheckpointKey>> _keys;
-    
+
     /** All the possessed keys in the level */
     vector<std::shared_ptr<CheckpointKeyCrazy>> _keysCrazy;
 
@@ -153,11 +153,11 @@ public:
      */
     int _mode = 0;
 
-    void setMode(int mode){
+    void setMode(int mode) {
         _mode = mode;
     }
-    
-    void pause(){
+
+    void pause() {
         _gamestate.pause();
     }
 
@@ -166,8 +166,7 @@ protected:
     /**
      * Last time reynard hurt
      */
-     std::chrono::time_point<std::chrono::system_clock> _lastHurt = std::chrono::system_clock::now();
-
+    std::chrono::time_point<std::chrono::system_clock> _lastHurt = std::chrono::system_clock::now();
 
 
 #pragma mark Internal Object Management
@@ -227,16 +226,16 @@ public:
     /**
      * Save all the states of the game to a file
      */
-    void rewriteSaveFile(){
+    void rewriteSaveFile() {
         //Init a JSON file
-        vector<std::string> file_path_list =vector<std::string>(2);
+        vector<std::string> file_path_list = vector<std::string>(2);
         file_path_list[0] = Application::get()->getSaveDirectory();
         file_path_list[1] = "state.json";
-        if (filetool::file_exists(cugl::filetool::join_path(file_path_list))){
+        if (filetool::file_exists(cugl::filetool::join_path(file_path_list))) {
             cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
         }
         shared_ptr<JsonWriter> jw = JsonWriter::alloc(cugl::filetool::join_path(file_path_list));
-        if (jw == nullptr){
+        if (jw == nullptr) {
             CULog("GameScene.h: Saving failed");
             return;
         }
@@ -255,38 +254,38 @@ public:
         // JSON - Enemy
         std::shared_ptr<JsonValue> jsonEnemyPos = JsonValue::alloc(JsonValue::Type::ArrayType);
         jsonEnemyPos->initArray();
-        for (auto thisEnemy: *_enemies){
+        for (auto thisEnemy: *_enemies) {
             jsonEnemyPos->appendValue(thisEnemy->getCharacter()->getPosition().x);
             jsonEnemyPos->appendValue(thisEnemy->getCharacter()->getPosition().y);
         }
-        jsonRoot->appendChild("EnemyPos",jsonEnemyPos);
+        jsonRoot->appendChild("EnemyPos", jsonEnemyPos);
 
         // JSON - Reynard
         std::shared_ptr<JsonValue> jsonReynardPos = JsonValue::alloc(JsonValue::Type::ArrayType);
         jsonReynardPos->initArray();
         jsonReynardPos->appendValue(_reynardController->getCharacter()->getPosition().x);
         jsonReynardPos->appendValue(_reynardController->getCharacter()->getPosition().y);
-        jsonRoot->appendChild("ReynardPos",jsonReynardPos);
+        jsonRoot->appendChild("ReynardPos", jsonReynardPos);
 
         // JSON - Checkpoint
         std::shared_ptr<JsonValue> jsonCheckpoints = JsonValue::alloc(JsonValue::Type::ArrayType);
-        for (int i:_checkpointActivatedCheckpoints){
+        for (int i: _checkpointActivatedCheckpoints) {
             float fi = i;
             jsonCheckpoints->appendValue(fi);
         }
-        jsonRoot->appendChild("ActivatedCheckpoints",jsonCheckpoints);
+        jsonRoot->appendChild("ActivatedCheckpoints", jsonCheckpoints);
 
         // JSON - Room Swapping
         std::shared_ptr<JsonValue> jsonRoomSwap = JsonValue::alloc(JsonValue::Type::ArrayType);
         jsonRoomSwap->initArray();
         int hisotoryLen = static_cast<int>(_envController->getSwapHistory().size());
-        for(int i = 0; i < hisotoryLen; i++){
+        for (int i = 0; i < hisotoryLen; i++) {
             jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][0].x);
             jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][0].y);
             jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][1].x);
             jsonRoomSwap->appendValue(_envController->getSwapHistory()[i][1].y);
         }
-        jsonRoot->appendChild("RoomSwap",jsonRoomSwap);
+        jsonRoot->appendChild("RoomSwap", jsonRoomSwap);
 
         // Save JSON file
         jw->writeJson(jsonRoot);
@@ -297,17 +296,17 @@ public:
     /**
     * Save all the states of the game to a file
     */
-    bool readSaveFile(){
+    bool readSaveFile() {
         //Init a JSON
-        vector<std::string> file_path_list =vector<std::string>(2);
+        vector<std::string> file_path_list = vector<std::string>(2);
         file_path_list[0] = Application::get()->getSaveDirectory();
         file_path_list[1] = "state.json";
-        if (!filetool::file_exists(cugl::filetool::join_path(file_path_list))){
+        if (!filetool::file_exists(cugl::filetool::join_path(file_path_list))) {
             return false;
         }
         shared_ptr<JsonReader> jr = JsonReader::alloc(cugl::filetool::join_path(file_path_list));
         jr->reset();
-        if (!jr->ready()){
+        if (!jr->ready()) {
             cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
             return false;
         }
@@ -315,9 +314,9 @@ public:
 
         //Read files
         if (jsonRoot->get("EnemyPos") == nullptr
-        || jsonRoot->get("ReynardPos") == nullptr
-        || jsonRoot->get("RoomSwap") == nullptr
-        || jsonRoot->get("ActivatedCheckpoints") == nullptr ){
+                || jsonRoot->get("ReynardPos") == nullptr
+                || jsonRoot->get("RoomSwap") == nullptr
+                || jsonRoot->get("ActivatedCheckpoints") == nullptr) {
             cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
             return false;
         }
@@ -325,7 +324,7 @@ public:
         std::vector<float> reynardPos1D = jsonRoot->get("ReynardPos")->asFloatArray();
         std::vector<float> swapHistory1D = jsonRoot->get("RoomSwap")->asFloatArray();
         std::vector<int> activatedcheckpts1D = jsonRoot->get("ActivatedCheckpoints")->asIntArray();
-        if (enemyPos1D.size() % 2 != 0 || reynardPos1D.size() != 2 || swapHistory1D.size() % 4 != 0){
+        if (enemyPos1D.size() % 2 != 0 || reynardPos1D.size() != 2 || swapHistory1D.size() % 4 != 0) {
             cugl::filetool::file_delete(cugl::filetool::join_path(file_path_list));
             return false;
         }
@@ -333,15 +332,15 @@ public:
         // JSON - Enemy
         int index = 0;
         _checkpointEnemyPos = vector<Vec2>();
-        for (int i  =0; i < enemyPos1D.size(); i+=2){
-            _checkpointEnemyPos.push_back(Vec2(enemyPos1D[index],enemyPos1D[index+1]));
+        for (int i = 0; i < enemyPos1D.size(); i += 2) {
+            _checkpointEnemyPos.push_back(Vec2(enemyPos1D[index], enemyPos1D[index + 1]));
         }
 
         // JSON - Checkpoint
         _checkpointActivatedCheckpoints = activatedcheckpts1D;
 
         // JSON - Reynard
-        _checkpointReynardPos = Vec2(reynardPos1D[0],reynardPos1D[1]);
+        _checkpointReynardPos = Vec2(reynardPos1D[0], reynardPos1D[1]);
 
         // JSON - Room Swapping
         std::shared_ptr<JsonValue> jsonRoomSwap = JsonValue::alloc(JsonValue::Type::ObjectType);
@@ -349,15 +348,16 @@ public:
         _checkpointSwapLen = static_cast<int>(swapHistory1D.size() / 4);
         int hisotoryLen = static_cast<int>(swapHistory1D.size());
         _swapHistory = vector<vector<Vec2>>();
-        for(int i = 0; i < hisotoryLen; i+=4){
+        for (int i = 0; i < hisotoryLen; i += 4) {
             vector<Vec2> thisSwap = vector<Vec2>();
-            thisSwap.push_back(Vec2(swapHistory1D[i],swapHistory1D[i+1]));
-            thisSwap.push_back(Vec2(swapHistory1D[i+2],swapHistory1D[i+3]));
+            thisSwap.push_back(Vec2(swapHistory1D[i], swapHistory1D[i + 1]));
+            thisSwap.push_back(Vec2(swapHistory1D[i + 2], swapHistory1D[i + 3]));
             _swapHistory.push_back(thisSwap);
         }
 
         return true;
     }
+
 protected:
     /**
      * Adds the physics object to the physics world and loosely couples it to the scene graph
@@ -635,7 +635,7 @@ public:
      * @return  trap type if one body is a trap
                 or UNTYPED if neither body is a trap
      */
-    shared_ptr<TrapModel> isTrapCollision(b2Contact* contact);
+    shared_ptr<TrapModel> isTrapCollision(b2Contact *contact);
 
     /**
      * Detects if a collision includes a tutorial object, and if so returns the tutorial's pointer
@@ -645,8 +645,7 @@ public:
      * @return  trap type if one body is a trap
                 or UNTYPED if neither body is a trap
      */
-    shared_ptr<Tutorial> isTutorialCollision(b2Contact* contact);
-
+    shared_ptr<Tutorial> isTutorialCollision(b2Contact *contact);
 
 
     /**
@@ -666,7 +665,7 @@ public:
      * @param body  The body to check against characters in the scene
      * @return      Whether the given body belongs to a character in the scene
      */
-    bool isCharacterBody(b2Body* body);
+    bool isCharacterBody(b2Body *body);
 
     /**
      * Returns a pointer to the character's body if the collision involved a character
@@ -675,7 +674,7 @@ public:
      * @param contact   Contact event generated by beginContact / endContact callbacks
      * @return          Pointer to the character's body, or nullptr if collision isn't character-on-object
      */
-    b2Body* getCharacterBodyInObjectCollision(b2Contact* contact);
+    b2Body *getCharacterBodyInObjectCollision(b2Contact *contact);
 
     /**
      * Returns a pointer to the relevant enemy controller if it is involved in the collision; otherwise
@@ -689,7 +688,7 @@ public:
      * @param body  The body of the character to get the controller for
      * @return      Pointer to the enemy controller if it's in the collision, or nullptr otherwise
      */
-    shared_ptr<EnemyController> getEnemyControllerInCollision(b2Contact* contact);
+    shared_ptr<EnemyController> getEnemyControllerInCollision(b2Contact *contact);
 
     /**
      * Helper function that checks if a contact event is a Reynard <> Wall contact
@@ -791,26 +790,27 @@ public:
 
 
 #pragma mark Helper Functions
+
     /* Converts input coordinates to coordinates in the game world */
     Vec2 inputToGameCoords(Vec2 inputCoords);
-    
+
     /**
      * Create a key at the given location in PHYSICS space
      */
     void createKey(Vec2 pos, bool isPossesed, bool isPathFinding);
 
     void createKeyCrazy(Vec2 enemyPos);
-    
+
     /**
      * Mark a key to be removed from the game during the next update
      */
     void removeKey(shared_ptr<CheckpointKey> k);
-    
+
     /**
      * Mark a possessed key to be removed from the game during the next update
      */
     void removeKeyCrazy(shared_ptr<CheckpointKeyCrazy> k);
-    
+
 };
 
 #endif /* __MP_GAME_MODE_H__ */

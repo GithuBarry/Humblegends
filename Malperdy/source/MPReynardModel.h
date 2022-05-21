@@ -43,11 +43,12 @@ protected:
     /** How long until we can jump again */
     int _jumpCooldown;
     /** How long until we can dash again */
-    int  _dashCooldown;
+    int _dashCooldown;
 
 public:
 
 #pragma mark Hidden Constructors
+
     /**
      * Initializes Reynard at the given position.
      *
@@ -74,8 +75,8 @@ public:
      * @param delta Number of seconds since last animation frame
      */
     virtual void update(float dt) override;
-    
-    ~ReynardModel(){
+
+    ~ReynardModel() {
         _core = nullptr;
     };
 

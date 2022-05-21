@@ -20,14 +20,14 @@
 using namespace cugl;
 
 class Tutorial : public cugl::physics2::BoxObstacle {
-    
+
 protected:
-    
+
     /** The scene graph node for the Bullet. */
     std::shared_ptr<cugl::scene2::SceneNode> _node;
     /*How long has this arrow existed for*/
     int _time = 0;
-    
+
 public:
 #pragma mark -
 #pragma mark Hidden Constructors
@@ -38,12 +38,13 @@ public:
      * This constructor does not initialize any of the character values beyond
      * the defaults. To use a CharacterModel, you must call init().
      */
-    Tutorial() : cugl::physics2::BoxObstacle() {}
+    Tutorial() : cugl::physics2::BoxObstacle() {
+    }
 
-    
+
 #pragma mark -
 #pragma mark Static Constructors
-    
+
 //    /**
 //     * Creates a new Bullet at the given position.
 //     *
@@ -66,7 +67,7 @@ public:
 
 #pragma mark -
 #pragma mark Constructors
-    
+
 
     /**
      * Initializes a new Arrow at the given position.
@@ -86,10 +87,11 @@ public:
      */
     virtual bool init(const cugl::Vec2 &pos, float width, float height);
 
-    
+
 #pragma mark -
 #pragma mark Destructor
-    virtual ~Tutorial(void){
+
+    virtual ~Tutorial(void) {
         //geometry is used for boxobstacles
         _geometry = nullptr;
 //        _core = nullptr;
@@ -104,7 +106,7 @@ public:
      * again.
      */
     void dispose();
-    
+
 #pragma mark -
 #pragma mark Getters/Setters
 
@@ -117,7 +119,9 @@ public:
      *
      * @return the scene graph node representing this Bullet.
      */
-    const std::shared_ptr<cugl::scene2::SceneNode>& getSceneNode() const { return _node; }
+    const std::shared_ptr<cugl::scene2::SceneNode> &getSceneNode() const {
+        return _node;
+    }
 
     /**
      * Sets the scene graph node representing this Bullet.
@@ -125,10 +129,9 @@ public:
      * @param node  The scene graph node representing this Bullet, which has
      *              been added to the world node already.
      */
-    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode>& node) {
+    void setSceneNode(const std::shared_ptr<cugl::scene2::SceneNode> &node) {
         _node = node;
     }
-    
 
 
 };

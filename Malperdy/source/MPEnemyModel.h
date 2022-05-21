@@ -94,7 +94,7 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation) ;
+    bool init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation);
 
 #pragma mark -
 #pragma mark Attribute Methods
@@ -128,11 +128,11 @@ public:
      */
     virtual void update(float dt) override;
 
-    
-    virtual float x_scale() override{
+
+    virtual float x_scale() override {
         return 1.5;
     }
-    
+
 #pragma mark -
 #pragma mark Physics Methods
 
@@ -144,14 +144,14 @@ public:
      * In addition to calling the parent method, enemies also have a
      * fixture to act as their detection radius, which is also added here.
      */
-    void createFixtures() ;
+    void createFixtures();
 
     /**
      * Release the fixtures for this body, reseting the shape
      *
      * This is the primary method to override for custom physics objects.
      */
-    void releaseFixtures() ;
+    void releaseFixtures();
 
 };
 

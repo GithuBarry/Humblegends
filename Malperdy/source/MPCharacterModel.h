@@ -115,7 +115,7 @@ protected:
 
     /** the time that the last dash started */
     Timestamp _dashStart = Timestamp();
-    
+
     /** whether the character jumped since leaving the ground */
     bool _jumped = false;
 
@@ -172,12 +172,13 @@ public:
      * This constructor does not initialize any of the character values beyond
      * the defaults. To use a CharacterModel, you must call init().
      */
-    CharacterModel() : CapsuleObstacle(), _sensorName(SENSOR_NAME) {}
+    CharacterModel() : CapsuleObstacle(), _sensorName(SENSOR_NAME) {
+    }
 
     /**
      * Destroys this CharacterModel, releasing all resources.
      */
-    virtual ~CharacterModel(void){
+    virtual ~CharacterModel(void) {
         _core = nullptr;
         dispose();
     }
@@ -261,7 +262,7 @@ public:
     /** Sets the animation to the string specified, and changes the relevant frame data
      * returns whether the animation was swapped successsfully
      */
-    bool setAnimation(string anim){
+    bool setAnimation(string anim) {
 
         // return false if the animation doesn't exist, or we are already on the animation
         if (!_animation->hasKey(anim)) return false;
@@ -276,8 +277,8 @@ public:
 
         // flip the animation if we need to
         _node->setVisible(false);
-        if (_flip ^ _animation->isFlip(anim)){
-            _node->setScale(_node->getScale() * Vec2(-1,1));
+        if (_flip ^ _animation->isFlip(anim)) {
+            _node->setScale(_node->getScale() * Vec2(-1, 1));
         }
         _node->setFrame(_currFrame);
         _node->setVisible(true);
@@ -299,8 +300,8 @@ public:
     /*void restoreSpeed() {
         _speed = RUN_SPEED;
     }*/
-    
-    bool canJump(){
+
+    bool canJump() {
         return !_jumped;
     }
 
@@ -326,9 +327,9 @@ public:
      */
     void flipDirection() {
         _faceRight = !_faceRight;
-        int sign = _faceRight?1:-1;
-        setLinearVelocity(sign*abs(getLinearVelocity().x), getLinearVelocity().y);
-        _node->setScale(_node->getScale()*Vec2(-1,1));
+        int sign = _faceRight ? 1 : -1;
+        setLinearVelocity(sign * abs(getLinearVelocity().x), getLinearVelocity().y);
+        _node->setScale(_node->getScale() * Vec2(-1, 1));
     }
 
     /**
@@ -417,7 +418,7 @@ public:
      * @param param An argument that can be used for additional state change info
      * @return      Whether the state change happened successfully
      */
-    bool setMoveState(MovementState newState, int param=0);
+    bool setMoveState(MovementState newState, int param = 0);
 
     /**
      * Sets the current position for this physics body
@@ -461,8 +462,8 @@ public:
      * @param delta Number of seconds since last animation frame
      */
     virtual void update(float dt) override;
-    
-    virtual float x_scale(){
+
+    virtual float x_scale() {
         return 1;
     }
 
@@ -479,7 +480,6 @@ public:
         return _body;
     }
 };
-
 
 
 #endif /* MPCharacterModel_h */

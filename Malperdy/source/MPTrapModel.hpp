@@ -24,14 +24,14 @@ class TrapModel : public cugl::scene2::SceneNode {
 
 
 public:
-    
+
     /** The potential activation states of the trap. */
-    enum class TrapState : int{
+    enum class TrapState : int {
         SPAWN,
         ACTIVATED,
         DEACTIVATED
     };
-    
+
     enum class TrapType : int {
         UNTYPED,
         SPIKE,
@@ -41,9 +41,9 @@ public:
         CHECKPOINT,
         GOAL
     };
-    
+
     static shared_ptr<AssetManager> ASSETS;
-    
+
 
 protected:
 #pragma mark -
@@ -51,30 +51,28 @@ protected:
 
     /** The texture for the TRAP   */
     const string TRAP_TEXTURE;
-    
+
     /** The amount of time in between each frame update */
     const float FRAME_TIME = 0.03;
 
 
-    
-    
 #pragma mark Attributes
 
     /** A uniform value represneting scale between the physics world and the screen */
     float _drawScale;
-    
+
     /** The subtype of the trap */
     TrapType _type;
 
     /** The current activation state of the trap. */
     TrapState _trapState = TrapState::SPAWN;
-        
+
     /** The obstacle representing the physical entity for the trap */
     shared_ptr<cugl::physics2::PolygonObstacle> _obstacle;
-    
+
     /** The polynode (alternative for) representing the physical entity for the trap */
     shared_ptr<cugl::scene2::SpriteNode> _sceneNode;
-    
+
     // ANIMATION RELATED ATTRIBUTES
     /** The amount of time since last frame update */
     float _elapsed = 0;
@@ -82,7 +80,7 @@ protected:
     /** represents the actual frame of animation, invariant to texture flips */
     int _currFrame = 0;
 
-    
+
 
 //    /**
 //    * Redraws the outline of the physics fixtures to the debug node
@@ -96,7 +94,7 @@ protected:
 public:
 #pragma mark -
 #pragma mark Hidden Constructors
-    
+
     /**
      * Initializes a trap with the given characteristics in a given location in Room Space.
      *
@@ -113,15 +111,14 @@ public:
      */
     bool init();
     //TODO: This needs to be verified to be in the room space coords and not world space coords
-    
-    bool initObstacle(shared_ptr<physics2::PolygonObstacle> bo){
+
+    bool initObstacle(shared_ptr<physics2::PolygonObstacle> bo) {
         _obstacle = bo;
         _obstacle->createFixtures();
         return true;
     }
-    
-    
-    
+
+
 #pragma mark -
 #pragma mark Attribute Properties
 
@@ -131,44 +128,44 @@ public:
      *
      * @return      Whether the change happened successfully
      */
-    shared_ptr<cugl::physics2::PolygonObstacle> getObstacle(){
+    shared_ptr<cugl::physics2::PolygonObstacle> getObstacle() {
         return _obstacle;
     }
-    
+
     /**
      * Sets the traps's state, changing physical attributes of the trap.
      *
      * @param x           Float representing x Position
      * @param y           Float representing y Position
      */
-    void setPhysicalBodyPos(float x, float y){
+    void setPhysicalBodyPos(float x, float y) {
         _obstacle->setPosition(x, y);
     }
-    
+
     /**
      * Sets the traps's state, changing physical attributes of the trap.
      *
      * @param pos           Vec2 with pos.x representing x location and pos.y representing y
      */
-    void setPhysicalBodyPos(Vec2 pos){
+    void setPhysicalBodyPos(Vec2 pos) {
         _obstacle->setPosition(pos);
     }
-    
+
     // Polygon Node Section:
     /**
      * Sets the traps's state, changing physical attributes of the trap.
      *
      * @return      Whether the change happened successfully
      */
-    Poly2 getImageBody(){
+    Poly2 getImageBody() {
         return _sceneNode->getPolygon();
-        
+
     }
-    
-    shared_ptr<scene2::PolygonNode> getPolyNode(){
+
+    shared_ptr<scene2::PolygonNode> getPolyNode() {
         return _sceneNode;
     }
-    
+
     // Trap State Section
     /**
      * Returns true if the trap is currently activated.
@@ -178,7 +175,7 @@ public:
     bool isActivated() const {
         return (_trapState == TrapState::ACTIVATED);
     }
-    
+
     /**
      * Sets the traps's state, changing physical attributes of the trap.
      *
@@ -186,21 +183,20 @@ public:
      * @return      Whether the change happened successfully
      */
     virtual void setTrapState(TrapState newState);
-    
-    
+
+
     TrapType getType() {
         return _type;
     }
-    
+
 #pragma mark -
 #pragma mark ANIMATION Methods
 
-    
-    
+
 #pragma mark -
 #pragma mark Physics Methods
 
-    
+
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      *
@@ -228,12 +224,15 @@ public:
      */
     virtual void update(float dt);
 
-    
+
 #pragma mark Destructors
+
     /**
      * Destroys this room, releasing all resources.
      */
-    virtual ~TrapModel(void) { dispose(); }
+    virtual ~TrapModel(void) {
+        dispose();
+    }
 
     /**
      * Disposes all resources and assets of this room.
@@ -241,13 +240,11 @@ public:
      * Any assets owned by this object will be immediately released.  Once
      * disposed, a room may not be used until it is initialized again.
      */
-    void dispose(){
+    void dispose() {
         removeAllChildren();
         _obstacle = nullptr;
     };
 };
-
-
 
 
 #endif /* MPTrapModel_hpp */

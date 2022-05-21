@@ -31,6 +31,7 @@ private:
 
 public:
 #pragma mark Constructors
+
     /**
      * Initializes a loader that will be used to read in room geometries from
      * a JSON and can be queried to get the geometry for a specific room type.
@@ -63,5 +64,7 @@ public:
      * 
      * @return  Pointer to vector of polygon geometries
      */
-    shared_ptr<vector<shared_ptr<JsonValue>>> getRoomData(string roomID) { return lookup->at(roomID); }
+    shared_ptr<vector<shared_ptr<JsonValue>>> getRoomData(string roomID) {
+        return lookup->at(roomID);
+    }
 };

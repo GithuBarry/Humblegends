@@ -28,62 +28,62 @@
  * this button will inform the application root to switch to the gameplay mode.
  */
 class LoadingScene : public cugl::Scene2 {
-    
+
 protected:
     /** The asset manager for loading. */
     std::shared_ptr<cugl::AssetManager> _assets;
-    
+
     // NO CONTROLLER (ALL IN SEPARATE THREAD)
-    
+
     // LOADING VIEW
     /** The animated progress bar */
-    std::shared_ptr<cugl::scene2::ProgressBar>  _bar;
+    std::shared_ptr<cugl::scene2::ProgressBar> _bar;
     /** The game's name (to be replaced with the team logo) */
-    std::shared_ptr<cugl::scene2::SceneNode>  _brand;
+    std::shared_ptr<cugl::scene2::SceneNode> _brand;
 
     // MAIN MENU VIEW
     /** The game's name */
-    std::shared_ptr<cugl::scene2::SceneNode>  _title;
+    std::shared_ptr<cugl::scene2::SceneNode> _title;
     /** The "load game" button */
-    std::shared_ptr<cugl::scene2::Button>     _load;
+    std::shared_ptr<cugl::scene2::Button> _load;
     /** The "new game" button */
-    std::shared_ptr<cugl::scene2::Button>     _new;
+    std::shared_ptr<cugl::scene2::Button> _new;
     /** The "settings" button */
-    std::shared_ptr<cugl::scene2::Button>     _settingsButton;
+    std::shared_ptr<cugl::scene2::Button> _settingsButton;
     /** The "credits" button */
-    std::shared_ptr<cugl::scene2::Button>     _credits;
+    std::shared_ptr<cugl::scene2::Button> _credits;
 
     // SETTINGS VIEW
     /** The background for volume settings */
-    std::shared_ptr<cugl::scene2::SceneNode>    _volumeBG;
+    std::shared_ptr<cugl::scene2::SceneNode> _volumeBG;
     /** The button to mute and unmute music */
-    std::shared_ptr<cugl::scene2::Button>       _musicMute;
+    std::shared_ptr<cugl::scene2::Button> _musicMute;
     /** The animated progress bar */
-    std::shared_ptr<cugl::scene2::ProgressBar>  _musicVol;
+    std::shared_ptr<cugl::scene2::ProgressBar> _musicVol;
     /** The button to decrease music volume */
-    std::shared_ptr<cugl::scene2::Button>       _musicMinus;
+    std::shared_ptr<cugl::scene2::Button> _musicMinus;
     /** The button to increase music volume */
-    std::shared_ptr<cugl::scene2::Button>       _musicPlus;
+    std::shared_ptr<cugl::scene2::Button> _musicPlus;
     /** The button to mute and unmute music */
-    std::shared_ptr<cugl::scene2::Button>       _sfxMute;
+    std::shared_ptr<cugl::scene2::Button> _sfxMute;
     /** The animated progress bar */
-    std::shared_ptr<cugl::scene2::ProgressBar>  _sfxVol;
+    std::shared_ptr<cugl::scene2::ProgressBar> _sfxVol;
     /** The button to decrease sfx volume */
-    std::shared_ptr<cugl::scene2::Button>       _sfxMinus;
+    std::shared_ptr<cugl::scene2::Button> _sfxMinus;
     /** The button to increase sfx volume */
-    std::shared_ptr<cugl::scene2::Button>       _sfxPlus;
+    std::shared_ptr<cugl::scene2::Button> _sfxPlus;
     /** The "done" button */
-    std::shared_ptr<cugl::scene2::Button>        _done;
+    std::shared_ptr<cugl::scene2::Button> _done;
 
     // CREDITS VIEW
     /** The credits content */
-    std::shared_ptr<cugl::scene2::SceneNode>  _creditsPage;
+    std::shared_ptr<cugl::scene2::SceneNode> _creditsPage;
 
     // MODEL
     /** The progress displayed on the screen */
     float _progress;
     /** Whether or not the player has pressed play to continue */
-    bool  _completed;
+    bool _completed;
     /**
     * State of the menu, so update can switch assets properly
     * 
@@ -108,9 +108,8 @@ protected:
     * 2: Start from memory
     */
     int _mode = 0;
-    
-    
-    
+
+
     /**
      * Returns the active screen size of this scene.
      *
@@ -118,31 +117,35 @@ protected:
      * ratios
      */
     cugl::Size computeActiveSize() const;
-        
+
 public:
 #pragma mark -
 #pragma mark Constructors
+
     /**
      * Creates a new loading mode with the default values.
      *
      * This constructor does not allocate any objects or start the game.
      * This allows us to use the object without a heap pointer.
      */
-    LoadingScene() : cugl::Scene2(), _progress(0.0f) {}
-    
+    LoadingScene() : cugl::Scene2(), _progress(0.0f) {
+    }
+
     /**
      * Disposes of all (non-static) resources allocated to this mode.
      *
      * This method is different from dispose() in that it ALSO shuts off any
      * static resources, like the input controller.
      */
-    ~LoadingScene() { dispose(); }
-    
+    ~LoadingScene() {
+        dispose();
+    }
+
     /**
      * Disposes of all (non-static) resources allocated to this mode.
      */
     void dispose();
-    
+
     /**
      * Initializes the controller contents, making it ready for loading
      *
@@ -154,11 +157,12 @@ public:
      *
      * @return true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager>& assets);
-    
-    
+    bool init(const std::shared_ptr<cugl::AssetManager> &assets);
+
+
 #pragma mark -
 #pragma mark Progress Monitoring
+
     /**
      * The method called to update the game mode.
      *
@@ -167,13 +171,13 @@ public:
      * @param timestep  The amount of time (in seconds) since the last frame
      */
     void update(float timestep);
-    
+
     /**
      * Returns true if loading is complete, but the player has not started the game
      *
      * @return true if loading is complete, but the player has not started the game
      */
-    bool isPending( ) const;
+    bool isPending() const;
 
     /**
     * Returns a value based on how the player wants to start playing
@@ -190,6 +194,7 @@ public:
 private:
 #pragma mark -
 #pragma mark Helper Functions
+
     /*
     * Returns whether there is a save file to load
     *

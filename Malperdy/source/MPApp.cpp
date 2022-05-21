@@ -106,7 +106,7 @@ void Malperdy::onShutdown() {
  */
 void Malperdy::onSuspend() {
     AudioEngine::get()->pause();
-    if (_gameplay._mode != 0){
+    if (_gameplay._mode != 0) {
         _gameplay.pause();
     }
 
@@ -149,7 +149,7 @@ void Malperdy::update(float timestep) {
         _gameplay.setMode(_loading.getMode());
         _gameplay.init(_assets);
         _loaded = true;
-        
+
     } else {
         _gameplay.update(timestep);
     }

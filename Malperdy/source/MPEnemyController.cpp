@@ -207,8 +207,8 @@ void EnemyController::reyCast() {
                 // If Reynard is a fixture in the path, then set the point to start going to
                 // Otherwise, set the point as a "null" value
                 bool isMyBody = _reynard->isMyBody(fixture->GetBody());
-                _raycastCache = isMyBody? point : Vec2(-1, -1);
-                if (!isMyBody){
+                _raycastCache = isMyBody ? point : Vec2(-1, -1);
+                if (!isMyBody) {
                     return -1;
                 }
                 return fraction;
@@ -235,15 +235,15 @@ void EnemyController::reyCast() {
                     if (_character->getBehaveState() == EnemyModel::BehaviorState::CHASING) {
                         jump();
                     } else if (_character->getBehaveState() == EnemyModel::BehaviorState::PATROLLING) {
-                        if (!_character->isJumping()){
+                        if (!_character->isJumping()) {
                             _character->flipDirection();
                         }
-                        
+
                     }
 
                 return fraction;
             },
-            _character->getPosition(), _character->getPosition()+ Vec2(cast_horizon, -0.3));
+            _character->getPosition(), _character->getPosition() + Vec2(cast_horizon, -0.3));
 
     // If the closest hit fixture really was Reynard, then set this enemy's target accordingly and set new target location
     if (_raycastCache != Vec2(-1, -1)) {

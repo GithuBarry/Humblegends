@@ -21,13 +21,14 @@
 #include "MPRoomModel.h"
 
 #include <stdio.h>
+
 using namespace cugl;
 
 #pragma mark -
 #pragma mark SpikeTrap
 
 
-class TrapDoor : public TrapModel{
+class TrapDoor : public TrapModel {
 
 public:
 
@@ -42,14 +43,14 @@ public:
      */
     bool init(float roomWidth, float roomHeight);
 
-    
+
     /**
      * Change the traps animation/image when you run into it. I need a way to do this
      *.
      *
      */
-    void changeTexture(){
-        
+    void changeTexture() {
+
     }
 
 };

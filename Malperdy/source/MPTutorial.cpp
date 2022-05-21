@@ -13,14 +13,13 @@
 #include <map>
 
 
-
 using namespace cugl;
 
 #pragma mark -
 #pragma mark Constructors
 
-bool Tutorial::init(const cugl::Vec2 &pos, float width = 3, float height = 3){
-    if(!(BoxObstacle::init(pos, Size(width, height)))) return false;
+bool Tutorial::init(const cugl::Vec2 &pos, float width = 3, float height = 3) {
+    if (!(BoxObstacle::init(pos, Size(width, height)))) return false;
     setGravityScale(0);
     setPosition(pos.x, pos.y);
     setSensor(true);
@@ -29,7 +28,7 @@ bool Tutorial::init(const cugl::Vec2 &pos, float width = 3, float height = 3){
 };
 
 
-void Tutorial::dispose(){
+void Tutorial::dispose() {
     _node = nullptr;
 };
     

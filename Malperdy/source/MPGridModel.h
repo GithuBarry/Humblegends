@@ -36,7 +36,7 @@ public:
 
     /** Locations of all enemies to spawn in HOUSE space and whether they're a key enemy or not */
     shared_ptr<vector<pair<Vec2, bool>>> _enemySpawnInfo =
-        make_shared<vector<pair<Vec2, bool>>>();
+            make_shared<vector<pair<Vec2, bool>>>();
 
 private:
     /** Reference to asset manager */
@@ -69,7 +69,7 @@ private:
     /**
      * a list of checkpoints
      */
-    vector<Checkpoint*> checkpoints;
+    vector<Checkpoint *> checkpoints;
 
     /*
      * The 2D data type for the grid. _grid[i][j] is the ptr to the room at the ith row from the bottom, jth column from the left.
@@ -111,7 +111,7 @@ public:
         return (result->init(assets) ? result : nullptr);
     }
 
-    vector<Checkpoint*> getCheckpoints() {
+    vector<Checkpoint *> getCheckpoints() {
         return checkpoints;
     }
 
@@ -138,7 +138,7 @@ private:
 
      */
     void initRegion(shared_ptr<JsonValue> region);
-    
+
 public:
     /**
      * Deafult init
@@ -177,12 +177,16 @@ public:
     /**
      * Returns the x-origin of the grid.
      */
-    int getOriginX() const { return _originX; }
+    int getOriginX() const {
+        return _originX;
+    }
 
     /**
      * Returns the y-origin of the grid.
      */
-    int getOriginY() const { return _originY; }
+    int getOriginY() const {
+        return _originY;
+    }
 
     /**
      * Returns the ptr to the room located at the given coordinate,
@@ -218,7 +222,9 @@ public:
      * 
      * @return  The list of active regions
      */
-    shared_ptr<vector<shared_ptr<RegionModel>>> getActiveRegions() { return _activeRegions; }
+    shared_ptr<vector<shared_ptr<RegionModel>>> getActiveRegions() {
+        return _activeRegions;
+    }
 
     /**
      * Returns the physics objects of the given room in GRID coordinates.
@@ -293,20 +299,20 @@ public:
     bool isRoomFogged(Vec2 coord) {
         return getRoom(coord) != nullptr && getRoom(coord)->isFogged();
     }
-    
-    void update(float dt){
-        for(int i = 0; i < _regions->size(); i++){
+
+    void update(float dt) {
+        for (int i = 0; i < _regions->size(); i++) {
             shared_ptr<RegionModel> rm = _regions->at(i);
-            
+
             int width = rm->getWidth();
             int height = rm->getHeight();
-            
-            for(int row = 0; row < height; row++){
-                for(int col = 0; col < width; col++){
+
+            for (int row = 0; row < height; row++) {
+                for (int col = 0; col < width; col++) {
                     // Get room, but convert from REGION to GRID space
                     shared_ptr<RoomModel> room = rm->getRoom(col + rm->getGridOriginX(),
-                        row + rm->getGridOriginY());
-                    if(room){
+                            row + rm->getGridOriginY());
+                    if (room) {
                         room->update(dt);
                     }
                 }
@@ -396,6 +402,7 @@ public:
     shared_ptr<physics2::PolygonObstacle> makeStaticFromPath(Path2 path);
 
 #pragma mark Checkpoints
+
     /**
      * Clears all the rooms associated with the checkpoint with the given ID (backgrounds
      * are swapped to the "cleared" option for the associated region). If this was the last

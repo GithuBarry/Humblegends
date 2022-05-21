@@ -7,6 +7,7 @@
 //
 #ifndef MPKey_hpp
 #define MPKey_hpp
+
 #include "MPCheckpointKey.h"
 #include <cugl/cugl.h>
 #include <cugl/physics2/CUBoxObstacle.h>
@@ -22,7 +23,7 @@ using namespace cugl;
 int CheckpointKey::_idCounter = 0;
 
 bool CheckpointKey::init(const Vec2 pos, const Size size) {
-    if (physics2::BoxObstacle::init(pos,size)) {
+    if (physics2::BoxObstacle::init(pos, size)) {
         // ABU: Below gives physics object weight
         setDensity(0.0f);
         setFriction(0.0f);
@@ -56,10 +57,10 @@ bool CheckpointKey::isPathFinding() {
  * @param delta Number of seconds since last animation frame
  */
 void CheckpointKey::update(float dt) {
-    
+
     BoxObstacle::update(dt);
     if (_node != nullptr) {
-        _node->setPosition(getPosition()*_drawScale);
+        _node->setPosition(getPosition() * _drawScale);
         _node->setAngle(getAngle());
     }
 }

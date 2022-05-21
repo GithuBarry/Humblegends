@@ -27,7 +27,7 @@
  *
  * @return  true if the character is initialized properly, false otherwise.
  */
-bool ReynardController::init(const cugl::Vec2& pos, float drawScale, shared_ptr<Animation> animation) {
+bool ReynardController::init(const cugl::Vec2 &pos, float drawScale, shared_ptr<Animation> animation) {
     // If initialization of parent class failed, return immediately
     return CharacterController::init(pos, drawScale, animation);
     //// Create user data to store in the physics body
@@ -44,9 +44,9 @@ bool ReynardController::init(const cugl::Vec2& pos, float drawScale, shared_ptr<
  * @param delta The amount of time that has passed since the last frame
  */
 void ReynardController::update(float delta) {
-	// Call parent method at the end
-	CharacterController::update(delta);
-    if (lastCheckPointPosition == Vec2(-1,-1)){
+    // Call parent method at the end
+    CharacterController::update(delta);
+    if (lastCheckPointPosition == Vec2(-1, -1)) {
         lastCheckPointPosition = getScenePosition();
     }
 }
