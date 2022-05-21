@@ -299,7 +299,7 @@ void GameScene::revert(bool totalReset)
         _swapHistory = _envController->getSwapHistory();
     }
 
-    totalReset = !readSaveFile())
+    totalReset = !readSaveFile();
     scrollingOffset = Vec2();
 
     _reynardController = nullptr;
@@ -462,7 +462,7 @@ void GameScene::populateEnemies()
         ++itr) {
         Vec2 enemyCoords;
         // Note that these are in HOUSE space, so first go to ROOM? space
-        enemyCoords.x = ((*itr).first).x - _grid->getOriginX() + 0.3f;
+        enemyCoords.x = ((*itr).first).x - _grid->getOriginX() + 0;
         enemyCoords.y = ((*itr).first).y - _grid->getOriginY() + 0.5f;
         // Then ROOM to GRID space?
         enemyCoords = _grid->roomSpaceToGrid(enemyCoords);
@@ -643,7 +643,24 @@ void GameScene::populateTutorials()
  */
 void GameScene::placeEnvImage(float x, float y, float scale, string TextureName)
 {
-    y += TUTORIAL_Y_OFFSET;
+    x = x * ROOM_WIDTH * _scale;
+    y = y * ROOM_HEIGHT * _scale;
+
+    // Transform tutorial offset to physics space
+    Vec2 offset = Vec2(0, TUTORIAL_Y_OFFSET);
+
+    // Note that these are in HOUSE space, so first go to ROOM? space
+    offset.x = offset.x - _grid->getOriginX();
+    offset.y = offset.y - _grid->getOriginY();
+    // Then ROOM to GRID space?
+    offset = _grid->roomSpaceToGrid(offset);
+    // Then go from GRID space to WORLD space
+    offset = _grid->nodeToWorldCoords(offset);
+    // Then go to PHYSICS space
+    //offset /= _scale;
+
+    x += offset.x;
+    y += offset.y;
 
     // Make scene node for the given tutorial image
     shared_ptr<scene2::PolygonNode> tutorialNode =
@@ -651,7 +668,7 @@ void GameScene::placeEnvImage(float x, float y, float scale, string TextureName)
 
     // Scale and place node
     tutorialNode->setScale(scale);
-    tutorialNode->setPosition(x * ROOM_WIDTH * _scale, y * ROOM_HEIGHT * _scale);
+    tutorialNode->setPosition(x, y);
     tutorialNode->setAbsolute(true);
 
     // Attach to the world node
