@@ -48,7 +48,6 @@ const Vec2 RoomModel::ROOM_SCALE = Vec2(DEFAULT_ROOM_WIDTH, DEFAULT_ROOM_HEIGHT)
 /** How big the boundary extrusion should be */
 #define BOUND_WIDTH 10
 
-shared_ptr<cugl::Texture> RoomModel::FOG_IMAGE = make_shared<cugl::Texture>();
 
 // Create color for geometry
 Color4 geometryColor = Color4(20,20,20,255);

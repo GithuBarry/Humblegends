@@ -70,8 +70,6 @@ public:
     shared_ptr<scene2::PolygonNode> _bgNode;
     /** Whether this room is permanently locked */
     bool permlocked = false;
-    
-    static shared_ptr<cugl::Texture> FOG_IMAGE;
 
 private:
     /** The ordered node to ensure backgrounds are layered properly */
