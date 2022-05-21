@@ -472,8 +472,6 @@ void GameScene::populateEnemies()
         // Then go to PHYSICS space
         enemyCoords /= _scale;
 
-        CULog("Enemy: %f, %f", enemyCoords.x, enemyCoords.y);
-
         // Now create the actual enemy
         _enemies->push_back(EnemyController::alloc(enemyCoords, _scale, rabbit_animations));
 
