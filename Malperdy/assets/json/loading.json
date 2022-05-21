@@ -424,18 +424,67 @@
                         "type"   : "Progress",
                         "data"   : {
                             "anchor"   : [0,1],
-                            "scale"    : 0.7,
+                            "scale"    : 0.5,
                             "background" : "volume-bar_background",
                             "foreground" : "volume-bar_foreground",
                             "left_cap"   : "volume-bar_leftcap",
-                            "right_cap"  : "volume-bar_rightcap",
-                            "visible"  : false 
+                            "right_cap"  : "volume-bar_rightcap"
                         },
                         "layout" : {
                             "x_anchor" : "left",
                             "y_anchor" : "top",
-                            "x_offset" : 20,
-                            "y_offset" : -80,
+                            "x_offset" : 135,
+                            "y_offset" : -115,
+                            "absolute" : true
+                        }
+                    },
+                    "music-minus"  : {
+                        "type"   : "Button",
+                        "data"   : {
+                            "upnode"   : "up",
+                            "pushable" : [0,0, 0,256, 256,256, 256,0],
+                            "pushsize" : true,
+                            "anchor"   : [1,1],
+                            "scale"    : 0.3
+                        },
+                        "children" : {
+                            "texture"       : {
+                                "type"   : "Image",
+                                "data"   : {
+                                    "texture"  : "minus-volume"
+                                }
+                            }
+                        },
+                        "layout" : {
+                            "x_anchor" : "right",
+                            "y_anchor" : "top",
+                            "x_offset" : -170,
+                            "y_offset" : -155,
+                            "absolute" : true
+                        }
+                    },
+                    "music-plus"  : {
+                        "type"   : "Button",
+                        "data"   : {
+                            "upnode"   : "up",
+                            "pushable" : [0,0, 0,256, 256,256, 256,0],
+                            "pushsize" : true,
+                            "anchor"   : [1,1],
+                            "scale"    : 0.3
+                        },
+                        "children" : {
+                            "texture"       : {
+                                "type"   : "Image",
+                                "data"   : {
+                                    "texture"  : "plus-volume"
+                                }
+                            }
+                        },
+                        "layout" : {
+                            "x_anchor" : "right",
+                            "y_anchor" : "top",
+                            "x_offset" : -80,
+                            "y_offset" : -155,
                             "absolute" : true
                         }
                     },
@@ -490,18 +539,67 @@
                         "type"   : "Progress",
                         "data"   : {
                             "anchor"   : [0,1],
-                            "scale"    : 0.7,
+                            "scale"    : 0.5,
                             "background" : "volume-bar_background",
                             "foreground" : "volume-bar_foreground",
                             "left_cap"   : "volume-bar_leftcap",
-                            "right_cap"  : "volume-bar_rightcap",
-                            "visible"  : false 
+                            "right_cap"  : "volume-bar_rightcap"
                         },
                         "layout" : {
                             "x_anchor" : "left",
                             "y_anchor" : "middle",
-                            "x_offset" : 20,
-                            "y_offset" : -60,
+                            "x_offset" : 135,
+                            "y_offset" : -100,
+                            "absolute" : true
+                        }
+                    },
+                    "sfx-minus"  : {
+                        "type"   : "Button",
+                        "data"   : {
+                            "upnode"   : "up",
+                            "pushable" : [0,0, 0,256, 256,256, 256,0],
+                            "pushsize" : true,
+                            "anchor"   : [1,1],
+                            "scale"    : 0.3
+                        },
+                        "children" : {
+                            "texture"       : {
+                                "type"   : "Image",
+                                "data"   : {
+                                    "texture"  : "minus-volume"
+                                }
+                            }
+                        },
+                        "layout" : {
+                            "x_anchor" : "right",
+                            "y_anchor" : "middle",
+                            "x_offset" : -170,
+                            "y_offset" : -140,
+                            "absolute" : true
+                        }
+                    },
+                    "sfx-plus"  : {
+                        "type"   : "Button",
+                        "data"   : {
+                            "upnode"   : "up",
+                            "pushable" : [0,0, 0,256, 256,256, 256,0],
+                            "pushsize" : true,
+                            "anchor"   : [1,1],
+                            "scale"    : 0.3
+                        },
+                        "children" : {
+                            "texture"       : {
+                                "type"   : "Image",
+                                "data"   : {
+                                    "texture"  : "plus-volume"
+                                }
+                            }
+                        },
+                        "layout" : {
+                            "x_anchor" : "right",
+                            "y_anchor" : "middle",
+                            "x_offset" : -80,
+                            "y_offset" : -140,
                             "absolute" : true
                         }
                     }

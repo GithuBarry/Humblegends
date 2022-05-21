@@ -60,10 +60,18 @@ protected:
     std::shared_ptr<cugl::scene2::Button>       _musicMute;
     /** The animated progress bar */
     std::shared_ptr<cugl::scene2::ProgressBar>  _musicVol;
+    /** The button to decrease music volume */
+    std::shared_ptr<cugl::scene2::Button>       _musicMinus;
+    /** The button to increase music volume */
+    std::shared_ptr<cugl::scene2::Button>       _musicPlus;
     /** The button to mute and unmute music */
     std::shared_ptr<cugl::scene2::Button>       _sfxMute;
     /** The animated progress bar */
     std::shared_ptr<cugl::scene2::ProgressBar>  _sfxVol;
+    /** The button to decrease sfx volume */
+    std::shared_ptr<cugl::scene2::Button>       _sfxMinus;
+    /** The button to increase sfx volume */
+    std::shared_ptr<cugl::scene2::Button>       _sfxPlus;
     /** The "done" button */
     std::shared_ptr<cugl::scene2::Button>        _done;
 

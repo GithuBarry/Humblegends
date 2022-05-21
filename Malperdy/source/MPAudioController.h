@@ -97,12 +97,16 @@ public:
 
 	// Getters & Setters for Volume Settings Variables
 	static float getMusicVol() { return musicVol; }
-	static void setMusicVol( float vol ) { musicVol = vol; }
+	static void setMusicVol( float vol ) {
+		if(vol >= 0.0 && vol <=1.001) musicVol = vol; 
+	}
 	static bool getMusicMute() { return musicMuted; }
 	static void setMusicMute(bool muted) { musicMuted = muted; }
 
 	static float getSfxVol() { return sfxVol; }
-	static void setSfxVol(float vol) { sfxVol = vol; }
+	static void setSfxVol(float vol) { 
+		if (vol >= 0.0 && vol <= 1.001) sfxVol = vol;
+	}
 	static bool getSfxMute() { return sfxMuted; }
 	static void setSfxMute(bool muted) { sfxMuted = muted; }
 };
