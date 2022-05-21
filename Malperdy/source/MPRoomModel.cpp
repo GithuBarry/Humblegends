@@ -37,6 +37,8 @@
 
 using namespace cugl;
 
+shared_ptr<cugl::Texture> RoomModel::FOG_IMAGE = make_shared<cugl::Texture>();
+
 /** Initialize RoomLoader for loading in rooms from a JSON */
 shared_ptr<RoomLoader> RoomModel::_roomLoader = RoomLoader::alloc("json/rooms.json");
 

@@ -19,6 +19,9 @@
   },
 
   "textures": {
+    "fog":{
+        "file": "textures/FogOfWar2.png"
+    },
     "sap":{
         "file" : "textures/Sap_Trap.png"
     },

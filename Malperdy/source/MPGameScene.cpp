@@ -156,6 +156,7 @@ bool GameScene::init(const std::shared_ptr<AssetManager> &assets, const Rect rec
     _input.init();
 
     TrapModel::ASSETS = _assets;
+    RoomModel::FOG_IMAGE = _assets->get<Texture>("fog");
 
     // Create the world and attach the listeners.
     _world = physics2::ObstacleWorld::alloc(rect, gravity);
