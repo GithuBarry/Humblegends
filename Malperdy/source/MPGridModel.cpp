@@ -315,7 +315,7 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                         // Need to transform by region origin to get coords in HOUSE space
                         // Also go down by a bit to put it in the center of the room
                         _loneKeyLocs->push_back(Vec2(curr_col + originX, curr_row + originY - 0.8f));
-
+                        CULog("Key: %f, %f", curr_col, curr_row);
                     }
                     // ADD KEY ENEMY IN GAMESCENE WHERE THE OTHER ENEMY IS INSTANTIATED
                     // Gamescene line 401

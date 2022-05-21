@@ -204,7 +204,7 @@
 
     "vines": {
       "type": "sample",
-      "file": "sounds/vines.wav",
+      "file": "sounds/vine.wav",
       "volume": 0.5
     },
 

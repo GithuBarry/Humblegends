@@ -913,7 +913,7 @@ void GameScene::update(float dt)
     // TODO debugging area. Disable for releases
     if ((!_reynardController->getCharacter()->isOnWall()) && abs(_reynardController->getCharacter()->getLinearVelocity().x) <= 0.5)
     {
-        CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
+        //CULog("likely Error 01: Reynard stuck. See MPGameScene.c update() and breakpoint here");
         _reynardController->getCharacter()->setLinearVelocity((3.7 * (_reynardController->getCharacter()->isFacingRight() ? 1 : -1)), 0.1);
     }
     else if (abs(_reynardController->getCharacter()->getLinearVelocity().x) + abs(_reynardController->getCharacter()->getLinearVelocity().y) == 0)
