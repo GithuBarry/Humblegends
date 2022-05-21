@@ -40,8 +40,8 @@ using namespace cugl;
 #define DELAY_SPEED 1.0f
 /** The speed at which this character jumps */
 #define JUMP_SPEED_X 7.0f
-#define JUMP_SPEED_Y 11.2f
-/** By how much to decelerate Reynard's movement */
+#define JUMP_SPEED_Y 10.8f
+/** By how much to decelerate Reynard's movement by */
 #define DECELERATION 0.3f
 /** Cooldown (in animation frames) for jumping */
 #define JUMP_COOLDOWN   5
@@ -58,7 +58,7 @@ using namespace cugl;
 /** Debug color for the sensor */
 #define DEBUG_COLOR     Color4::RED
 /** The multiplier for the character dash */
-#define DASH_MULTIPLIER 5
+#define DASH_MULTIPLIER 5.2f
 
 class CharacterModel : public cugl::physics2::CapsuleObstacle {
 private:
@@ -113,6 +113,9 @@ protected:
     
     /** whether the character jumped since leaving the ground */
     bool _jumped = false;
+
+    /** Whether the character was on the ground when they dashed */
+    bool _dashedOnGround = false;
 
 #pragma mark -
 #pragma mark Attributes
