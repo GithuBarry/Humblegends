@@ -371,7 +371,7 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                     else if (tile_to_traps[data.at(j)].find("enemy") != string::npos)
                     {
                         // Store enemy spawn location in HOUSE space and whether or not it has a key
-                        _enemySpawnInfo->emplace_back(Vec2(curr_col + originX, curr_row + originY),
+                        _enemySpawnInfo->emplace_back(Vec2(curr_col, curr_row),
                             tile_to_traps[data.at(j)].find("key") != string::npos);
                     }
                     else if (tile_to_traps[data.at(j)] == "sap")
@@ -389,7 +389,6 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                         // TODO: add key in this room (using curr_col / curr_row)
                         // Need to transform by region origin to get coords in HOUSE space
                         _loneKeyLocs->push_back(Vec2(curr_col, curr_row));
-                        CULog("Key: %d, %d", curr_col, curr_row);
                     }
                     // ADD KEY ENEMY IN GAMESCENE WHERE THE OTHER ENEMY IS INSTANTIATED
                     // Gamescene line 401

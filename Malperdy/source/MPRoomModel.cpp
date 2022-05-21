@@ -267,7 +267,7 @@ void RoomModel::dispose() {
  */
 void RoomModel::clear(shared_ptr<Texture> bg) {
     // Don't do anything if already cleared or has no background (solid room)
-    if (_isCleared || isSolid) return;
+    if (_isCleared || isSolid || !_bgClearedNode) return;
     _isCleared = true;
 
     // Set cleared background node's texture
