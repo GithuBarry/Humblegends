@@ -151,7 +151,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             if (_moveState == MovementState::FALLING) return false;
             // Jump up
             //setVX((JUMP_SPEED_X + RUN_SPEED) * (_faceRight ? 1 : -1));
-            setVY(JUMP_SPEED_Y);
+            setVY(JUMP_SPEED_Y + (_moveState == MovementState::ONWALL ? 1.4f : 0));
             setPosition(getPosition() + Vec2(0, 0.1));
 
             // If character is on a wall, then also give a horizontal velocity away
@@ -176,6 +176,8 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             if (Timestamp().ellapsedMillis(_dashStart) <= DASH_COOLDOWN) {
                 return false;
             }
+
+            _dashedOnGround = _moveState == MovementState::RUNNING;
             
             if ((param > 0) != _faceRight) flipDirection();
 
@@ -356,7 +358,8 @@ void CharacterModel::update(float dt) {
             break;
         case MovementState::DASHING:
             if (Timestamp().ellapsedMillis(_dashStart) > DASH_DURATION) {
-                setMoveState(MovementState::FALLING, 1);
+                setMoveState(_dashedOnGround ? MovementState::RUNNING : MovementState::FALLING, 1);
+                _dashedOnGround = false;
             }
             break;
         case MovementState::DEAD:
