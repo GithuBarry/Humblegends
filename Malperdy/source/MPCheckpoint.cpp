@@ -58,3 +58,27 @@ bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal, bool lock
 
     return this->TrapModel::init();
 }
+
+/**
+ * Unlocks the checkpoint if it is locked, allowing the lock asset to
+ * fade away.
+ */
+void Checkpoint::unlock() {
+    if (_isLocked) {
+        _isLocked = false;
+        startFadeLock = true;
+    }
+}
+
+void Checkpoint::update(float dt) {
+    TrapModel::update(dt);
+
+    if (startFadeLock) {
+        lockOpacity -= dt / LOCK_FADE_TIME;
+        if (lockOpacity <= 0) {
+            lockOpacity = 0;
+            startFadeLock = false;
+        }
+        _lockNode->setColor(Color4(Vec4(1, 1, 1, lockOpacity)));
+    }
+}

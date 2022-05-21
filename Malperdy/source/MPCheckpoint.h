@@ -20,6 +20,8 @@
 
 using namespace cugl;
 
+#define LOCK_FADE_TIME 0.8f
+
 class Checkpoint : public TrapModel {
 private:
     /** A counter to ensure each checkpoint instance has a unique ID number */
@@ -33,6 +35,12 @@ private:
 
     /** Pointer to the SceneNode with the lock asset */
     shared_ptr<scene2::PolygonNode> _lockNode;
+
+    /** Opacity of lock asset */
+    float lockOpacity = 1.0f;
+
+    /** Whether to start fading the lock asset */
+    bool startFadeLock = false;
 
 public:
 #pragma mark Constructors
@@ -61,6 +69,16 @@ public:
      * @return  Whether this checkpoint requires a key to activate
      */
     bool isLocked() { return _isLocked; }
+
+#pragma mark Setters
+    /**
+     * Unlocks the checkpoint if it is locked, allowing the lock asset to
+     * fade away.
+     */
+    void unlock();
+
+#pragma mark Update
+    void update(float dt) override;
 
 };
 #endif /* MPCheckpoint_h */

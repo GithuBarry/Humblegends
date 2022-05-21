@@ -336,6 +336,7 @@ void GameScene::revert(bool totalReset)
         {
             _envController->getGrid()->getCheckpoints()[index]->setTrapState(TrapModel::TrapState::ACTIVATED);
             _grid->clearCheckpoint(_envController->getGrid()->getCheckpoints()[index]->getID());
+            _envController->getGrid()->getCheckpoints()[index]->unlock();
         }
     }
 }
@@ -387,11 +388,21 @@ void GameScene::populateEnv()
 
     // POPULATE KEYS
     // Do regular keys first
+    Vec2 keyCoords;
+
     auto keyItr = _grid->_loneKeyLocs->begin();
     while (keyItr != _grid->_loneKeyLocs->end()) {
-        // Note that these are in GRID space
-        // Go to world space, then to physics
-        createKey(_grid->nodeToWorldCoords(*keyItr) / _scale, false, false);
+        // Note that these are in HOUSE space, so first go to GRID space
+        keyCoords.x = (*keyItr).x + _grid->getOriginX();
+        keyCoords.y = (*keyItr).y + _grid->getOriginY();
+        // Then go from GRID space to WORLD space
+        keyCoords = _grid->nodeToWorldCoords(keyCoords);
+        // Then go to PHYSICS space
+        keyCoords *= _scale;
+        
+        // Create key with transformed coordinates
+        createKey(keyCoords, false, false);
+
         ++keyItr;
     }
 }
@@ -1371,7 +1382,8 @@ void GameScene::beginContact(b2Contact *contact)
                     if (kBody == body1 || kBody == body2) {
                         // Only remove the key if Reynard successfully picks it up
                         if (_reynardController->pickupKey(k->getID())) removeKey(k);
-                        // TODO: otherwise turn it into a regular key
+                        // Otherwise turn it into a regular key
+                        else { k->setIsPathFinding(false); }
                     }
                 }
                 
@@ -1425,13 +1437,14 @@ void GameScene::beginContact(b2Contact *contact)
                         _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                     }
 
-                    // If the checkpoint is already activated, don't use a key
+                    // Only use a key if the checkpoint isn't already activated
                     if (!trap->isActivated()) _reynardController->useKey();
 
                     trap->setTrapState(TrapModel::TrapState::ACTIVATED);
 
                     // Clear all the associated rooms
                     _grid->clearCheckpoint(cp->getID());
+                    cp->unlock();
 
                     vector<Checkpoint *> cps = _envController->getGrid()->getCheckpoints();
                     for (int i = 0; i < cps.size(); i++)
@@ -1709,22 +1722,24 @@ void GameScene::createKey(Vec2 pos, bool isPossesed, bool isPathFinding) {
     if (isPossesed) {
         std::shared_ptr<CheckpointKeyCrazy> k = CheckpointKeyCrazy::alloc(Vec2(0,0),Size(1.0f, 1.0f));
         k->setSceneNode(n);
+        addObstacle(k, n);
+        k->setPosition(pos);
         k->setDrawScale(_scale);
         n->setScale(.2);
-        k->setPosition(pos);
         k->setIsPathFinding(isPathFinding);
         _keysCrazy.push_back(k);
-        addObstacle(k, n);
     }
     else {
         std::shared_ptr<CheckpointKey> k  = CheckpointKey::alloc(Vec2(0,0),Size(1.0f, 1.0f));
         k->setSceneNode(n);
+        addObstacle(k, n);
+        k->setPosition(pos);
         k->setDrawScale(_scale);
         n->setScale(.2);
-        k->setPosition(pos);
         k->setIsPathFinding(isPathFinding);
         _keys.push_back(k);
-        addObstacle(k, n);
+
+        //CULog("Position: (%f, %f)", pos.x, pos.y);
     }
 }
 
