@@ -62,7 +62,7 @@ using namespace cugl;
 #define LOCKED_ALPHA 0.7f
 
 /** The color of the overlaid geometry */
-const Color4 GEOMETRY_COLOR = Color4(20, 20, 20, 255);
+//const Color4 GEOMETRY_COLOR = Color4(20, 20, 20, 255);
 
 class RoomModel : public cugl::scene2::SceneNode {
 public:
@@ -89,6 +89,8 @@ private:
 
     /** Whether this room is a solid room */
     bool isSolid = false;
+
+    Color4 GEOMETRY_COLOR;
 
     // STATUS
     /** Whether this room is currently locked/unable to be swapped. False by default */
@@ -125,7 +127,7 @@ private:
      *
      * @param roomID	ID of room type with the desired geometry
      */
-    void buildGeometry(string roomID);
+    void buildGeometry(string roomID, int region);
 
 public:
 #pragma mark Constructors
@@ -152,7 +154,7 @@ public:
      * @param bg		Background texture to apply to the room (nullptr by default)
      * @return          true if the room is initialized properly, false otherwise.
      */
-    bool init(float x, float y, string roomID, shared_ptr<Texture> bg = nullptr);
+    bool init(float x, float y, string roomID, int region, shared_ptr<Texture> bg = nullptr);
 
     /**
      * Initializes a trap of the given type in this room.
@@ -181,9 +183,9 @@ public:
      * @param bg		Background texture to apply to the room (nullptr by default)
      * @return          A newly-allocated RoomModel
      */
-    static std::shared_ptr<RoomModel> alloc(float x, float y, string roomID, shared_ptr<Texture> bg = nullptr) {
+    static std::shared_ptr<RoomModel> alloc(float x, float y, string roomID, int region, shared_ptr<Texture> bg = nullptr) {
         std::shared_ptr<RoomModel> result = std::make_shared<RoomModel>();
-        return (result->init(x, y, roomID, bg) ? result : nullptr);
+        return (result->init(x, y, roomID, region, bg) ? result : nullptr);
     }
 
 #pragma mark Destructors
@@ -332,7 +334,7 @@ public:
                     (*itr)->setColor(Color4(40, 40, 40, 255 * LOCKED_ALPHA));
                 }
                 else {
-                    (*itr)->setColor(Color4(20, 20, 20, 255));
+                    (*itr)->setColor(GEOMETRY_COLOR);
                 }
             }
         }        
@@ -357,7 +359,7 @@ public:
             // Only revert background if room isn't solid
             if (!isSolid) _bgOrderNode->setColor(Color4(Vec4(1, 1, 1, 1)));
             for (auto itr = _geometry->begin(); itr != _geometry->end(); ++itr) {
-                (*itr)->setColor(Color4(20, 20, 20, 255));
+                (*itr)->setColor(GEOMETRY_COLOR);
             }
         }
     }

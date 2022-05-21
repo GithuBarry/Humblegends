@@ -70,7 +70,7 @@ float BOUND[] = {				 0,						  0,
  *
  * @param roomID	ID of room type with the desired geometry
  */
-void RoomModel::buildGeometry(string roomID) {
+void RoomModel::buildGeometry(string roomID, int region) {
     // Get data for the room with the corresponding ID
 	// If no roomID is given, use a default solid room
 	shared_ptr<vector<shared_ptr<JsonValue>>> roomData = _roomLoader->getRoomData(roomID == "" ? "room_solid" : roomID);
@@ -100,6 +100,8 @@ void RoomModel::buildGeometry(string roomID) {
         // Convert polygon into a scene graph node and add as a child to the room node
         shared_ptr<scene2::PolygonNode> polyNode = scene2::PolygonNode::alloc();
         polyNode->setPolygon(*poly);
+        if (region == 3) region = 5;
+        GEOMETRY_COLOR = Color4(10 * region, 10 * region, 10 * region, 255);
         polyNode->setColor(GEOMETRY_COLOR);
         // Ensure that polygons are drawn to their absolute coordinates
         polyNode->setAbsolute(true);
@@ -132,7 +134,7 @@ void RoomModel::buildGeometry(string roomID) {
  * @param bg		Background texture to apply to the room (nullptr by default)
  * @return          true if the room is initialized properly, false otherwise.
  */
-bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
+bool RoomModel::init(float x, float y, string roomID, int region, shared_ptr<Texture> bg) {
     // Store room's original location
     _originalLoc = Vec2(x, y);
 
@@ -158,7 +160,7 @@ bool RoomModel::init(float x, float y, string roomID, shared_ptr<Texture> bg) {
 	}
 
 	// Build geometry for the room type with the given ID
-	buildGeometry(roomID);
+	buildGeometry(roomID, region);
 
 	// Create path node for room boundary
 	/*Path2 boundPath = Path2(reinterpret_cast<Vec2*>(BOUND), sizeof(BOUND) / 2);

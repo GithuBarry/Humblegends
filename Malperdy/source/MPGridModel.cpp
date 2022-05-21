@@ -242,7 +242,7 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
 
                 // instantiate the room and add it as a child
                 // Make sure to place it at the right place in GRID space
-                sublevel->at(y)->at(x)->init(x + originX, y + originY, roomID,
+                sublevel->at(y)->at(x)->init(x + originX, y + originY, roomID, region->getType(),
                     isSolid ? nullptr : RegionModel::getRandBG(region->getType()));
                 if (isSolid) sublevel->at(y)->at(x)->setSolid();
                 addChild(sublevel->at(y)->at(x));
