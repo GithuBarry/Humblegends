@@ -299,10 +299,7 @@ void GameScene::revert(bool totalReset)
         _swapHistory = _envController->getSwapHistory();
     }
 
-    if (!readSaveFile())
-    {
-        totalReset = true;
-    }
+    totalReset = !readSaveFile())
     scrollingOffset = Vec2();
 
     _reynardController = nullptr;
@@ -860,22 +857,21 @@ void GameScene::update(float dt)
     if (_gamestate.secondsAfterResume() < 1)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_3.png");
-        return;
     }
     if (_gamestate.secondsAfterResume() < 2)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_2.png");
-        return;
     }
     if (_gamestate.secondsAfterResume() < 3)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_1.png");
-        return;
     }
     if (_gamestate.secondsAfterResume() < 4)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Button.png");
     }
+    if (_gamestate.isPaused() || _gamestate.secondsAfterResume() < 3)
+        return;
 
     // Room swap by drag
     if (usingDrag && !_gamestate.zoomed_in())
