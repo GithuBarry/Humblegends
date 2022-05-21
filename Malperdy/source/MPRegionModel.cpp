@@ -223,7 +223,7 @@ int RegionModel::clearCheckpoint(int cID) {
 	AudioController::playSFX(CHECKPOINT_SOUND);
 
 	// Clear all the rooms in the sublevel
-	_sublevels->at(_checkpointMap->at(cID))->clearSublevel(_bgsCleared->at(_bgType));
+	_sublevels->at(_checkpointMap->at(cID))->clearSublevel(_bgsCleared->at(_bgType - 1));
 
 	// Now unlink this checkpoint from the checkpoint map
 	_checkpointMap->operator[](cID) = -1;

@@ -391,13 +391,15 @@ void GameScene::populateEnv()
 
     auto keyItr = _grid->_loneKeyLocs->begin();
     while (keyItr != _grid->_loneKeyLocs->end()) {
-        // Note that these are in HOUSE space, so first go to GRID space
-        keyCoords.x = (*keyItr).x + _grid->getOriginX();
-        keyCoords.y = (*keyItr).y + _grid->getOriginY();
+        // Note that these are in HOUSE space, so first go to ROOM? space
+        keyCoords.x = (*keyItr).x - _grid->getOriginX() + 0.5f;
+        keyCoords.y = (*keyItr).y - _grid->getOriginY() + 0.5f;
+        // Then ROOM to GRID space?
+        keyCoords = _grid->roomSpaceToGrid(keyCoords);
         // Then go from GRID space to WORLD space
         keyCoords = _grid->nodeToWorldCoords(keyCoords);
         // Then go to PHYSICS space
-        keyCoords *= _scale;
+        keyCoords /= _scale;
         
         // Create key with transformed coordinates
         createKey(keyCoords, false, false);
@@ -421,6 +423,12 @@ void GameScene::populateChars()
 void GameScene::populateReynard()
 {
     Vec2 pos = _checkpointReynardPos;
+        
+    Vec2 temp = pos;
+    temp *= _scale; // To world
+    // Now world to grid
+    temp = _grid->worldSpaceToRoom(temp);
+    //CULog("Reynard Pos: (%f, %f)", temp.x, temp.y);
 
     shared_ptr<Animation> reynard_animations = make_shared<Animation>(_assets->get<Texture>("reynard_all"), _assets->get<JsonValue>("framedata2")->get("reynard"));
     // initialize reynardController with the final animation map

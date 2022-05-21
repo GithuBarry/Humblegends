@@ -5,7 +5,7 @@
 
     "world": "json/levels/MP_WorldData.json",
     "region1": "json/levels/MP_Region_1.json",
-    "region1-2": "json/levels/MP_Region_1-2.json",
+    "region1-2": "json/levels/MP_Region_1-2.tmj",
     "region2": "json/levels/MP_Region_2.json",
     "region_test": "json/levels/MP_evan_test2.json",
     "key_test": "json/levels/MP_KeyTest.json",
@@ -92,7 +92,7 @@
       "file": "textures/environment/BG_R1_3.png"
     },
     "bg-r2-0": {
-      "file": "textures/environment/BG_R1_0.jpg"
+      "file": "textures/environment/BG_R2_0.png"
     },
     "bg-r2-1": {
       "file": "textures/environment/BG_R2_1.jpg"
@@ -107,7 +107,7 @@
       "file": "textures/environment/BG_R2_4.jpg"
     },
     "bg-r3-0": {
-      "file": "textures/environment/BG_R1_0.jpg"
+      "file": "textures/environment/BG_R3_0.png"
     },
     "bg-r3-1": {
       "file": "textures/environment/BG_R3_1.jpg"

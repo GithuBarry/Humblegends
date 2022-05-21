@@ -270,8 +270,15 @@ public:
         return Vec2(x, y);
     }
 
+    Vec2 roomSpaceToGrid(Vec2 coord) {
+        float x = (coord.x + _originX) * DEFAULT_ROOM_WIDTH;
+        float y = (coord.y + _originY) * DEFAULT_ROOM_HEIGHT;
+        return Vec2(x, y);
+    }
+
     Vec2 worldSpaceToRoom(Vec2 coord) {
         //Vec2 gridcoords = this->screenToNodeCoords(coord);
+        // World to grid space
         Vec2 gridcoords = this->worldToNodeCoords(coord);
         //CULog("Grid Model: (%f, %f)", gridcoords.x, gridcoords.y);
         return gridSpaceToRoom(gridcoords);
