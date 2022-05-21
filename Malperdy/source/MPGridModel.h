@@ -34,6 +34,10 @@ public:
     /** Spawn locations of all standalone possessed keys in the game in HOUSE space (row, col) */
     shared_ptr<vector<Vec2>> _lonePossessedKeyLocs = make_shared<vector<Vec2>>();
 
+    /** Locations of all enemies to spawn in HOUSE space and whether they're a key enemy or not */
+    shared_ptr<vector<pair<Vec2, bool>>> _enemySpawnInfo =
+        make_shared<vector<pair<Vec2, bool>>>();
+
 private:
     /** Reference to asset manager */
     shared_ptr<cugl::AssetManager> _assets;
@@ -311,7 +315,9 @@ public:
             
             for(int row = 0; row < height; row++){
                 for(int col = 0; col < width; col++){
-                    shared_ptr<RoomModel> room = rm->getRoom(col, row);
+                    // Get room, but convert from REGION to GRID space
+                    shared_ptr<RoomModel> room = rm->getRoom(col + rm->getGridOriginX(),
+                        row + rm->getGridOriginY());
                     if(room){
                         room->update(dt);
                     }
@@ -369,7 +375,9 @@ public:
     * Does nothing if the coordinates are out of bounds.
     */
     void setRoomFog(Vec2 coord, bool hasFog) {
-        if (getRoom(coord)) getRoom(coord)->setFogged(hasFog);
+        if (getRoom(coord) != nullptr) {
+            getRoom(coord)->setFogged(hasFog);
+        }
     }
 
     /**

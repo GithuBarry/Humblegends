@@ -57,6 +57,71 @@ shared_ptr<vector<shared_ptr<vector<shared_ptr<RoomModel>>>>> GridModel::initGri
 }
 
 /**
+ * Deafult init
+ * @param assets: the asset manager of the game
+ * @param scale: the physics scale
+ * @return a grid with 3x3 rooms, each room the default
+ */
+bool GridModel::init(shared_ptr<AssetManager> assets, float scale)
+{
+    _assets = assets;
+    _physics_scale = scale;
+
+    // Get JSON for the world metadata and parse for constants
+    shared_ptr<JsonValue> worldJSON = assets->get<JsonValue>("world");
+
+    // Get room dimensions in tiles
+    _roomWidth = worldJSON->get("roomWidth")->asInt();
+    _roomHeight = worldJSON->get("roomHeight")->asInt();
+    // The size of each tile in pixels
+    _tileSize = worldJSON->get("tileSize")->asInt();
+
+    // Get the tileset for the rooms
+    _roomsTileset = assets->get<JsonValue>("tileset_rooms");
+
+    /**************************************************************/
+    // REGIONS
+    /**************************************************************/
+    // First give all the regions access to the backgrounds they'll need
+    RegionModel::setBackgrounds(assets, worldJSON);
+
+    // Get the list of regions in the world
+    vector<shared_ptr<JsonValue>> regions = worldJSON->get("regions")->children();
+
+    // Initialize Rect for region bounds
+    Rect _regionBounds = Rect();
+
+    // Now build each region based on the corresponding JSON metadata
+    for (shared_ptr<JsonValue> regionMetadata : regions) {
+        initRegion(regionMetadata);
+    }
+
+    // Set the size and origin based on the full world bounds
+    _size.x = _bounds.getMaxX() - _bounds.getMinX();
+    _size.y = _bounds.getMaxY() - _bounds.getMinY();
+    _originX = _bounds.getMinX();
+    _originY = _bounds.getMinY();
+
+    // For now, make all regions active at once
+    _activeRegions = _regions;
+
+    // Fill any empty spaces with solid rooms
+    //for (int y = 0; y < _size.y; y++) {
+    //    for (int x = 0; x < _size.x; x++) {
+    //        // If there's no room there, put a solid one
+    //        if (getRoom(x, y) == nullptr) {
+    //            // Need to offset by grid origin to get GRID coordinates
+    //            shared_ptr<RoomModel> room = RoomModel::alloc(x + _originX, y + _originY, "room_solid");
+    //            setRoom(x, y, room);
+    //            _filler->push_back(room);
+    //        }
+    //    }
+    //}
+
+    return this->scene2::SceneNode::init();
+};
+
+/**
  * Initializes a region for the game. The region is placed such that its
  * lower left corner, its region origin, is at the given coordinates in the
  * overall grid space. Returns the bounds of the newly-created region.
@@ -128,8 +193,6 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
     for (int i = 0; i < layers->size(); i++)
     {
         shared_ptr<JsonValue> layer = layers->get(i);
-
-        CULog("%s", layer->get("name"));
 
         // Parse each sublevel if the layer name contains "sublevel"
         if (layer->get("name")->asString().find("sublevel") != string::npos) {
@@ -280,36 +343,46 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
                     int curr_row = ((_roomHeight * height - 1) - (j / (_roomWidth * width))) / _roomHeight;
                     int curr_col = (j % (_roomWidth * width)) / _roomWidth;
 
+                    // Transform from REGION to GRID space
+                    curr_col += originX;
+                    curr_row += originY;
+
                     // if the tile is a trap, then add it
                     if (tile_to_traps[data.at(j)] == "trapdoor")
                     {
-                        sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::TRAPDOOR);
+                        getRoom(curr_col, curr_row)->initTrap(TrapModel::TrapType::TRAPDOOR);
                     }
                     else if (tile_to_traps[data.at(j)] == "spike")
                     {
-                        sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::SPIKE);
+                        getRoom(curr_col, curr_row)->initTrap(TrapModel::TrapType::SPIKE);
                     }
                     else if (tile_to_traps[data.at(j)].find("checkpoint") != string::npos)
                     {
                         // Add locked checkpoint to the region
-                        sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::CHECKPOINT,
+                        getRoom(curr_col, curr_row)->initTrap(TrapModel::TrapType::CHECKPOINT,
                             tile_to_traps[data.at(j)].find("key") != string::npos);
                         // Add checkpoint to the region
-                        region->addCheckpoint(dynamic_cast<Checkpoint*>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap())))->getID(),
+                        region->addCheckpoint(dynamic_cast<Checkpoint*>(&(*(getRoom(curr_col, curr_row)->getTrap())))->getID(),
                             curr_col, curr_row);
                         // Lock it by default
-                        sublevel->at(curr_row)->at(curr_col)->setPermlocked();
-                        checkpoints.push_back(dynamic_cast<Checkpoint*>(&(*(sublevel->at(curr_row)->at(curr_col)->getTrap()))));
+                        getRoom(curr_col, curr_row)->setPermlocked();
+                        checkpoints.push_back(dynamic_cast<Checkpoint*>(&(*(getRoom(curr_col, curr_row)->getTrap()))));
+                    }
+                    else if (tile_to_traps[data.at(j)].find("enemy") != string::npos)
+                    {
+                        // Store enemy spawn location in HOUSE space and whether or not it has a key
+                        _enemySpawnInfo->emplace_back(Vec2(curr_col + originX, curr_row + originY),
+                            tile_to_traps[data.at(j)].find("key") != string::npos);
                     }
                     else if (tile_to_traps[data.at(j)] == "sap")
                     {
                         // TODO: make sure this works
-                        sublevel->at(curr_row)->at(curr_col)->initTrap(TrapModel::TrapType::SAP);
+                        getRoom(curr_col, curr_row)->initTrap(TrapModel::TrapType::SAP);
                     }
                     else if (tile_to_traps[data.at(j)] == "locked")
                     {
                         // TODO: make sure this works
-                        sublevel->at(curr_row)->at(curr_col)->setPermlocked();
+                        getRoom(curr_col, curr_row)->setPermlocked();
                     }
                     else if (tile_to_traps[data.at(j)] == "key")
                     {
@@ -333,71 +406,6 @@ void GridModel::initRegion(shared_ptr<JsonValue> regionMetadata)
     // Update the world bounds based on this region's bounds
     _bounds = _bounds.merge(region->getBounds());
 }
-
-/**
- * Deafult init
- * @param assets: the asset manager of the game
- * @param scale: the physics scale
- * @return a grid with 3x3 rooms, each room the default
- */
-bool GridModel::init(shared_ptr<AssetManager> assets, float scale)
-{
-    _assets = assets;
-    _physics_scale = scale;
-
-    // Get JSON for the world metadata and parse for constants
-    shared_ptr<JsonValue> worldJSON = assets->get<JsonValue>("world");
-
-    // Get room dimensions in tiles
-    _roomWidth = worldJSON->get("roomWidth")->asInt();
-    _roomHeight = worldJSON->get("roomHeight")->asInt();
-    // The size of each tile in pixels
-    _tileSize = worldJSON->get("tileSize")->asInt();
-
-    // Get the tileset for the rooms
-    _roomsTileset = assets->get<JsonValue>("tileset_rooms");
-
-    /**************************************************************/
-    // REGIONS
-    /**************************************************************/
-    // First give all the regions access to the backgrounds they'll need
-    RegionModel::setBackgrounds(assets, worldJSON);
-
-    // Get the list of regions in the world
-    vector<shared_ptr<JsonValue>> regions = worldJSON->get("regions")->children();
-
-    // Initialize Rect for region bounds
-    Rect _regionBounds = Rect();
-
-    // Now build each region based on the corresponding JSON metadata
-    for (shared_ptr<JsonValue> regionMetadata : regions) {
-        initRegion(regionMetadata);
-    }
-
-    // Set the size and origin based on the full world bounds
-    _size.x = _bounds.getMaxX() - _bounds.getMinX();
-    _size.y = _bounds.getMaxY() - _bounds.getMinY();
-    _originX = _bounds.getMinX();
-    _originY = _bounds.getMinY();
-
-    // Set only first region to be active at start
-    _activeRegions->push_back(_regions->at(0));
-
-    // Fill any empty spaces with solid rooms
-    for (int y = 0; y < _size.y; y++) {
-        for (int x = 0; x < _size.x; x++) {
-            // If there's no room there, put a solid one
-            if (getRoom(x, y) == nullptr) {
-                // Need to offset by grid origin to get GRID coordinates
-                shared_ptr<RoomModel> room = RoomModel::alloc(x + _originX, y + _originY, "room_solid");
-                setRoom(x, y, room);
-                _filler->push_back(room);
-            }
-        }
-    }
-
-    return this->scene2::SceneNode::init();
-};
 
 #pragma mark Destructors
 
@@ -446,8 +454,9 @@ int GridModel::getRegion(int x, int y)
 {
     for (int k = 0; k < _regions->size(); k++)
     {
-        if (_regions->at(k)->isInRegion(x, y))
+        if (_regions->at(k)->isInRegion(x, y)) {
             return (k + 1);
+        }
     }
     return 0;
 }
@@ -468,8 +477,8 @@ int GridModel::getRegion(int x, int y)
 bool GridModel::setRoom(int x, int y, shared_ptr<RoomModel> room)
 {
     // Transform these HOUSE coordinates to GRID space
-    x += _originX;
-    y += _originY;
+    //x += _originX;
+    //y += _originY;
     int regionNum = getRegion(x, y);
     return (regionNum == 0) ? false : _regions->at(regionNum - 1)->setRoom(x, y, room);
 };
@@ -661,8 +670,9 @@ void GridModel::calculatePhysicsGeometry()
             // If there's no room here, pull the corresponding solid one from the fillers
             // This loop happens in the same order that the fillers were created, so we can just pop off
             if (room == nullptr) {
-                room = _filler->at(fillerInd);
+                //room = _filler->at(fillerInd);
                 fillerInd++;
+                continue;
             }
 
             // Get pointers to PolygonNodes with the room's geometry

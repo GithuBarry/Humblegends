@@ -84,6 +84,8 @@ protected:
     // DEBUG
     /** Whether to auto-clear the first region */
     bool _clearReg1Pressed;
+    /** Whether to auto-clear the second region */
+    bool _clearReg2Pressed;
 
 // Device-specific fields are kept private
 private:
@@ -387,11 +389,19 @@ public:
     cugl::Vec2 getDragEnd() const {
         return _dragEnd;
     }
+
     /**
      * Returns whether region 1 should be cleared automatically
      */
     bool didClearRegion1() const {
         return _clearReg1Pressed;
+    }
+
+    /**
+     * Returns whether region 2 should be cleared automatically
+     */
+    bool didClearRegion2() const {
+        return _clearReg2Pressed;
     }
 
 #pragma mark -

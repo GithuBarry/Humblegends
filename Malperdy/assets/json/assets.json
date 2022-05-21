@@ -11,6 +11,7 @@
     "region3": "json/levels/MP_Region_3.json",
     "region_test": "json/levels/MP_evan_test2.json",
     "key_test": "json/levels/MP_KeyTest.json",
+    "regionblack": "json/levels/MP_RegionBlack.json",
 
     "tileset_geometry": "json/tilesets/geometry.tsj",
     "tileset_entities": "json/tilesets/entities.json",

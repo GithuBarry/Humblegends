@@ -47,6 +47,10 @@ protected:
 
     bool _debug = false;
 public:
+
+    /** Whether this enemy drops a key on death */
+    bool _isKeyed = false;
+
     bool isDebug() const;
 
     void setDebug(bool debug);

@@ -278,7 +278,9 @@ void RoomModel::clear(shared_ptr<Texture> bg) {
 bool RoomModel::update(float dt) {
     // SHOWING LOCKS
     // Only show if the rooms are zoomed out and there's a pending lock state update
-    if (isZoomedOut && lockChangePending) updateLockedAppearance();
+    if (isZoomedOut && lockChangePending) {
+        updateLockedAppearance();
+    }
 
     // BACKGROUND CLEAR TRANSITION
     // When a room is being cleared, transition smoothly between backgrounds

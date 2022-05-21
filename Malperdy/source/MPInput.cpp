@@ -40,8 +40,6 @@ using namespace cugl;
 #define DEBUG_KEY KeyCode::P
 /** The key for exiting the game */
 #define EXIT_KEY  KeyCode::ESCAPE
-/** The key for clearing the first region automatically */
-#define REGION_1_CLEAR_KEY KeyCode::NUM_1
 
 /** The key to dash right */
 #define DASH_RIGHT_KEY  KeyCode::D
@@ -53,6 +51,11 @@ using namespace cugl;
 #define ZOOM_OUT_KEY  KeyCode::Q
 /** The key to jump */
 #define JUMP_KEY  KeyCode::W
+
+/** The key for clearing the first region automatically */
+#define REGION_1_CLEAR_KEY KeyCode::NUM_1
+/** The key for clearing the second region automatically */
+#define REGION_2_CLEAR_KEY KeyCode::NUM_2
 
 #pragma mark -
 #pragma mark Input Controller
@@ -114,7 +117,8 @@ InputController::InputController() :
         _zoomInPressed(false),
         _zoomOutPressed(false),
 //DEBUG
-        _clearReg1Pressed(false) {
+        _clearReg1Pressed(false),
+        _clearReg2Pressed(false) {
 }
 
 /**
@@ -257,7 +261,9 @@ void InputController::update(float dt) {
 
     keys->keyDown(KeyCode::ARROW_DOWN);
 
+    // REGION CLEAR (DEBUG)
     _clearReg1Pressed = keys->keyPressed(REGION_1_CLEAR_KEY);
+    _clearReg2Pressed = keys->keyPressed(REGION_2_CLEAR_KEY);
 
     // USE INTERNAL PRIVATE VARIABLES TO CHANGE THE EXTERNAL FLAGS
     _resetPressed = _keyReset;

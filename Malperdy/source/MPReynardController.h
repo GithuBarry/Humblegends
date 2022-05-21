@@ -107,6 +107,9 @@ public:
         // Otherwise, pick up the key
         _keyIDs->push_back(keyID);
         _keysCount++;
+
+        AudioController::playSFX(KEYCOLLECT_SOUND);
+
         return true;
     }
 

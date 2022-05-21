@@ -32,9 +32,11 @@
 #include "MPTutorial.hpp"
 
 /** Reynard's start location */
-//#define REYNARD_START Vec2(70, 70)
-//old reynard start possition
-#define REYNARD_START Vec2(2,16)
+// y-position is approx 6 * y-origin of first region
+// was (2,16) when region 1 was at (0,0)
+#define REYNARD_START Vec2(4,153)
+/** The y-offset from the origin for tutorials */
+#define TUTORIAL_Y_OFFSET 137
 
 /** Room dimensions in tiles */
 #define ROOM_WIDTH 12

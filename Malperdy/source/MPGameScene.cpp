@@ -42,7 +42,7 @@ using namespace std;
 float DEFAULT_HEIGHT = DEFAULT_WIDTH / SCENE_WIDTH * SCENE_HEIGHT;
 
 /** The default value of gravity (going down) */
-#define DEFAULT_GRAVITY -22.0f
+#define DEFAULT_GRAVITY -26.0f
 
 /** The default value of Spike damage */
 #define SPIKE_DAMAGE 1.0f
@@ -446,15 +446,60 @@ void GameScene::populateReynard()
  */
 void GameScene::populateEnemies()
 {
-    shared_ptr<vector<shared_ptr<RegionModel>>> _activeRegions = _grid->getActiveRegions();
+    /*shared_ptr<vector<shared_ptr<RegionModel>>> _activeRegions = _grid->getActiveRegions();
     for (vector<shared_ptr<RegionModel>>::iterator itr = _activeRegions->begin();
          itr != _activeRegions->end(); ++itr)
     {
         populateEnemiesInRegion(*itr);
+    }*/
+
+
+    shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
+
+    // Initialize new enemy
+    _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
+
+    Vec2 enemyCoords;
+
+    // For each enemy to spawn
+    for (auto itr = _grid->_enemySpawnInfo->begin(); itr != _grid->_enemySpawnInfo->end();
+        ++itr) {
+        // Note that these are in HOUSE space, so first go to ROOM? space
+        enemyCoords.x = ((*itr).first).x - _grid->getOriginX() + 0.5f;
+        enemyCoords.y = ((*itr).first).y - _grid->getOriginY() + 0.5f;
+        // Then ROOM to GRID space?
+        enemyCoords = _grid->roomSpaceToGrid(enemyCoords);
+        // Then go from GRID space to WORLD space
+        enemyCoords = _grid->nodeToWorldCoords(enemyCoords);
+        // Then go to PHYSICS space
+        enemyCoords /= _scale;
+
+        // Now create the actual enemy
+
+        // initialize it
+        //                _enemies->push_back(EnemyController::alloc(enemypos * Vec2(12,8), _scale, rabbit_animations));
+        _enemies->push_back(EnemyController::alloc(Vec2::ZERO, _scale, rabbit_animations));
+
+        _enemies->back()->setObstacleWorld(_world);
+        _enemies->back()->setReynardController(_reynardController);
+        _enemies->back()->_isKeyed = (*itr).second;
+
+        //addObstacle(_enemies->back()->getCharacter(), _enemies->back()->getCharacter()->_node);
+
+        //_enemies->back()->getCharacter()->setPosition(enemyCoords);
+    }
+
+    _checkpointEnemyPos = vector<Vec2>();
+    _checkpointReynardPos = _reynardController->getCharacter()->getPosition();
+    for (auto enemy : *_enemies)
+    {
+        _checkpointEnemyPos.push_back(enemy->getCharacter()->getPosition());
     }
 }
 
 /**
+ * NOT CURRENTLY USED
+ * 
  * Places the enemies for the given region in the game world.
  *
  * Allows us to populate enemies on a per-region basis, instead
@@ -465,11 +510,15 @@ void GameScene::populateEnemies()
  */
 void GameScene::populateEnemiesInRegion(shared_ptr<RegionModel> region)
 {
+
+    // NOT CURRENTLY USED
+
     shared_ptr<Animation> rabbit_animations = make_shared<Animation>(_assets->get<Texture>("rabbit_all"), _assets->get<JsonValue>("framedata2")->get("rabbit"));
 
     // Initialize new enemy
     _enemies = make_shared<vector<std::shared_ptr<EnemyController>>>();
 
+    
     // get Level data from the JSON
     shared_ptr<JsonValue> levelJSON = _assets->get<JsonValue>(region->getName());
     // get the layer containing entities
@@ -593,6 +642,8 @@ void GameScene::populateTutorials()
  */
 void GameScene::placeEnvImage(float x, float y, float scale, string TextureName)
 {
+    y += TUTORIAL_Y_OFFSET;
+
     // Make scene node for the given tutorial image
     shared_ptr<scene2::PolygonNode> tutorialNode =
         scene2::PolygonNode::allocWithTexture(_assets->get<Texture>(TextureName));
@@ -664,9 +715,12 @@ void GameScene::update(float dt)
     
     _world->garbageCollect();
 
-    // Clear region 1 if we hit the debug key
+    // Clear regions if we hit the debug key
     if (_input.didClearRegion1()) {
         _grid->clearRegion(1);
+    }
+    if (_input.didClearRegion2()) {
+        _grid->clearRegion(2);
     }
 
     // Process the toggled key commands
@@ -1449,8 +1503,8 @@ void GameScene::beginContact(b2Contact *contact)
                         _checkpointEnemyPos.push_back(thisEnemy->getCharacter()->getPosition());
                     }
 
-                    // Only use a key if the checkpoint isn't already activated
-                    if (!trap->isActivated()) _reynardController->useKey();
+                    // Only use a key if the checkpoint isn't already activated and it needs a key
+                    if (!trap->isActivated() && cp->isLocked()) _reynardController->useKey();
 
                     trap->setTrapState(TrapModel::TrapState::ACTIVATED);
 
@@ -1515,7 +1569,8 @@ void GameScene::beginContact(b2Contact *contact)
             if (trapType == TrapModel::TrapType::SPIKE && !enemy->isDead()) {
                 // TODO: Change this because enemy dies instantly on contact with spikes.
                 enemy->getCharacter()->setHearts(0);
-                if (enemy->isDead()) {
+                // If it's dead and a keyed enemy
+                if (enemy->isDead() && enemy->_isKeyed) {
                     // Mark this enemy to get a key spawned here next frame
                     deadKeyEnemyLocs->push_back(enemy->getCharacter()->getPosition());
                 }

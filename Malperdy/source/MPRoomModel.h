@@ -373,7 +373,7 @@ public:
         isZoomedOut = true;
 
         // Prepare to update appearance next frame if the room is locked
-        lockChangePending = locked;
+        lockChangePending = locked || permlocked;
     }
 
     /**

@@ -157,6 +157,10 @@ void RegionModel::addSublevel(int originX, int originY, int width, int height,
  * @return      Whether the room was set successfully
  */
 bool RegionModel::setExitRoom(int x, int y, shared_ptr<Texture> tex) {
+	// Transform these GRID coordinates to REGION space
+	x -= _originX;
+	y -= _originY;
+
 	shared_ptr<RoomModel> exitRoom = getRoom(x, y);
 	if (exitRoom == nullptr) return false;
 
@@ -181,11 +185,15 @@ bool RegionModel::setExitRoom(int x, int y, shared_ptr<Texture> tex) {
  * This should ONLY be called after all sublevels have already been added to the region.
  *
  * @param cID	The ID of the checkpoint to add to this region
- * @param cX	The x-coordinate in region space of this checkpoint's location
- * @param cY	The y-coordinate in region space of this checkpoint's location
+ * @param cX	The x-coordinate in GRID space of this checkpoint's location
+ * @param cY	The y-coordinate in GRID space of this checkpoint's location
  * @return		Whether the checkpoint was successfully added to the region
  */
 bool RegionModel::addCheckpoint(int cID, int cX, int cY) {
+	// Convert to REGION space
+	cX -= _originX;
+	cY -= _originY;
+
 	// Increment number of uncleared checkpoints in the level
 	_checkpointsToClear++;
 

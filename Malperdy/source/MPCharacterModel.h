@@ -40,7 +40,7 @@ using namespace cugl;
 #define DELAY_SPEED 1.0f
 /** The speed at which this character jumps */
 #define JUMP_SPEED_X 7.0f
-#define JUMP_SPEED_Y 10.8f
+#define JUMP_SPEED_Y 12.8f
 /** By how much to decelerate Reynard's movement by */
 #define DECELERATION 0.3f
 /** Cooldown (in animation frames) for jumping */
