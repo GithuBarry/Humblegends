@@ -208,6 +208,18 @@
       "volume": 0.5
     },
 
+    "checkpoint_onlygong": {
+      "type": "sample",
+      "file": "sounds/checkpoint_onlygong.wav",
+      "volume": 0.5
+    },
+
+    "key_collect": {
+      "type": "sample",
+      "file": "sounds/key_collect.wav",
+      "volume": 0.5
+    },
+
     "pause_ui": {
       "type": "sample",
       "file": "sounds/pause_ui.wav",

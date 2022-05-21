@@ -16,7 +16,9 @@ using namespace cugl;
 #define SWAP_SOUND "swap_room"
 #define NOSWAP_SOUND "noswap"
 #define CHECKPOINT_SOUND "checkpoint"
+#define CHECKPOINTGONG_SOUND "checkpoint_onlygong"
 #define VINE_SOUND "vine"
+#define KEYCOLLECT_SOUND "key_collect"
 
 #define ZOOMIN_SOUND "zoom_in"
 #define ZOOMOUT_SOUND "zoom_out"
@@ -24,6 +26,7 @@ using namespace cugl;
 
 /* Play these with MPAudioController::playAudio(_assets, XYZ_MUSIC_GOES_HERE, false, 1, true); */
 #define LEVEL_MUSIC "level_music"
+#define SLOWEDLEVEL_MUSIC "slowedlevel_music"
 #define TITLE_MUSIC "titlescreen_music"
 
 class AudioController {
@@ -97,14 +100,36 @@ public:
 	static void setVolume(string sound, bool isMusic, float vol, bool isRel);
 
 	// Getters & Setters for Volume Settings Variables
-	static float getMusicVol() { return (musicMuted ? 0.0f : musicVol); }
+	static float getMusicVol(bool inclMuted = true) {
+
+		if (inclMuted)
+		{
+			return (musicMuted ? 0.0f : musicVol);
+		}
+		else
+		{
+			return musicVol;
+		}
+
+	}
 	static void setMusicVol( float vol ) {
 		if(vol >= 0.0 && vol <=1.001) musicVol = vol; 
 	}
 	static bool getMusicMute() { return musicMuted; }
 	static void setMusicMute(bool muted) { musicMuted = muted; }
 
-	static float getSfxVol() { return (sfxMuted ? 0.0f : sfxVol); }
+	static float getSfxVol(bool inclMuted = true) { 
+		
+		if (inclMuted)
+		{
+			return (sfxMuted ? 0.0f : sfxVol);
+		}
+		else
+		{
+			return sfxVol;
+		}
+	
+	}
 	static void setSfxVol(float vol) { 
 		if (vol >= 0.0 && vol <= 1.001) sfxVol = vol;
 	}

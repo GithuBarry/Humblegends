@@ -121,8 +121,10 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
-            AudioController::setMusicVol(AudioController::getMusicVol() - VOL_INCREMENT);
-            _musicVol->setProgress(AudioController::getMusicVol());
+            AudioController::setMusicVol(AudioController::getMusicVol(false) - VOL_INCREMENT);
+            _musicVol->setProgress(AudioController::getMusicVol(false));
+            CULog("DECREMENT");
+            //AudioController::setVolume(TITLE_MUSIC, true, AudioController::getMusicVol(), false);
         }
     });
     _musicPlus = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_music-plus"));
@@ -130,10 +132,12 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
-            AudioController::setMusicVol(AudioController::getMusicVol() + VOL_INCREMENT);
-            _musicVol->setProgress(AudioController::getMusicVol());
+            AudioController::setMusicVol(AudioController::getMusicVol(false) + VOL_INCREMENT);
+            _musicVol->setProgress(AudioController::getMusicVol(false));
+            CULog("INCREMENT");
         }
     });
+
     _sfxMute = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_sfx-mute"));
     _sfxMute->addListener([=](const std::string& name, bool down) {
         if (_buttonState == 0) _buttonState = 1;
@@ -151,8 +155,10 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
-            AudioController::setSfxVol(AudioController::getSfxVol() - VOL_INCREMENT);
-            _sfxVol->setProgress(AudioController::getSfxVol());
+            AudioController::setSfxVol(AudioController::getSfxVol(false) - VOL_INCREMENT);
+            _sfxVol->setProgress(AudioController::getSfxVol(false));
+
+            AudioController::playSFX(PAUSE_UI_SOUND, AudioController::getSfxVol());
         }
     });
     _sfxPlus = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_volume_sfx-plus"));
@@ -160,8 +166,9 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
         if (_buttonState == 0) _buttonState = 1;
         else {
             _buttonState = 0;
-            AudioController::setSfxVol(AudioController::getSfxVol() + VOL_INCREMENT);
-            _sfxVol->setProgress(AudioController::getSfxVol());
+            AudioController::setSfxVol(AudioController::getSfxVol(false) + VOL_INCREMENT);
+            _sfxVol->setProgress(AudioController::getSfxVol(false));
+            AudioController::playSFX(PAUSE_UI_SOUND, AudioController::getSfxVol());
         }
     });
     _done = std::dynamic_pointer_cast<scene2::Button>(assets->get<scene2::SceneNode>("load_done"));
@@ -180,7 +187,7 @@ bool LoadingScene::init(const std::shared_ptr<AssetManager>& assets) {
     addChild(layer);
 
     // Play title screen music
-    AudioController::playGivenMusic(_assets->get<Sound>("titlescreen_music"));
+    AudioController::playMusic(TITLE_MUSIC);
 
     return true;
 }
@@ -227,6 +234,8 @@ void LoadingScene::dispose() {
  * @param timestep  The amount of time (in seconds) since the last frame
  */
 void LoadingScene::update(float progress) {
+    AudioController::setVolume(TITLE_MUSIC, true, AudioController::getMusicVol(), false);
+
     if (_progress < 1) {
         _progress = _assets->progress();
         if (_progress >= 1) {

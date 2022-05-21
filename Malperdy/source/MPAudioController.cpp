@@ -38,11 +38,11 @@ bool AudioController::sfxMuted = false;
 			
 		if (isMusic)
 		{
-			AudioEngine::get()->getMusicQueue()->play(source, loop, vol);
+			AudioEngine::get()->getMusicQueue()->play(source, loop, getMusicVol() * vol);
 		}
 		else
 		{
-			AudioEngine::get()->play(sound, source, loop, vol, true);
+			AudioEngine::get()->play(sound, source, loop, getSfxVol() * vol, true);
 		}
 	}
 
