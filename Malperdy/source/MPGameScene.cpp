@@ -876,15 +876,15 @@ void GameScene::update(float dt)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_3.png");
     }
-    if (_gamestate.secondsAfterResume() < 2)
+    else if (_gamestate.secondsAfterResume() < 2)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_2.png");
     }
-    if (_gamestate.secondsAfterResume() < 3)
+    else if (_gamestate.secondsAfterResume() < 3)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Count_Down_1.png");
     }
-    if (_gamestate.secondsAfterResume() < 4)
+    else if (_gamestate.secondsAfterResume() < 4)
     {
         _pause->setTexture("textures/PauseScreen/Pause_Button.png");
     }
