@@ -142,7 +142,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
                 AudioController::playSFX(LAND_SOUND);
             }
 
-            _speed = RUN_SPEED;
+            _speed = RUN_SPEED * (isSapped ? SAPPED_MULT : 1);
             setAnimation("run");
             _jumped = false;
             break;
@@ -191,7 +191,7 @@ bool CharacterModel::setMoveState(MovementState newState, int param) {
             setVY(0);
             setGravityScale(0);
             // Flip the direction to dash direction
-            setVX(param * RUN_SPEED * DASH_MULTIPLIER * x_scale());
+            setVX(param * RUN_SPEED * DASH_MULTIPLIER * (isSapped ? SAPPED_MULT : 1) * x_scale());
             
             // Freeze animation while dashing
             _currAnimation = "";
@@ -333,7 +333,7 @@ void CharacterModel::update(float dt) {
         case MovementState::RUNNING: {
             _speed = RUN_SPEED;
             // Continue moving if in the run state
-            setVX((_faceRight ? 1 : -1) * _speed);
+            setVX((_faceRight ? 1 : -1) * _speed * (isSapped ? SAPPED_MULT : 1));
             break;
         }
         case MovementState::JUMPING: {
@@ -341,7 +341,7 @@ void CharacterModel::update(float dt) {
                 _speed -= DECELERATION;
                 jump_x = _speed;
             }
-            setVX((_faceRight ? 1 : -1) * jump_x);
+            setVX((_faceRight ? 1 : -1) * jump_x * (isSapped ? SAPPED_MULT : 1));
             // If vertical velocity becomes negative, transition to Falling
             if (getVY() <= -0.2f) setMoveState(MovementState::FALLING);
             break;
@@ -351,7 +351,7 @@ void CharacterModel::update(float dt) {
                 _speed -= DECELERATION;
                 jump_x = _speed;
             }
-            setVX((_faceRight ? 1 : -1) * jump_x);
+            setVX((_faceRight ? 1 : -1) * jump_x * (isSapped ? SAPPED_MULT : 1));
             break;
         }
         case MovementState::ONWALL:
@@ -373,6 +373,11 @@ void CharacterModel::update(float dt) {
     if (_node != nullptr) {
         _node->setPosition(getPosition() * _drawScale);
         _node->setAngle(getAngle());
+    }
+
+    // Update sapped status
+    if (Timestamp().ellapsedMillis(_dashStart) <= SAPPED_DURATION) {
+        isSapped = false;
     }
 
     // UPDATE THE ANIMATION

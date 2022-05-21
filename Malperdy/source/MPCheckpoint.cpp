@@ -42,7 +42,7 @@ bool Checkpoint::init(float roomWidth, float roomHeight, bool isFinal, bool lock
 
     _sceneNode->setAnchor(Vec2::ZERO);
     _sceneNode->setScale((roomWidth / 4) / _sceneNode->getPolygon().getBounds().getMaxX());
-    _sceneNode->setPosition(_sceneNode->getPosition().x + (roomWidth / 4), _sceneNode->getPosition().y + (roomHeight / 8));
+    _sceneNode->setPosition(_sceneNode->getPosition().x + (3 * roomWidth / 8), _sceneNode->getPosition().y + (roomHeight / 8));
     _sceneNode->setAbsolute(true);
 
     _currFrame = 29;
